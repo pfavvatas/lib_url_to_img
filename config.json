@@ -2,7 +2,7 @@
     "debug": true,
     "settings": {
         "html_parser": {
-            "xpath": "/html/body"
+            "tag_name": "body"
         },
         "root": "body",
         "level": [1, 2, 3, 4]

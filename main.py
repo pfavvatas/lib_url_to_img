@@ -7,7 +7,7 @@ import json
 from urllib.parse import urlparse
 
 
-def process_url(url, driver):
+def process_url(url, driver, config):
     try:
         driver.get(url)
     except WebDriverException as e:
@@ -15,7 +15,8 @@ def process_url(url, driver):
             f.write(f"Error processing URL {url}: {str(e)}\n")
         print('\033[91m' + "Error: " + url + '\033[0m')
         return
-    root = HTMLTag(driver.find_element(By.TAG_NAME, 'html'), driver)
+    tag_name = config.get_attribute('settings.html_parser.tag_name', 'html')
+    root = HTMLTag(driver.find_element(By.TAG_NAME, tag_name), driver)
     parsed_url = urlparse(url)
     folder_name = "results/"+ (parsed_url.netloc or 'localhost')
     os.makedirs(folder_name, exist_ok=True)
@@ -32,6 +33,6 @@ driver = webdriver.Chrome()
 urls = ['http://localhost:8888']
 
 for url in urls:
-    process_url(url, driver)
+    process_url(url, driver, config)
 
 driver.close()
