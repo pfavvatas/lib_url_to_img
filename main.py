@@ -1,4 +1,5 @@
 from url_scrapper import HTMLTag
+from config import Config
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import WebDriverException
@@ -21,9 +22,11 @@ def process_url(url, driver):
     with open(os.path.join(folder_name, 'data.json'), 'w') as f:
         json.dump(root.to_dict(), f, indent=4)
 
+settings = Config('config.json')
+
 driver = webdriver.Chrome()
 
-urls = ['http://localhost:8880', 'http://localhost:8080']
+urls = ['http://localhost:8888']
 
 for url in urls:
     process_url(url, driver)
