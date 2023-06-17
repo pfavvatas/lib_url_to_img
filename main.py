@@ -1,5 +1,4 @@
-from url_scrapper import HTMLTag
-from config import Config
+from utils import HTMLTag, Config
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import WebDriverException
