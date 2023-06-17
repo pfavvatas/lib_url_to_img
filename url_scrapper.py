@@ -2,15 +2,16 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 
 class HTMLTag:
-    def __init__(self, webelement, driver, depth=0):
+    def __init__(self, webelement, driver, depth=0, parent_id=None):
         self.unique_id = id(self)
+        self.parent_id = parent_id  # Save the parent's unique_id
         self.tag_name = webelement.tag_name
         self.attributes = self.get_all_attributes(webelement, driver)  
         self.depth = depth
 
         # We only create children list and recursively populate it if the current webelement has child elements.
         if webelement.find_elements(By.XPATH, ".//*"):
-            self.children = [HTMLTag(child, driver, depth=depth+1) for child in webelement.find_elements(By.XPATH, "./*")]
+            self.children = [HTMLTag(child, driver, depth=depth+1, parent_id=self.unique_id) for child in webelement.find_elements(By.XPATH, "./*")]
         else:
             self.children = []
 
@@ -41,6 +42,7 @@ class HTMLTag:
     def to_dict(self):
         return {
             'unique_id': self.unique_id,
+            'parent_id': self.parent_id,
             'tag_name': self.tag_name,
             'attributes': self.attributes,
             'children': [child.to_dict() for child in self.children],
