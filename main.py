@@ -17,12 +17,15 @@ def process_url(url, driver):
         return
     root = HTMLTag(driver.find_element(By.TAG_NAME, 'html'), driver)
     parsed_url = urlparse(url)
-    folder_name = parsed_url.netloc or 'localhost'
+    folder_name = "results/"+ (parsed_url.netloc or 'localhost')
     os.makedirs(folder_name, exist_ok=True)
     with open(os.path.join(folder_name, 'data.json'), 'w') as f:
         json.dump(root.to_dict(), f, indent=4)
 
-settings = Config('config.json')
+config = Config('config.json')
+
+debug_mode = getattr(config, 'debug', False)
+if debug_mode: print(config)
 
 driver = webdriver.Chrome()
 

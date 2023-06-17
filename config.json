@@ -1,6 +1,9 @@
 {
+    "debug": true,
     "settings": {
-        "xpath": "/html/body",
+        "html_parser": {
+            "xpath": "/html/body"
+        },
         "root": "body",
         "level": [1, 2, 3, 4]
     },
