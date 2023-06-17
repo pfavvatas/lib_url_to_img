@@ -13,6 +13,7 @@ def process_url(url, driver):
     except WebDriverException as e:
         with open('errors.log', 'a') as f:
             f.write(f"Error processing URL {url}: {str(e)}\n")
+        print('\033[91m' + "Error: " + url + '\033[0m')
         return
     root = HTMLTag(driver.find_element(By.TAG_NAME, 'html'), driver)
     parsed_url = urlparse(url)
