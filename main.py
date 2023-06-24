@@ -1,11 +1,10 @@
-from utils import HTMLTag, Config
+from utils import HTMLTag, Config, generate_combinations_reversed, writeToFile, FileExtensions, FileNames
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import WebDriverException
 import os
 import json
 from urllib.parse import urlparse
-
 
 def process_url(url, driver, config):
     try:
@@ -15,14 +14,24 @@ def process_url(url, driver, config):
             f.write(f"Error processing URL {url}: {str(e)}\n")
         print('\033[91m' + "Error: " + url + '\033[0m')
         return
-    tag_name = config.get_attribute('settings.html_parser.tag_name', 'html')
-    root = HTMLTag(driver.find_element(By.TAG_NAME, tag_name), driver)
+    
+    #Step 0
     parsed_url = urlparse(url)
     folder_name = "results/"+ (parsed_url.netloc or 'localhost')
     os.makedirs(folder_name, exist_ok=True)
-    with open(os.path.join(folder_name, 'data.json'), 'w') as f:
-        json.dump(root.to_dict(), f, indent=4)
 
+    #Step 1
+    tag_name = config.get_attribute('settings.html_parser.tag_name', 'html')
+    root = HTMLTag(driver.find_element(By.TAG_NAME, tag_name), driver)
+    writeToFile(folder_name, FileNames.DATA.value , FileExtensions.JSON.value , root.to_dict())
+
+    #Step2
+    # Generate combinations and their reversed forms with levels
+    combinations_reverse = {}
+    generate_combinations_reversed(root, [], [], combinations_reverse)
+    writeToFile(folder_name, FileNames.COMBINATIONS.value , FileExtensions.JSON.value , combinations_reverse)
+
+#***************************************************************************************************************#
 config = Config('config.json')
 
 debug_mode = getattr(config, 'debug', False)
