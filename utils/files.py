@@ -16,6 +16,7 @@ class FileExtensions(Enum):
 class FileNames(Enum):
     DATA = 'Data'
     COMBINATIONS = 'Combinations'
+    COMBINATIONS_BY_LENGTH = 'CombinationsByLength'
 
 def writeToFile(folder_name, file_name, file_extension, data):
     os.makedirs(folder_name, exist_ok=True)
