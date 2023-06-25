@@ -27,3 +27,47 @@ def generate_combinations_reversed(node, parent_tags, parent_tags_by_id, combina
             generate_combinations_reversed(child, current_tags, current_tags_by_id, combinations)
     except Exception as e:
         print(e)
+
+def search_combinations_by_length(combinations_reverse, desired_length):
+    try:
+        desired_length = int(desired_length)
+    except ValueError:
+        print("\033[91m [search_combinations_by_length] WARNING: You did not enter a valid integer. \033[0m")
+
+    search_results = []
+
+    for combinations_by_id, data in combinations_reverse.items():
+        found_match = False
+
+        for sub_comb, length in data['combinations_by_id']:
+            if length == desired_length:
+                search_results.append((sub_comb))
+                found_match = True
+                break
+
+        if not found_match:
+            for sub_comb, length in data['combinations_by_id']:
+                if length < desired_length:
+                    search_results.append((sub_comb))
+                    found_match = True
+                    break
+
+        if not found_match:
+            for sub_comb, length in reversed(data['combinations_by_id']):
+                if length > desired_length:
+                    continue
+                if length <= desired_length:
+                    search_results.append((sub_comb))
+                    found_match = True
+                    break
+
+    return search_results
+
+def search_multiple_lengths(combinations_reverse, desired_lengths):
+    results = []
+
+    for length in desired_lengths:
+        combinations = search_combinations_by_length(combinations_reverse, length)
+        results.append({'level': str(length), 'combinations': combinations})
+
+    return results

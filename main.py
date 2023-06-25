@@ -1,4 +1,4 @@
-from utils import HTMLTag, Config, generate_combinations_reversed, writeToFile, FileExtensions, FileNames
+from utils import *#HTMLTag, Config, generate_combinations_reversed, writeToFile, FileExtensions, FileNames, search_combinations_by_length, search_multiple_lengths
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import WebDriverException
@@ -30,6 +30,10 @@ def process_url(url, driver, config):
     combinations_reverse = {}
     generate_combinations_reversed(root, [], [], combinations_reverse)
     writeToFile(folder_name, FileNames.COMBINATIONS.value , FileExtensions.JSON.value , combinations_reverse)
+
+    #Step3
+    combinations_by_length = search_multiple_lengths(combinations_reverse,[1,2,3])
+    writeToFile(folder_name, FileNames.COMBINATIONS_BY_LENGTH.value , FileExtensions.JSON.value , combinations_by_length)
 
 #***************************************************************************************************************#
 config = Config('config.json')
