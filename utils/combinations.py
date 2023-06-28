@@ -28,46 +28,73 @@ def generate_combinations_reversed(node, parent_tags, parent_tags_by_id, combina
     except Exception as e:
         print(e)
 
-def search_combinations_by_length(combinations_reverse, desired_length):
+def search_combinations_by_level(combinations_reverse, desired_level):
     try:
-        desired_length = int(desired_length)
+        desired_level = int(desired_level)
     except ValueError:
-        print("\033[91m [search_combinations_by_length] WARNING: You did not enter a valid integer. \033[0m")
+        print("\033[91m [search_combinations_by_level] WARNING: You did not enter a valid integer. \033[0m")
 
     search_results = []
 
     for combinations_by_id, data in combinations_reverse.items():
         found_match = False
 
-        for sub_comb, length in data['combinations_by_id']:
-            if length == desired_length:
+        for sub_comb, level in data['combinations_by_id']:
+            if level == desired_level:
                 search_results.append((sub_comb))
                 found_match = True
                 break
 
         if not found_match:
-            for sub_comb, length in data['combinations_by_id']:
-                if length < desired_length:
+            for sub_comb, level in data['combinations_by_id']:
+                if level < desired_level:
                     search_results.append((sub_comb))
                     found_match = True
                     break
 
         if not found_match:
-            for sub_comb, length in reversed(data['combinations_by_id']):
-                if length > desired_length:
+            for sub_comb, level in reversed(data['combinations_by_id']):
+                if level > desired_level:
                     continue
-                if length <= desired_length:
+                if level <= desired_level:
                     search_results.append((sub_comb))
                     found_match = True
                     break
 
     return search_results
 
-def search_multiple_lengths(combinations_reverse, desired_lengths):
+# def search_multiple_levels(combinations_reverse, desired_levels):
+#     results = []
+
+#     for level in desired_levels:
+#         combinations = search_combinations_by_level(combinations_reverse, level)
+#         results.append({'level': str(level), 'combinations': combinations})
+
+#     return results
+
+def get_combinations_tags_by_unique_id(data):
+    # Use list comprehension to collect all combinations
+    all_combinations = [combination for obj in data for combination in obj['combinations']]
+
+    return all_combinations
+
+def search_multiple_levels(combinations_reverse, desired_levels, root):
     results = []
 
-    for length in desired_lengths:
-        combinations = search_combinations_by_length(combinations_reverse, length)
-        results.append({'level': str(length), 'combinations': combinations})
+    for level in desired_levels:
+        combinations = search_combinations_by_level(combinations_reverse, level)
+
+        # Compute combinations_tags
+        combinations_tags = [[root.find_tag_name_by_id(id) for id in combination] for combination in combinations]
+
+        # Compute combinations_keys
+        combinations_keys = [",".join(tags) for tags in combinations_tags]
+
+        results.append({
+            'level': str(level), 
+            'combinations': combinations, 
+            'combinations_tags': combinations_tags,
+            'combinations_keys': combinations_keys
+        })
 
     return results
