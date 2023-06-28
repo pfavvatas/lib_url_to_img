@@ -1,4 +1,4 @@
-from utils import *#HTMLTag, Config, generate_combinations_reversed, writeToFile, FileExtensions, FileNames, search_combinations_by_length, search_multiple_lengths
+from utils import *
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import WebDriverException
@@ -32,8 +32,17 @@ def process_url(url, driver, config):
     writeToFile(folder_name, FileNames.COMBINATIONS.value , FileExtensions.JSON.value , combinations_reverse)
 
     #Step3
-    combinations_by_length = search_multiple_lengths(combinations_reverse,[1,2,3])
-    writeToFile(folder_name, FileNames.COMBINATIONS_BY_LENGTH.value , FileExtensions.JSON.value , combinations_by_length)
+    #Lista me olous tous diathesimous sunduasmous basi level
+    combinations_by_level = search_multiple_levels(combinations_reverse,[1,2,3,4], root)
+    writeToFile(folder_name, FileNames.COMBINATIONS_BY_LEVEL.value , FileExtensions.JSON.value , combinations_by_level)
+
+    #Step4
+    #Lista me olous toys html tag sundiasmous basi unique id apo Step3
+    all_combinations_tags_by_unique_id = get_combinations_tags_by_unique_id(combinations_by_level)
+    writeToFile(folder_name, FileNames.COMBINATIONS_TAGS_BY_UNIQUE_ID.value , FileExtensions.JSON.value , all_combinations_tags_by_unique_id)
+
+    #tags configuration file
+    root.generate_tag_color_map(all_combinations_tags_by_unique_id, FileNames.TAGS_CONFIGURATION.value + FileExtensions.JSON.value)
 
 #***************************************************************************************************************#
 config = Config('config.json')
