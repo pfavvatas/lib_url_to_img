@@ -16,7 +16,9 @@ class FileExtensions(Enum):
 class FileNames(Enum):
     DATA = 'Data'
     COMBINATIONS = 'Combinations'
-    COMBINATIONS_BY_LENGTH = 'CombinationsByLength'
+    COMBINATIONS_BY_LEVEL = 'CombinationsByLevel'
+    COMBINATIONS_TAGS_BY_UNIQUE_ID = 'CombinationsTags'
+    TAGS_CONFIGURATION = 'configuration/tags'
 
 def writeToFile(folder_name, file_name, file_extension, data):
     os.makedirs(folder_name, exist_ok=True)
