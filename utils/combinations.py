@@ -1,3 +1,5 @@
+import json
+
 def generate_combinations_reversed(node, parent_tags, parent_tags_by_id, combinations):
     try:
         #Remove root node
@@ -78,6 +80,31 @@ def get_combinations_tags_by_unique_id(data):
 
     return all_combinations
 
+def get_combinations_keys_ordered(combinations_keys, combinations):
+    with open('configuration/tags.json') as config_file:
+        config_data = json.load(config_file)
+        tag_order = config_data.get('tag_order', {})  # Use an empty dictionary if 'tag_order' doesn't exist
+
+       # Compute combinations_keys_ordered
+        combinations_keys_ordered = []
+        for key, combination in zip(combinations_keys, combinations):
+            if key in tag_order:
+                combinations_keys_ordered.append((key, combination))
+            else:
+                combinations_keys_ordered.append((key, combination))
+                tag_order[key] = max(tag_order.values(), default=0) + 1
+
+        # Sort combinations_keys_ordered based on tag_order
+        combinations_keys_ordered.sort(key=lambda x: tag_order.get(x[0], float('inf')))
+
+    # Update the tag_order in the configuration file
+    config_data['tag_order'] = tag_order
+    with open('configuration/tags.json', 'w') as config_file:
+        json.dump(config_data, config_file, indent=4)
+
+    return combinations_keys_ordered
+
+
 def search_multiple_levels(combinations_reverse, desired_levels, root):
     results = []
 
@@ -94,7 +121,8 @@ def search_multiple_levels(combinations_reverse, desired_levels, root):
             'level': str(level), 
             'combinations': combinations, 
             'combinations_tags': combinations_tags,
-            'combinations_keys': combinations_keys
+            'combinations_keys': combinations_keys,
+            'combinations_keys_ordered': get_combinations_keys_ordered(combinations_keys, combinations)
         })
 
     return results
