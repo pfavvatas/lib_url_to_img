@@ -23,3 +23,13 @@ class Config:
     def __str__(self):
         attrs = vars(self)
         return ', '.join("%s: %s" % item for item in attrs.items())
+
+# Function to get tag order from JSON file
+def get_tag_order():
+    with open("configuration/tags.json", "r") as file:
+        tag_data = json.load(file)
+    return tag_data["tag_order"]
+def get_tag_colors():
+    with open("configuration/tags.json", "r") as file:
+        tag_data = json.load(file)
+    return tag_data["tag_colors"]
