@@ -74,6 +74,23 @@ class HTMLTag:
         # If the node wasn't found in this branch of the tree, return None
         return None
     
+    def find_node_by_id(self, unique_id):
+        if str(self.unique_id) == str(unique_id):
+            return self
+
+        for child in self.children:
+            result = child.find_node_by_id(unique_id)
+            if result:
+                return result
+
+        return None
+    
+    def get_width_and_height(self):
+        attributes = self.attributes
+        width = attributes.get('width', None)
+        height = attributes.get('height', None)
+        return width, height
+    
     def random_color(self):
         r = lambda: random.randint(0,255)
         return '#%02X%02X%02X' % (r(),r(),r())
