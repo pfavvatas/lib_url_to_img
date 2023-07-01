@@ -4,6 +4,25 @@
         "a": "#E09FE2",
         "b,a": "#83F3BC",
         "b,a,li": "#96E197",
-        "b,a,li,ul": "#12B0B6"
+        "b,a,li,ul": "#12B0B6",
+        "p": "#64EEFE",
+        "h1": "#42A5FB",
+        "a,p": "#75BFF1",
+        "p,div": "#CF0D05",
+        "h1,div": "#A3394D",
+        "a,p,div": "#06FC4E"
+    },
+    "tag_order": {
+        "b": 1,
+        "a": 2,
+        "b,a": 3,
+        "b,a,li": 4,
+        "b,a,li,ul": 5,
+        "p": 6,
+        "h1": 7,
+        "a,p": 8,
+        "p,div": 9,
+        "h1,div": 10,
+        "a,p,div": 11
     }
 }
