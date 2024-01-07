@@ -44,10 +44,13 @@ def process_url(url, driver, config, unique_id, dataCollector):
     generate_combinations_reversed(root, [], [], combinations_reverse)
     writeToFile(folder_name, FileNames.COMBINATIONS.value , FileExtensions.JSON.value , combinations_reverse)
 
-    #Step3
-    #Lista me olous tous diathesimous sunduasmous basi level
+    # Step 3
+    # Retrieve the level attribute from the configuration. Default to [1] if not found.
     level = config.get_attribute('settings.level', [1])
-    combinations_by_level = search_multiple_levels(combinations_reverse,level, root)
+    # Generate all available combinations based on the specified level.
+    # 'combinations_reverse' is a list of combinations in reverse order.
+    # 'root' is the root node for the search.
+    combinations_by_level = search_multiple_levels(combinations_reverse, level, root)
 
     #Step3.1
     #Lista me olous toys html tag sundiasmous basi unique id apo Step3
