@@ -8,6 +8,8 @@ import os
 import json
 import time
 from urllib.parse import urlparse
+import re
+
 
 def process_url(url, driver, config, unique_id, dataCollector):
     try:
@@ -22,9 +24,14 @@ def process_url(url, driver, config, unique_id, dataCollector):
     
     #Step 0
     parsed_url = urlparse(url)
-    folder_name = "results/"+ (parsed_url.netloc or 'localhost')
+    # folder_name = "results/"+ (parsed_url.netloc or 'localhost')
+    # os.makedirs(folder_name, exist_ok=True)
+    # Replace special characters with underscore
+    folder_name = re.sub(r'[/:?#\\[\]@!$&\'()*+,;=]', '_', url)
+    # Replace multiple consecutive underscores with a single one
+    folder_name = re.sub(r'__+', '_', folder_name)
+    folder_name = "results/" + folder_name
     os.makedirs(folder_name, exist_ok=True)
-
     #Step 1
     tag_name = config.get_attribute('settings.html_parser.tag_name', 'html')
     root = HTMLTag(driver.find_element(By.TAG_NAME, tag_name), driver)
