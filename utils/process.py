@@ -32,6 +32,7 @@ def process_url(url, driver, config, unique_id, dataCollector):
     folder_name = re.sub(r'__+', '_', folder_name)
     folder_name = "results/" + folder_name
     os.makedirs(folder_name, exist_ok=True)
+
     #Step 1
     tag_name = config.get_attribute('settings.html_parser.tag_name', 'html')
     root = HTMLTag(driver.find_element(By.TAG_NAME, tag_name), driver)
@@ -45,7 +46,8 @@ def process_url(url, driver, config, unique_id, dataCollector):
 
     #Step3
     #Lista me olous tous diathesimous sunduasmous basi level
-    combinations_by_level = search_multiple_levels(combinations_reverse,[1,2,3,4], root)
+    level = config.get_attribute('settings.level', [1])
+    combinations_by_level = search_multiple_levels(combinations_reverse,level, root)
 
     #Step3.1
     #Lista me olous toys html tag sundiasmous basi unique id apo Step3
