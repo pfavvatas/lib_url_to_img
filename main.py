@@ -82,9 +82,10 @@ dataCollector.save_data()
 image_data_collector = ImageDataCollector(dataCollector.url_data)
 
 # Save the results to a JSON file
-file_path = "results/image_data.json"
-image_data_collector.save_to_json(file_path)
+# file_path = "results/image_data.json"
+image_data_collector.save_to_json()
 image_data_collector.generate_images()
+image_data_collector.image_info()
 
 # Access the processed information
 # print(image_data_collector.levels_info)

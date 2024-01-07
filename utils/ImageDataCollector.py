@@ -1,6 +1,7 @@
 import datetime
 import json
 import os
+from PIL import Image
 from utils.image import create_image_for_level
 
 # Generate a timestamp for the file name
@@ -29,7 +30,7 @@ class ImageDataCollector:
 
         return levels_info
 
-    def save_to_json(self, file_path):
+    def save_to_json(self, file_path=None):
         # Save the collected data to a file with the timestamp
         file_name = f"results/image_data_{timestamp}.json"
         with open(file_name, 'w') as f:
@@ -45,11 +46,30 @@ class ImageDataCollector:
             max_text_size = level_data['max_text_size']
             urls_info = level_data['urls_info']
 
-            print("========================")
-            print("level: " ,level)
+            print("========================level: ", level)
             level_image = create_image_for_level(urls_info, max_text_size, prev_image)
 
             # Save the image with the level number and timestamp
             level_image.save(f"results/images/{level}_{timestamp}.png")
 
             prev_image = level_image.copy()
+
+    def image_info(self):
+        # Define the directory path
+        directory = 'results/Images'
+        # Define the output file
+        output_file = 'results/image_info.txt'
+
+        # Open the output file
+        with open(output_file, 'w') as f:
+            # Loop over all files in the directory
+            for filename in os.listdir(directory):
+                # Check if the file is a .png file
+                if filename.endswith('.png'):
+                    # Open the image file
+                    img = Image.open(os.path.join(directory, filename))
+                    # Write the image information to the file
+                    f.write(f'Image: {filename}\n')
+                    f.write(f'Size: {img.size}\n')
+                    f.write(f'Format: {img.format}\n')
+                    f.write(f'Mode: {img.mode}\n\n')
