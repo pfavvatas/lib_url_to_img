@@ -67,9 +67,10 @@ driver = webdriver.Chrome()
 urls = [
     'http://localhost:8888/'
     , 'http://localhost:8880'
-    , 'http://example.com'
-    , 
-    'https://nvd.nist.gov/vuln/detail/CVE-2020-14624'
+    , 'http://localhost:8889'
+    # , 'http://example.com'
+    # , 
+    , 'https://nvd.nist.gov/vuln/detail/CVE-2020-14624'
     ]
 
 #TRY
