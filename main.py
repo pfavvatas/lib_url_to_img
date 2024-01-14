@@ -70,13 +70,14 @@ urls = [
     , 'http://localhost:8889'
     # , 'http://example.com'
     # , 
-    , 'https://nvd.nist.gov/vuln/detail/CVE-2020-14624'
+    # , 'https://nvd.nist.gov/vuln/detail/CVE-2020-14624'
     ]
 
 #TRY
 dataCollector = DataCollector()
 dataCollector.collect_data(urls, driver, config)
 dataCollector.save_data()
+dataCollector.computed_styles()
 
 # Create the ImageDataCollector instance and process the data
 image_data_collector = ImageDataCollector(dataCollector.url_data)
@@ -91,7 +92,7 @@ image_data_collector.image_info()
 # print(image_data_collector.levels_info)
 
 
-# for url in urls:
+# for url in urls: 
 #     process_url(url, driver, config)
 
 driver.close()
