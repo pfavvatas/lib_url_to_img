@@ -65,9 +65,9 @@ if debug_mode: print(config)
 driver = webdriver.Chrome()
 
 urls = [
-    'http://localhost:8888/'
-    , 'http://localhost:8880'
-    , 'http://localhost:8889'
+    'http://localhost:8888/', 
+    'http://localhost:8880' ,
+    'http://localhost:8889'
     # , 'http://example.com'
     # , 
     # , 'https://nvd.nist.gov/vuln/detail/CVE-2020-14624'
@@ -77,7 +77,7 @@ urls = [
 dataCollector = DataCollector()
 dataCollector.collect_data(urls, driver, config)
 dataCollector.save_data()
-dataCollector.computed_styles()
+dataCollector.computed_styles(level=1)
 
 # Create the ImageDataCollector instance and process the data
 image_data_collector = ImageDataCollector(dataCollector.url_data)

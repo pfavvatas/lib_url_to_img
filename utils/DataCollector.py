@@ -52,7 +52,27 @@ class DataCollector:
 
     import json
 
-    def computed_styles(self):
+    def get_combinations_by_level(self, level):
+        # Initialize an empty list to store the combinations
+        combinations = []
+
+        # Iterate over the guids in the url_data dictionary
+        for guid in self.url_data:
+            # Iterate over the combinations_by_level list
+            for combination in self.url_data[guid]['combinations_by_level']:
+                # Check if the level of the current combination matches the given level
+                if combination['level'] == str(level):
+                    # If it does, flatten the combinations and extend the combinations list with them
+                    flattened_combinations = [item for sublist in combination['combinations'] for item in sublist]
+                    combinations.extend(flattened_combinations)
+
+        # Return the combinations
+        return combinations
+
+    def computed_styles(self, level=1):
+        # Get the combinations for the given level
+        combinations = self.get_combinations_by_level(level)
+
         # Initialize an empty list to store all attributes
         all_attributes = []
 
@@ -96,11 +116,20 @@ class DataCollector:
             for value in attribute_df['value'].unique():
                 value_str = value
                 unique_ids = attribute_df[attribute_df['value'] == value]['unique_id'].tolist()
-                value_list.append([value_str, unique_ids])
+                # Filter the unique_ids by the combinations
+                filtered_ids = [id for id in unique_ids if str(id) in combinations]
+                value_list.append([value, filtered_ids])
+                # value_list.append([value, unique_ids])
             attribute_values.append([attribute, value_list])
                 
+        # Define the directory path
+        dir_path = f"results/computed_styles_level_{level}"
+        # Check if the directory exists
+        if not os.path.exists(dir_path):
+            # If it doesn't exist, create it
+            os.makedirs(dir_path)        
         # Save the output to a file
-        with open(f"results/computed_styles_{timestamp}.json", 'w') as f:
+        with open(f"{dir_path}/computed_styles_{timestamp}.json", 'w') as f:
             json.dump({
                 'total_unique_attributes': total_unique_attributes,
                 'attribute_values': attribute_values
@@ -149,12 +178,16 @@ class DataCollector:
             # Show the plot
             # plt.show()
 
-            # Save the plot as an image
-            # Ensure the directory exists
-            os.makedirs('results/computed_styles_images', exist_ok=True)
+            # Define the directory path
+            dir_path = f"results/computed_styles_images/level_{level}"
 
-            # Save the plot as an image
-            plt.savefig(f'results/computed_styles_images/{attribute}_{timestamp}.png')
+            # Check if the directory exists
+            if not os.path.exists(dir_path):
+                # If it doesn't exist, create it
+                os.makedirs(dir_path)
+
+            # Now you can safely save the plot to the directory
+            plt.savefig(f'{dir_path}/{attribute}_{timestamp}.png')
 
             # Close the plot
             plt.close()
