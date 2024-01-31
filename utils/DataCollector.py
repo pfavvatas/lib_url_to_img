@@ -142,7 +142,7 @@ class DataCollector:
             values = attribute_data[1]
 
             # Create a new figure for each attribute
-            plt.figure(figsize=(10, 5))
+            # plt.figure(figsize=(10, 5))
 
             # Iterate over each value
             for value_data in values:
@@ -154,7 +154,7 @@ class DataCollector:
                     y = len(ids)
 
                     # Create a bar plot with the value as the x value and the length of the ids list as the y value
-                    plt.bar(value, y)
+                    # plt.bar(value, y)
 
                 except Exception as e:
                     # Write the error, attribute, value, and ids to the error file
@@ -169,28 +169,28 @@ class DataCollector:
                         error_file.write("\n\n")
 
             # Set the title of the plot to the attribute
-            plt.title(attribute)
+            # plt.title(attribute)
 
             # Set the x and y labels
-            plt.xlabel('Value')
-            plt.ylabel('Number of IDs')
+            # plt.xlabel('Value')
+            # plt.ylabel('Number of IDs')
 
             # Show the plot
             # plt.show()
 
             # Define the directory path
-            dir_path = f"results/computed_styles_images/level_{level}"
+            # dir_path = f"results/computed_styles_images/level_{level}"
 
             # Check if the directory exists
-            if not os.path.exists(dir_path):
-                # If it doesn't exist, create it
-                os.makedirs(dir_path)
+            # if not os.path.exists(dir_path):
+            #     # If it doesn't exist, create it
+            #     os.makedirs(dir_path)
 
             # Now you can safely save the plot to the directory
-            plt.savefig(f'{dir_path}/{attribute}_{timestamp}.png')
+            # plt.savefig(f'{dir_path}/{attribute}_{timestamp}.png')
 
             # Close the plot
-            plt.close()
+            # plt.close()
 
         return total_unique_attributes, attribute_values
 
