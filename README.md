@@ -1,7 +1,7 @@
 # lib_url_to_img
 A Python tool to convert website URLs into images by rendering the DOM HTML data.
 
-## ChromeDriver Setup
+# ChromeDriver Setup
 
 This tool requires ChromeDriver to interact with the Chrome browser. Follow the steps below to download and install ChromeDriver:
 
@@ -17,3 +17,17 @@ After downloading and moving ChromeDriver, you can use it in your code without s
 from selenium import webdriver
 
 driver = webdriver.Chrome()
+```
+
+
+# Running the Script
+You can run the script from the command line using the following format:
+
+```
+python main.py --urls url1,url2,...,urln --levels 1 2 ... n
+```
+
+For example:
+```
+python main.py --urls http://localhost:8888,http://localhost:8880,http://localhost:8889 --levels 1 2 3
+```
