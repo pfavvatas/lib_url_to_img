@@ -4,8 +4,7 @@
         "html_parser": {
             "tag_name": "body"
         },
-        "root": "body",
-        "level": [1, 2, 3, 4]
+        "root": "body"
     },
     "html_tag_priority": {
         "a": 1,

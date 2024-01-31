@@ -11,7 +11,7 @@ from urllib.parse import urlparse
 import re
 
 
-def process_url(url, driver, config, unique_id, dataCollector):
+def process_url(url, levels, driver, config, unique_id, dataCollector):
     try:
         driver.get(url)
         # Wait for 10 seconds before proceeding with scraping
@@ -46,11 +46,11 @@ def process_url(url, driver, config, unique_id, dataCollector):
 
     # Step 3
     # Retrieve the level attribute from the configuration. Default to [1] if not found.
-    level = config.get_attribute('settings.level', [1])
+    # level = config.get_attribute('settings.level', [1])
     # Generate all available combinations based on the specified level.
     # 'combinations_reverse' is a list of combinations in reverse order.
     # 'root' is the root node for the search.
-    combinations_by_level = search_multiple_levels(combinations_reverse, level, root)
+    combinations_by_level = search_multiple_levels(combinations_reverse, levels, root)
 
     #Step3.1
     #Lista me olous toys html tag sundiasmous basi unique id apo Step3

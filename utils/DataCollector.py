@@ -15,11 +15,11 @@ class DataCollector:
     def __init__(self):
         self.url_data = {}
 
-    def collect_data(self, urls, driver, config):
+    def collect_data(self, urls, levels, driver, config):
         for url in urls:
             unique_id = str(uuid.uuid4())  # Generate a unique identifier            
             self.url_data[unique_id] = {'url': url, 'html_data': {}, 'combinations_by_level': {}}
-            process_url(url, driver, config, unique_id, self)
+            process_url(url, levels, driver, config, unique_id, self)
             # create_image_by_level(self, timestamp)
 
 

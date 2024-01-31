@@ -1,3 +1,4 @@
+import argparse
 from utils import *
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -57,6 +58,20 @@ from urllib.parse import urlparse
 
 
 #***************************************************************************************************************#
+#Example python main.py --urls http://localhost:8888,http://localhost:8880,http://localhost:8889 --levels 1 2 3
+
+# Parse command-line arguments
+parser = argparse.ArgumentParser(description='Process some integers.')
+parser.add_argument('--urls', type=str, required=True, help='Comma-separated list of URLs')
+parser.add_argument('--levels', type=int, nargs='+', required=True, help='Space-separated list of levels')
+args = parser.parse_args()
+
+# Convert the comma-separated string of URLs into a list
+urls = args.urls.split(',')
+
+# Get the levels from the arguments
+levels = args.levels
+
 config = Config('config.json')
 
 debug_mode = getattr(config, 'debug', False)
@@ -64,18 +79,18 @@ if debug_mode: print(config)
 
 driver = webdriver.Chrome()
 
-urls = [
-    'http://localhost:8888/', 
-    'http://localhost:8880' ,
-    'http://localhost:8889'
-    # , 'http://example.com'
-    # , 
-    # , 'https://nvd.nist.gov/vuln/detail/CVE-2020-14624'
-    ]
+# urls = [
+#     'http://localhost:8888/', 
+#     'http://localhost:8880' ,
+#     'http://localhost:8889'
+#     # , 'http://example.com'
+#     # , 
+#     # , 'https://nvd.nist.gov/vuln/detail/CVE-2020-14624'
+#     ]
 
 #TRY
 dataCollector = DataCollector()
-dataCollector.collect_data(urls, driver, config)
+dataCollector.collect_data(urls, levels, driver, config)
 dataCollector.save_data()
 dataCollector.computed_styles(level=1)
 
