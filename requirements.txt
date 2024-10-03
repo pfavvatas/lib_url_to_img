@@ -1,2 +1,4 @@
 image==1.5.33
 selenium==4.10.0
+pandas
+matplotlib
