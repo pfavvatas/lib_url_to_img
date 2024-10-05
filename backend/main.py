@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.service import Service
 import os
 import json
 import time
@@ -77,6 +78,7 @@ config = Config('config.json')
 debug_mode = getattr(config, 'debug', False)
 if debug_mode: print(config)
 
+service = Service('/usr/lib64/chromium/chromedriver')
 driver = webdriver.Chrome()
 
 # urls = [
@@ -92,7 +94,7 @@ driver = webdriver.Chrome()
 dataCollector = DataCollector()
 dataCollector.collect_data(urls, levels, driver, config)
 dataCollector.save_data()
-dataCollector.computed_styles(level=1)
+dataCollector.computed_styles(level=2)
 
 # Create the ImageDataCollector instance and process the data
 image_data_collector = ImageDataCollector(dataCollector.url_data)
@@ -100,8 +102,8 @@ image_data_collector = ImageDataCollector(dataCollector.url_data)
 # Save the results to a JSON file
 # file_path = "results/image_data.json"
 image_data_collector.save_to_json()
-image_data_collector.generate_images()
-image_data_collector.image_info()
+# image_data_collector.generate_images()
+# image_data_collector.image_info()
 
 # Access the processed information
 # print(image_data_collector.levels_info)
