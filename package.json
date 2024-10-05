@@ -1,0 +1,10 @@
+{
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  },
+  "scripts": {
+    "start": "npm-run-all --parallel start:react start:python",
+    "start:react": "cd ./frontend && npm start",
+    "start:python": "source ./backend/venv/bin/activate && python ./backend/api/main.py"
+  }
+}

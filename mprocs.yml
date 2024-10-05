@@ -1,0 +1,10 @@
+procs:
+
+  ReactApp:
+    shell: "cd ./frontend; npm start"
+
+  PythonApi:
+    shell: "cd ./backend/api; npm run dev"
+
+  PythonApiTests:
+    shell: "cd ./backend/api; npm run tests"
