@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Box, TextField, Chip, FormControl, Button, useTheme, Alert, CircularProgress } from '@mui/material';
+import { Box, TextField, Chip, FormControl, Button, useTheme, Snackbar, CircularProgress, Grid2 as Grid } from '@mui/material';
+import MuiAlert from '@mui/material/Alert';
 
 const URLChipForm = () => {
     const [urls, setUrls] = useState([]);
     const [inputValue, setInputValue] = useState("");
     const [warning, setWarning] = useState("");
+    const [success, setSuccess] = useState(""); // State for success message
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState(null);
-    const [formAtTop, setFormAtTop] = useState(false);
     const theme = useTheme();
 
     const handleInputChange = (e) => {
@@ -24,7 +25,6 @@ const URLChipForm = () => {
     const handlePaste = (e) => {
         e.preventDefault();
         const pastedText = e.clipboardData.getData('text');
-        console.log("Pasted text:", pastedText); // Debugging line
         addUrls(pastedText);
     };
 
@@ -38,13 +38,9 @@ const URLChipForm = () => {
     };
 
     const addUrls = (input) => {
-        console.log("Input received:", input); // Debugging line
         const newUrls = input.split(/\s+/).filter(url => url.trim().length > 0);
-        console.log("Parsed URLs:", newUrls); // Debugging line
         const validUrls = newUrls.filter(url => isValidUrl(url));
         const invalidUrls = newUrls.filter(url => !isValidUrl(url));
-        console.log("Valid URLs:", validUrls); // Debugging line
-        console.log("Invalid URLs:", invalidUrls); // Debugging line
 
         if (invalidUrls.length > 0) {
             setWarning(`Invalid URLs: ${invalidUrls.join(', ')}`);
@@ -62,7 +58,6 @@ const URLChipForm = () => {
 
     const handleRun = async () => {
         setLoading(true);
-        setFormAtTop(true);
         try {
             const response = await fetch("http://localhost:5000/process-urls", {
                 method: 'POST',
@@ -73,7 +68,34 @@ const URLChipForm = () => {
                 body: JSON.stringify({ urls })
             });
             const data = await response.json();
-            setResult(data);
+
+            if (data.status === "success") {
+                // Display success notification
+                setSuccess(data.message);
+
+                // Handle file conversion and download
+                if (data.files && data.files.length > 0) {
+                    data.files.forEach(file => {
+                        const hexString = file.data;
+                        const binaryData = new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+                        const blob = new Blob([binaryData], { type: 'application/zip' });
+                        // Generate timestamp
+                        const timestamp = new Date().toISOString().replace(/[-:.]/g, '').slice(0, 15);
+                        const filenameWithTimestamp = `${timestamp}_${file.filename}`;
+                        const link = document.createElement('a');
+                        link.href = URL.createObjectURL(blob);
+                        link.download = filenameWithTimestamp;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    });
+                }
+            } else if (data.status === "error") {
+                // Display error notification
+                alert(`Error: ${data.message}\nStack Trace: ${data.stack}`);
+            }
+
+            setResult(data.body);
         } catch (error) {
             console.error("Error:", error);
         } finally {
@@ -84,49 +106,42 @@ const URLChipForm = () => {
     const handleClear = () => {
         setUrls([]);
         setResult(null);
-        setFormAtTop(false);
     };
 
     useEffect(() => {
         if (warning) {
             const timer = setTimeout(() => {
                 setWarning('');
-            }, 2000);
+            }, 3000); // Adjust the duration as needed
             return () => clearTimeout(timer);
         }
     }, [warning]);
 
+    useEffect(() => {
+        if (success) {
+            const timer = setTimeout(() => {
+                setSuccess('');
+            }, 3000); // Adjust the duration as needed
+            return () => clearTimeout(timer);
+        }
+    }, [success]);
+
     return (
-        <Box
+        <Grid
+            container
+            direction="column"
+            justifyContent="center"
+            alignItems="center"
+            spacing={4}
             sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                minHeight: '100vh',
-                flexDirection: 'column',
                 paddingTop: theme.spacing(4),
-                width: '100%',
                 paddingLeft: theme.spacing(2),
                 paddingRight: theme.spacing(2),
-                overflowX: 'hidden',
                 boxSizing: 'border-box'
             }}
         >
-            <Box
-                sx={{
-                    width: '100%',
-                    maxWidth: '600px',
-                    margin: '0 auto',
-                    transition: 'all 0.5s ease',
-                    position: formAtTop ? 'fixed' : 'relative',
-                    top: formAtTop ? theme.spacing(2) : 'auto',
-                    left: formAtTop ? '50%' : 'auto',
-                    transform: formAtTop ? 'translateX(-50%)' : 'none',
-                    zIndex: formAtTop ? 1000 : 'auto',
-                    paddingBottom: theme.spacing(2)
-                }}
-            >
-                <FormControl fullWidth>
+            <FormControl fullWidth>
+                <Box sx={{ margin: '0 30%' }}>
                     <TextField
                         label="Paste your URLs"
                         placeholder="Paste URLs and press Enter"
@@ -137,61 +152,59 @@ const URLChipForm = () => {
                         fullWidth
                         variant="outlined"
                     />
-                    {warning && (
-                        <Alert severity="error" sx={{ mt: theme.spacing(1) }}>
-                            {warning}
-                        </Alert>
-                    )}
-                    <Box
-                        sx={{
-                            mt: theme.spacing(2),
-                            display: 'flex',
-                            flexWrap: 'wrap',
-                            gap: theme.spacing(1),
-                            maxHeight: '200px',
-                            overflowY: 'auto'
-                        }}
-                    >
-                        {urls.map((url, index) => (
-                            <Chip
-                                key={index}
-                                label={url}
-                                onDelete={() => handleDelete(url)}
-                                color="primary"
-                            />
-                        ))}
-                    </Box>
-                    <Box
-                        sx={{
-                            mt: theme.spacing(2),
-                            display: 'flex',
-                            justifyContent: 'center',
-                            gap: theme.spacing(2)
-                        }}
-                    >
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={handleRun}
-                            sx={{ borderRadius: '20px' }}
-                            disabled={urls.length === 0}
-                        >
-                            Run
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="secondary"
-                            onClick={handleClear}
-                            sx={{ borderRadius: '20px' }}
-                            disabled={urls.length === 0}
-                        >
-                            Clear
-                        </Button>
-                    </Box>
-                </FormControl>
-            </Box>
-            {loading && (
+                </Box>
                 <Box
+                    sx={{
+                        mt: theme.spacing(2),
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: theme.spacing(1),
+                        maxHeight: '200px',
+                        overflowY: 'auto',
+                        justifyContent: 'center' // Center the URLs
+                    }}
+                >
+                    {urls.map((url, index) => (
+                        <Chip
+                            key={index}
+                            label={url}
+                            onDelete={() => handleDelete(url)}
+                            color="primary"
+                        />
+                    ))}
+                </Box>
+                <Box
+                    sx={{
+                        mt: theme.spacing(2),
+                        display: 'flex',
+                        justifyContent: 'center',
+                        gap: theme.spacing(2)
+                    }}
+                >
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleRun}
+                        sx={{ borderRadius: '20px' }}
+                        disabled={urls.length === 0}
+                    >
+                        Run
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        onClick={handleClear}
+                        sx={{ borderRadius: '20px' }}
+                        disabled={urls.length === 0}
+                    >
+                        Clear
+                    </Button>
+                </Box>
+            </FormControl>
+            {loading && (
+                <Grid
+                    item
+                    xs={12}
                     sx={{
                         display: 'flex',
                         justifyContent: 'center',
@@ -205,24 +218,46 @@ const URLChipForm = () => {
                     }}
                 >
                     <CircularProgress />
-                </Box>
+                </Grid>
             )}
             {result && (
-                <Box
+                <Grid
+                    item
+                    xs={12}
+                    sm={8}
+                    md={6}
                     sx={{
-                        mt: theme.spacing(2),
+                        mt: theme.spacing(4),
                         width: '100%',
-                        padding: theme.spacing(2),
-                        backgroundColor: '#f5f5f5',
+                        padding: theme.spacing(4),
                         borderRadius: '8px',
-                        boxShadow: '0 0 10px rgba(0,0,0,0.1)',
                         overflowX: 'auto'
                     }}
                 >
                     <pre>{JSON.stringify(result, null, 2)}</pre>
-                </Box>
+                </Grid>
             )}
-        </Box>
+            <Snackbar
+                open={Boolean(warning)}
+                autoHideDuration={3000}
+                onClose={() => setWarning('')}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+                <MuiAlert onClose={() => setWarning('')} severity="error" sx={{ width: '100%' }}>
+                    {warning}
+                </MuiAlert>
+            </Snackbar>
+            <Snackbar
+                open={Boolean(success)}
+                autoHideDuration={3000}
+                onClose={() => setSuccess('')}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+                <MuiAlert onClose={() => setSuccess('')} severity="success" sx={{ width: '100%' }}>
+                    {success}
+                </MuiAlert>
+            </Snackbar>
+        </Grid>
     );
 };
 

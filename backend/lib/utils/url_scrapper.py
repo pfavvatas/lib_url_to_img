@@ -170,6 +170,9 @@ class HTMLTag:
         return '#%02X%02X%02X' % (r(),r(),r())
 
     def generate_tag_color_map(self, combination_list, existing_map_file):
+        print("Generating tag color map...")
+        # print("Combination list:", combination_list)
+        print("Existing map file:", existing_map_file)
         # Load the existing map if any
         try:
             with open(existing_map_file, 'r') as f:

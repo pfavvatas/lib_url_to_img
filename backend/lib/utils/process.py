@@ -59,7 +59,7 @@ def process_url(url, levels, driver, config, unique_id, dataCollector):
    
     #Step3.2
     #tags configuration file
-    root.generate_tag_color_map(all_combinations_tags_by_unique_id, FileNames.TAGS_CONFIGURATION.value + FileExtensions.JSON.value)
+    root.generate_tag_color_map(all_combinations_tags_by_unique_id, FilePaths.CONFIGURATION.value + FileNames.TAGS.value + FileExtensions.JSON.value)
 
     #Step3.3
     generate_image_data(combinations_by_level, root)

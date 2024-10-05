@@ -129,7 +129,8 @@ class DataCollector:
             # If it doesn't exist, create it
             os.makedirs(dir_path)        
         # Save the output to a file
-        with open(f"{dir_path}/computed_styles_{timestamp}.json", 'w') as f:
+        computed_styles_file = f"{dir_path}/computed_styles_{timestamp}.json"
+        with open(computed_styles_file, 'w') as f:
             json.dump({
                 'total_unique_attributes': total_unique_attributes,
                 'attribute_values': attribute_values
@@ -192,5 +193,5 @@ class DataCollector:
             # Close the plot
             # plt.close()
 
-        return total_unique_attributes, attribute_values
+        return total_unique_attributes, attribute_values, computed_styles_file
 

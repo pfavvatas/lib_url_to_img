@@ -1,4 +1,6 @@
 import json
+import os
+tags_path = os.path.join(os.path.dirname(__file__), '../configuration/tags.json')
 
 def generate_combinations_reversed(node, parent_tags, parent_tags_by_id, combinations):
     try:
@@ -81,7 +83,7 @@ def get_combinations_tags_by_unique_id(data):
     return all_combinations
 
 def get_combinations_keys_ordered(combinations_keys, combinations):
-    with open('configuration/tags.json') as config_file:
+    with open(tags_path) as config_file:
         config_data = json.load(config_file)
         tag_order = config_data.get('tag_order', {})  # Use an empty dictionary if 'tag_order' doesn't exist
 
@@ -99,7 +101,7 @@ def get_combinations_keys_ordered(combinations_keys, combinations):
 
     # Update the tag_order in the configuration file
     config_data['tag_order'] = tag_order
-    with open('configuration/tags.json', 'w') as config_file:
+    with open(tags_path, 'w') as config_file:
         json.dump(config_data, config_file, indent=4)
 
     return combinations_keys_ordered
@@ -108,14 +110,21 @@ def get_combinations_keys_ordered(combinations_keys, combinations):
 def search_multiple_levels(combinations_reverse, desired_levels, root):
     results = []
 
+    print("desired_levels:", desired_levels)
+    # print("combinations_reverse:", combinations_reverse)
+
     for level in desired_levels:
+        # print("Processing level:", level)
         combinations = search_combinations_by_level(combinations_reverse, level)
+        # print("combinations:", combinations)
 
         # Compute combinations_tags
         combinations_tags = [[root.find_tag_name_by_id(id) for id in combination] for combination in combinations]
+        # print("combinations_tags:", combinations_tags)
 
         # Compute combinations_keys
         combinations_keys = [",".join(tags) for tags in combinations_tags]
+        # print("combinations_keys:", combinations_keys)
 
         results.append({
             'level': str(level), 
@@ -125,4 +134,5 @@ def search_multiple_levels(combinations_reverse, desired_levels, root):
             'combinations_keys_ordered': get_combinations_keys_ordered(combinations_keys, combinations)
         })
 
+    print("results:", results)
     return results

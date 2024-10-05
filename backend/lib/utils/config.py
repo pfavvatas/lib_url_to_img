@@ -1,4 +1,6 @@
 import json
+import os
+tags_path = os.path.join(os.path.dirname(__file__), '../configuration/tags.json')
 
 class Config:
     def __init__(self, filename):
@@ -26,10 +28,10 @@ class Config:
 
 # Function to get tag order from JSON file
 def get_tag_order():
-    with open("configuration/tags.json", "r") as file:
+    with open(tags_path, "r") as file:
         tag_data = json.load(file)
     return tag_data["tag_order"]
 def get_tag_colors():
-    with open("configuration/tags.json", "r") as file:
+    with open(tags_path, "r") as file:
         tag_data = json.load(file)
     return tag_data["tag_colors"]

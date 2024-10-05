@@ -2,9 +2,10 @@ import os
 import json
 from PIL import Image, ImageDraw
 from .config import *
+tags_path = os.path.join(os.path.dirname(__file__), '../configuration/tags.json')
 
 def get_tag_color(keys):
-    with open('configuration/tags.json', 'r') as file:
+    with open(tags_path, 'r') as file:
         data = json.load(file)
         
     tag_colors = data['tag_colors']

@@ -1,6 +1,8 @@
 import os
 import json
 from enum import Enum
+configuration_path = os.path.join(os.path.dirname(__file__), '../configuration/')
+
 
 class FileExtensions(Enum):
     JSON = '.json'
@@ -18,7 +20,10 @@ class FileNames(Enum):
     COMBINATIONS = 'Combinations'
     COMBINATIONS_BY_LEVEL = 'CombinationsByLevel'
     COMBINATIONS_TAGS_BY_UNIQUE_ID = 'CombinationsTags'
-    TAGS_CONFIGURATION = 'configuration/tags'
+    TAGS = 'tags'
+    
+class FilePaths(Enum):
+    CONFIGURATION = configuration_path
 
 def writeToFile(folder_name, file_name, file_extension, data):
     os.makedirs(folder_name, exist_ok=True)

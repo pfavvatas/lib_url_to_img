@@ -3,6 +3,11 @@ import webbrowser
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flasgger import Swagger
+import sys
+
+# Add the lib directory to the system path
+sys.path.append(os.path.join(os.path.dirname(__file__), '../lib'))
+from lib import process_urls_from_api
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all domains
@@ -40,7 +45,8 @@ def process_urls():
     """
     data = request.json
     urls = data.get('urls', [])
-    results = run_price_processes(urls)
+    # results = run_price_processes(urls)
+    results = process_urls_from_api(urls, [1])
     return jsonify(results)
 
 def run_price_processes(urls):
