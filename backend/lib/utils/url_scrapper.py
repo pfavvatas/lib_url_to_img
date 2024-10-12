@@ -3,14 +3,36 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 import json
 import random
+import time
+# Set to store used IDs
+used_ids = set()
 
+# Set to store used IDs
+used_ids = set()
+
+def generate_unique_id():
+    while True:
+        # Get the current timestamp in milliseconds
+        timestamp = int(time.time() * 1000)
+        # Generate a larger random number for more entropy
+        random_number = random.randint(1000000000, 9999999999)
+        # Combine the timestamp and the random number
+        unique_id = int(f"{timestamp}{random_number}")
+        # Check if the ID is unique
+        if unique_id not in used_ids:
+            used_ids.add(unique_id)
+            return unique_id
+        else:
+            print(f"\033[93mDuplicate ID found: {unique_id}, generating a new one.\033[0m")
+            
 class HTMLTag:
     def __init__(self, webelement, driver, depth=0, parent_id=None):
-        self.unique_id = id(self)
+        self.unique_id = generate_unique_id()#id(self)
         self.parent_id = parent_id  # Save the parent's unique_id
         self.tag_name = webelement.tag_name
         self.attributes = self.get_all_attributes(webelement, driver)  
         self.depth = depth
+        self.actual_text = self.get_text_excluding_children(webelement, driver)
         self.text = self.clean_text(webelement.text.strip()) if webelement.text else ""
         self.text_size = self.count_text()
 
@@ -20,6 +42,10 @@ class HTMLTag:
         else:
             self.children = []
 
+    def get_text_excluding_children(self, webelement, driver):
+        script = "return arguments[0].firstChild ? arguments[0].firstChild.textContent : '';"
+        return driver.execute_script(script, webelement).strip()
+    
     def get_all_attributes(self, webelement, driver):
         attrs = driver.execute_script("""
         let elem = arguments[0], 
@@ -49,6 +75,7 @@ class HTMLTag:
             'unique_id': self.unique_id,
             'parent_id': self.parent_id,
             'tag_name': self.tag_name,
+            'actual_text': self.actual_text,
             'text': self.text,
             'text_size': self.text_size,
             'attributes': self.attributes,

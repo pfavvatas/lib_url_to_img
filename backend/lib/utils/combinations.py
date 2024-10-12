@@ -134,5 +134,5 @@ def search_multiple_levels(combinations_reverse, desired_levels, root):
             'combinations_keys_ordered': get_combinations_keys_ordered(combinations_keys, combinations)
         })
 
-    print("results:", results)
+    # print("results:", results)
     return results

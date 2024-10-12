@@ -242,7 +242,8 @@
         "path,symbol": "#954D0D",
         "polygon,symbol": "#BECBFE",
         "title,symbol": "#23BFB3",
-        "rect,symbol": "#491F6C"
+        "rect,symbol": "#491F6C",
+        "iframe": "#2A2016"
     },
     "tag_order": {
         "b": 1,
@@ -487,6 +488,7 @@
         "path,symbol": 240,
         "polygon,symbol": 241,
         "title,symbol": 242,
-        "rect,symbol": 243
+        "rect,symbol": 243,
+        "iframe": 244
     }
 }

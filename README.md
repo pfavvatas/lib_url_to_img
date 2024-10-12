@@ -68,3 +68,13 @@ http://jvn.jp/en/jp/JVN41119755/index.html
 http://jvn.jp/en/jp/JVN33214411/index.html
 https://www.kb.cert.org/vuls/id/366027
 https://www.kb.cert.org/vuls/id/229438
+
+
+https://akispetretzikis.com/recipe/7817/mpakaliaros-me-prasa
+
+https://akispetretzikis.com/en/recipe/7817/mpakaliaros-me-prasa
+
+
+
+#TEST
+file:///home/pfavvatas/lib_url_to_img/test/test1.html

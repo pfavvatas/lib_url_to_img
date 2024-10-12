@@ -26,3 +26,6 @@ yarn-error.log*
 .venv
 
 /results
+/results_
+/results_*
+/output_html_files

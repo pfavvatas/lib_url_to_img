@@ -7,9 +7,28 @@ import os
 import traceback
 from utils.image import create_image_by_level
 from utils.process import process_url
-
+import time
+import random
 # Generate a timestamp for the file name
 timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+
+# Set to store used IDs
+used_ids = set()
+
+def generate_unique_id():
+    while True:
+        # Get the current timestamp in milliseconds
+        timestamp = int(time.time() * 1000)
+        # Generate a larger random number for more entropy
+        random_number = random.randint(1000000000, 9999999999)
+        # Combine the timestamp and the random number
+        unique_id = int(f"{timestamp}{random_number}")
+        # Check if the ID is unique
+        if unique_id not in used_ids:
+            used_ids.add(unique_id)
+            return unique_id
+        else:
+            print(f"\033[93mDuplicate ID found: {unique_id}, generating a new one.\033[0m")
 
 class DataCollector:
     def __init__(self):
@@ -17,7 +36,7 @@ class DataCollector:
 
     def collect_data(self, urls, levels, driver, config):
         for url in urls:
-            unique_id = str(uuid.uuid4())  # Generate a unique identifier            
+            unique_id = generate_unique_id()  # Generate a unique identifier            
             self.url_data[unique_id] = {'url': url, 'html_data': {}, 'combinations_by_level': {}}
             process_url(url, levels, driver, config, unique_id, self)
             # create_image_by_level(self, timestamp)

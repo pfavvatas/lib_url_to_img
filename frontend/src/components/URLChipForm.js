@@ -9,6 +9,7 @@ const URLChipForm = () => {
     const [success, setSuccess] = useState(""); // State for success message
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState(null);
+    const [error, setError] = useState(null); // State for error message and stack trace
     const theme = useTheme();
 
     const handleInputChange = (e) => {
@@ -58,6 +59,7 @@ const URLChipForm = () => {
 
     const handleRun = async () => {
         setLoading(true);
+        setError(null); // Clear previous error
         try {
             const response = await fetch("http://localhost:5000/process-urls", {
                 method: 'POST',
@@ -90,14 +92,20 @@ const URLChipForm = () => {
                         document.body.removeChild(link);
                     });
                 }
+
+                const parsedData = JSON.parse(data.body);
+                setResult(parsedData);
             } else if (data.status === "error") {
-                // Display error notification
-                alert(`Error: ${data.message}\nStack Trace: ${data.stack}`);
+                // Set error state
+                setError({ message: data.message, stack: data?.stack_trace });
             }
 
-            setResult(data.body);
+            // setResult(data.body);
+            // const parsedData = JSON.parse(data.body);
+            // setResult(parsedData);
         } catch (error) {
             console.error("Error:", error);
+            setError({ message: error.message, stack: error.stack });
         } finally {
             setLoading(false);
         }
@@ -106,6 +114,7 @@ const URLChipForm = () => {
     const handleClear = () => {
         setUrls([]);
         setResult(null);
+        setError(null); // Clear error when clearing
     };
 
     useEffect(() => {
@@ -235,6 +244,26 @@ const URLChipForm = () => {
                     }}
                 >
                     <pre>{JSON.stringify(result, null, 2)}</pre>
+                </Grid>
+            )}
+            {error && (
+                <Grid
+                    item
+                    xs={12}
+                    sm={8}
+                    md={6}
+                    sx={{
+                        mt: theme.spacing(4),
+                        width: '100%',
+                        padding: theme.spacing(4),
+                        borderRadius: '8px',
+                        overflowX: 'auto',
+                        backgroundColor: '#f8d7da',
+                        color: '#721c24'
+                    }}
+                >
+                    <h3>Error: {error.message}</h3>
+                    <pre>{error.stack}</pre>
                 </Grid>
             )}
             <Snackbar
