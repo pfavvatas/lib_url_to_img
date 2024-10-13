@@ -63,7 +63,9 @@ def process_urls_from_cli(urls, levels, from_api=False):
     dataCollector = DataCollector()
     dataCollector.collect_data(urls, levels, driver, config)
     dataCollector.save_data()
-    total_unique_attributes, attribute_values, computed_styles_file = dataCollector.computed_styles(level=1)
+    # total_unique_attributes, attribute_values, computed_styles_file = dataCollector.computed_styles(level=1)
+    for level in levels:
+        dataCollector.computed_styles(level=level)
 
     image_data_collector = ImageDataCollector(dataCollector.url_data)
     image_data_collector.save_to_json()

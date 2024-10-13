@@ -79,6 +79,7 @@ class DataCollector:
         for guid in self.url_data:
             # Iterate over the combinations_by_level list
             for combination in self.url_data[guid]['combinations_by_level']:
+                print("combination['level']: ", combination['level'])
                 # Check if the level of the current combination matches the given level
                 if combination['level'] == str(level):
                     # If it does, flatten the combinations and extend the combinations list with them
