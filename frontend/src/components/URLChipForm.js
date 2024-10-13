@@ -10,6 +10,7 @@ const URLChipForm = () => {
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState(null);
     const [error, setError] = useState(null); // State for error message and stack trace
+    const [selectedLevels, setSelectedLevels] = useState([]); // State for selected levels
     const theme = useTheme();
 
     const handleInputChange = (e) => {
@@ -57,6 +58,14 @@ const URLChipForm = () => {
         setUrls(urls.filter(url => url !== urlToDelete));
     };
 
+    const handleLevelSelect = (level) => {
+        if (selectedLevels.includes(level)) {
+            setSelectedLevels(selectedLevels.filter(l => l !== level));
+        } else {
+            setSelectedLevels([...selectedLevels, level]);
+        }
+    };
+
     const handleRun = async () => {
         setLoading(true);
         setError(null); // Clear previous error
@@ -67,7 +76,7 @@ const URLChipForm = () => {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ urls })
+                body: JSON.stringify({ urls, levels: selectedLevels })
             });
             const data = await response.json();
 
@@ -161,6 +170,19 @@ const URLChipForm = () => {
                         fullWidth
                         variant="outlined"
                     />
+                </Box>
+                <Box sx={{ position: 'relative', margin: '0 30%', mt: theme.spacing(2), display: 'flex', justifyContent: 'center' }}>
+                    <Box sx={{ position: 'absolute', top: '-10px', left: '10px', backgroundColor: 'white', padding: '0 5px', fontWeight: 'bold' }}>Levels</Box>
+                    <Box sx={{ border: '1px solid', borderColor: 'grey.400', borderRadius: '8px', padding: theme.spacing(2), display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: theme.spacing(1), width: '-webkit-fill-available' }}>
+                        {Array.from({ length: 10 }, (_, i) => i + 1).map(level => (
+                            <Chip
+                                key={level}
+                                label={level}
+                                onClick={() => handleLevelSelect(level)}
+                                color={selectedLevels.includes(level) ? 'primary' : 'default'}
+                            />
+                        ))}
+                    </Box>
                 </Box>
                 <Box
                     sx={{
