@@ -35,6 +35,11 @@ def process_urls():
               items:
                 type: string
               example: ["http://example.com", "http://test.com"]
+            levels:
+              type: array
+              items:
+                type: integer
+              example: [1, 2, 3]
     responses:
       200:
         description: A list of processed results
@@ -45,8 +50,8 @@ def process_urls():
     """
     data = request.json
     urls = data.get('urls', [])
-    # results = run_price_processes(urls)
-    results = process_urls_from_api(urls, [1])
+    levels = data.get('levels', [])
+    results = process_urls_from_api(urls, levels)
     return jsonify(results)
 
 def run_price_processes(urls):
