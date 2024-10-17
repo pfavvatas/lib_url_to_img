@@ -78,3 +78,8 @@ https://akispetretzikis.com/en/recipe/7817/mpakaliaros-me-prasa
 
 #TEST
 file:///home/pfavvatas/lib_url_to_img/test/test1.html
+
+
+https://security.gentoo.org/glsa/202105-27 No Types Assigned
+
+Étienne Gervais, Charl-Alexandre Le Brun and Chatwork Co., Ltd. reported this vulnerability to Six Apart Ltd. and coordinated. 
