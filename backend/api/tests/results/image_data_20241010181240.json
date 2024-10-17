@@ -1,0 +1,37 @@
+{
+    "1": {
+        "max_text_size": 28,
+        "urls_info": [
+            {
+                "text_size_sum": 28,
+                "url": "http://example.com",
+                "image_data": [
+                    {
+                        "id": "140668726789792",
+                        "keys": "a",
+                        "color": "#E09FE2",
+                        "text_size": 2,
+                        "width": 136.890625,
+                        "height": 19
+                    },
+                    {
+                        "id": "140668726788544",
+                        "keys": "p",
+                        "color": "#64EEFE",
+                        "text_size": 24,
+                        "width": 600,
+                        "height": 38
+                    },
+                    {
+                        "id": "140668726788496",
+                        "keys": "h1",
+                        "color": "#42A5FB",
+                        "text_size": 2,
+                        "width": 600,
+                        "height": 38
+                    }
+                ]
+            }
+        ]
+    }
+}

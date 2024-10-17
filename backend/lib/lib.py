@@ -44,33 +44,33 @@ def find_chromedriver(port=9515):
         
 
 def process_urls_from_cli(urls, levels, from_api=False):
-    config_path = os.path.join(os.path.dirname(__file__), 'config.json')
-    config = Config(config_path)
+    # config_path = os.path.join(os.path.dirname(__file__), 'config.json')
+    # config = Config(config_path)
 
-    debug_mode = getattr(config, 'debug', False)
-    if debug_mode: print(config)
+    # debug_mode = getattr(config, 'debug', False)
+    # if debug_mode: print(config)
         
-    service = find_chromedriver()
-    if service:
-        chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument("--headless")
-        # chrome_options.add_argument("--start-maximized")
-        #set resolution 1920x1080
-        chrome_options.add_argument("--window-size=1920,1080")
-        driver = webdriver.Chrome(service=service, options=chrome_options)
+    # service = find_chromedriver()
+    # if service:
+    #     chrome_options = webdriver.ChromeOptions()
+    #     chrome_options.add_argument("--headless")
+    #     # chrome_options.add_argument("--start-maximized")
+    #     #set resolution 1920x1080
+    #     chrome_options.add_argument("--window-size=1920,1080")
+    #     driver = webdriver.Chrome(service=service, options=chrome_options)
     
 
-    dataCollector = DataCollector()
-    dataCollector.collect_data(urls, levels, driver, config)
-    dataCollector.save_data()
-    # total_unique_attributes, attribute_values, computed_styles_file = dataCollector.computed_styles(level=1)
-    for level in levels:
-        dataCollector.computed_styles(level=level)
+    # dataCollector = DataCollector()
+    # dataCollector.collect_data(urls, levels, driver, config)
+    # dataCollector.save_data()
+    # # total_unique_attributes, attribute_values, computed_styles_file = dataCollector.computed_styles(level=1)
+    # for level in levels:
+    #     dataCollector.computed_styles(level=level)
 
-    image_data_collector = ImageDataCollector(dataCollector.url_data)
-    image_data_collector.save_to_json()
+    # image_data_collector = ImageDataCollector(dataCollector.url_data)
+    # image_data_collector.save_to_json()
     
-    driver.close()
+    # driver.close()
     
     #########################################################################################################################
     # Send the computed styles to the Thanasis script.
@@ -89,7 +89,10 @@ def process_urls_from_cli(urls, levels, from_api=False):
             self.additional_info = info
 
         def __repr__(self):
-            return f"Cluster(id={self.id}, color={self.color}, guids={self.guids}, additional_info={self.additional_info})"
+            return f"Cluster(id={self.id}, color={self.color}, guids={len(self.guids)}, additional_info={self.additional_info})"
+        
+        def print_results_one_line(self):
+            return f"Cluster(id={self.id}, color={self.color}, guids={len(self.guids)}, additional_info={self.additional_info})"
         
     # Custom JSON encoder for Cluster objects
     class ClusterEncoder(json.JSONEncoder):
@@ -97,16 +100,13 @@ def process_urls_from_cli(urls, levels, from_api=False):
             if isinstance(obj, Cluster):
                 return obj.__dict__
             return super().default(obj)
-    
-    data = [
-        ["17287660649799029157534", "17287660644774531384640", "17287660641005514928867"],
-        ["17287660923919347830796", "17287660919057216475881", "17287660913926449697774"],
-        ["17287661089258711881068", "17287661087931915471026", "17287661082356588874458"]
-    ]
+        
+    with open("/home/pfavvatas/lib_url_to_img/backend/api/cluster/clustered_ids_2.txt", "r") as f:
+        data = json.load(f)
     
     # List of 30 different colors
     colors = [
-        "red", "blue", "green", "yellow", "purple", "orange", "pink", "brown", "black", "white",
+        "red", "blue", "green", "yellow", "purple", "orange", "pink", "brown", #"black", "white",
         "gray", "cyan", "magenta", "lime", "maroon", "navy", "olive", "teal", "aqua", "fuchsia",
         "silver", "gold", "beige", "coral", "indigo", "ivory", "khaki", "lavender", "plum", "salmon"
     ]
@@ -125,9 +125,11 @@ def process_urls_from_cli(urls, levels, from_api=False):
         cluster = Cluster(id=f"cluster_{i}", color=color, guids=guids)
         clusters.append(cluster)
 
+    data_to_return = []
     # Print clusters to verify
     for cluster in clusters:
         print(cluster)
+        data_to_return.append(cluster.print_results_one_line())
         
     # Collect all GUIDs from clusters
     all_cluster_guids = set()
@@ -135,7 +137,7 @@ def process_urls_from_cli(urls, levels, from_api=False):
         all_cluster_guids.update(cluster.guids) 
           
     # Function to search for HTML data with a specific GUID
-    data_to_return = []
+    
     def search_html_data(html_data):
         unique_id = str(html_data.get("unique_id"))
         if unique_id in all_cluster_guids:
@@ -145,11 +147,11 @@ def process_urls_from_cli(urls, levels, from_api=False):
                         cluster_id = cluster.id 
                         cluster_obj = cluster    
                 msg = f"Found GUID: {unique_id} in cluster: {cluster_id}"
-                data_to_return.append(msg)              
+                # data_to_return.append(msg)              
                 print(msg)
                 if "clusters" not in html_data:
                     html_data["clusters"] = []
-                html_data["clusters"].append(cluster_obj.__dict__)
+                html_data["clusters"].append(cluster_obj.__dict__)                
             except Exception as e:
                 print(f"An error occurred: {e}")
                 data_to_return.append(f"An error occurred: {e}")
@@ -171,7 +173,7 @@ def process_urls_from_cli(urls, levels, from_api=False):
         latest_file = max(files, key=os.path.getmtime)
         
         return latest_file
-    directory = "/home/pfavvatas/lib_url_to_img/backend/api/results"
+    directory = "/home/pfavvatas/lib_url_to_img/backend/api/results_1"
     file_path = find_latest_data_file(directory)
 
     # Check if the file exists
@@ -229,76 +231,76 @@ def process_urls_from_cli(urls, levels, from_api=False):
         "margin", "margin-top", "margin-right", "margin-bottom", "margin-left", 
         "padding", "padding-top", "padding-right", "padding-bottom", "padding-left",
 
-        # Display and Positioning
-        "display", "position", "top", "right", "bottom", "left", "z-index", 
-        "float", "clear", "visibility", "overflow", "overflow-x", "overflow-y", 
-        "clip", "vertical-align",
+        # # Display and Positioning
+        # "display", "position", "top", "right", "bottom", "left", "z-index", 
+        # "float", "clear", "visibility", "overflow", "overflow-x", "overflow-y", 
+        # "clip", "vertical-align",
 
-        # Flexbox
-        "flex", "flex-grow", "flex-shrink", "flex-basis", "flex-direction", 
-        "flex-wrap", "align-items", "align-content", "justify-content", 
-        "order", "align-self",
+        # # Flexbox
+        # "flex", "flex-grow", "flex-shrink", "flex-basis", "flex-direction", 
+        # "flex-wrap", "align-items", "align-content", "justify-content", 
+        # "order", "align-self",
 
-        # Grid
-        "grid", "grid-template-columns", "grid-template-rows", 
-        "grid-template-areas", "grid-column", "grid-row", "grid-gap", 
-        "grid-auto-columns", "grid-auto-rows", "grid-column-start", 
-        "grid-column-end", "grid-row-start", "grid-row-end", 
-        "place-items", "place-content", "place-self",
+        # # Grid
+        # "grid", "grid-template-columns", "grid-template-rows", 
+        # "grid-template-areas", "grid-column", "grid-row", "grid-gap", 
+        # "grid-auto-columns", "grid-auto-rows", "grid-column-start", 
+        # "grid-column-end", "grid-row-start", "grid-row-end", 
+        # "place-items", "place-content", "place-self",
 
-        # Sizing
-        "width", "height", "min-width", "min-height", "max-width", "max-height",
+        # # Sizing
+        # "width", "height", "min-width", "min-height", "max-width", "max-height",
 
-        # Animations and Transitions
-        "animation", "animation-name", "animation-duration", 
-        "animation-timing-function", "animation-delay", "animation-iteration-count", 
-        "animation-direction", "animation-fill-mode", "transition", 
-        "transition-property", "transition-duration", "transition-timing-function", 
-        "transition-delay",
+        # # Animations and Transitions
+        # "animation", "animation-name", "animation-duration", 
+        # "animation-timing-function", "animation-delay", "animation-iteration-count", 
+        # "animation-direction", "animation-fill-mode", "transition", 
+        # "transition-property", "transition-duration", "transition-timing-function", 
+        # "transition-delay",
 
-        # Transforms
-        "transform", "transform-origin", "transform-style", "perspective", 
-        "perspective-origin",
+        # # Transforms
+        # "transform", "transform-origin", "transform-style", "perspective", 
+        # "perspective-origin",
 
-        # Columns
-        "columns", "column-width", "column-count", "column-gap", 
-        "column-rule", "column-rule-width", "column-rule-style", "column-rule-color",
+        # # Columns
+        # "columns", "column-width", "column-count", "column-gap", 
+        # "column-rule", "column-rule-width", "column-rule-style", "column-rule-color",
 
-        # Tables
-        "table-layout", "border-spacing", "border-collapse", "caption-side", 
-        "empty-cells",
+        # # Tables
+        # "table-layout", "border-spacing", "border-collapse", "caption-side", 
+        # "empty-cells",
 
-        # Lists
-        "list-style", "list-style-type", "list-style-position", "list-style-image",
+        # # Lists
+        # "list-style", "list-style-type", "list-style-position", "list-style-image",
 
-        # Content and Cursor
-        "content", "quotes", "cursor", "caret-color",
+        # # Content and Cursor
+        # "content", "quotes", "cursor", "caret-color",
 
-        # Misc
-        "opacity", "visibility", "pointer-events", "filter", "resize", 
-        "user-select", "will-change", "zoom",
+        # # Misc
+        # "opacity", "visibility", "pointer-events", "filter", "resize", 
+        # "user-select", "will-change", "zoom",
 
         # Vendor-specific prefixes
-        "-webkit-transform", "-webkit-transition", "-webkit-animation", 
-        "-webkit-box-shadow", "-webkit-border-radius", "-webkit-opacity", 
-        "-webkit-flex", "-webkit-align-items", "-webkit-justify-content", 
-        "-webkit-align-self", "-webkit-order", "-webkit-flex-grow", 
-        "-webkit-flex-shrink", "-webkit-flex-basis", "-webkit-perspective", 
-        "-webkit-perspective-origin", "-webkit-backface-visibility", 
-        "-webkit-box-sizing", "-webkit-text-fill-color", "-webkit-text-stroke", 
-        "-webkit-text-stroke-width", "-webkit-appearance", "-webkit-mask", 
-        "-webkit-mask-image", "-webkit-mask-position", "-webkit-mask-size", 
-        "-webkit-mask-repeat", "-webkit-mask-clip", "-webkit-mask-origin", 
-        "-webkit-mask-composite", "-webkit-box-flex", "-webkit-box-align", 
-        "-webkit-box-pack", "-webkit-box-orient", "-webkit-box-direction", 
-        "-webkit-box-decoration-break", "-webkit-background-clip", 
-        "-webkit-filter", "-webkit-hyphens", "-webkit-overflow-scrolling", 
-        "-webkit-tap-highlight-color", "-webkit-touch-callout", 
-        "-webkit-writing-mode", "-webkit-transition-timing-function", 
-        "-webkit-transition-duration", "-webkit-transition-property", 
-        "-webkit-transition-delay", "-webkit-animation-delay", 
-        "-webkit-animation-duration", "-webkit-animation-iteration-count", 
-        "-webkit-animation-timing-function", "-webkit-animation-name"
+        # "-webkit-transform", "-webkit-transition", "-webkit-animation", 
+        # "-webkit-box-shadow", "-webkit-border-radius", "-webkit-opacity", 
+        # "-webkit-flex", "-webkit-align-items", "-webkit-justify-content", 
+        # "-webkit-align-self", "-webkit-order", "-webkit-flex-grow", 
+        # "-webkit-flex-shrink", "-webkit-flex-basis", "-webkit-perspective", 
+        # "-webkit-perspective-origin", "-webkit-backface-visibility", 
+        # "-webkit-box-sizing", "-webkit-text-fill-color", "-webkit-text-stroke", 
+        # "-webkit-text-stroke-width", "-webkit-appearance", "-webkit-mask", 
+        # "-webkit-mask-image", "-webkit-mask-position", "-webkit-mask-size", 
+        # "-webkit-mask-repeat", "-webkit-mask-clip", "-webkit-mask-origin", 
+        # "-webkit-mask-composite", "-webkit-box-flex", "-webkit-box-align", 
+        # "-webkit-box-pack", "-webkit-box-orient", "-webkit-box-direction", 
+        # "-webkit-box-decoration-break", "-webkit-background-clip", 
+        # "-webkit-filter", "-webkit-hyphens", "-webkit-overflow-scrolling", 
+        # "-webkit-tap-highlight-color", "-webkit-touch-callout", 
+        # "-webkit-writing-mode", "-webkit-transition-timing-function", 
+        # "-webkit-transition-duration", "-webkit-transition-property", 
+        # "-webkit-transition-delay", "-webkit-animation-delay", 
+        # "-webkit-animation-duration", "-webkit-animation-iteration-count", 
+        # "-webkit-animation-timing-function", "-webkit-animation-name"
     ]
     
     def escape_quotes(value):
@@ -308,10 +310,20 @@ def process_urls_from_cli(urls, levels, from_api=False):
     
     def create_html_from_json(json_data, output_dir):
         def create_element(element_data):
+            unique_id = element_data.get("unique_id", None)
             tag_name = element_data.get("tag_name", "div")
             text = element_data.get("actual_text", "")
             children = element_data.get("children", [])
             attributes = element_data.get("attributes", {})
+            clusters = element_data.get("clusters", [])
+            
+            # if len(clusters) > 0:
+            #     print(f"Clusters found: {len(clusters)}")
+            # if len(clusters) == 0:
+            #     return f''
+            
+            #remove from attributes start with -webkit
+            attributes = {key: value for key, value in attributes.items() if not key.startswith("-webkit")}
             
             # Separate CSS styles from other attributes
             styles = {key: value for key, value in attributes.items() if key in VALID_CSS_PROPERTIES}
@@ -319,14 +331,29 @@ def process_urls_from_cli(urls, levels, from_api=False):
     
             # Convert styles dictionary to a string of valid CSS styles
             style_str = "; ".join(f'{key}: {escape_quotes(value)}' for key, value in styles.items())
+            if(len(clusters) > 0):
+                for cluster in clusters:                    
+                    style_str += f"; background-color: {cluster['color']}"
     
             # Convert other attributes dictionary to a string of HTML attributes
             attributes_str = " ".join(
                 f'{key}="{escape_quotes(value)}"' for key, value in other_attributes.items()
             )
             
+            # if(len(clusters) > 0):
+            #     for cluster in clusters:
+            #         if unique_id in cluster["guids"]:
+            #             style_str += f"; background-color: {cluster['color']}"
+            #             attributes_str += f' data-cluster="{cluster["id"]}"'
+            
+            if(len(clusters) > 0):
+                for cluster in clusters:
+                    attributes_str += f' data-cluster="{cluster["id"]}"'
+            
             children_html = "".join(create_element(child) for child in children)
             
+            if(len(clusters) == 0):
+                return f'<{tag_name}">{children_html}</{tag_name}>'
             return f'<{tag_name} style="{style_str}"  {attributes_str}>{text}{children_html}</{tag_name}>'
         
         if not os.path.exists(output_dir):
@@ -345,13 +372,15 @@ def process_urls_from_cli(urls, levels, from_api=False):
                 file.write(final_html)
             
             print(f"File created: {output_file}")
-            data_to_return.append(f"File created: {output_file}")
+            data_to_return.append(f"File created: {os.path.abspath(output_file)}")
+            #pathlib.Path(__file__).parent.resolve()
+            # print(f"File created: {os.path.abspath(output_file)}")
     
 
     create_html_from_json(json_data, "output_html_files")
         
     # Write results to a file
-    output_file_path = "/home/pfavvatas/lib_url_to_img/backend/api/results/WEB.json"
+    output_file_path = "/home/pfavvatas/lib_url_to_img/backend/api/results_1/WEB.json"
     with open(output_file_path, "w") as file:
         json.dump(json_data, file, indent=4)
 
