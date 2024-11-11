@@ -1,24 +1,34 @@
 0)
+```sh
 sudo apt update
 sudo apt install nodejs npm
 node -v
 npm -v
+```
 
 1)
+```sh
 cd ./backend/api
 npm install scripty --save-dev
 npm run setup
+```
 
 2)
+```sh
 cd ./backend/server
 npm run setup
+```
 
 3)
+```sh
 cd ./frontend
 npm run setup
+```
 
 4) Run the projects:
+```sh
 mprocs --config ./mprocs.yml
+```
 
 
 
