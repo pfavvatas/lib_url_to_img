@@ -4,6 +4,7 @@ sudo apt update
 sudo apt install nodejs npm
 node -v
 npm -v
+npm install -g mprocs
 ```
 
 1)
