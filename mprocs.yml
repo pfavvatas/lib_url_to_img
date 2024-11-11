@@ -6,5 +6,8 @@ procs:
   PythonApi:
     shell: "cd ./backend/api; npm run dev"
 
+  BackendApiNodeServer:
+    shell: "cd ./backend/server; node server.js"
+
   PythonApiTests:
     shell: "cd ./backend/api; npm run tests"

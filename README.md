@@ -1,10 +1,29 @@
+0)
+sudo apt update
+sudo apt install nodejs npm
+node -v
+npm -v
+
 1)
 cd ./backend/api
+npm install scripty --save-dev
 npm run setup
 
 2)
+cd ./backend/server
+npm run setup
+
+3)
+cd ./frontend
+npm run setup
+
+4) Run the projects:
 mprocs --config ./mprocs.yml
 
+
+
+
+========================================================
 sudo ufw allow 8000
 
 

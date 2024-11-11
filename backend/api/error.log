@@ -9,3 +9,2112 @@
   "message": "URLs processed successfully",
   "status": "success"
 }
+Error processing URLs: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /opt/google/chrome/chrome is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x562a803b808e <unknown>
+#1 0x562a800b331b <unknown>
+#2 0x562a800ec58f <unknown>
+#3 0x562a800e5db8 <unknown>
+#4 0x562a80134b56 <unknown>
+#5 0x562a80134173 <unknown>
+#6 0x562a80127003 <unknown>
+#7 0x562a800f3ded <unknown>
+#8 0x562a800f4b1e <unknown>
+#9 0x562a803887be <unknown>
+#10 0x562a8038bbfd <unknown>
+#11 0x562a8038b698 <unknown>
+#12 0x562a8038c0b5 <unknown>
+#13 0x562a803790cb <unknown>
+#14 0x562a8038c467 <unknown>
+#15 0x562a80363532 <unknown>
+#16 0x562a803a7555 <unknown>
+#17 0x562a803a7793 <unknown>
+#18 0x562a803b6e01 <unknown>
+#19 0x7f3bfea89c02 start_thread
+
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 70, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 51, in process_urls_from_cli
+    driver = webdriver.Chrome(service=service)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chrome/webdriver.py", line 49, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chromium/webdriver.py", line 54, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 206, in __init__
+    self.start_session(capabilities)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 291, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 346, in execute
+    self.error_handler.check_response(response)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/errorhandler.py", line 245, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /opt/google/chrome/chrome is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x562a803b808e <unknown>
+#1 0x562a800b331b <unknown>
+#2 0x562a800ec58f <unknown>
+#3 0x562a800e5db8 <unknown>
+#4 0x562a80134b56 <unknown>
+#5 0x562a80134173 <unknown>
+#6 0x562a80127003 <unknown>
+#7 0x562a800f3ded <unknown>
+#8 0x562a800f4b1e <unknown>
+#9 0x562a803887be <unknown>
+#10 0x562a8038bbfd <unknown>
+#11 0x562a8038b698 <unknown>
+#12 0x562a8038c0b5 <unknown>
+#13 0x562a803790cb <unknown>
+#14 0x562a8038c467 <unknown>
+#15 0x562a80363532 <unknown>
+#16 0x562a803a7555 <unknown>
+#17 0x562a803a7793 <unknown>
+#18 0x562a803b6e01 <unknown>
+#19 0x7f3bfea89c02 start_thread
+
+
+Error processing URLs: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /opt/google/chrome/chrome is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x556ed13d608e <unknown>
+#1 0x556ed10d131b <unknown>
+#2 0x556ed110a58f <unknown>
+#3 0x556ed1103db8 <unknown>
+#4 0x556ed1152b56 <unknown>
+#5 0x556ed1152173 <unknown>
+#6 0x556ed1145003 <unknown>
+#7 0x556ed1111ded <unknown>
+#8 0x556ed1112b1e <unknown>
+#9 0x556ed13a67be <unknown>
+#10 0x556ed13a9bfd <unknown>
+#11 0x556ed13a9698 <unknown>
+#12 0x556ed13aa0b5 <unknown>
+#13 0x556ed13970cb <unknown>
+#14 0x556ed13aa467 <unknown>
+#15 0x556ed1381532 <unknown>
+#16 0x556ed13c5555 <unknown>
+#17 0x556ed13c5793 <unknown>
+#18 0x556ed13d4e01 <unknown>
+#19 0x7f7d4d289c02 start_thread
+
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 70, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 51, in process_urls_from_cli
+    driver = webdriver.Chrome(service=service)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chrome/webdriver.py", line 49, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chromium/webdriver.py", line 54, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 206, in __init__
+    self.start_session(capabilities)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 291, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 346, in execute
+    self.error_handler.check_response(response)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/errorhandler.py", line 245, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /opt/google/chrome/chrome is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x556ed13d608e <unknown>
+#1 0x556ed10d131b <unknown>
+#2 0x556ed110a58f <unknown>
+#3 0x556ed1103db8 <unknown>
+#4 0x556ed1152b56 <unknown>
+#5 0x556ed1152173 <unknown>
+#6 0x556ed1145003 <unknown>
+#7 0x556ed1111ded <unknown>
+#8 0x556ed1112b1e <unknown>
+#9 0x556ed13a67be <unknown>
+#10 0x556ed13a9bfd <unknown>
+#11 0x556ed13a9698 <unknown>
+#12 0x556ed13aa0b5 <unknown>
+#13 0x556ed13970cb <unknown>
+#14 0x556ed13aa467 <unknown>
+#15 0x556ed1381532 <unknown>
+#16 0x556ed13c5555 <unknown>
+#17 0x556ed13c5793 <unknown>
+#18 0x556ed13d4e01 <unknown>
+#19 0x7f7d4d289c02 start_thread
+
+
+Error processing URLs: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /opt/google/chrome/chrome is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x560a1a4d508e <unknown>
+#1 0x560a1a1d031b <unknown>
+#2 0x560a1a20958f <unknown>
+#3 0x560a1a202db8 <unknown>
+#4 0x560a1a251b56 <unknown>
+#5 0x560a1a251173 <unknown>
+#6 0x560a1a244003 <unknown>
+#7 0x560a1a210ded <unknown>
+#8 0x560a1a211b1e <unknown>
+#9 0x560a1a4a57be <unknown>
+#10 0x560a1a4a8bfd <unknown>
+#11 0x560a1a4a8698 <unknown>
+#12 0x560a1a4a90b5 <unknown>
+#13 0x560a1a4960cb <unknown>
+#14 0x560a1a4a9467 <unknown>
+#15 0x560a1a480532 <unknown>
+#16 0x560a1a4c4555 <unknown>
+#17 0x560a1a4c4793 <unknown>
+#18 0x560a1a4d3e01 <unknown>
+#19 0x7fcda1489c02 start_thread
+
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 70, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 51, in process_urls_from_cli
+    driver = webdriver.Chrome(service=service)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chrome/webdriver.py", line 49, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chromium/webdriver.py", line 54, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 206, in __init__
+    self.start_session(capabilities)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 291, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 346, in execute
+    self.error_handler.check_response(response)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/errorhandler.py", line 245, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /opt/google/chrome/chrome is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x560a1a4d508e <unknown>
+#1 0x560a1a1d031b <unknown>
+#2 0x560a1a20958f <unknown>
+#3 0x560a1a202db8 <unknown>
+#4 0x560a1a251b56 <unknown>
+#5 0x560a1a251173 <unknown>
+#6 0x560a1a244003 <unknown>
+#7 0x560a1a210ded <unknown>
+#8 0x560a1a211b1e <unknown>
+#9 0x560a1a4a57be <unknown>
+#10 0x560a1a4a8bfd <unknown>
+#11 0x560a1a4a8698 <unknown>
+#12 0x560a1a4a90b5 <unknown>
+#13 0x560a1a4960cb <unknown>
+#14 0x560a1a4a9467 <unknown>
+#15 0x560a1a480532 <unknown>
+#16 0x560a1a4c4555 <unknown>
+#17 0x560a1a4c4793 <unknown>
+#18 0x560a1a4d3e01 <unknown>
+#19 0x7fcda1489c02 start_thread
+
+
+Error processing URLs: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /opt/google/chrome/chrome is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x560e15a2908e <unknown>
+#1 0x560e1572431b <unknown>
+#2 0x560e1575d58f <unknown>
+#3 0x560e15756db8 <unknown>
+#4 0x560e157a5b56 <unknown>
+#5 0x560e157a5173 <unknown>
+#6 0x560e15798003 <unknown>
+#7 0x560e15764ded <unknown>
+#8 0x560e15765b1e <unknown>
+#9 0x560e159f97be <unknown>
+#10 0x560e159fcbfd <unknown>
+#11 0x560e159fc698 <unknown>
+#12 0x560e159fd0b5 <unknown>
+#13 0x560e159ea0cb <unknown>
+#14 0x560e159fd467 <unknown>
+#15 0x560e159d4532 <unknown>
+#16 0x560e15a18555 <unknown>
+#17 0x560e15a18793 <unknown>
+#18 0x560e15a27e01 <unknown>
+#19 0x7f0de9489c02 start_thread
+
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 70, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 51, in process_urls_from_cli
+    driver = webdriver.Chrome(service=service)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chrome/webdriver.py", line 49, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chromium/webdriver.py", line 54, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 206, in __init__
+    self.start_session(capabilities)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 291, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 346, in execute
+    self.error_handler.check_response(response)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/errorhandler.py", line 245, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /opt/google/chrome/chrome is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x560e15a2908e <unknown>
+#1 0x560e1572431b <unknown>
+#2 0x560e1575d58f <unknown>
+#3 0x560e15756db8 <unknown>
+#4 0x560e157a5b56 <unknown>
+#5 0x560e157a5173 <unknown>
+#6 0x560e15798003 <unknown>
+#7 0x560e15764ded <unknown>
+#8 0x560e15765b1e <unknown>
+#9 0x560e159f97be <unknown>
+#10 0x560e159fcbfd <unknown>
+#11 0x560e159fc698 <unknown>
+#12 0x560e159fd0b5 <unknown>
+#13 0x560e159ea0cb <unknown>
+#14 0x560e159fd467 <unknown>
+#15 0x560e159d4532 <unknown>
+#16 0x560e15a18555 <unknown>
+#17 0x560e15a18793 <unknown>
+#18 0x560e15a27e01 <unknown>
+#19 0x7f0de9489c02 start_thread
+
+
+Error processing URLs: name 'computed_styles_file' is not defined
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 128, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 122, in process_urls_from_cli
+    return {"status": "success", "message": "URLs processed successfully", "file": computed_styles_file}
+NameError: name 'computed_styles_file' is not defined
+
+Error processing URLs: name 'computed_styles_file' is not defined
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 170, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 164, in process_urls_from_cli
+    return {"status": "success", "message": "URLs processed successfully", "file": computed_styles_file}
+NameError: name 'computed_styles_file' is not defined
+
+Error processing URLs: object of type 'NoneType' has no len()
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 173, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 143, in process_urls_from_cli
+    print(len(guid_data))
+TypeError: object of type 'NoneType' has no len()
+
+Error processing URLs: object of type 'NoneType' has no len()
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 173, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 143, in process_urls_from_cli
+    print(len(guid_data))
+TypeError: object of type 'NoneType' has no len()
+
+Error processing URLs: object of type 'NoneType' has no len()
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 174, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 144, in process_urls_from_cli
+    print(len(guid_data))
+TypeError: object of type 'NoneType' has no len()
+
+Error processing URLs: object of type 'NoneType' has no len()
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 190, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 160, in process_urls_from_cli
+    print(len(guid_data))
+TypeError: object of type 'NoneType' has no len()
+
+Error processing URLs: expected str, bytes or os.PathLike object, not NoneType
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 195, in process_urls_from_api
+    zipf.write(computed_styles_file, os.path.basename(computed_styles_file))
+  File "/usr/lib64/python3.9/posixpath.py", line 142, in basename
+    p = os.fspath(p)
+TypeError: expected str, bytes or os.PathLike object, not NoneType
+
+Error processing URLs: expected str, bytes or os.PathLike object, not NoneType
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 196, in process_urls_from_api
+    zipf.write(computed_styles_file, os.path.basename(computed_styles_file))
+  File "/usr/lib64/python3.9/posixpath.py", line 142, in basename
+    p = os.fspath(p)
+TypeError: expected str, bytes or os.PathLike object, not NoneType
+
+Error processing URLs: expected str, bytes or os.PathLike object, not NoneType
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 199, in process_urls_from_api
+    zipf.write(computed_styles_file, os.path.basename(computed_styles_file))
+  File "/usr/lib64/python3.9/posixpath.py", line 142, in basename
+    p = os.fspath(p)
+TypeError: expected str, bytes or os.PathLike object, not NoneType
+
+Error processing URLs: expected str, bytes or os.PathLike object, not NoneType
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 200, in process_urls_from_api
+    zipf.write(computed_styles_file, os.path.basename(computed_styles_file))
+  File "/usr/lib64/python3.9/posixpath.py", line 142, in basename
+    p = os.fspath(p)
+TypeError: expected str, bytes or os.PathLike object, not NoneType
+
+Error processing URLs: expected str, bytes or os.PathLike object, not NoneType
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 201, in process_urls_from_api
+    zipf.write(computed_styles_file, os.path.basename(computed_styles_file))
+  File "/usr/lib64/python3.9/posixpath.py", line 142, in basename
+    p = os.fspath(p)
+TypeError: expected str, bytes or os.PathLike object, not NoneType
+
+Error processing URLs: expected str, bytes or os.PathLike object, not NoneType
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 202, in process_urls_from_api
+    zipf.write(computed_styles_file, os.path.basename(computed_styles_file))
+  File "/usr/lib64/python3.9/posixpath.py", line 142, in basename
+    p = os.fspath(p)
+TypeError: expected str, bytes or os.PathLike object, not NoneType
+
+Error processing URLs: expected str, bytes or os.PathLike object, not NoneType
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 204, in process_urls_from_api
+    zipf.write(computed_styles_file, os.path.basename(computed_styles_file))
+  File "/usr/lib64/python3.9/posixpath.py", line 142, in basename
+    p = os.fspath(p)
+TypeError: expected str, bytes or os.PathLike object, not NoneType
+
+Error processing URLs: expected str, bytes or os.PathLike object, not NoneType
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 205, in process_urls_from_api
+    zipf.write(computed_styles_file, os.path.basename(computed_styles_file))
+  File "/usr/lib64/python3.9/posixpath.py", line 142, in basename
+    p = os.fspath(p)
+TypeError: expected str, bytes or os.PathLike object, not NoneType
+
+Error processing URLs: expected str, bytes or os.PathLike object, not NoneType
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 210, in process_urls_from_api
+    zipf.write(computed_styles_file, os.path.basename(computed_styles_file))
+  File "/usr/lib64/python3.9/posixpath.py", line 142, in basename
+    p = os.fspath(p)
+TypeError: expected str, bytes or os.PathLike object, not NoneType
+
+Error processing URLs: expected str, bytes or os.PathLike object, not NoneType
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 207, in process_urls_from_api
+    zipf.write(computed_styles_file, os.path.basename(computed_styles_file))
+  File "/usr/lib64/python3.9/posixpath.py", line 142, in basename
+    p = os.fspath(p)
+TypeError: expected str, bytes or os.PathLike object, not NoneType
+
+Error processing URLs: expected str, bytes or os.PathLike object, not NoneType
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 207, in process_urls_from_api
+    zipf.write(computed_styles_file, os.path.basename(computed_styles_file))
+  File "/usr/lib64/python3.9/posixpath.py", line 142, in basename
+    p = os.fspath(p)
+TypeError: expected str, bytes or os.PathLike object, not NoneType
+
+Error processing URLs: expected str, bytes or os.PathLike object, not NoneType
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 208, in process_urls_from_api
+    zipf.write(computed_styles_file, os.path.basename(computed_styles_file))
+  File "/usr/lib64/python3.9/posixpath.py", line 142, in basename
+    p = os.fspath(p)
+TypeError: expected str, bytes or os.PathLike object, not NoneType
+
+Error processing URLs: expected str, bytes or os.PathLike object, not NoneType
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 209, in process_urls_from_api
+    zipf.write(computed_styles_file, os.path.basename(computed_styles_file))
+  File "/usr/lib64/python3.9/posixpath.py", line 142, in basename
+    p = os.fspath(p)
+TypeError: expected str, bytes or os.PathLike object, not NoneType
+
+Error processing URLs: expected str, bytes or os.PathLike object, not NoneType
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 210, in process_urls_from_api
+    zipf.write(computed_styles_file, os.path.basename(computed_styles_file))
+  File "/usr/lib64/python3.9/posixpath.py", line 142, in basename
+    p = os.fspath(p)
+TypeError: expected str, bytes or os.PathLike object, not NoneType
+
+Error processing URLs: expected str, bytes or os.PathLike object, not NoneType
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 210, in process_urls_from_api
+    zipf.write(computed_styles_file, os.path.basename(computed_styles_file))
+  File "/usr/lib64/python3.9/posixpath.py", line 142, in basename
+    p = os.fspath(p)
+TypeError: expected str, bytes or os.PathLike object, not NoneType
+
+Error processing URLs: expected str, bytes or os.PathLike object, not NoneType
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 211, in process_urls_from_api
+    zipf.write(computed_styles_file, os.path.basename(computed_styles_file))
+  File "/usr/lib64/python3.9/posixpath.py", line 142, in basename
+    p = os.fspath(p)
+TypeError: expected str, bytes or os.PathLike object, not NoneType
+
+Error processing URLs: expected str, bytes or os.PathLike object, not NoneType
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 214, in process_urls_from_api
+    zipf.write(computed_styles_file, os.path.basename(computed_styles_file))
+  File "/usr/lib64/python3.9/posixpath.py", line 142, in basename
+    p = os.fspath(p)
+TypeError: expected str, bytes or os.PathLike object, not NoneType
+
+Error processing URLs: '140653470205168'
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 209, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 181, in process_urls_from_cli
+    results.append(unique_id_map[guid_str])
+KeyError: '140653470205168'
+
+Error processing URLs: expected str, bytes or os.PathLike object, not NoneType
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 219, in process_urls_from_api
+    zipf.write(computed_styles_file, os.path.basename(computed_styles_file))
+  File "/usr/lib64/python3.9/posixpath.py", line 142, in basename
+    p = os.fspath(p)
+TypeError: expected str, bytes or os.PathLike object, not NoneType
+
+Error processing URLs: expected str, bytes or os.PathLike object, not NoneType
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 219, in process_urls_from_api
+    zipf.write(computed_styles_file, os.path.basename(computed_styles_file))
+  File "/usr/lib64/python3.9/posixpath.py", line 142, in basename
+    p = os.fspath(p)
+TypeError: expected str, bytes or os.PathLike object, not NoneType
+
+Error processing URLs: expected str, bytes or os.PathLike object, not NoneType
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 219, in process_urls_from_api
+    zipf.write(computed_styles_file, os.path.basename(computed_styles_file))
+  File "/usr/lib64/python3.9/posixpath.py", line 142, in basename
+    p = os.fspath(p)
+TypeError: expected str, bytes or os.PathLike object, not NoneType
+
+Error processing URLs: expected str, bytes or os.PathLike object, not NoneType
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 219, in process_urls_from_api
+    zipf.write(computed_styles_file, os.path.basename(computed_styles_file))
+  File "/usr/lib64/python3.9/posixpath.py", line 142, in basename
+    p = os.fspath(p)
+TypeError: expected str, bytes or os.PathLike object, not NoneType
+
+Error processing URLs: name 'zip_filename' is not defined
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 236, in process_urls_from_api
+    "files": [{"filename": zip_filename, "data": zip_hex_data}]
+NameError: name 'zip_filename' is not defined
+
+Error processing URLs: Object of type Cluster is not JSON serializable
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 245, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 228, in process_urls_from_cli
+    json.dump(unique_id_map, file, indent=4)
+  File "/usr/lib64/python3.9/json/__init__.py", line 179, in dump
+    for chunk in iterable:
+  File "/usr/lib64/python3.9/json/encoder.py", line 431, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 438, in _iterencode
+    o = _default(o)
+  File "/usr/lib64/python3.9/json/encoder.py", line 179, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type Cluster is not JSON serializable
+
+Error processing URLs: 'dict' object has no attribute 'append'
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 256, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 194, in process_urls_from_cli
+    search_html_data(html_data, all_guids, cluster)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 153, in search_html_data
+    search_html_data(child, guids, cluster)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 153, in search_html_data
+    search_html_data(child, guids, cluster)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 153, in search_html_data
+    search_html_data(child, guids, cluster)
+  [Previous line repeated 17 more times]
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 150, in search_html_data
+    html_data.append(cluster)
+AttributeError: 'dict' object has no attribute 'append'
+
+Error processing URLs: Object of type Cluster is not JSON serializable
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 262, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 245, in process_urls_from_cli
+    json.dump(json_data, file, indent=4)
+  File "/usr/lib64/python3.9/json/__init__.py", line 179, in dump
+    for chunk in iterable:
+  File "/usr/lib64/python3.9/json/encoder.py", line 431, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 438, in _iterencode
+    o = _default(o)
+  File "/usr/lib64/python3.9/json/encoder.py", line 179, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type Cluster is not JSON serializable
+
+Error processing URLs: Object of type Cluster is not JSON serializable
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 265, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 248, in process_urls_from_cli
+    json.dump(json_data, file, indent=4)
+  File "/usr/lib64/python3.9/json/__init__.py", line 179, in dump
+    for chunk in iterable:
+  File "/usr/lib64/python3.9/json/encoder.py", line 431, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 438, in _iterencode
+    o = _default(o)
+  File "/usr/lib64/python3.9/json/encoder.py", line 179, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type Cluster is not JSON serializable
+
+Error processing URLs: search_html_data() takes 2 positional arguments but 3 were given
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 263, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 193, in process_urls_from_cli
+    search_html_data(html_data, all_cluster_guids)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 152, in search_html_data
+    search_html_data(child, guids, cluster)
+TypeError: search_html_data() takes 2 positional arguments but 3 were given
+
+Error processing URLs: string indices must be integers
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 263, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 193, in process_urls_from_cli
+    search_html_data(html_data)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 152, in search_html_data
+    search_html_data(child)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 152, in search_html_data
+    search_html_data(child)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 152, in search_html_data
+    search_html_data(child)
+  [Previous line repeated 17 more times]
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 147, in search_html_data
+    print(f"Found GUID: {unique_id} in cluster: {cluster.id[unique_id]}")
+TypeError: string indices must be integers
+
+Error processing URLs: string indices must be integers
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 264, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 194, in process_urls_from_cli
+    search_html_data(html_data)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 153, in search_html_data
+    search_html_data(child)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 153, in search_html_data
+    search_html_data(child)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 153, in search_html_data
+    search_html_data(child)
+  [Previous line repeated 17 more times]
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 148, in search_html_data
+    print(f"Found GUID: {unique_id} in cluster: {cluster.id[unique_id]}")
+TypeError: string indices must be integers
+
+Error processing URLs: Object of type Cluster is not JSON serializable
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 270, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 253, in process_urls_from_cli
+    json.dump(json_data, file, indent=4)
+  File "/usr/lib64/python3.9/json/__init__.py", line 179, in dump
+    for chunk in iterable:
+  File "/usr/lib64/python3.9/json/encoder.py", line 431, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 325, in _iterencode_list
+    yield from chunks
+  File "/usr/lib64/python3.9/json/encoder.py", line 438, in _iterencode
+    o = _default(o)
+  File "/usr/lib64/python3.9/json/encoder.py", line 179, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type Cluster is not JSON serializable
+
+Error processing URLs: 'list' object has no attribute 'json'
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 280, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 267, in process_urls_from_cli
+    return {"status": "success", "message": "URLs processed successfully", "data": data_to_return.json()}
+AttributeError: 'list' object has no attribute 'json'
+
+Error processing URLs: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /opt/google/chrome/chrome is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x556f8298a08e <unknown>
+#1 0x556f8268531b <unknown>
+#2 0x556f826be58f <unknown>
+#3 0x556f826b7db8 <unknown>
+#4 0x556f82706b56 <unknown>
+#5 0x556f82706173 <unknown>
+#6 0x556f826f9003 <unknown>
+#7 0x556f826c5ded <unknown>
+#8 0x556f826c6b1e <unknown>
+#9 0x556f8295a7be <unknown>
+#10 0x556f8295dbfd <unknown>
+#11 0x556f8295d698 <unknown>
+#12 0x556f8295e0b5 <unknown>
+#13 0x556f8294b0cb <unknown>
+#14 0x556f8295e467 <unknown>
+#15 0x556f82935532 <unknown>
+#16 0x556f82979555 <unknown>
+#17 0x556f82979793 <unknown>
+#18 0x556f82988e01 <unknown>
+#19 0x7f1356489c02 start_thread
+
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 280, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 53, in process_urls_from_cli
+    driver = webdriver.Chrome(service=service)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chrome/webdriver.py", line 49, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chromium/webdriver.py", line 54, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 206, in __init__
+    self.start_session(capabilities)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 291, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 346, in execute
+    self.error_handler.check_response(response)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/errorhandler.py", line 245, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /opt/google/chrome/chrome is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x556f8298a08e <unknown>
+#1 0x556f8268531b <unknown>
+#2 0x556f826be58f <unknown>
+#3 0x556f826b7db8 <unknown>
+#4 0x556f82706b56 <unknown>
+#5 0x556f82706173 <unknown>
+#6 0x556f826f9003 <unknown>
+#7 0x556f826c5ded <unknown>
+#8 0x556f826c6b1e <unknown>
+#9 0x556f8295a7be <unknown>
+#10 0x556f8295dbfd <unknown>
+#11 0x556f8295d698 <unknown>
+#12 0x556f8295e0b5 <unknown>
+#13 0x556f8294b0cb <unknown>
+#14 0x556f8295e467 <unknown>
+#15 0x556f82935532 <unknown>
+#16 0x556f82979555 <unknown>
+#17 0x556f82979793 <unknown>
+#18 0x556f82988e01 <unknown>
+#19 0x7f1356489c02 start_thread
+
+
+Error processing URLs: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /opt/google/chrome/chrome is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x55937e79908e <unknown>
+#1 0x55937e49431b <unknown>
+#2 0x55937e4cd58f <unknown>
+#3 0x55937e4c6db8 <unknown>
+#4 0x55937e515b56 <unknown>
+#5 0x55937e515173 <unknown>
+#6 0x55937e508003 <unknown>
+#7 0x55937e4d4ded <unknown>
+#8 0x55937e4d5b1e <unknown>
+#9 0x55937e7697be <unknown>
+#10 0x55937e76cbfd <unknown>
+#11 0x55937e76c698 <unknown>
+#12 0x55937e76d0b5 <unknown>
+#13 0x55937e75a0cb <unknown>
+#14 0x55937e76d467 <unknown>
+#15 0x55937e744532 <unknown>
+#16 0x55937e788555 <unknown>
+#17 0x55937e788793 <unknown>
+#18 0x55937e797e01 <unknown>
+#19 0x7f7173089c02 start_thread
+
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 280, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 53, in process_urls_from_cli
+    driver = webdriver.Chrome(service=service)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chrome/webdriver.py", line 49, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chromium/webdriver.py", line 54, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 206, in __init__
+    self.start_session(capabilities)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 291, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 346, in execute
+    self.error_handler.check_response(response)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/errorhandler.py", line 245, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /opt/google/chrome/chrome is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x55937e79908e <unknown>
+#1 0x55937e49431b <unknown>
+#2 0x55937e4cd58f <unknown>
+#3 0x55937e4c6db8 <unknown>
+#4 0x55937e515b56 <unknown>
+#5 0x55937e515173 <unknown>
+#6 0x55937e508003 <unknown>
+#7 0x55937e4d4ded <unknown>
+#8 0x55937e4d5b1e <unknown>
+#9 0x55937e7697be <unknown>
+#10 0x55937e76cbfd <unknown>
+#11 0x55937e76c698 <unknown>
+#12 0x55937e76d0b5 <unknown>
+#13 0x55937e75a0cb <unknown>
+#14 0x55937e76d467 <unknown>
+#15 0x55937e744532 <unknown>
+#16 0x55937e788555 <unknown>
+#17 0x55937e788793 <unknown>
+#18 0x55937e797e01 <unknown>
+#19 0x7f7173089c02 start_thread
+
+
+Error processing URLs: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /opt/google/chrome/chrome is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x55a6e1db508e <unknown>
+#1 0x55a6e1ab031b <unknown>
+#2 0x55a6e1ae958f <unknown>
+#3 0x55a6e1ae2db8 <unknown>
+#4 0x55a6e1b31b56 <unknown>
+#5 0x55a6e1b31173 <unknown>
+#6 0x55a6e1b24003 <unknown>
+#7 0x55a6e1af0ded <unknown>
+#8 0x55a6e1af1b1e <unknown>
+#9 0x55a6e1d857be <unknown>
+#10 0x55a6e1d88bfd <unknown>
+#11 0x55a6e1d88698 <unknown>
+#12 0x55a6e1d890b5 <unknown>
+#13 0x55a6e1d760cb <unknown>
+#14 0x55a6e1d89467 <unknown>
+#15 0x55a6e1d60532 <unknown>
+#16 0x55a6e1da4555 <unknown>
+#17 0x55a6e1da4793 <unknown>
+#18 0x55a6e1db3e01 <unknown>
+#19 0x7fae96c89c02 start_thread
+
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 280, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 53, in process_urls_from_cli
+    driver = webdriver.Chrome(service=service)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chrome/webdriver.py", line 49, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chromium/webdriver.py", line 54, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 206, in __init__
+    self.start_session(capabilities)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 291, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 346, in execute
+    self.error_handler.check_response(response)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/errorhandler.py", line 245, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /opt/google/chrome/chrome is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x55a6e1db508e <unknown>
+#1 0x55a6e1ab031b <unknown>
+#2 0x55a6e1ae958f <unknown>
+#3 0x55a6e1ae2db8 <unknown>
+#4 0x55a6e1b31b56 <unknown>
+#5 0x55a6e1b31173 <unknown>
+#6 0x55a6e1b24003 <unknown>
+#7 0x55a6e1af0ded <unknown>
+#8 0x55a6e1af1b1e <unknown>
+#9 0x55a6e1d857be <unknown>
+#10 0x55a6e1d88bfd <unknown>
+#11 0x55a6e1d88698 <unknown>
+#12 0x55a6e1d890b5 <unknown>
+#13 0x55a6e1d760cb <unknown>
+#14 0x55a6e1d89467 <unknown>
+#15 0x55a6e1d60532 <unknown>
+#16 0x55a6e1da4555 <unknown>
+#17 0x55a6e1da4793 <unknown>
+#18 0x55a6e1db3e01 <unknown>
+#19 0x7fae96c89c02 start_thread
+
+
+Error processing URLs: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /opt/google/chrome/chrome is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x5601e411508e <unknown>
+#1 0x5601e3e1031b <unknown>
+#2 0x5601e3e4958f <unknown>
+#3 0x5601e3e42db8 <unknown>
+#4 0x5601e3e91b56 <unknown>
+#5 0x5601e3e91173 <unknown>
+#6 0x5601e3e84003 <unknown>
+#7 0x5601e3e50ded <unknown>
+#8 0x5601e3e51b1e <unknown>
+#9 0x5601e40e57be <unknown>
+#10 0x5601e40e8bfd <unknown>
+#11 0x5601e40e8698 <unknown>
+#12 0x5601e40e90b5 <unknown>
+#13 0x5601e40d60cb <unknown>
+#14 0x5601e40e9467 <unknown>
+#15 0x5601e40c0532 <unknown>
+#16 0x5601e4104555 <unknown>
+#17 0x5601e4104793 <unknown>
+#18 0x5601e4113e01 <unknown>
+#19 0x7f1dc2e89c02 start_thread
+
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 280, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 53, in process_urls_from_cli
+    driver = webdriver.Chrome(service=service)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chrome/webdriver.py", line 49, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chromium/webdriver.py", line 54, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 206, in __init__
+    self.start_session(capabilities)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 291, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 346, in execute
+    self.error_handler.check_response(response)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/errorhandler.py", line 245, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /opt/google/chrome/chrome is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x5601e411508e <unknown>
+#1 0x5601e3e1031b <unknown>
+#2 0x5601e3e4958f <unknown>
+#3 0x5601e3e42db8 <unknown>
+#4 0x5601e3e91b56 <unknown>
+#5 0x5601e3e91173 <unknown>
+#6 0x5601e3e84003 <unknown>
+#7 0x5601e3e50ded <unknown>
+#8 0x5601e3e51b1e <unknown>
+#9 0x5601e40e57be <unknown>
+#10 0x5601e40e8bfd <unknown>
+#11 0x5601e40e8698 <unknown>
+#12 0x5601e40e90b5 <unknown>
+#13 0x5601e40d60cb <unknown>
+#14 0x5601e40e9467 <unknown>
+#15 0x5601e40c0532 <unknown>
+#16 0x5601e4104555 <unknown>
+#17 0x5601e4104793 <unknown>
+#18 0x5601e4113e01 <unknown>
+#19 0x7f1dc2e89c02 start_thread
+
+
+Error processing URLs: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /opt/google/chrome/chrome is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x5600548d708e <unknown>
+#1 0x5600545d231b <unknown>
+#2 0x56005460b58f <unknown>
+#3 0x560054604db8 <unknown>
+#4 0x560054653b56 <unknown>
+#5 0x560054653173 <unknown>
+#6 0x560054646003 <unknown>
+#7 0x560054612ded <unknown>
+#8 0x560054613b1e <unknown>
+#9 0x5600548a77be <unknown>
+#10 0x5600548aabfd <unknown>
+#11 0x5600548aa698 <unknown>
+#12 0x5600548ab0b5 <unknown>
+#13 0x5600548980cb <unknown>
+#14 0x5600548ab467 <unknown>
+#15 0x560054882532 <unknown>
+#16 0x5600548c6555 <unknown>
+#17 0x5600548c6793 <unknown>
+#18 0x5600548d5e01 <unknown>
+#19 0x7fc134889c02 start_thread
+
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 280, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 53, in process_urls_from_cli
+    driver = webdriver.Chrome(service=service)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chrome/webdriver.py", line 49, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chromium/webdriver.py", line 54, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 206, in __init__
+    self.start_session(capabilities)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 291, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 346, in execute
+    self.error_handler.check_response(response)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/errorhandler.py", line 245, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /opt/google/chrome/chrome is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x5600548d708e <unknown>
+#1 0x5600545d231b <unknown>
+#2 0x56005460b58f <unknown>
+#3 0x560054604db8 <unknown>
+#4 0x560054653b56 <unknown>
+#5 0x560054653173 <unknown>
+#6 0x560054646003 <unknown>
+#7 0x560054612ded <unknown>
+#8 0x560054613b1e <unknown>
+#9 0x5600548a77be <unknown>
+#10 0x5600548aabfd <unknown>
+#11 0x5600548aa698 <unknown>
+#12 0x5600548ab0b5 <unknown>
+#13 0x5600548980cb <unknown>
+#14 0x5600548ab467 <unknown>
+#15 0x560054882532 <unknown>
+#16 0x5600548c6555 <unknown>
+#17 0x5600548c6793 <unknown>
+#18 0x5600548d5e01 <unknown>
+#19 0x7fc134889c02 start_thread
+
+
+Error processing URLs: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /opt/google/chrome/chrome is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x55567fb8a08e <unknown>
+#1 0x55567f88531b <unknown>
+#2 0x55567f8be58f <unknown>
+#3 0x55567f8b7db8 <unknown>
+#4 0x55567f906b56 <unknown>
+#5 0x55567f906173 <unknown>
+#6 0x55567f8f9003 <unknown>
+#7 0x55567f8c5ded <unknown>
+#8 0x55567f8c6b1e <unknown>
+#9 0x55567fb5a7be <unknown>
+#10 0x55567fb5dbfd <unknown>
+#11 0x55567fb5d698 <unknown>
+#12 0x55567fb5e0b5 <unknown>
+#13 0x55567fb4b0cb <unknown>
+#14 0x55567fb5e467 <unknown>
+#15 0x55567fb35532 <unknown>
+#16 0x55567fb79555 <unknown>
+#17 0x55567fb79793 <unknown>
+#18 0x55567fb88e01 <unknown>
+#19 0x7f0255689c02 start_thread
+
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 280, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 53, in process_urls_from_cli
+    driver = webdriver.Chrome(service=service)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chrome/webdriver.py", line 49, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chromium/webdriver.py", line 54, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 206, in __init__
+    self.start_session(capabilities)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 291, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 346, in execute
+    self.error_handler.check_response(response)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/errorhandler.py", line 245, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /opt/google/chrome/chrome is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x55567fb8a08e <unknown>
+#1 0x55567f88531b <unknown>
+#2 0x55567f8be58f <unknown>
+#3 0x55567f8b7db8 <unknown>
+#4 0x55567f906b56 <unknown>
+#5 0x55567f906173 <unknown>
+#6 0x55567f8f9003 <unknown>
+#7 0x55567f8c5ded <unknown>
+#8 0x55567f8c6b1e <unknown>
+#9 0x55567fb5a7be <unknown>
+#10 0x55567fb5dbfd <unknown>
+#11 0x55567fb5d698 <unknown>
+#12 0x55567fb5e0b5 <unknown>
+#13 0x55567fb4b0cb <unknown>
+#14 0x55567fb5e467 <unknown>
+#15 0x55567fb35532 <unknown>
+#16 0x55567fb79555 <unknown>
+#17 0x55567fb79793 <unknown>
+#18 0x55567fb88e01 <unknown>
+#19 0x7f0255689c02 start_thread
+
+
+Error processing URLs: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /opt/google/chrome/chrome is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x55c71ee3b08e <unknown>
+#1 0x55c71eb3631b <unknown>
+#2 0x55c71eb6f58f <unknown>
+#3 0x55c71eb68db8 <unknown>
+#4 0x55c71ebb7b56 <unknown>
+#5 0x55c71ebb7173 <unknown>
+#6 0x55c71ebaa003 <unknown>
+#7 0x55c71eb76ded <unknown>
+#8 0x55c71eb77b1e <unknown>
+#9 0x55c71ee0b7be <unknown>
+#10 0x55c71ee0ebfd <unknown>
+#11 0x55c71ee0e698 <unknown>
+#12 0x55c71ee0f0b5 <unknown>
+#13 0x55c71edfc0cb <unknown>
+#14 0x55c71ee0f467 <unknown>
+#15 0x55c71ede6532 <unknown>
+#16 0x55c71ee2a555 <unknown>
+#17 0x55c71ee2a793 <unknown>
+#18 0x55c71ee39e01 <unknown>
+#19 0x7f2819489c02 start_thread
+
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 280, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 53, in process_urls_from_cli
+    driver = webdriver.Chrome(service=service)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chrome/webdriver.py", line 49, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chromium/webdriver.py", line 54, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 206, in __init__
+    self.start_session(capabilities)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 291, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 346, in execute
+    self.error_handler.check_response(response)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/errorhandler.py", line 245, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /opt/google/chrome/chrome is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x55c71ee3b08e <unknown>
+#1 0x55c71eb3631b <unknown>
+#2 0x55c71eb6f58f <unknown>
+#3 0x55c71eb68db8 <unknown>
+#4 0x55c71ebb7b56 <unknown>
+#5 0x55c71ebb7173 <unknown>
+#6 0x55c71ebaa003 <unknown>
+#7 0x55c71eb76ded <unknown>
+#8 0x55c71eb77b1e <unknown>
+#9 0x55c71ee0b7be <unknown>
+#10 0x55c71ee0ebfd <unknown>
+#11 0x55c71ee0e698 <unknown>
+#12 0x55c71ee0f0b5 <unknown>
+#13 0x55c71edfc0cb <unknown>
+#14 0x55c71ee0f467 <unknown>
+#15 0x55c71ede6532 <unknown>
+#16 0x55c71ee2a555 <unknown>
+#17 0x55c71ee2a793 <unknown>
+#18 0x55c71ee39e01 <unknown>
+#19 0x7f2819489c02 start_thread
+
+
+Error processing URLs: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /opt/google/chrome/chrome is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x5641d0dd108e <unknown>
+#1 0x5641d0acc31b <unknown>
+#2 0x5641d0b0558f <unknown>
+#3 0x5641d0afedb8 <unknown>
+#4 0x5641d0b4db56 <unknown>
+#5 0x5641d0b4d173 <unknown>
+#6 0x5641d0b40003 <unknown>
+#7 0x5641d0b0cded <unknown>
+#8 0x5641d0b0db1e <unknown>
+#9 0x5641d0da17be <unknown>
+#10 0x5641d0da4bfd <unknown>
+#11 0x5641d0da4698 <unknown>
+#12 0x5641d0da50b5 <unknown>
+#13 0x5641d0d920cb <unknown>
+#14 0x5641d0da5467 <unknown>
+#15 0x5641d0d7c532 <unknown>
+#16 0x5641d0dc0555 <unknown>
+#17 0x5641d0dc0793 <unknown>
+#18 0x5641d0dcfe01 <unknown>
+#19 0x7f3f36a89c02 start_thread
+
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 280, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 53, in process_urls_from_cli
+    driver = webdriver.Chrome(service=service)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chrome/webdriver.py", line 49, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chromium/webdriver.py", line 54, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 206, in __init__
+    self.start_session(capabilities)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 291, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 346, in execute
+    self.error_handler.check_response(response)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/errorhandler.py", line 245, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /opt/google/chrome/chrome is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x5641d0dd108e <unknown>
+#1 0x5641d0acc31b <unknown>
+#2 0x5641d0b0558f <unknown>
+#3 0x5641d0afedb8 <unknown>
+#4 0x5641d0b4db56 <unknown>
+#5 0x5641d0b4d173 <unknown>
+#6 0x5641d0b40003 <unknown>
+#7 0x5641d0b0cded <unknown>
+#8 0x5641d0b0db1e <unknown>
+#9 0x5641d0da17be <unknown>
+#10 0x5641d0da4bfd <unknown>
+#11 0x5641d0da4698 <unknown>
+#12 0x5641d0da50b5 <unknown>
+#13 0x5641d0d920cb <unknown>
+#14 0x5641d0da5467 <unknown>
+#15 0x5641d0d7c532 <unknown>
+#16 0x5641d0dc0555 <unknown>
+#17 0x5641d0dc0793 <unknown>
+#18 0x5641d0dcfe01 <unknown>
+#19 0x7f3f36a89c02 start_thread
+
+
+Error processing URLs: Message: Unable to obtain /usr/lib64/chromium/chromedriver using Selenium Manager; Message: Unsuccessful command executed: /home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/common/linux/selenium-manager --browser chrome --output json.
+The chromedriver version cannot be discovered
+; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors/driver_location
+
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 54, in process_urls_from_cli
+    driver = webdriver.Chrome(service=service)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chrome/webdriver.py", line 49, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chromium/webdriver.py", line 54, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 206, in __init__
+    self.start_session(capabilities)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 291, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 346, in execute
+    self.error_handler.check_response(response)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/errorhandler.py", line 245, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /opt/google/chrome/chrome is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x559b96f2e08e <unknown>
+#1 0x559b96c2931b <unknown>
+#2 0x559b96c6258f <unknown>
+#3 0x559b96c5bdb8 <unknown>
+#4 0x559b96caab56 <unknown>
+#5 0x559b96caa173 <unknown>
+#6 0x559b96c9d003 <unknown>
+#7 0x559b96c69ded <unknown>
+#8 0x559b96c6ab1e <unknown>
+#9 0x559b96efe7be <unknown>
+#10 0x559b96f01bfd <unknown>
+#11 0x559b96f01698 <unknown>
+#12 0x559b96f020b5 <unknown>
+#13 0x559b96eef0cb <unknown>
+#14 0x559b96f02467 <unknown>
+#15 0x559b96ed9532 <unknown>
+#16 0x559b96f1d555 <unknown>
+#17 0x559b96f1d793 <unknown>
+#18 0x559b96f2ce01 <unknown>
+#19 0x7fe7dea89c02 start_thread
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/common/driver_finder.py", line 42, in get_path
+    path = SeleniumManager().driver_location(options) if path is None else path
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/common/selenium_manager.py", line 96, in driver_location
+    result = self.run(args)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/common/selenium_manager.py", line 121, in run
+    raise WebDriverException(f"Unsuccessful command executed: {command}.\n{result}{stderr}")
+selenium.common.exceptions.WebDriverException: Message: Unsuccessful command executed: /home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/common/linux/selenium-manager --browser chrome --output json.
+The chromedriver version cannot be discovered
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 283, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 56, in process_urls_from_cli
+    driver = webdriver.Chrome(service=Service('/usr/lib64/chromium/chromedriver'))
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chrome/webdriver.py", line 47, in __init__
+    self.service.path = DriverFinder.get_path(self.service, self.options)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/common/driver_finder.py", line 44, in get_path
+    raise NoSuchDriverException(f"Unable to obtain {service.path} using Selenium Manager; {err}")
+selenium.common.exceptions.NoSuchDriverException: Message: Unable to obtain /usr/lib64/chromium/chromedriver using Selenium Manager; Message: Unsuccessful command executed: /home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/common/linux/selenium-manager --browser chrome --output json.
+The chromedriver version cannot be discovered
+; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors/driver_location
+
+
+Error processing URLs: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /usr/bin/chromedriver is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x56311280608e <unknown>
+#1 0x56311250131b <unknown>
+#2 0x56311253a58f <unknown>
+#3 0x563112533db8 <unknown>
+#4 0x563112582b56 <unknown>
+#5 0x563112582173 <unknown>
+#6 0x563112575003 <unknown>
+#7 0x563112541ded <unknown>
+#8 0x563112542b1e <unknown>
+#9 0x5631127d67be <unknown>
+#10 0x5631127d9bfd <unknown>
+#11 0x5631127d9698 <unknown>
+#12 0x5631127da0b5 <unknown>
+#13 0x5631127c70cb <unknown>
+#14 0x5631127da467 <unknown>
+#15 0x5631127b1532 <unknown>
+#16 0x5631127f5555 <unknown>
+#17 0x5631127f5793 <unknown>
+#18 0x563112804e01 <unknown>
+#19 0x7f46ccc89c02 start_thread
+
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 283, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 55, in process_urls_from_cli
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chrome/webdriver.py", line 49, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chromium/webdriver.py", line 54, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 206, in __init__
+    self.start_session(capabilities)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 291, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 346, in execute
+    self.error_handler.check_response(response)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/errorhandler.py", line 245, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /usr/bin/chromedriver is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x56311280608e <unknown>
+#1 0x56311250131b <unknown>
+#2 0x56311253a58f <unknown>
+#3 0x563112533db8 <unknown>
+#4 0x563112582b56 <unknown>
+#5 0x563112582173 <unknown>
+#6 0x563112575003 <unknown>
+#7 0x563112541ded <unknown>
+#8 0x563112542b1e <unknown>
+#9 0x5631127d67be <unknown>
+#10 0x5631127d9bfd <unknown>
+#11 0x5631127d9698 <unknown>
+#12 0x5631127da0b5 <unknown>
+#13 0x5631127c70cb <unknown>
+#14 0x5631127da467 <unknown>
+#15 0x5631127b1532 <unknown>
+#16 0x5631127f5555 <unknown>
+#17 0x5631127f5793 <unknown>
+#18 0x563112804e01 <unknown>
+#19 0x7f46ccc89c02 start_thread
+
+
+Error processing URLs: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /usr/bin/chromedriver is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x563a0fd3d08e <unknown>
+#1 0x563a0fa3831b <unknown>
+#2 0x563a0fa7158f <unknown>
+#3 0x563a0fa6adb8 <unknown>
+#4 0x563a0fab9b56 <unknown>
+#5 0x563a0fab9173 <unknown>
+#6 0x563a0faac003 <unknown>
+#7 0x563a0fa78ded <unknown>
+#8 0x563a0fa79b1e <unknown>
+#9 0x563a0fd0d7be <unknown>
+#10 0x563a0fd10bfd <unknown>
+#11 0x563a0fd10698 <unknown>
+#12 0x563a0fd110b5 <unknown>
+#13 0x563a0fcfe0cb <unknown>
+#14 0x563a0fd11467 <unknown>
+#15 0x563a0fce8532 <unknown>
+#16 0x563a0fd2c555 <unknown>
+#17 0x563a0fd2c793 <unknown>
+#18 0x563a0fd3be01 <unknown>
+#19 0x7fb220089c02 start_thread
+
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 284, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 56, in process_urls_from_cli
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chrome/webdriver.py", line 49, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chromium/webdriver.py", line 54, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 206, in __init__
+    self.start_session(capabilities)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 291, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 346, in execute
+    self.error_handler.check_response(response)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/errorhandler.py", line 245, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /usr/bin/chromedriver is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x563a0fd3d08e <unknown>
+#1 0x563a0fa3831b <unknown>
+#2 0x563a0fa7158f <unknown>
+#3 0x563a0fa6adb8 <unknown>
+#4 0x563a0fab9b56 <unknown>
+#5 0x563a0fab9173 <unknown>
+#6 0x563a0faac003 <unknown>
+#7 0x563a0fa78ded <unknown>
+#8 0x563a0fa79b1e <unknown>
+#9 0x563a0fd0d7be <unknown>
+#10 0x563a0fd10bfd <unknown>
+#11 0x563a0fd10698 <unknown>
+#12 0x563a0fd110b5 <unknown>
+#13 0x563a0fcfe0cb <unknown>
+#14 0x563a0fd11467 <unknown>
+#15 0x563a0fce8532 <unknown>
+#16 0x563a0fd2c555 <unknown>
+#17 0x563a0fd2c793 <unknown>
+#18 0x563a0fd3be01 <unknown>
+#19 0x7fb220089c02 start_thread
+
+
+Error processing URLs: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /usr/bin/chromedriver is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x558cb2dc10ce <unknown>
+#1 0x558cb2abc31b <unknown>
+#2 0x558cb2af558f <unknown>
+#3 0x558cb2aeedb8 <unknown>
+#4 0x558cb2b3db56 <unknown>
+#5 0x558cb2b3d173 <unknown>
+#6 0x558cb2b30003 <unknown>
+#7 0x558cb2afcded <unknown>
+#8 0x558cb2afdb1e <unknown>
+#9 0x558cb2d917fe <unknown>
+#10 0x558cb2d94c3d <unknown>
+#11 0x558cb2d946d8 <unknown>
+#12 0x558cb2d950f5 <unknown>
+#13 0x558cb2d8210b <unknown>
+#14 0x558cb2d954a7 <unknown>
+#15 0x558cb2d6c572 <unknown>
+#16 0x558cb2db0595 <unknown>
+#17 0x558cb2db07d3 <unknown>
+#18 0x558cb2dbfe41 <unknown>
+#19 0x7f25d8889c02 start_thread
+
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 284, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 56, in process_urls_from_cli
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chrome/webdriver.py", line 49, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chromium/webdriver.py", line 54, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 206, in __init__
+    self.start_session(capabilities)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 291, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 346, in execute
+    self.error_handler.check_response(response)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/errorhandler.py", line 245, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /usr/bin/chromedriver is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x558cb2dc10ce <unknown>
+#1 0x558cb2abc31b <unknown>
+#2 0x558cb2af558f <unknown>
+#3 0x558cb2aeedb8 <unknown>
+#4 0x558cb2b3db56 <unknown>
+#5 0x558cb2b3d173 <unknown>
+#6 0x558cb2b30003 <unknown>
+#7 0x558cb2afcded <unknown>
+#8 0x558cb2afdb1e <unknown>
+#9 0x558cb2d917fe <unknown>
+#10 0x558cb2d94c3d <unknown>
+#11 0x558cb2d946d8 <unknown>
+#12 0x558cb2d950f5 <unknown>
+#13 0x558cb2d8210b <unknown>
+#14 0x558cb2d954a7 <unknown>
+#15 0x558cb2d6c572 <unknown>
+#16 0x558cb2db0595 <unknown>
+#17 0x558cb2db07d3 <unknown>
+#18 0x558cb2dbfe41 <unknown>
+#19 0x7f25d8889c02 start_thread
+
+
+Error processing URLs: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /usr/bin/chromedriver is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x55a003a180ce <unknown>
+#1 0x55a00371331b <unknown>
+#2 0x55a00374c58f <unknown>
+#3 0x55a003745db8 <unknown>
+#4 0x55a003794b56 <unknown>
+#5 0x55a003794173 <unknown>
+#6 0x55a003787003 <unknown>
+#7 0x55a003753ded <unknown>
+#8 0x55a003754b1e <unknown>
+#9 0x55a0039e87fe <unknown>
+#10 0x55a0039ebc3d <unknown>
+#11 0x55a0039eb6d8 <unknown>
+#12 0x55a0039ec0f5 <unknown>
+#13 0x55a0039d910b <unknown>
+#14 0x55a0039ec4a7 <unknown>
+#15 0x55a0039c3572 <unknown>
+#16 0x55a003a07595 <unknown>
+#17 0x55a003a077d3 <unknown>
+#18 0x55a003a16e41 <unknown>
+#19 0x7f3164089c02 start_thread
+
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 284, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 56, in process_urls_from_cli
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chrome/webdriver.py", line 49, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chromium/webdriver.py", line 54, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 206, in __init__
+    self.start_session(capabilities)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 291, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 346, in execute
+    self.error_handler.check_response(response)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/errorhandler.py", line 245, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /usr/bin/chromedriver is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x55a003a180ce <unknown>
+#1 0x55a00371331b <unknown>
+#2 0x55a00374c58f <unknown>
+#3 0x55a003745db8 <unknown>
+#4 0x55a003794b56 <unknown>
+#5 0x55a003794173 <unknown>
+#6 0x55a003787003 <unknown>
+#7 0x55a003753ded <unknown>
+#8 0x55a003754b1e <unknown>
+#9 0x55a0039e87fe <unknown>
+#10 0x55a0039ebc3d <unknown>
+#11 0x55a0039eb6d8 <unknown>
+#12 0x55a0039ec0f5 <unknown>
+#13 0x55a0039d910b <unknown>
+#14 0x55a0039ec4a7 <unknown>
+#15 0x55a0039c3572 <unknown>
+#16 0x55a003a07595 <unknown>
+#17 0x55a003a077d3 <unknown>
+#18 0x55a003a16e41 <unknown>
+#19 0x7f3164089c02 start_thread
+
+
+Error processing URLs: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /usr/bin/chromedriver is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x563592fc80ce <unknown>
+#1 0x563592cc331b <unknown>
+#2 0x563592cfc58f <unknown>
+#3 0x563592cf5db8 <unknown>
+#4 0x563592d44b56 <unknown>
+#5 0x563592d44173 <unknown>
+#6 0x563592d37003 <unknown>
+#7 0x563592d03ded <unknown>
+#8 0x563592d04b1e <unknown>
+#9 0x563592f987fe <unknown>
+#10 0x563592f9bc3d <unknown>
+#11 0x563592f9b6d8 <unknown>
+#12 0x563592f9c0f5 <unknown>
+#13 0x563592f8910b <unknown>
+#14 0x563592f9c4a7 <unknown>
+#15 0x563592f73572 <unknown>
+#16 0x563592fb7595 <unknown>
+#17 0x563592fb77d3 <unknown>
+#18 0x563592fc6e41 <unknown>
+#19 0x7f9b35089c02 start_thread
+
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 284, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 56, in process_urls_from_cli
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chrome/webdriver.py", line 49, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chromium/webdriver.py", line 54, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 206, in __init__
+    self.start_session(capabilities)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 291, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 346, in execute
+    self.error_handler.check_response(response)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/errorhandler.py", line 245, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /usr/bin/chromedriver is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x563592fc80ce <unknown>
+#1 0x563592cc331b <unknown>
+#2 0x563592cfc58f <unknown>
+#3 0x563592cf5db8 <unknown>
+#4 0x563592d44b56 <unknown>
+#5 0x563592d44173 <unknown>
+#6 0x563592d37003 <unknown>
+#7 0x563592d03ded <unknown>
+#8 0x563592d04b1e <unknown>
+#9 0x563592f987fe <unknown>
+#10 0x563592f9bc3d <unknown>
+#11 0x563592f9b6d8 <unknown>
+#12 0x563592f9c0f5 <unknown>
+#13 0x563592f8910b <unknown>
+#14 0x563592f9c4a7 <unknown>
+#15 0x563592f73572 <unknown>
+#16 0x563592fb7595 <unknown>
+#17 0x563592fb77d3 <unknown>
+#18 0x563592fc6e41 <unknown>
+#19 0x7f9b35089c02 start_thread
+
+
+Error processing URLs: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /usr/bin/chromedriver is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x55bae9a450ce <unknown>
+#1 0x55bae974031b <unknown>
+#2 0x55bae977958f <unknown>
+#3 0x55bae9772db8 <unknown>
+#4 0x55bae97c1b56 <unknown>
+#5 0x55bae97c1173 <unknown>
+#6 0x55bae97b4003 <unknown>
+#7 0x55bae9780ded <unknown>
+#8 0x55bae9781b1e <unknown>
+#9 0x55bae9a157fe <unknown>
+#10 0x55bae9a18c3d <unknown>
+#11 0x55bae9a186d8 <unknown>
+#12 0x55bae9a190f5 <unknown>
+#13 0x55bae9a0610b <unknown>
+#14 0x55bae9a194a7 <unknown>
+#15 0x55bae99f0572 <unknown>
+#16 0x55bae9a34595 <unknown>
+#17 0x55bae9a347d3 <unknown>
+#18 0x55bae9a43e41 <unknown>
+#19 0x7fec5b889c02 start_thread
+
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 284, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 56, in process_urls_from_cli
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chrome/webdriver.py", line 49, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/chromium/webdriver.py", line 54, in __init__
+    super().__init__(
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 206, in __init__
+    self.start_session(capabilities)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 291, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/webdriver.py", line 346, in execute
+    self.error_handler.check_response(response)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/.venv/lib64/python3.9/site-packages/selenium/webdriver/remote/errorhandler.py", line 245, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created: Chrome failed to start: exited normally.
+  (session not created: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /usr/bin/chromedriver is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+Stacktrace:
+#0 0x55bae9a450ce <unknown>
+#1 0x55bae974031b <unknown>
+#2 0x55bae977958f <unknown>
+#3 0x55bae9772db8 <unknown>
+#4 0x55bae97c1b56 <unknown>
+#5 0x55bae97c1173 <unknown>
+#6 0x55bae97b4003 <unknown>
+#7 0x55bae9780ded <unknown>
+#8 0x55bae9781b1e <unknown>
+#9 0x55bae9a157fe <unknown>
+#10 0x55bae9a18c3d <unknown>
+#11 0x55bae9a186d8 <unknown>
+#12 0x55bae9a190f5 <unknown>
+#13 0x55bae9a0610b <unknown>
+#14 0x55bae9a194a7 <unknown>
+#15 0x55bae99f0572 <unknown>
+#16 0x55bae9a34595 <unknown>
+#17 0x55bae9a347d3 <unknown>
+#18 0x55bae9a43e41 <unknown>
+#19 0x7fec5b889c02 start_thread
+
+
+Error processing URLs: [Errno 2] No such file or directory: 'WEB.json'
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 346, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 274, in process_urls_from_cli
+    with open("WEB.json", "r") as file:
+FileNotFoundError: [Errno 2] No such file or directory: 'WEB.json'
+
+Error processing URLs: name 'attributes' is not defined
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 376, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 307, in process_urls_from_cli
+    create_html_from_json(json_data, "output_html_files")
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 290, in create_html_from_json
+    html_content = create_element(html_data)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 279, in create_element
+    style_str = "; ".join(f'{key}: {value}' for key, value in attributes.items())
+NameError: name 'attributes' is not defined
+
+Error processing URLs: 'float' object has no attribute 'replace'
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 483, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 414, in process_urls_from_cli
+    create_html_from_json(json_data, "output_html_files")
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 397, in create_html_from_json
+    html_content = create_element(html_data)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 381, in create_element
+    style_str = "; ".join(f'{key}: {escape_quotes(value)}' for key, value in styles.items())
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 381, in <genexpr>
+    style_str = "; ".join(f'{key}: {escape_quotes(value)}' for key, value in styles.items())
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 367, in escape_quotes
+    return value.replace('"', "'")
+AttributeError: 'float' object has no attribute 'replace'
+
+Error processing URLs: 'float' object has no attribute 'replace'
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 484, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 415, in process_urls_from_cli
+    create_html_from_json(json_data, "output_html_files")
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 398, in create_html_from_json
+    html_content = create_element(html_data)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 382, in create_element
+    style_str = "; ".join(f'{key}: {escape_quotes(value)}' for key, value in styles.items())
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 382, in <genexpr>
+    style_str = "; ".join(f'{key}: {escape_quotes(value)}' for key, value in styles.items())
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 368, in escape_quotes
+    return value.replace('"', "'")
+AttributeError: 'float' object has no attribute 'replace'
+
+Error processing URLs: Object of type Cluster is not JSON serializable
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 373, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 131, in process_urls_from_cli
+    return {"status": "success", "message": "Clusters created successfully", "data": json.dumps(clusters)}
+  File "/usr/lib64/python3.9/json/__init__.py", line 231, in dumps
+    return _default_encoder.encode(obj)
+  File "/usr/lib64/python3.9/json/encoder.py", line 199, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+  File "/usr/lib64/python3.9/json/encoder.py", line 257, in iterencode
+    return _iterencode(o, 0)
+  File "/usr/lib64/python3.9/json/encoder.py", line 179, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type Cluster is not JSON serializable
+
+Error processing URLs: 'list' object has no attribute '__dict__'
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 373, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 131, in process_urls_from_cli
+    return {"status": "success", "message": "Clusters created successfully", "data": json.dumps(clusters.__dict__)}
+AttributeError: 'list' object has no attribute '__dict__'
+
+Error processing URLs: stat: path should be string, bytes, os.PathLike or integer, not NoneType
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 370, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 176, in process_urls_from_cli
+    if os.path.exists(file_path):
+  File "/usr/lib64/python3.9/genericpath.py", line 19, in exists
+    os.stat(path)
+TypeError: stat: path should be string, bytes, os.PathLike or integer, not NoneType
+
+Error processing URLs: stat: path should be string, bytes, os.PathLike or integer, not NoneType
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 370, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 176, in process_urls_from_cli
+    if os.path.exists(file_path):
+  File "/usr/lib64/python3.9/genericpath.py", line 19, in exists
+    os.stat(path)
+TypeError: stat: path should be string, bytes, os.PathLike or integer, not NoneType
+
+Error processing URLs: [Errno 2] No such file or directory: '/home/pfavvatas/lib_url_to_img/backend/api/results/WEB.json'
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 370, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 353, in process_urls_from_cli
+    with open(output_file_path, "w") as file:
+FileNotFoundError: [Errno 2] No such file or directory: '/home/pfavvatas/lib_url_to_img/backend/api/results/WEB.json'
+
+Error processing URLs: local variable 'data_to_return' referenced before assignment
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 378, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 136, in process_urls_from_cli
+    data_to_return.append(cluster.print_results_one_line())
+UnboundLocalError: local variable 'data_to_return' referenced before assignment
+
+Error processing URLs: local variable 'data_to_return' referenced before assignment
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 378, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 136, in process_urls_from_cli
+    data_to_return.append(cluster.print_results_one_line())
+UnboundLocalError: local variable 'data_to_return' referenced before assignment
+
+Error processing URLs: local variable 'data_to_return' referenced before assignment
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 378, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 132, in process_urls_from_cli
+    data_to_return.append(cluster.print_results_one_line())
+UnboundLocalError: local variable 'data_to_return' referenced before assignment
+
+Error processing URLs: local variable 'data_to_return' referenced before assignment
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 378, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 132, in process_urls_from_cli
+    data_to_return.append(cluster.print_results_one_line())
+UnboundLocalError: local variable 'data_to_return' referenced before assignment
+
+Error processing URLs: local variable 'data_to_return' referenced before assignment
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 378, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 132, in process_urls_from_cli
+    data_to_return.append(cluster)
+UnboundLocalError: local variable 'data_to_return' referenced before assignment
+
+Error processing URLs: local variable 'data_to_return' referenced before assignment
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 378, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img/backend/api/../lib/lib.py", line 132, in process_urls_from_cli
+    data_to_return.append(f"Cluster(id={cluster.id}, color={cluster.color}, guids={len(cluster.guids)}, additional_info={cluster.additional_info})")
+UnboundLocalError: local variable 'data_to_return' referenced before assignment
+
+Error processing clusters: 'str' object has no attribute 'read'
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img (copy)/backend/api/../lib/lib.py", line 755, in process_clusters_from_api
+    result = process_clusters_from_cli(clusters_data, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img (copy)/backend/api/../lib/lib.py", line 426, in process_clusters_from_cli
+    data = json.load(clusters_data)
+  File "/usr/lib64/python3.9/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+AttributeError: 'str' object has no attribute 'read'
+
+Error processing clusters: 'str' object has no attribute 'read'
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img (copy)/backend/api/../lib/lib.py", line 755, in process_clusters_from_api
+    result = process_clusters_from_cli(clusters_data, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img (copy)/backend/api/../lib/lib.py", line 426, in process_clusters_from_cli
+    data = json.load(clusters_data)
+  File "/usr/lib64/python3.9/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+AttributeError: 'str' object has no attribute 'read'
+
+Error processing clusters: local variable 'data' referenced before assignment
+Traceback (most recent call last):
+  File "/home/pfavvatas/lib_url_to_img (copy)/backend/api/../lib/lib.py", line 759, in process_clusters_from_api
+    result = process_clusters_from_cli(clusters_data, from_api=True)
+  File "/home/pfavvatas/lib_url_to_img (copy)/backend/api/../lib/lib.py", line 430, in process_clusters_from_cli
+    data = json.loads(data)
+UnboundLocalError: local variable 'data' referenced before assignment
+

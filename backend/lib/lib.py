@@ -44,40 +44,41 @@ def find_chromedriver(port=9515):
         
 
 def process_urls_from_cli(urls, levels, from_api=False):
-    # config_path = os.path.join(os.path.dirname(__file__), 'config.json')
-    # config = Config(config_path)
+    config_path = os.path.join(os.path.dirname(__file__), 'config.json')
+    config = Config(config_path)
 
-    # debug_mode = getattr(config, 'debug', False)
-    # if debug_mode: print(config)
+    debug_mode = getattr(config, 'debug', False)
+    if debug_mode: print(config)
         
-    # service = find_chromedriver()
-    # if service:
-    #     chrome_options = webdriver.ChromeOptions()
-    #     chrome_options.add_argument("--headless")
-    #     # chrome_options.add_argument("--start-maximized")
-    #     #set resolution 1920x1080
-    #     chrome_options.add_argument("--window-size=1920,1080")
-    #     driver = webdriver.Chrome(service=service, options=chrome_options)
+    service = find_chromedriver()
+    if service:
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument("--headless")
+        # chrome_options.add_argument("--start-maximized")
+        #set resolution 1920x1080
+        chrome_options.add_argument("--window-size=1920,1080")
+        driver = webdriver.Chrome(service=service, options=chrome_options)
     
 
-    # dataCollector = DataCollector()
-    # dataCollector.collect_data(urls, levels, driver, config)
-    # dataCollector.save_data()
-    # # total_unique_attributes, attribute_values, computed_styles_file = dataCollector.computed_styles(level=1)
-    # for level in levels:
-    #     dataCollector.computed_styles(level=level)
+    dataCollector = DataCollector()
+    dataCollector.collect_data(urls, levels, driver, config)
+    dataCollector.save_data()
+    total_unique_attributes, attribute_values, computed_styles_file = dataCollector.computed_styles(level=1)
+    for level in levels:
+        dataCollector.computed_styles(level=level)
 
-    # image_data_collector = ImageDataCollector(dataCollector.url_data)
-    # image_data_collector.save_to_json()
+    image_data_collector = ImageDataCollector(dataCollector.url_data)
+    image_data_collector.save_to_json()
     
-    # driver.close()
+    driver.close()    
     
-    #########################################################################################################################
-    # Send the computed styles to the Thanasis script.
-    # The Thanasis script will return a list of cluster results in N dimensions.
-    # The cluster results will be saved in a file.
-    # I will read the file and set the cluster results in the dataCollector object.
-    # Define the Cluster class
+    if from_api:
+        return {"status": "success", "message": "URLs processed successfully", "file": computed_styles_file}
+    else:
+        return {"status": "success", "message": "URLs processed successfully"}
+
+
+def process_clusters_from_cli(clusters_data, from_api=False):
     class Cluster:
         def __init__(self, id, color, guids):
             self.id = id
@@ -101,9 +102,9 @@ def process_urls_from_cli(urls, levels, from_api=False):
                 return obj.__dict__
             return super().default(obj)
         
-    with open("/home/pfavvatas/lib_url_to_img/backend/api/cluster/clustered_ids_2.txt", "r") as f:
-        data = json.load(f)
-    
+    data = clusters_data
+    data = json.loads(data)
+        
     # List of 30 different colors
     colors = [
         "red", "blue", "green", "yellow", "purple", "orange", "pink", "brown", #"black", "white",
@@ -124,7 +125,7 @@ def process_urls_from_cli(urls, levels, from_api=False):
             color = generate_random_color()
         cluster = Cluster(id=f"cluster_{i}", color=color, guids=guids)
         clusters.append(cluster)
-
+        
     data_to_return = []
     # Print clusters to verify
     for cluster in clusters:
@@ -387,14 +388,7 @@ def process_urls_from_cli(urls, levels, from_api=False):
     print(f"Results written to: {output_file_path}")
     data_to_return.append(f"Results written to: {output_file_path}")
 
-    return {"status": "success", "message": "URLs processed successfully", "data": json.dumps(data_to_return)}
-    #########################################################################################################################
-    
-    
-    # if from_api:
-    #     return {"status": "success", "message": "URLs processed successfully", "file": computed_styles_file}
-    # else:
-    #     return {"status": "success", "message": "URLs processed successfully"}
+    return {"status": "success", "message": "Clustering completed successfully", "data": json.dumps(data_to_return)}
 
 def process_urls_from_api(urls, levels):
     try:
@@ -425,6 +419,28 @@ def process_urls_from_api(urls, levels):
         }
     except Exception as e:
         error_message = f"Error processing URLs: {str(e)}"
+        stack_trace = traceback.format_exc()
+        with open('error.log', 'a') as error_file:
+            error_file.write(f"{error_message}\n")
+            error_file.write(f"{stack_trace}\n")
+        return {
+            "status": "error", 
+            "message": str(e),
+            "stack_trace": stack_trace
+        }
+
+
+def process_clusters_from_api(clusters_data):
+    try:
+        result = process_clusters_from_cli(clusters_data, from_api=True)
+        
+        return {
+            "status": result.get("status"), 
+            "message": result.get("message"), 
+            "body": result.get("data", {})
+        }
+    except Exception as e:
+        error_message = f"Error processing clusters: {str(e)}"
         stack_trace = traceback.format_exc()
         with open('error.log', 'a') as error_file:
             error_file.write(f"{error_message}\n")

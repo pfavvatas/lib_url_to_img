@@ -7,7 +7,7 @@ import sys
 
 # Add the lib directory to the system path
 sys.path.append(os.path.join(os.path.dirname(__file__), '../lib'))
-from lib import process_urls_from_api
+from lib import process_urls_from_api, process_clusters_from_api
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all domains
@@ -52,6 +52,37 @@ def process_urls():
     urls = data.get('urls', [])
     levels = data.get('levels', [])
     results = process_urls_from_api(urls, levels)
+    return jsonify(results)
+  
+@app.route('/process-clusters', methods=['POST'])
+def process_clusters():
+    """
+    Process cluster data
+    ---
+    tags:
+      - Cluster Processing
+    parameters:
+      - name: clusters
+        in: body
+        required: true
+        schema:
+          type: object
+          properties:
+            clusters:
+              type: string
+              example: "cluster data here"
+    responses:
+      200:
+        description: Processed cluster results
+        schema:
+          type: object
+          additionalProperties:
+            type: string
+    """
+    data = request.json
+    clusters_data = data.get('clusters', '')
+    # Process the clusters data
+    results = process_clusters_from_api(clusters_data)
     return jsonify(results)
 
 def run_price_processes(urls):

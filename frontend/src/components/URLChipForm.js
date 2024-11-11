@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, TextField, Chip, FormControl, Button, useTheme, Snackbar, CircularProgress, Grid2 as Grid } from '@mui/material';
+import { Box, TextField, Chip, FormControl, Button, useTheme, Snackbar, CircularProgress, Grid2 as Grid, TextareaAutosize } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 
 const URLChipForm = () => {
@@ -9,8 +9,11 @@ const URLChipForm = () => {
     const [success, setSuccess] = useState(""); // State for success message
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState(null);
+    const [filePaths, setFilePaths] = useState(null);
     const [error, setError] = useState(null); // State for error message and stack trace
     const [selectedLevels, setSelectedLevels] = useState([]); // State for selected levels
+    const [currentView, setCurrentView] = useState('home'); // State for current view
+    const [clusterInput, setClusterInput] = useState(""); // State for cluster input
     const theme = useTheme();
 
     const handleInputChange = (e) => {
@@ -109,9 +112,44 @@ const URLChipForm = () => {
                 setError({ message: data.message, stack: data?.stack_trace });
             }
 
-            // setResult(data.body);
-            // const parsedData = JSON.parse(data.body);
-            // setResult(parsedData);
+        } catch (error) {
+            console.error("Error:", error);
+            setError({ message: error.message, stack: error.stack });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleClusterRun = async () => {
+        setLoading(true);
+        setError(null); // Clear previous error
+        try {
+            // Serialize the data
+            const serializedData = JSON.stringify({ clusters: clusterInput });
+
+            const response = await fetch("http://localhost:5000/process-clusters", {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: serializedData
+            });
+            const data = await response.json();
+
+            if (data.status === "success") {
+                setSuccess(data.message);
+                const parsedData = JSON.parse(data.body);
+                setResult(parsedData);
+                const filePaths = parsedData
+                    .filter(item => item.startsWith("File created:"))
+                    .map(item => item.replace("File created: ", ""))
+                    .map(filePath => filePath.split('/').pop()); // Extract the last part of each path
+                setFilePaths(filePaths);
+            } else if (data.status === "error") {
+                setError({ message: data.message, stack: data?.stack_trace });
+            }
+
         } catch (error) {
             console.error("Error:", error);
             setError({ message: error.message, stack: error.stack });
@@ -123,6 +161,7 @@ const URLChipForm = () => {
     const handleClear = () => {
         setUrls([]);
         setResult(null);
+        setFilePaths(null);
         setError(null); // Clear error when clearing
     };
 
@@ -144,6 +183,115 @@ const URLChipForm = () => {
         }
     }, [success]);
 
+    const renderContent = () => {
+        switch (currentView) {
+            case 'home':
+                return (
+                    <FormControl fullWidth>
+                        <Box sx={{ margin: '0 30%' }}>
+                            <TextField
+                                label="Paste your URLs"
+                                placeholder="Paste URLs and press Enter"
+                                value={inputValue}
+                                onChange={handleInputChange}
+                                onKeyDown={handleKeyDown}
+                                onPaste={handlePaste}
+                                fullWidth
+                                variant="outlined"
+                            />
+                        </Box>
+                        <Box sx={{ position: 'relative', margin: '0 30%', mt: theme.spacing(2), display: 'flex', justifyContent: 'center' }}>
+                            <Box sx={{ position: 'absolute', top: '-10px', left: '10px', backgroundColor: 'white', padding: '0 5px', fontWeight: 'bold' }}>Levels</Box>
+                            <Box sx={{ border: '1px solid', borderColor: 'grey.400', borderRadius: '8px', padding: theme.spacing(2), display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: theme.spacing(1), width: '-webkit-fill-available' }}>
+                                {Array.from({ length: 10 }, (_, i) => i + 1).map(level => (
+                                    <Chip
+                                        key={level}
+                                        label={level}
+                                        onClick={() => handleLevelSelect(level)}
+                                        color={selectedLevels.includes(level) ? 'primary' : 'default'}
+                                    />
+                                ))}
+                            </Box>
+                        </Box>
+                        <Box
+                            sx={{
+                                mt: theme.spacing(2),
+                                display: 'flex',
+                                flexWrap: 'wrap',
+                                gap: theme.spacing(1),
+                                maxHeight: '200px',
+                                overflowY: 'auto',
+                                justifyContent: 'center' // Center the URLs
+                            }}
+                        >
+                            {urls.map((url, index) => (
+                                <Chip
+                                    key={index}
+                                    label={url}
+                                    onDelete={() => handleDelete(url)}
+                                    color="primary"
+                                />
+                            ))}
+                        </Box>
+                        <Box
+                            sx={{
+                                mt: theme.spacing(2),
+                                display: 'flex',
+                                justifyContent: 'center',
+                                gap: theme.spacing(2)
+                            }}
+                        >
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={handleRun}
+                                sx={{ borderRadius: '20px' }}
+                                disabled={urls.length === 0}
+                            >
+                                Run
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="secondary"
+                                onClick={handleClear}
+                                sx={{ borderRadius: '20px' }}
+                                disabled={urls.length === 0}
+                            >
+                                Clear
+                            </Button>
+                        </Box>
+                    </FormControl>
+                );
+            case 'clusters':
+                return (
+                    <Box sx={{ width: '100%', maxWidth: '600px', margin: '0 auto' }}>
+                        <textarea
+                            rows={10}
+                            placeholder="Paste your cluster results here"
+                            style={{ width: '100%', padding: '10px', boxSizing: 'border-box', maxHeight: '300px', overflowY: 'scroll' }}
+                            value={clusterInput}
+                            onChange={(e) => setClusterInput(e.target.value)}
+                        />
+                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: theme.spacing(2) }}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={handleClusterRun}
+                                sx={{ borderRadius: '20px' }}
+                                disabled={clusterInput.trim() === ''}
+                            >
+                                Run
+                            </Button>
+                        </Box>
+                    </Box>
+                );
+            case 'view3':
+                return <div>View 3 Content</div>;
+            default:
+                return <div>Home</div>;
+        }
+    };
+
     return (
         <Grid
             container
@@ -158,80 +306,12 @@ const URLChipForm = () => {
                 boxSizing: 'border-box'
             }}
         >
-            <FormControl fullWidth>
-                <Box sx={{ margin: '0 30%' }}>
-                    <TextField
-                        label="Paste your URLs"
-                        placeholder="Paste URLs and press Enter"
-                        value={inputValue}
-                        onChange={handleInputChange}
-                        onKeyDown={handleKeyDown}
-                        onPaste={handlePaste}
-                        fullWidth
-                        variant="outlined"
-                    />
-                </Box>
-                <Box sx={{ position: 'relative', margin: '0 30%', mt: theme.spacing(2), display: 'flex', justifyContent: 'center' }}>
-                    <Box sx={{ position: 'absolute', top: '-10px', left: '10px', backgroundColor: 'white', padding: '0 5px', fontWeight: 'bold' }}>Levels</Box>
-                    <Box sx={{ border: '1px solid', borderColor: 'grey.400', borderRadius: '8px', padding: theme.spacing(2), display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: theme.spacing(1), width: '-webkit-fill-available' }}>
-                        {Array.from({ length: 10 }, (_, i) => i + 1).map(level => (
-                            <Chip
-                                key={level}
-                                label={level}
-                                onClick={() => handleLevelSelect(level)}
-                                color={selectedLevels.includes(level) ? 'primary' : 'default'}
-                            />
-                        ))}
-                    </Box>
-                </Box>
-                <Box
-                    sx={{
-                        mt: theme.spacing(2),
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        gap: theme.spacing(1),
-                        maxHeight: '200px',
-                        overflowY: 'auto',
-                        justifyContent: 'center' // Center the URLs
-                    }}
-                >
-                    {urls.map((url, index) => (
-                        <Chip
-                            key={index}
-                            label={url}
-                            onDelete={() => handleDelete(url)}
-                            color="primary"
-                        />
-                    ))}
-                </Box>
-                <Box
-                    sx={{
-                        mt: theme.spacing(2),
-                        display: 'flex',
-                        justifyContent: 'center',
-                        gap: theme.spacing(2)
-                    }}
-                >
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={handleRun}
-                        sx={{ borderRadius: '20px' }}
-                        disabled={urls.length === 0}
-                    >
-                        Run
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="secondary"
-                        onClick={handleClear}
-                        sx={{ borderRadius: '20px' }}
-                        disabled={urls.length === 0}
-                    >
-                        Clear
-                    </Button>
-                </Box>
-            </FormControl>
+            <Box sx={{ display: 'flex', justifyContent: 'center', gap: theme.spacing(2), mb: theme.spacing(2) }}>
+                <Button variant="contained" onClick={() => setCurrentView('home')}>Home</Button>
+                <Button variant="contained" onClick={() => setCurrentView('clusters')}>Clusters</Button>
+                <Button variant="contained" onClick={() => setCurrentView('view3')}>View 3</Button>
+            </Box>
+            {renderContent()}
             {loading && (
                 <Grid
                     item
@@ -265,6 +345,17 @@ const URLChipForm = () => {
                         overflowX: 'auto'
                     }}
                 >
+                    {filePaths && filePaths.map((file, index) => (
+                        <Box key={index} sx={{ mt: theme.spacing(2) }}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={() => window.open(`http://localhost:5005/output_html_files/${file}`, '_blank')}
+                            >
+                                Open {file}
+                            </Button>
+                        </Box>
+                    ))}
                     <pre>{JSON.stringify(result, null, 2)}</pre>
                 </Grid>
             )}
