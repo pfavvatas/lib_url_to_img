@@ -43,7 +43,8 @@ const URLChipForm = () => {
     };
 
     const addUrls = (input) => {
-        const newUrls = input.split(/\s+/).filter(url => url.trim().length > 0);
+        // const newUrls = input.split(/\s+/).filter(url => url.trim().length > 0);
+				const newUrls = input.match(/"[^"]+"|\S+/g).map(url => url.replace(/(^"|"$)/g, ''));
         const validUrls = newUrls.filter(url => isValidUrl(url));
         const invalidUrls = newUrls.filter(url => !isValidUrl(url));
 
@@ -70,6 +71,11 @@ const URLChipForm = () => {
     };
 
     const handleRun = async () => {
+        if (selectedLevels.length === 0) {
+            setWarning("You must select at least one level.");
+            return;
+        }
+
         setLoading(true);
         setError(null); // Clear previous error
         try {
@@ -105,7 +111,10 @@ const URLChipForm = () => {
                     });
                 }
 
-                const parsedData = JSON.parse(data.body);
+                const parsedData = data.body && Object.keys(data.body).length > 0 ? JSON.parse(data.body) : null;
+                if (parsedData) {
+                    setResult(parsedData);
+                }
                 setResult(parsedData);
             } else if (data.status === "error") {
                 // Set error state

@@ -54,9 +54,11 @@ def process_urls_from_cli(urls, levels, from_api=False):
     if service:
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_argument("--headless")
-        # chrome_options.add_argument("--start-maximized")
-        #set resolution 1920x1080
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--window-size=1920,1080")
+        chrome_options.binary_location = "/opt/google/chrome/chrome"  # Specify the correct path to your Chrome binary
         driver = webdriver.Chrome(service=service, options=chrome_options)
     
 

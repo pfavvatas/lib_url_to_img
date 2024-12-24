@@ -58,7 +58,7 @@ class DataCollector:
         if 'attributes' in data:
             # Extend the list with the keys of the 'attributes' dictionary and the associated unique_id
             for attribute, value in data['attributes'].items():
-                all_attributes.append((attribute, data['unique_id'], value))
+                all_attributes.append((attribute, data['unique_id'], value, data['text_size']))
 
         # Check if 'children' is in the dictionary
         if 'children' in data:
@@ -102,7 +102,7 @@ class DataCollector:
             all_attributes.extend(self.find_attributes(self.url_data[guid]['html_data']))
 
         # Convert the list to a pandas DataFrame to use nunique() and unique()
-        attributes_df = pd.DataFrame(all_attributes, columns=['attribute', 'unique_id', 'value'])
+        attributes_df = pd.DataFrame(all_attributes, columns=['attribute', 'unique_id', 'value', 'text_size'])
 
         # Convert dictionaries in 'value' column to strings
         attributes_df['value'] = attributes_df['value'].apply(json.dumps)
@@ -133,6 +133,7 @@ class DataCollector:
         for attribute in distinct_values:
             attribute_df = attributes_df[attributes_df['attribute'] == attribute]
             value_list = []
+            text_size_value_list = []
             for value in attribute_df['value'].unique():
                 value_str = value
                 unique_ids = attribute_df[attribute_df['value'] == value]['unique_id'].tolist()
@@ -140,7 +141,14 @@ class DataCollector:
                 filtered_ids = [id for id in unique_ids if str(id) in combinations]
                 value_list.append([value, filtered_ids])
                 # value_list.append([value, unique_ids])
-            attribute_values.append([attribute, value_list])
+            for value in attribute_df['text_size'].unique():
+                    value_str = str(value)  # Convert value to string
+                    unique_ids = attribute_df[attribute_df['text_size'] == value]['unique_id'].tolist()
+                    # Filter the unique_ids by the combinations
+                    filtered_ids = [id for id in unique_ids if str(id) in combinations]
+                    if filtered_ids:  # Append only if filtered_ids is not empty
+                        text_size_value_list.append([value_str, filtered_ids])
+            attribute_values.append([attribute, value_list, "text-size", text_size_value_list])
                 
         # Define the directory path
         dir_path = f"results/computed_styles_level_{level}"
