@@ -2118,3 +2118,909 @@ Traceback (most recent call last):
     data = json.loads(data)
 UnboundLocalError: local variable 'data' referenced before assignment
 
+Error processing URLs: cannot access local variable 'driver' where it is not associated with a value
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 397, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 66, in process_urls_from_cli
+    dataCollector.collect_data(urls, levels, driver, config)
+                                             ^^^^^^
+UnboundLocalError: cannot access local variable 'driver' where it is not associated with a value
+
+Error processing URLs: Message: session not created
+from unknown error: no chrome binary at /opt/google/chrome/chrome
+Stacktrace:
+#0 0x561eb5ce379a <unknown>
+#1 0x561eb57a6540 <unknown>
+#2 0x561eb57dd3c2 <unknown>
+#3 0x561eb57db7c8 <unknown>
+#4 0x561eb582ad09 <unknown>
+#5 0x561eb582a2a6 <unknown>
+#6 0x561eb581c3b3 <unknown>
+#7 0x561eb57e914a <unknown>
+#8 0x561eb57e9da1 <unknown>
+#9 0x561eb5cab8bf <unknown>
+#10 0x561eb5caf972 <unknown>
+#11 0x561eb5c929b2 <unknown>
+#12 0x561eb5cb011e <unknown>
+#13 0x561eb5c79aee <unknown>
+#14 0x561eb5cd2998 <unknown>
+#15 0x561eb5cd2ba4 <unknown>
+#16 0x561eb5ce23dc <unknown>
+#17 0x7f6d5a67aac3 <unknown>
+
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 397, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 62, in process_urls_from_cli
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/chrome/webdriver.py", line 49, in __init__
+    super().__init__(
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/chromium/webdriver.py", line 54, in __init__
+    super().__init__(
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 206, in __init__
+    self.start_session(capabilities)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 291, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 346, in execute
+    self.error_handler.check_response(response)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/errorhandler.py", line 245, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created
+from unknown error: no chrome binary at /opt/google/chrome/chrome
+Stacktrace:
+#0 0x561eb5ce379a <unknown>
+#1 0x561eb57a6540 <unknown>
+#2 0x561eb57dd3c2 <unknown>
+#3 0x561eb57db7c8 <unknown>
+#4 0x561eb582ad09 <unknown>
+#5 0x561eb582a2a6 <unknown>
+#6 0x561eb581c3b3 <unknown>
+#7 0x561eb57e914a <unknown>
+#8 0x561eb57e9da1 <unknown>
+#9 0x561eb5cab8bf <unknown>
+#10 0x561eb5caf972 <unknown>
+#11 0x561eb5c929b2 <unknown>
+#12 0x561eb5cb011e <unknown>
+#13 0x561eb5c79aee <unknown>
+#14 0x561eb5cd2998 <unknown>
+#15 0x561eb5cd2ba4 <unknown>
+#16 0x561eb5ce23dc <unknown>
+#17 0x7f6d5a67aac3 <unknown>
+
+
+Error processing URLs: Message: session not created
+from unknown error: no chrome binary at /usr/bin/google-chrome
+Stacktrace:
+#0 0x55b4f85b179a <unknown>
+#1 0x55b4f8074540 <unknown>
+#2 0x55b4f80ab3c2 <unknown>
+#3 0x55b4f80a97c8 <unknown>
+#4 0x55b4f80f8d09 <unknown>
+#5 0x55b4f80f82a6 <unknown>
+#6 0x55b4f80ea3b3 <unknown>
+#7 0x55b4f80b714a <unknown>
+#8 0x55b4f80b7da1 <unknown>
+#9 0x55b4f85798bf <unknown>
+#10 0x55b4f857d972 <unknown>
+#11 0x55b4f85609b2 <unknown>
+#12 0x55b4f857e11e <unknown>
+#13 0x55b4f8547aee <unknown>
+#14 0x55b4f85a0998 <unknown>
+#15 0x55b4f85a0ba4 <unknown>
+#16 0x55b4f85b03dc <unknown>
+#17 0x7f4147713ac3 <unknown>
+
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 423, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 88, in process_urls_from_cli
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/chrome/webdriver.py", line 49, in __init__
+    super().__init__(
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/chromium/webdriver.py", line 54, in __init__
+    super().__init__(
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 206, in __init__
+    self.start_session(capabilities)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 291, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 346, in execute
+    self.error_handler.check_response(response)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/errorhandler.py", line 245, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created
+from unknown error: no chrome binary at /usr/bin/google-chrome
+Stacktrace:
+#0 0x55b4f85b179a <unknown>
+#1 0x55b4f8074540 <unknown>
+#2 0x55b4f80ab3c2 <unknown>
+#3 0x55b4f80a97c8 <unknown>
+#4 0x55b4f80f8d09 <unknown>
+#5 0x55b4f80f82a6 <unknown>
+#6 0x55b4f80ea3b3 <unknown>
+#7 0x55b4f80b714a <unknown>
+#8 0x55b4f80b7da1 <unknown>
+#9 0x55b4f85798bf <unknown>
+#10 0x55b4f857d972 <unknown>
+#11 0x55b4f85609b2 <unknown>
+#12 0x55b4f857e11e <unknown>
+#13 0x55b4f8547aee <unknown>
+#14 0x55b4f85a0998 <unknown>
+#15 0x55b4f85a0ba4 <unknown>
+#16 0x55b4f85b03dc <unknown>
+#17 0x7f4147713ac3 <unknown>
+
+
+Error processing URLs: Message: session not created
+from unknown error: no chrome binary at /usr/bin/google-chrome
+Stacktrace:
+#0 0x559b4a89f79a <unknown>
+#1 0x559b4a362540 <unknown>
+#2 0x559b4a3993c2 <unknown>
+#3 0x559b4a3977c8 <unknown>
+#4 0x559b4a3e6d09 <unknown>
+#5 0x559b4a3e62a6 <unknown>
+#6 0x559b4a3d83b3 <unknown>
+#7 0x559b4a3a514a <unknown>
+#8 0x559b4a3a5da1 <unknown>
+#9 0x559b4a8678bf <unknown>
+#10 0x559b4a86b972 <unknown>
+#11 0x559b4a84e9b2 <unknown>
+#12 0x559b4a86c11e <unknown>
+#13 0x559b4a835aee <unknown>
+#14 0x559b4a88e998 <unknown>
+#15 0x559b4a88eba4 <unknown>
+#16 0x559b4a89e3dc <unknown>
+#17 0x7f516914bac3 <unknown>
+
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 423, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 88, in process_urls_from_cli
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/chrome/webdriver.py", line 49, in __init__
+    super().__init__(
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/chromium/webdriver.py", line 54, in __init__
+    super().__init__(
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 206, in __init__
+    self.start_session(capabilities)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 291, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 346, in execute
+    self.error_handler.check_response(response)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/errorhandler.py", line 245, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created
+from unknown error: no chrome binary at /usr/bin/google-chrome
+Stacktrace:
+#0 0x559b4a89f79a <unknown>
+#1 0x559b4a362540 <unknown>
+#2 0x559b4a3993c2 <unknown>
+#3 0x559b4a3977c8 <unknown>
+#4 0x559b4a3e6d09 <unknown>
+#5 0x559b4a3e62a6 <unknown>
+#6 0x559b4a3d83b3 <unknown>
+#7 0x559b4a3a514a <unknown>
+#8 0x559b4a3a5da1 <unknown>
+#9 0x559b4a8678bf <unknown>
+#10 0x559b4a86b972 <unknown>
+#11 0x559b4a84e9b2 <unknown>
+#12 0x559b4a86c11e <unknown>
+#13 0x559b4a835aee <unknown>
+#14 0x559b4a88e998 <unknown>
+#15 0x559b4a88eba4 <unknown>
+#16 0x559b4a89e3dc <unknown>
+#17 0x7f516914bac3 <unknown>
+
+
+Error processing URLs: Message: session not created
+from unknown error: no chrome binary at /usr/bin/google-chrome
+Stacktrace:
+#0 0x55ef7e74179a <unknown>
+#1 0x55ef7e204540 <unknown>
+#2 0x55ef7e23b3c2 <unknown>
+#3 0x55ef7e2397c8 <unknown>
+#4 0x55ef7e288d09 <unknown>
+#5 0x55ef7e2882a6 <unknown>
+#6 0x55ef7e27a3b3 <unknown>
+#7 0x55ef7e24714a <unknown>
+#8 0x55ef7e247da1 <unknown>
+#9 0x55ef7e7098bf <unknown>
+#10 0x55ef7e70d972 <unknown>
+#11 0x55ef7e6f09b2 <unknown>
+#12 0x55ef7e70e11e <unknown>
+#13 0x55ef7e6d7aee <unknown>
+#14 0x55ef7e730998 <unknown>
+#15 0x55ef7e730ba4 <unknown>
+#16 0x55ef7e7403dc <unknown>
+#17 0x7ff88f6bdac3 <unknown>
+
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 423, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 88, in process_urls_from_cli
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/chrome/webdriver.py", line 49, in __init__
+    super().__init__(
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/chromium/webdriver.py", line 54, in __init__
+    super().__init__(
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 206, in __init__
+    self.start_session(capabilities)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 291, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 346, in execute
+    self.error_handler.check_response(response)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/errorhandler.py", line 245, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created
+from unknown error: no chrome binary at /usr/bin/google-chrome
+Stacktrace:
+#0 0x55ef7e74179a <unknown>
+#1 0x55ef7e204540 <unknown>
+#2 0x55ef7e23b3c2 <unknown>
+#3 0x55ef7e2397c8 <unknown>
+#4 0x55ef7e288d09 <unknown>
+#5 0x55ef7e2882a6 <unknown>
+#6 0x55ef7e27a3b3 <unknown>
+#7 0x55ef7e24714a <unknown>
+#8 0x55ef7e247da1 <unknown>
+#9 0x55ef7e7098bf <unknown>
+#10 0x55ef7e70d972 <unknown>
+#11 0x55ef7e6f09b2 <unknown>
+#12 0x55ef7e70e11e <unknown>
+#13 0x55ef7e6d7aee <unknown>
+#14 0x55ef7e730998 <unknown>
+#15 0x55ef7e730ba4 <unknown>
+#16 0x55ef7e7403dc <unknown>
+#17 0x7ff88f6bdac3 <unknown>
+
+
+Error processing URLs: Message: session not created
+from unknown error: no chrome binary at /usr/bin/google-chrome
+Stacktrace:
+#0 0x55b038ecb79a <unknown>
+#1 0x55b03898e540 <unknown>
+#2 0x55b0389c53c2 <unknown>
+#3 0x55b0389c37c8 <unknown>
+#4 0x55b038a12d09 <unknown>
+#5 0x55b038a122a6 <unknown>
+#6 0x55b038a043b3 <unknown>
+#7 0x55b0389d114a <unknown>
+#8 0x55b0389d1da1 <unknown>
+#9 0x55b038e938bf <unknown>
+#10 0x55b038e97972 <unknown>
+#11 0x55b038e7a9b2 <unknown>
+#12 0x55b038e9811e <unknown>
+#13 0x55b038e61aee <unknown>
+#14 0x55b038eba998 <unknown>
+#15 0x55b038ebaba4 <unknown>
+#16 0x55b038eca3dc <unknown>
+#17 0x7f1279a7aac3 <unknown>
+
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 424, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 89, in process_urls_from_cli
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/chrome/webdriver.py", line 49, in __init__
+    super().__init__(
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/chromium/webdriver.py", line 54, in __init__
+    super().__init__(
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 206, in __init__
+    self.start_session(capabilities)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 291, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 346, in execute
+    self.error_handler.check_response(response)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/errorhandler.py", line 245, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created
+from unknown error: no chrome binary at /usr/bin/google-chrome
+Stacktrace:
+#0 0x55b038ecb79a <unknown>
+#1 0x55b03898e540 <unknown>
+#2 0x55b0389c53c2 <unknown>
+#3 0x55b0389c37c8 <unknown>
+#4 0x55b038a12d09 <unknown>
+#5 0x55b038a122a6 <unknown>
+#6 0x55b038a043b3 <unknown>
+#7 0x55b0389d114a <unknown>
+#8 0x55b0389d1da1 <unknown>
+#9 0x55b038e938bf <unknown>
+#10 0x55b038e97972 <unknown>
+#11 0x55b038e7a9b2 <unknown>
+#12 0x55b038e9811e <unknown>
+#13 0x55b038e61aee <unknown>
+#14 0x55b038eba998 <unknown>
+#15 0x55b038ebaba4 <unknown>
+#16 0x55b038eca3dc <unknown>
+#17 0x7f1279a7aac3 <unknown>
+
+
+Error processing URLs: Message: session not created
+from unknown error: no chrome binary at /usr/bin/google-chrome
+Stacktrace:
+#0 0x556ed2bd579a <unknown>
+#1 0x556ed2698540 <unknown>
+#2 0x556ed26cf3c2 <unknown>
+#3 0x556ed26cd7c8 <unknown>
+#4 0x556ed271cd09 <unknown>
+#5 0x556ed271c2a6 <unknown>
+#6 0x556ed270e3b3 <unknown>
+#7 0x556ed26db14a <unknown>
+#8 0x556ed26dbda1 <unknown>
+#9 0x556ed2b9d8bf <unknown>
+#10 0x556ed2ba1972 <unknown>
+#11 0x556ed2b849b2 <unknown>
+#12 0x556ed2ba211e <unknown>
+#13 0x556ed2b6baee <unknown>
+#14 0x556ed2bc4998 <unknown>
+#15 0x556ed2bc4ba4 <unknown>
+#16 0x556ed2bd43dc <unknown>
+#17 0x7f82d7c46ac3 <unknown>
+
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 424, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 89, in process_urls_from_cli
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/chrome/webdriver.py", line 49, in __init__
+    super().__init__(
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/chromium/webdriver.py", line 54, in __init__
+    super().__init__(
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 206, in __init__
+    self.start_session(capabilities)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 291, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 346, in execute
+    self.error_handler.check_response(response)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/errorhandler.py", line 245, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created
+from unknown error: no chrome binary at /usr/bin/google-chrome
+Stacktrace:
+#0 0x556ed2bd579a <unknown>
+#1 0x556ed2698540 <unknown>
+#2 0x556ed26cf3c2 <unknown>
+#3 0x556ed26cd7c8 <unknown>
+#4 0x556ed271cd09 <unknown>
+#5 0x556ed271c2a6 <unknown>
+#6 0x556ed270e3b3 <unknown>
+#7 0x556ed26db14a <unknown>
+#8 0x556ed26dbda1 <unknown>
+#9 0x556ed2b9d8bf <unknown>
+#10 0x556ed2ba1972 <unknown>
+#11 0x556ed2b849b2 <unknown>
+#12 0x556ed2ba211e <unknown>
+#13 0x556ed2b6baee <unknown>
+#14 0x556ed2bc4998 <unknown>
+#15 0x556ed2bc4ba4 <unknown>
+#16 0x556ed2bd43dc <unknown>
+#17 0x7f82d7c46ac3 <unknown>
+
+
+Error processing URLs: Message: session not created
+from unknown error: no chrome binary at /usr/bin/google-chrome
+Stacktrace:
+#0 0x559147c1079a <unknown>
+#1 0x5591476d3540 <unknown>
+#2 0x55914770a3c2 <unknown>
+#3 0x5591477087c8 <unknown>
+#4 0x559147757d09 <unknown>
+#5 0x5591477572a6 <unknown>
+#6 0x5591477493b3 <unknown>
+#7 0x55914771614a <unknown>
+#8 0x559147716da1 <unknown>
+#9 0x559147bd88bf <unknown>
+#10 0x559147bdc972 <unknown>
+#11 0x559147bbf9b2 <unknown>
+#12 0x559147bdd11e <unknown>
+#13 0x559147ba6aee <unknown>
+#14 0x559147bff998 <unknown>
+#15 0x559147bffba4 <unknown>
+#16 0x559147c0f3dc <unknown>
+#17 0x7ff72568aac3 <unknown>
+
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 424, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 89, in process_urls_from_cli
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/chrome/webdriver.py", line 49, in __init__
+    super().__init__(
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/chromium/webdriver.py", line 54, in __init__
+    super().__init__(
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 206, in __init__
+    self.start_session(capabilities)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 291, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 346, in execute
+    self.error_handler.check_response(response)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/errorhandler.py", line 245, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created
+from unknown error: no chrome binary at /usr/bin/google-chrome
+Stacktrace:
+#0 0x559147c1079a <unknown>
+#1 0x5591476d3540 <unknown>
+#2 0x55914770a3c2 <unknown>
+#3 0x5591477087c8 <unknown>
+#4 0x559147757d09 <unknown>
+#5 0x5591477572a6 <unknown>
+#6 0x5591477493b3 <unknown>
+#7 0x55914771614a <unknown>
+#8 0x559147716da1 <unknown>
+#9 0x559147bd88bf <unknown>
+#10 0x559147bdc972 <unknown>
+#11 0x559147bbf9b2 <unknown>
+#12 0x559147bdd11e <unknown>
+#13 0x559147ba6aee <unknown>
+#14 0x559147bff998 <unknown>
+#15 0x559147bffba4 <unknown>
+#16 0x559147c0f3dc <unknown>
+#17 0x7ff72568aac3 <unknown>
+
+
+Error processing URLs: Message: session not created
+from unknown error: no chrome binary at /opt/google/chrome/google-chrome
+Stacktrace:
+#0 0x558f068d279a <unknown>
+#1 0x558f06395540 <unknown>
+#2 0x558f063cc3c2 <unknown>
+#3 0x558f063ca7c8 <unknown>
+#4 0x558f06419d09 <unknown>
+#5 0x558f064192a6 <unknown>
+#6 0x558f0640b3b3 <unknown>
+#7 0x558f063d814a <unknown>
+#8 0x558f063d8da1 <unknown>
+#9 0x558f0689a8bf <unknown>
+#10 0x558f0689e972 <unknown>
+#11 0x558f068819b2 <unknown>
+#12 0x558f0689f11e <unknown>
+#13 0x558f06868aee <unknown>
+#14 0x558f068c1998 <unknown>
+#15 0x558f068c1ba4 <unknown>
+#16 0x558f068d13dc <unknown>
+#17 0x7f89340caac3 <unknown>
+
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 424, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 89, in process_urls_from_cli
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/chrome/webdriver.py", line 49, in __init__
+    super().__init__(
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/chromium/webdriver.py", line 54, in __init__
+    super().__init__(
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 206, in __init__
+    self.start_session(capabilities)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 291, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 346, in execute
+    self.error_handler.check_response(response)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/errorhandler.py", line 245, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created
+from unknown error: no chrome binary at /opt/google/chrome/google-chrome
+Stacktrace:
+#0 0x558f068d279a <unknown>
+#1 0x558f06395540 <unknown>
+#2 0x558f063cc3c2 <unknown>
+#3 0x558f063ca7c8 <unknown>
+#4 0x558f06419d09 <unknown>
+#5 0x558f064192a6 <unknown>
+#6 0x558f0640b3b3 <unknown>
+#7 0x558f063d814a <unknown>
+#8 0x558f063d8da1 <unknown>
+#9 0x558f0689a8bf <unknown>
+#10 0x558f0689e972 <unknown>
+#11 0x558f068819b2 <unknown>
+#12 0x558f0689f11e <unknown>
+#13 0x558f06868aee <unknown>
+#14 0x558f068c1998 <unknown>
+#15 0x558f068c1ba4 <unknown>
+#16 0x558f068d13dc <unknown>
+#17 0x7f89340caac3 <unknown>
+
+
+Error processing URLs: Message: session not created
+from unknown error: no chrome binary at /opt/google/chrome/google-chrome
+Stacktrace:
+#0 0x562eb954b79a <unknown>
+#1 0x562eb900e540 <unknown>
+#2 0x562eb90453c2 <unknown>
+#3 0x562eb90437c8 <unknown>
+#4 0x562eb9092d09 <unknown>
+#5 0x562eb90922a6 <unknown>
+#6 0x562eb90843b3 <unknown>
+#7 0x562eb905114a <unknown>
+#8 0x562eb9051da1 <unknown>
+#9 0x562eb95138bf <unknown>
+#10 0x562eb9517972 <unknown>
+#11 0x562eb94fa9b2 <unknown>
+#12 0x562eb951811e <unknown>
+#13 0x562eb94e1aee <unknown>
+#14 0x562eb953a998 <unknown>
+#15 0x562eb953aba4 <unknown>
+#16 0x562eb954a3dc <unknown>
+#17 0x7f0d97292ac3 <unknown>
+
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 424, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 89, in process_urls_from_cli
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/chrome/webdriver.py", line 49, in __init__
+    super().__init__(
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/chromium/webdriver.py", line 54, in __init__
+    super().__init__(
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 206, in __init__
+    self.start_session(capabilities)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 291, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 346, in execute
+    self.error_handler.check_response(response)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/errorhandler.py", line 245, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created
+from unknown error: no chrome binary at /opt/google/chrome/google-chrome
+Stacktrace:
+#0 0x562eb954b79a <unknown>
+#1 0x562eb900e540 <unknown>
+#2 0x562eb90453c2 <unknown>
+#3 0x562eb90437c8 <unknown>
+#4 0x562eb9092d09 <unknown>
+#5 0x562eb90922a6 <unknown>
+#6 0x562eb90843b3 <unknown>
+#7 0x562eb905114a <unknown>
+#8 0x562eb9051da1 <unknown>
+#9 0x562eb95138bf <unknown>
+#10 0x562eb9517972 <unknown>
+#11 0x562eb94fa9b2 <unknown>
+#12 0x562eb951811e <unknown>
+#13 0x562eb94e1aee <unknown>
+#14 0x562eb953a998 <unknown>
+#15 0x562eb953aba4 <unknown>
+#16 0x562eb954a3dc <unknown>
+#17 0x7f0d97292ac3 <unknown>
+
+
+Error processing URLs: Message: session not created
+from unknown error: no chrome binary at /opt/google/chrome/google-chrome
+Stacktrace:
+#0 0x55a53ee3779a <unknown>
+#1 0x55a53e8fa540 <unknown>
+#2 0x55a53e9313c2 <unknown>
+#3 0x55a53e92f7c8 <unknown>
+#4 0x55a53e97ed09 <unknown>
+#5 0x55a53e97e2a6 <unknown>
+#6 0x55a53e9703b3 <unknown>
+#7 0x55a53e93d14a <unknown>
+#8 0x55a53e93dda1 <unknown>
+#9 0x55a53edff8bf <unknown>
+#10 0x55a53ee03972 <unknown>
+#11 0x55a53ede69b2 <unknown>
+#12 0x55a53ee0411e <unknown>
+#13 0x55a53edcdaee <unknown>
+#14 0x55a53ee26998 <unknown>
+#15 0x55a53ee26ba4 <unknown>
+#16 0x55a53ee363dc <unknown>
+#17 0x7fbf7f37bac3 <unknown>
+
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 424, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 89, in process_urls_from_cli
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/chrome/webdriver.py", line 49, in __init__
+    super().__init__(
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/chromium/webdriver.py", line 54, in __init__
+    super().__init__(
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 206, in __init__
+    self.start_session(capabilities)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 291, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 346, in execute
+    self.error_handler.check_response(response)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/errorhandler.py", line 245, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created
+from unknown error: no chrome binary at /opt/google/chrome/google-chrome
+Stacktrace:
+#0 0x55a53ee3779a <unknown>
+#1 0x55a53e8fa540 <unknown>
+#2 0x55a53e9313c2 <unknown>
+#3 0x55a53e92f7c8 <unknown>
+#4 0x55a53e97ed09 <unknown>
+#5 0x55a53e97e2a6 <unknown>
+#6 0x55a53e9703b3 <unknown>
+#7 0x55a53e93d14a <unknown>
+#8 0x55a53e93dda1 <unknown>
+#9 0x55a53edff8bf <unknown>
+#10 0x55a53ee03972 <unknown>
+#11 0x55a53ede69b2 <unknown>
+#12 0x55a53ee0411e <unknown>
+#13 0x55a53edcdaee <unknown>
+#14 0x55a53ee26998 <unknown>
+#15 0x55a53ee26ba4 <unknown>
+#16 0x55a53ee363dc <unknown>
+#17 0x7fbf7f37bac3 <unknown>
+
+
+Error processing URLs: module 'datetime' has no attribute 'now'
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 459, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 112, in process_urls_from_cli
+    dataCollector.save_data(domain_dir)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/utils/DataCollector.py", line 45, in save_data
+    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+                ^^^^^^^^^^^^
+AttributeError: module 'datetime' has no attribute 'now'
+
+Error processing clusters: the JSON object must be str, bytes or bytearray, not dict
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 555, in process_clusters_from_api
+    result = process_clusters_from_cli(clusters_data, from_api=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 170, in process_clusters_from_cli
+    data = json.loads(data)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 339, in loads
+    raise TypeError(f'the JSON object must be str, bytes or bytearray, '
+TypeError: the JSON object must be str, bytes or bytearray, not dict
+
+Error processing clusters: the JSON object must be str, bytes or bytearray, not dict
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 555, in process_clusters_from_api
+    result = process_clusters_from_cli(clusters_data, from_api=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 170, in process_clusters_from_cli
+    data = json.loads(data)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 339, in loads
+    raise TypeError(f'the JSON object must be str, bytes or bytearray, '
+TypeError: the JSON object must be str, bytes or bytearray, not dict
+
+Error processing URLs: No module named 'colormath'
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 482, in process_urls_from_api
+    clustering_results = get_clustering_results(domain_data['url_data'], level)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 532, in get_clustering_results
+    from utils.clustering import process_clustering
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/utils/clustering.py", line 4, in <module>
+    from colormath.color_objects import sRGBColor, LabColor
+ModuleNotFoundError: No module named 'colormath'
+
+Error processing URLs: No module named 'colormath'
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 482, in process_urls_from_api
+    clustering_results = get_clustering_results(domain_data['url_data'], level)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 532, in get_clustering_results
+    from utils.clustering import process_clustering
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/utils/clustering.py", line 4, in <module>
+    from colormath.color_objects import sRGBColor, LabColor
+ModuleNotFoundError: No module named 'colormath'
+
+Error processing URLs: No module named 'colormath'
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 482, in process_urls_from_api
+    clustering_results = get_clustering_results(domain_data['url_data'], level)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 532, in get_clustering_results
+    from utils.clustering import process_clustering
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/utils/clustering.py", line 4, in <module>
+    from colormath.color_objects import sRGBColor, LabColor
+ModuleNotFoundError: No module named 'colormath'
+
+Error processing URLs: No module named 'colormath'
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 483, in process_urls_from_api
+    clustering_results = get_clustering_results(domain_data['url_data'], level)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 539, in get_clustering_results
+    from utils.clustering import process_clustering
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/utils/clustering.py", line 4, in <module>
+    from colormath.color_objects import sRGBColor, LabColor
+ModuleNotFoundError: No module named 'colormath'
+
+Error processing URLs: No module named 'colormath'
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 483, in process_urls_from_api
+    clustering_results = get_clustering_results(domain_data['url_data'], level)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 539, in get_clustering_results
+    from utils.clustering import process_clustering
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/utils/clustering.py", line 4, in <module>
+    from colormath.color_objects import sRGBColor, LabColor
+ModuleNotFoundError: No module named 'colormath'
+
+Error processing URLs: name 'generate_image_data' is not defined
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 460, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 105, in process_urls_from_cli
+    dataCollector.collect_data(domain_url_list, levels, driver, config)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/utils/DataCollector.py", line 41, in collect_data
+    process_url(url, levels, driver, config, unique_id, self)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/utils/process.py", line 73, in process_url
+    generate_image_data(combinations_by_level, root)
+    ^^^^^^^^^^^^^^^^^^^
+NameError: name 'generate_image_data' is not defined
+
+Error processing URLs: name 'create_image' is not defined
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 460, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 105, in process_urls_from_cli
+    dataCollector.collect_data(domain_url_list, levels, driver, config)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/utils/DataCollector.py", line 41, in collect_data
+    process_url(url, levels, driver, config, unique_id, self)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/utils/process.py", line 76, in process_url
+    create_image(combinations_by_level, folder_name)
+    ^^^^^^^^^^^^
+NameError: name 'create_image' is not defined
+
+Error processing URLs: No module named 'colormath'
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 483, in process_urls_from_api
+    clustering_results = get_clustering_results(domain_data['url_data'], level)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 539, in get_clustering_results
+    from utils.clustering import process_clustering
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/utils/clustering.py", line 4, in <module>
+    from colormath.color_objects import sRGBColor, LabColor
+ModuleNotFoundError: No module named 'colormath'
+
+Error processing URLs: No module named 'colormath'
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 483, in process_urls_from_api
+    clustering_results = get_clustering_results(domain_data['url_data'], level)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 539, in get_clustering_results
+    from utils.clustering import process_clustering
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/utils/clustering.py", line 4, in <module>
+    from colormath.color_objects import sRGBColor, LabColor
+ModuleNotFoundError: No module named 'colormath'
+
+Error processing URLs: No module named 'colormath'
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 483, in process_urls_from_api
+    clustering_results = get_clustering_results(domain_data['url_data'], level)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 539, in get_clustering_results
+    from utils.clustering import process_clustering
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/utils/clustering.py", line 4, in <module>
+    from colormath.color_objects import sRGBColor, LabColor
+ModuleNotFoundError: No module named 'colormath'
+
+Error processing URLs: No module named 'colormath'
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 483, in process_urls_from_api
+    clustering_results = get_clustering_results(domain_data['url_data'], level)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 539, in get_clustering_results
+    from utils.clustering import process_clustering
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/utils/clustering.py", line 4, in <module>
+    from colormath.color_objects import sRGBColor, LabColor
+ModuleNotFoundError: No module named 'colormath'
+
+Error processing URLs: [Errno 2] No such file or directory: '/home/pfavv/projects/UOP/lib_url_to_img/api/results'
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 483, in process_urls_from_api
+    clustering_results = get_clustering_results(domain_data['url_data'], level)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 587, in get_clustering_results
+    computed_styles_file = find_latest_computed_styles(level)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 554, in find_latest_computed_styles
+    domain_dirs = [d for d in os.listdir(results_dir) if os.path.isdir(os.path.join(results_dir, d))]
+                              ^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/pfavv/projects/UOP/lib_url_to_img/api/results'
+
+Error processing URLs: [Errno 2] No such file or directory: '/home/pfavv/projects/UOP/lib_url_to_img/api/results'
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 483, in process_urls_from_api
+    clustering_results = get_clustering_results(domain_data['url_data'], level)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 587, in get_clustering_results
+    computed_styles_file = find_latest_computed_styles(level)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 554, in find_latest_computed_styles
+    domain_dirs = [d for d in os.listdir(results_dir) if os.path.isdir(os.path.join(results_dir, d))]
+                              ^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/pfavv/projects/UOP/lib_url_to_img/api/results'
+
+Error processing clusters: the JSON object must be str, bytes or bytearray, not dict
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 620, in process_clusters_from_api
+    result = process_clusters_from_cli(clusters_data, from_api=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 171, in process_clusters_from_cli
+    data = json.loads(data)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 339, in loads
+    raise TypeError(f'the JSON object must be str, bytes or bytearray, '
+TypeError: the JSON object must be str, bytes or bytearray, not dict
+
+Error processing clusters: 'str' object has no attribute 'items'
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 468, in process_clusters_from_api
+    result = process_clusters_from_cli(clusters_data, from_api=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 183, in process_clusters_from_cli
+    for domain, domain_data in clusters_data.items():
+                               ^^^^^^^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'items'
+
+Error processing clusters: 'int' object has no attribute 'get'
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 468, in process_clusters_from_api
+    result = process_clusters_from_cli(clusters_data, from_api=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 240, in process_clusters_from_cli
+    html_data = guid_data.get("html_data")
+                ^^^^^^^^^^^^^
+AttributeError: 'int' object has no attribute 'get'
+
+Error processing URLs: 'int' object has no attribute 'decode'
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 488, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 134, in process_urls_from_cli
+    clustering_results = get_clustering_results(dataCollector.url_data, level)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 579, in get_clustering_results
+    domain = urlparse(first_url).netloc
+             ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/parse.py", line 394, in urlparse
+    url, scheme, _coerce_result = _coerce_args(url, scheme)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/parse.py", line 133, in _coerce_args
+    return _decode_args(args) + (_encode_result,)
+           ^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/parse.py", line 117, in _decode_args
+    return tuple(x.decode(encoding, errors) if x else '' for x in args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/parse.py", line 117, in <genexpr>
+    return tuple(x.decode(encoding, errors) if x else '' for x in args)
+                 ^^^^^^^^
+AttributeError: 'int' object has no attribute 'decode'
+

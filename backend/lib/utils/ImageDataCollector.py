@@ -2,13 +2,14 @@ import datetime
 import json
 import os
 from PIL import Image
-from utils.image import create_image_for_level
+from .image import create_image_for_level
 
 # Generate a timestamp for the file name
 timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 
 class ImageDataCollector:
     def __init__(self, url_data):
+        self.url_data = url_data
         self.levels_info = self.process_url_data(url_data)
 
     def process_url_data(self, url_data):
@@ -30,11 +31,17 @@ class ImageDataCollector:
 
         return levels_info
 
-    def save_to_json(self, file_path=None):
-        # Save the collected data to a file with the timestamp
-        file_name = f"results/image_data_{timestamp}.json"
+    def save_to_json(self, domain_dir=None):
+        timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+        
+        # Save the image data to a file with the timestamp
+        if domain_dir:
+            file_name = f"{domain_dir}/image_data_{timestamp}.json"
+        else:
+            file_name = f"results/image_data_{timestamp}.json"
+            
         with open(file_name, 'w') as f:
-            json.dump(self.levels_info, f, indent=4)
+            json.dump(self.url_data, f, indent=4)
 
     def generate_images(self):
         # Create the 'Images' folder if it doesn't exist

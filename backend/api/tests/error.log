@@ -376,3 +376,363 @@ Traceback (most recent call last):
     encoder.setimage(im.im, extents)
 SystemError: tile cannot extend outside image
 
+Error processing URLs: cannot access local variable 'driver' where it is not associated with a value
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 397, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 66, in process_urls_from_cli
+    dataCollector.collect_data(urls, levels, driver, config)
+                                             ^^^^^^
+UnboundLocalError: cannot access local variable 'driver' where it is not associated with a value
+
+Error processing URLs: Message: session not created
+from unknown error: no chrome binary at /opt/google/chrome/google-chrome
+Stacktrace:
+#0 0x55721ffdd79a <unknown>
+#1 0x55721faa0540 <unknown>
+#2 0x55721fad73c2 <unknown>
+#3 0x55721fad57c8 <unknown>
+#4 0x55721fb24d09 <unknown>
+#5 0x55721fb242a6 <unknown>
+#6 0x55721fb163b3 <unknown>
+#7 0x55721fae314a <unknown>
+#8 0x55721fae3da1 <unknown>
+#9 0x55721ffa58bf <unknown>
+#10 0x55721ffa9972 <unknown>
+#11 0x55721ff8c9b2 <unknown>
+#12 0x55721ffaa11e <unknown>
+#13 0x55721ff73aee <unknown>
+#14 0x55721ffcc998 <unknown>
+#15 0x55721ffccba4 <unknown>
+#16 0x55721ffdc3dc <unknown>
+#17 0x7fe0ad347ac3 <unknown>
+
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 424, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 89, in process_urls_from_cli
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/chrome/webdriver.py", line 49, in __init__
+    super().__init__(
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/chromium/webdriver.py", line 54, in __init__
+    super().__init__(
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 206, in __init__
+    self.start_session(capabilities)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 291, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 346, in execute
+    self.error_handler.check_response(response)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/errorhandler.py", line 245, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created
+from unknown error: no chrome binary at /opt/google/chrome/google-chrome
+Stacktrace:
+#0 0x55721ffdd79a <unknown>
+#1 0x55721faa0540 <unknown>
+#2 0x55721fad73c2 <unknown>
+#3 0x55721fad57c8 <unknown>
+#4 0x55721fb24d09 <unknown>
+#5 0x55721fb242a6 <unknown>
+#6 0x55721fb163b3 <unknown>
+#7 0x55721fae314a <unknown>
+#8 0x55721fae3da1 <unknown>
+#9 0x55721ffa58bf <unknown>
+#10 0x55721ffa9972 <unknown>
+#11 0x55721ff8c9b2 <unknown>
+#12 0x55721ffaa11e <unknown>
+#13 0x55721ff73aee <unknown>
+#14 0x55721ffcc998 <unknown>
+#15 0x55721ffccba4 <unknown>
+#16 0x55721ffdc3dc <unknown>
+#17 0x7fe0ad347ac3 <unknown>
+
+
+Error processing URLs: Message: session not created
+from unknown error: no chrome binary at /opt/google/chrome/google-chrome
+Stacktrace:
+#0 0x558fd446a79a <unknown>
+#1 0x558fd3f2d540 <unknown>
+#2 0x558fd3f643c2 <unknown>
+#3 0x558fd3f627c8 <unknown>
+#4 0x558fd3fb1d09 <unknown>
+#5 0x558fd3fb12a6 <unknown>
+#6 0x558fd3fa33b3 <unknown>
+#7 0x558fd3f7014a <unknown>
+#8 0x558fd3f70da1 <unknown>
+#9 0x558fd44328bf <unknown>
+#10 0x558fd4436972 <unknown>
+#11 0x558fd44199b2 <unknown>
+#12 0x558fd443711e <unknown>
+#13 0x558fd4400aee <unknown>
+#14 0x558fd4459998 <unknown>
+#15 0x558fd4459ba4 <unknown>
+#16 0x558fd44693dc <unknown>
+#17 0x7f3460461ac3 <unknown>
+
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 424, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 89, in process_urls_from_cli
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/chrome/webdriver.py", line 49, in __init__
+    super().__init__(
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/chromium/webdriver.py", line 54, in __init__
+    super().__init__(
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 206, in __init__
+    self.start_session(capabilities)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 291, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 346, in execute
+    self.error_handler.check_response(response)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/errorhandler.py", line 245, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created
+from unknown error: no chrome binary at /opt/google/chrome/google-chrome
+Stacktrace:
+#0 0x558fd446a79a <unknown>
+#1 0x558fd3f2d540 <unknown>
+#2 0x558fd3f643c2 <unknown>
+#3 0x558fd3f627c8 <unknown>
+#4 0x558fd3fb1d09 <unknown>
+#5 0x558fd3fb12a6 <unknown>
+#6 0x558fd3fa33b3 <unknown>
+#7 0x558fd3f7014a <unknown>
+#8 0x558fd3f70da1 <unknown>
+#9 0x558fd44328bf <unknown>
+#10 0x558fd4436972 <unknown>
+#11 0x558fd44199b2 <unknown>
+#12 0x558fd443711e <unknown>
+#13 0x558fd4400aee <unknown>
+#14 0x558fd4459998 <unknown>
+#15 0x558fd4459ba4 <unknown>
+#16 0x558fd44693dc <unknown>
+#17 0x7f3460461ac3 <unknown>
+
+
+Error processing URLs: Message: session not created
+from unknown error: no chrome binary at /opt/google/chrome/google-chrome
+Stacktrace:
+#0 0x555cc33cb79a <unknown>
+#1 0x555cc2e8e540 <unknown>
+#2 0x555cc2ec53c2 <unknown>
+#3 0x555cc2ec37c8 <unknown>
+#4 0x555cc2f12d09 <unknown>
+#5 0x555cc2f122a6 <unknown>
+#6 0x555cc2f043b3 <unknown>
+#7 0x555cc2ed114a <unknown>
+#8 0x555cc2ed1da1 <unknown>
+#9 0x555cc33938bf <unknown>
+#10 0x555cc3397972 <unknown>
+#11 0x555cc337a9b2 <unknown>
+#12 0x555cc339811e <unknown>
+#13 0x555cc3361aee <unknown>
+#14 0x555cc33ba998 <unknown>
+#15 0x555cc33baba4 <unknown>
+#16 0x555cc33ca3dc <unknown>
+#17 0x7f1bb7220ac3 <unknown>
+
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 424, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 89, in process_urls_from_cli
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/chrome/webdriver.py", line 49, in __init__
+    super().__init__(
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/chromium/webdriver.py", line 54, in __init__
+    super().__init__(
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 206, in __init__
+    self.start_session(capabilities)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 291, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py", line 346, in execute
+    self.error_handler.check_response(response)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/selenium/webdriver/remote/errorhandler.py", line 245, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created
+from unknown error: no chrome binary at /opt/google/chrome/google-chrome
+Stacktrace:
+#0 0x555cc33cb79a <unknown>
+#1 0x555cc2e8e540 <unknown>
+#2 0x555cc2ec53c2 <unknown>
+#3 0x555cc2ec37c8 <unknown>
+#4 0x555cc2f12d09 <unknown>
+#5 0x555cc2f122a6 <unknown>
+#6 0x555cc2f043b3 <unknown>
+#7 0x555cc2ed114a <unknown>
+#8 0x555cc2ed1da1 <unknown>
+#9 0x555cc33938bf <unknown>
+#10 0x555cc3397972 <unknown>
+#11 0x555cc337a9b2 <unknown>
+#12 0x555cc339811e <unknown>
+#13 0x555cc3361aee <unknown>
+#14 0x555cc33ba998 <unknown>
+#15 0x555cc33baba4 <unknown>
+#16 0x555cc33ca3dc <unknown>
+#17 0x7f1bb7220ac3 <unknown>
+
+
+Error processing URLs: tile cannot extend outside image
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/PIL/ImageFile.py", line 643, in _save
+    fh = fp.fileno()
+         ^^^^^^^^^
+AttributeError: '_idat' object has no attribute 'fileno'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 424, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 93, in process_urls_from_cli
+    dataCollector.collect_data(urls, levels, driver, config)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/utils/DataCollector.py", line 41, in collect_data
+    process_url(url, levels, driver, config, unique_id, self)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/utils/process.py", line 76, in process_url
+    create_image(combinations_by_level, folder_name)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/utils/image.py", line 202, in create_image
+    final_image.save(final_path)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/PIL/Image.py", line 2581, in save
+    save_handler(self, fp, filename)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/PIL/PngImagePlugin.py", line 1492, in _save
+    ImageFile._save(
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/PIL/ImageFile.py", line 647, in _save
+    _encode_tile(im, fp, tile, bufsize, None, exc)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/PIL/ImageFile.py", line 665, in _encode_tile
+    encoder.setimage(im.im, extents)
+SystemError: tile cannot extend outside image
+
+Error processing URLs: tile cannot extend outside image
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/PIL/ImageFile.py", line 643, in _save
+    fh = fp.fileno()
+         ^^^^^^^^^
+AttributeError: '_idat' object has no attribute 'fileno'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 424, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 93, in process_urls_from_cli
+    dataCollector.collect_data(urls, levels, driver, config)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/utils/DataCollector.py", line 41, in collect_data
+    process_url(url, levels, driver, config, unique_id, self)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/utils/process.py", line 76, in process_url
+    create_image(combinations_by_level, folder_name)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/utils/image.py", line 202, in create_image
+    final_image.save(final_path)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/PIL/Image.py", line 2581, in save
+    save_handler(self, fp, filename)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/PIL/PngImagePlugin.py", line 1492, in _save
+    ImageFile._save(
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/PIL/ImageFile.py", line 647, in _save
+    _encode_tile(im, fp, tile, bufsize, None, exc)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/PIL/ImageFile.py", line 665, in _encode_tile
+    encoder.setimage(im.im, extents)
+SystemError: tile cannot extend outside image
+
+Error processing URLs: tile cannot extend outside image
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/PIL/ImageFile.py", line 643, in _save
+    fh = fp.fileno()
+         ^^^^^^^^^
+AttributeError: '_idat' object has no attribute 'fileno'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 459, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 104, in process_urls_from_cli
+    dataCollector.collect_data(domain_url_list, levels, driver, config)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/utils/DataCollector.py", line 41, in collect_data
+    process_url(url, levels, driver, config, unique_id, self)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/utils/process.py", line 76, in process_url
+    create_image(combinations_by_level, folder_name)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/utils/image.py", line 202, in create_image
+    final_image.save(final_path)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/PIL/Image.py", line 2581, in save
+    save_handler(self, fp, filename)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/PIL/PngImagePlugin.py", line 1492, in _save
+    ImageFile._save(
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/PIL/ImageFile.py", line 647, in _save
+    _encode_tile(im, fp, tile, bufsize, None, exc)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/PIL/ImageFile.py", line 665, in _encode_tile
+    encoder.setimage(im.im, extents)
+SystemError: tile cannot extend outside image
+
+Error processing URLs: tile cannot extend outside image
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/PIL/ImageFile.py", line 643, in _save
+    fh = fp.fileno()
+         ^^^^^^^^^
+AttributeError: '_idat' object has no attribute 'fileno'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 460, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 105, in process_urls_from_cli
+    dataCollector.collect_data(domain_url_list, levels, driver, config)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/utils/DataCollector.py", line 41, in collect_data
+    process_url(url, levels, driver, config, unique_id, self)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/utils/process.py", line 76, in process_url
+    image.create_image(combinations_by_level, folder_name)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/utils/image.py", line 202, in create_image
+    final_image.save(final_path)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/PIL/Image.py", line 2581, in save
+    save_handler(self, fp, filename)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/PIL/PngImagePlugin.py", line 1492, in _save
+    ImageFile._save(
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/PIL/ImageFile.py", line 647, in _save
+    _encode_tile(im, fp, tile, bufsize, None, exc)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/PIL/ImageFile.py", line 665, in _encode_tile
+    encoder.setimage(im.im, extents)
+SystemError: tile cannot extend outside image
+
+Error processing URLs: tile cannot extend outside image
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/PIL/ImageFile.py", line 643, in _save
+    fh = fp.fileno()
+         ^^^^^^^^^
+AttributeError: '_idat' object has no attribute 'fileno'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 460, in process_urls_from_api
+    result = process_urls_from_cli(urls, levels, from_api=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/lib.py", line 105, in process_urls_from_cli
+    dataCollector.collect_data(domain_url_list, levels, driver, config)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/utils/DataCollector.py", line 41, in collect_data
+    process_url(url, levels, driver, config, unique_id, self)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/utils/process.py", line 76, in process_url
+    image.create_image(combinations_by_level, folder_name)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/../lib/utils/image.py", line 202, in create_image
+    final_image.save(final_path)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/PIL/Image.py", line 2581, in save
+    save_handler(self, fp, filename)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/PIL/PngImagePlugin.py", line 1492, in _save
+    ImageFile._save(
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/PIL/ImageFile.py", line 647, in _save
+    _encode_tile(im, fp, tile, bufsize, None, exc)
+  File "/home/pfavv/projects/UOP/lib_url_to_img/backend/api/.venv/lib/python3.12/site-packages/PIL/ImageFile.py", line 665, in _encode_tile
+    encoder.setimage(im.im, extents)
+SystemError: tile cannot extend outside image
+

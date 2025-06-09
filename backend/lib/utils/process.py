@@ -1,4 +1,4 @@
-from utils import *
+from . import *
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import WebDriverException
@@ -32,6 +32,14 @@ def process_url(url, levels, driver, config, unique_id, dataCollector):
     folder_name = re.sub(r'__+', '_', folder_name)
     folder_name = "results/" + folder_name
     os.makedirs(folder_name, exist_ok=True)
+    
+    
+    # Try full-page screenshot (Selenium 4+ and Chrome)
+    try:
+        driver.get_full_page_screenshot_as_file(folder_name + "/full_screenshot.png")
+    except AttributeError:
+        # Fallback to viewport screenshot if full-page is not supported
+        driver.save_screenshot(folder_name + "/screenshot.png")
 
     #Step 1
     tag_name = config.get_attribute('settings.html_parser.tag_name', 'html')
@@ -62,10 +70,10 @@ def process_url(url, levels, driver, config, unique_id, dataCollector):
     root.generate_tag_color_map(all_combinations_tags_by_unique_id, FilePaths.CONFIGURATION.value + FileNames.TAGS.value + FileExtensions.JSON.value)
 
     #Step3.3
-    generate_image_data(combinations_by_level, root)
+    image.generate_image_data(combinations_by_level, root)
     writeToFile(folder_name, FileNames.COMBINATIONS_BY_LEVEL.value , FileExtensions.JSON.value , combinations_by_level)
 
-    create_image(combinations_by_level, folder_name)
+    image.create_image(combinations_by_level, folder_name)
 
 
     dataCollector.url_data[unique_id]['html_data'] = root.to_dict()  # Store HTMLTag data

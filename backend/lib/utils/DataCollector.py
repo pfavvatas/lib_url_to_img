@@ -5,8 +5,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 import traceback
-from utils.image import create_image_by_level
-from utils.process import process_url
+from .image import create_image_by_level
+from .process import process_url
 import time
 import random
 # Generate a timestamp for the file name
@@ -41,12 +41,15 @@ class DataCollector:
             process_url(url, levels, driver, config, unique_id, self)
             # create_image_by_level(self, timestamp)
 
-
-    def save_data(self):
+    def save_data(self, domain_dir=None):
+        timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
         
-
         # Save the collected data to a file with the timestamp
-        file_name = f"results/data_{timestamp}.json"
+        if domain_dir:
+            file_name = f"{domain_dir}/data_{timestamp}.json"
+        else:
+            file_name = f"results/data_{timestamp}.json"
+            
         with open(file_name, 'w') as f:
             json.dump(self.url_data, f, indent=4)
 
@@ -89,7 +92,7 @@ class DataCollector:
         # Return the combinations
         return combinations
 
-    def computed_styles(self, level=1):
+    def computed_styles(self, level=1, domain=None):
         # Get the combinations for the given level
         combinations = self.get_combinations_by_level(level)
 
@@ -113,21 +116,6 @@ class DataCollector:
         # Get distinct values for each attribute
         distinct_values = attributes_df['attribute'].unique().tolist()
 
-        # # Create a nested dictionary structure for each unique attribute and its values
-        # attribute_values = {}
-        # for attribute in distinct_values:
-        #     attribute_df = attributes_df[attributes_df['attribute'] == attribute]
-        #     attribute_values[attribute] = {}
-        #     for value in attribute_df['value'].unique():
-        #         print("value", value)
-        #         # Convert value back to dictionary
-        #         value_dict = json.loads(value)
-        #         print("value_dict", value_dict)
-        #         # Convert dictionary to a string representation
-        #         value_str = json.dumps(value_dict)
-        #         print("value_str", value_str)
-        #         attribute_values[attribute][value_dict] = attribute_df[attribute_df['value'] == value]['unique_id'].tolist()
-
         # Create a nested list structure for each unique attribute and its values
         attribute_values = []
         for attribute in distinct_values:
@@ -140,86 +128,34 @@ class DataCollector:
                 # Filter the unique_ids by the combinations
                 filtered_ids = [id for id in unique_ids if str(id) in combinations]
                 value_list.append([value, filtered_ids])
-                # value_list.append([value, unique_ids])
             for value in attribute_df['text_size'].unique():
-                    value_str = str(value)  # Convert value to string
-                    unique_ids = attribute_df[attribute_df['text_size'] == value]['unique_id'].tolist()
-                    # Filter the unique_ids by the combinations
-                    filtered_ids = [id for id in unique_ids if str(id) in combinations]
-                    if filtered_ids:  # Append only if filtered_ids is not empty
-                        text_size_value_list.append([value_str, filtered_ids])
+                value_str = str(value)  # Convert value to string
+                unique_ids = attribute_df[attribute_df['text_size'] == value]['unique_id'].tolist()
+                # Filter the unique_ids by the combinations
+                filtered_ids = [id for id in unique_ids if str(id) in combinations]
+                if filtered_ids:  # Append only if filtered_ids is not empty
+                    text_size_value_list.append([value_str, filtered_ids])
             attribute_values.append([attribute, value_list, "text-size", text_size_value_list])
                 
         # Define the directory path
-        dir_path = f"results/computed_styles_level_{level}"
+        if domain:
+            dir_path = f"results/{domain}/computed_styles_level_{level}"
+        else:
+            dir_path = f"results/computed_styles_level_{level}"
+            
         # Check if the directory exists
         if not os.path.exists(dir_path):
             # If it doesn't exist, create it
             os.makedirs(dir_path)        
+            
         # Save the output to a file
+        timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
         computed_styles_file = f"{dir_path}/computed_styles_{timestamp}.json"
         with open(computed_styles_file, 'w') as f:
             json.dump({
                 'total_unique_attributes': total_unique_attributes,
                 'attribute_values': attribute_values
             }, f, indent=4)
-
-
-        # Iterate over each attribute
-        for attribute_data in attribute_values:
-            attribute = attribute_data[0]
-            values = attribute_data[1]
-
-            # Create a new figure for each attribute
-            # plt.figure(figsize=(10, 5))
-
-            # Iterate over each value
-            for value_data in values:
-                value = value_data[0]
-                ids = value_data[1]
-
-                try:
-                    # Use the length of the ids list as the y value
-                    y = len(ids)
-
-                    # Create a bar plot with the value as the x value and the length of the ids list as the y value
-                    # plt.bar(value, y)
-
-                except Exception as e:
-                    # Write the error, attribute, value, and ids to the error file
-                    # Open the error file
-                    with open(f"results/computed_styles_images/error_log_{timestamp}.txt", 'w') as error_file:
-                        error_file.write(f"Error: {str(e)}\n")
-                        error_file.write(f"Attribute: {attribute}\n")
-                        error_file.write(f"Value: {value}\n")
-                        error_file.write(f"IDs: {ids}\n")
-                        error_file.write("Traceback:\n")
-                        error_file.write(traceback.format_exc())
-                        error_file.write("\n\n")
-
-            # Set the title of the plot to the attribute
-            # plt.title(attribute)
-
-            # Set the x and y labels
-            # plt.xlabel('Value')
-            # plt.ylabel('Number of IDs')
-
-            # Show the plot
-            # plt.show()
-
-            # Define the directory path
-            # dir_path = f"results/computed_styles_images/level_{level}"
-
-            # Check if the directory exists
-            # if not os.path.exists(dir_path):
-            #     # If it doesn't exist, create it
-            #     os.makedirs(dir_path)
-
-            # Now you can safely save the plot to the directory
-            # plt.savefig(f'{dir_path}/{attribute}_{timestamp}.png')
-
-            # Close the plot
-            # plt.close()
 
         return total_unique_attributes, attribute_values, computed_styles_file
 

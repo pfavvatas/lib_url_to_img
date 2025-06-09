@@ -5,6 +5,11 @@ sudo apt install nodejs npm
 node -v
 npm -v
 npm install -g mprocs
+sudo apt install python3-venv
+sudo apt-get install chromium-chromedriver
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+sudo apt update
+sudo apt install -y ./google-chrome-stable_current_amd64.deb
 ```
 
 1)
@@ -28,6 +33,7 @@ npm run setup
 
 4) Run the projects:
 ```sh
+export CHROME_BINARY=/opt/google/chrome/google-chrome
 mprocs --config ./mprocs.yml
 ```
 
@@ -113,3 +119,88 @@ file:///home/pfavvatas/lib_url_to_img/test/test1.html
 https://security.gentoo.org/glsa/202105-27 No Types Assigned
 
 Étienne Gervais, Charl-Alexandre Le Brun and Chatwork Co., Ltd. reported this vulnerability to Six Apart Ltd. and coordinated. 
+
+# WSL (Windows Subsystem for Linux) Setup Instructions
+
+If you are running this project in WSL (Windows Subsystem for Linux), follow these steps to ensure Google Chrome and ChromeDriver work correctly with Selenium:
+
+## 1. Install Google Chrome in WSL
+
+```sh
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+sudo apt update
+sudo apt install -y ./google-chrome-stable_current_amd64.deb
+```
+
+## 2. Install ChromeDriver (matching your Chrome version)
+
+1. Check your Chrome version:
+   ```sh
+   /opt/google/chrome/google-chrome --version
+   ```
+2. Download the matching ChromeDriver from:
+   https://googlechromelabs.github.io/chrome-for-testing/
+3. Unzip and move it to your PATH:
+   ```sh
+   sudo apt install unzip
+   wget <chromedriver-zip-url>
+   unzip chromedriver-linux64.zip
+   sudo mv chromedriver-linux64/chromedriver /usr/bin/chromedriver
+   sudo chmod +x /usr/bin/chromedriver
+   chromedriver --version  # Should match Chrome version
+   ```
+
+## 3. Install required dependencies
+
+Some libraries are needed for Chrome to run in headless mode:
+```sh
+sudo apt-get install -y libnss3 libxi6 libxcursor1 libxdamage1 libxrandr2 libatk1.0-0 libcups2t64 libdbus-1-3 libgtk-3-0t64 libxcomposite1 libxss1 libxtst6 fonts-liberation libappindicator3-1 xdg-utils
+```
+
+## 4. Set the Chrome binary path (optional but recommended)
+
+Add this to your shell before running the project:
+```sh
+export CHROME_BINARY=/opt/google/chrome/google-chrome
+```
+
+## 5. Use a Python virtual environment
+
+```sh
+python3 -m venv venv
+source venv/bin/activate
+pip install selenium
+```
+
+## 6. Troubleshooting
+
+- If you see `no chrome binary at ...` errors, double-check the Chrome and ChromeDriver versions match and that `/opt/google/chrome/google-chrome` exists and is executable.
+- If you see `ModuleNotFoundError: No module named 'selenium'`, make sure your virtual environment is activated.
+- If you see errors about missing libraries, re-run the dependencies install command above.
+- If you are using WSL1 and have issues, consider upgrading to WSL2 for better compatibility with headless browsers.
+
+---
+
+## Python Dependencies for Clustering
+
+To use the clustering features, you need to install several Python packages. Make sure your virtual environment is activated (see step 5 above), then run:
+
+```sh
+pip install -r lib_url_to_img/backend/requirements.txt
+```
+
+**Note:** If you see an error like `ModuleNotFoundError: No module named 'colormath'`, double-check that your virtual environment is activated. You can activate it with:
+
+```sh
+source venv/bin/activate
+```
+
+If you encounter issues with the `dbcv` package (not available on PyPI), it will be installed from source via the requirements file. If you need to install it manually, you can run:
+
+```sh
+pip install git+https://github.com/scikit-learn-contrib/hdbscan.git
+```
+
+This will install `hdbscan` and the bundled `dbcv` implementation.
+
+---

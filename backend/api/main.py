@@ -69,8 +69,8 @@ def process_clusters():
           type: object
           properties:
             clusters:
-              type: string
-              example: "cluster data here"
+              type: object
+              example: {"domain": {"level": {"results": []}}}
     responses:
       200:
         description: Processed cluster results
@@ -80,7 +80,7 @@ def process_clusters():
             type: string
     """
     data = request.json
-    clusters_data = data.get('clusters', '')
+    clusters_data = data  # The entire request body is the clusters data
     # Process the clusters data
     results = process_clusters_from_api(clusters_data)
     return jsonify(results)
