@@ -311,7 +311,22 @@
         "img,p,div,div,div,div,div,div,section,div": "#FF7DAA",
         "br,p,div,div,div,div,div,div,section,div": "#DB1FD6",
         "img,div,div,div,div,div,div,section,div,header": "#AA4EEC",
-        "b,h1": "#B4E92E"
+        "b,h1": "#B4E92E",
+        "tbody,table,div": "#AA57EF",
+        "small,i,div": "#79CBC9",
+        "hr,div,div": "#8B504F",
+        "span,strong,div": "#294849",
+        "style,div,div": "#CDCDE6",
+        "li,ul,div": "#0DD44D",
+        "dd,dl,div": "#A8407F",
+        "dt,dl,div": "#A96FEE",
+        "h2,div,div": "#210E93",
+        "th,tr,tbody": "#41007A",
+        "br,li,ol": "#7CB5B8",
+        "code,li,ul": "#FB70C2",
+        "code,p,div": "#03FE6A",
+        "span,h1,div": "#12DCB6",
+        "br,h1,div": "#431606"
     },
     "tag_order": {
         "b": 1,
@@ -625,6 +640,21 @@
         "img,p,div,div,div,div,div,div,section,div": 309,
         "br,p,div,div,div,div,div,div,section,div": 310,
         "img,div,div,div,div,div,div,section,div,header": 311,
-        "b,h1": 312
+        "b,h1": 312,
+        "tbody,table,div": 313,
+        "small,i,div": 314,
+        "hr,div,div": 315,
+        "span,strong,div": 316,
+        "style,div,div": 317,
+        "li,ul,div": 318,
+        "dd,dl,div": 319,
+        "dt,dl,div": 320,
+        "h2,div,div": 321,
+        "th,tr,tbody": 322,
+        "br,li,ol": 323,
+        "code,li,ul": 324,
+        "code,p,div": 325,
+        "span,h1,div": 326,
+        "br,h1,div": 327
     }
 }

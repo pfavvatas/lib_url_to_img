@@ -79,6 +79,7 @@ def process_urls_from_cli(urls, levels, from_api=False):
     # Clustering
     # Process computed styles for each level
     clustering_results = []
+    processed_clusters_data = []
     for level in levels:
         # Get the computed styles file path for this level
         computed_styles_file = dataCollector.computed_styles(level=level)[2]
@@ -107,6 +108,15 @@ def process_urls_from_cli(urls, levels, from_api=False):
                 # Add level information to the result
                 clustering_result['level'] = level
                 clustering_results.append(clustering_result)
+
+                # Process clusters for this level
+                if 'clusters' in clustering_result:
+                    cluster_data = json.dumps(clustering_result['clusters'])
+                    processed_cluster = process_clusters_from_cli(cluster_data, from_api=True)
+                    processed_clusters_data.append({
+                        'level': level,
+                        'processed_data': processed_cluster
+                    })
             else:
                 clustering_results.append({
                     "level": level,
@@ -125,9 +135,20 @@ def process_urls_from_cli(urls, levels, from_api=False):
             })
     
     if from_api:
-        return {"status": "success", "message": "URLs processed successfully", "file": computed_styles_file, "clustering_results": clustering_results}
+        return {
+            "status": "success", 
+            "message": "URLs processed successfully", 
+            "file": computed_styles_file, 
+            "clustering_results": clustering_results,
+            "processed_clusters": processed_clusters_data
+        }
     else:
-        return {"status": "success", "message": "URLs processed successfully", "clustering_results": clustering_results}
+        return {
+            "status": "success", 
+            "message": "URLs processed successfully", 
+            "clustering_results": clustering_results,
+            "processed_clusters": processed_clusters_data
+        }
 
 
 def process_clusters_from_cli(clusters_data, from_api=False):
@@ -188,61 +209,46 @@ def process_clusters_from_cli(clusters_data, from_api=False):
     all_cluster_guids = set()
     for cluster in clusters:
         all_cluster_guids.update(cluster.guids) 
+
+    # Dictionary to store site-to-cluster mappings
+    sites = {}
           
     # Function to search for HTML data with a specific GUID
-    
-    def search_html_data(html_data):
+    def search_html_data(html_data, site_url):
         unique_id = str(html_data.get("unique_id"))
         if unique_id in all_cluster_guids:
             try:
                 for cluster in clusters:
                     if unique_id in cluster.guids:
-                        cluster_id = cluster.id 
-                        cluster_obj = cluster    
-                msg = f"Found GUID: {unique_id} in cluster: {cluster_id}"
-                # data_to_return.append(msg)              
-                print(msg)
-                if "clusters" not in html_data:
-                    html_data["clusters"] = []
-                html_data["clusters"].append(cluster_obj.__dict__)                
+                        cluster_id = int(cluster.id.split('_')[1]) + 1  # Extract the number from cluster_id and add 1
+                        if site_url not in sites:
+                            sites[site_url] = []
+                        sites[site_url].append(cluster_id)
+                        if "clusters" not in html_data:
+                            html_data["clusters"] = []
+                        html_data["clusters"].append(cluster.__dict__)
+                        break
             except Exception as e:
                 print(f"An error occurred: {e}")
                 data_to_return.append(f"An error occurred: {e}")
         for child in html_data.get("children", []):
-            search_html_data(child)
+            search_html_data(child, site_url)
 
     # Read the JSON file
     def find_latest_data_file(directory):
-        # print(f"directory: {directory}")
-        # print(f"directory files: {os.listdir(directory)}")
-        
-        # Construct the search pattern
         search_pattern = os.path.join(directory, "data_*.json")
-        # print(f"search_pattern: {search_pattern}")
-        
-        # Get a list of all matching files
         files = glob.glob(search_pattern)
-        # print(f"files: {files}")
-        
         if not files:
             return None
-        
-        # Find the latest file based on the modification time
         latest_file = max(files, key=os.path.getmtime)
-        # print(f"latest_file: {latest_file}")
-        
         return latest_file
 
     directory = "/home/pfavv/lib_url_to_img/backend/api/results"
     file_path = find_latest_data_file(directory)
-    # print(f"file_path: {file_path}")
 
     # Check if the file exists
     if os.path.exists(file_path):
-        # Get the file size
         file_size = os.path.getsize(file_path)
-        
-        # Read the JSON file and count the number of top-level keys
         with open(file_path, "r") as file:
             json_data = json.load(file)
             num_keys = len(json_data)
@@ -259,18 +265,26 @@ def process_clusters_from_cli(clusters_data, from_api=False):
         return {"status": "error", "message": "File not found", "data": data_to_return}
 
     # Process the JSON data
-    unique_id_map = {}
     for key, guid_data in json_data.items():
         html_data = guid_data.get("html_data")
         if html_data:
-            print(f"Processing GUID: {key} for URL: {guid_data.get('url')}")
-            data_to_return.append(f"Processing GUID: {key} for URL: {guid_data.get('url')}")
-            # for cluster in clusters:
-            search_html_data(html_data)
-        #remove combinations_by_level
+            site_url = guid_data.get('url', '')
+            print(f"Processing GUID: {key} for URL: {site_url}")
+            data_to_return.append(f"Processing GUID: {key} for URL: {site_url}")
+            search_html_data(html_data, site_url)
         if "combinations_by_level" in guid_data:
             guid_data.pop("combinations_by_level")
+
+    # Format sites as a string object
+    sites_str = "sites = {\n"
+    for site_url, cluster_ids in sites.items():
+        sites_str += f"    '{site_url}': {cluster_ids},\n"
+    sites_str += "}"
     
+    # Print the sites mapping
+    print("\n" + sites_str)
+    data_to_return.append(sites_str)
+
     # List of valid CSS properties
     VALID_CSS_PROPERTIES = [
         # Fonts and Text
@@ -448,7 +462,12 @@ def process_clusters_from_cli(clusters_data, from_api=False):
     print(f"Results written to: {output_file_path}")
     data_to_return.append(f"Results written to: {output_file_path}")
 
-    return {"status": "success", "message": "Clustering completed successfully", "data": json.dumps(data_to_return)}
+    return {
+        "status": "success", 
+        "message": "Clustering completed successfully", 
+        "data": json.dumps(data_to_return),
+        "sites": sites
+    }
 
 def process_urls_from_api(urls, levels):
     try:
@@ -458,7 +477,8 @@ def process_urls_from_api(urls, levels):
             "status": result.get("status"), 
             "message": result.get("message"), 
             "body": result.get("data", {}),
-            "clustering_results": result.get("clustering_results", {})
+            "clustering_results": result.get("clustering_results", {}),
+            "processed_clusters": result.get("processed_clusters", {})
         }
     except Exception as e:
         error_message = f"Error processing URLs: {str(e)}"
