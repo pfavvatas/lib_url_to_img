@@ -16,6 +16,6 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "scripty": "^2.0.0"
+    "scripty": "^2.1.1"
   }
 }

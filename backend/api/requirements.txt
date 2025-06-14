@@ -6,3 +6,9 @@ image==1.5.33
 selenium==4.10.0
 pandas
 matplotlib
+numpy
+scikit-learn
+git+https://github.com/scikit-learn-contrib/hdbscan.git
+git+https://github.com/FelSiq/DBCV.git
+colormath
+seaborn
