@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Box, TextField, Chip, FormControl, Button, useTheme, Snackbar, CircularProgress, Grid2 as Grid, TextareaAutosize } from '@mui/material';
+import { Box, TextField, Chip, FormControl, Button, useTheme, Snackbar, CircularProgress, Grid2 as Grid, TextareaAutosize, Accordion, AccordionSummary, AccordionDetails, Typography } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const URLChipForm = () => {
     const [urls, setUrls] = useState([]);
@@ -14,6 +15,7 @@ const URLChipForm = () => {
     const [selectedLevels, setSelectedLevels] = useState([]); // State for selected levels
     const [currentView, setCurrentView] = useState('home'); // State for current view
     const [clusterInput, setClusterInput] = useState(""); // State for cluster input
+    const [showResults, setShowResults] = useState(false); // Add this new state
     const theme = useTheme();
 
     const handleInputChange = (e) => {
@@ -88,10 +90,13 @@ const URLChipForm = () => {
                 body: JSON.stringify({ urls, levels: selectedLevels })
             });
             const data = await response.json();
+            console.log("API Response:", data); // Debug log
 
             if (data.status === "success") {
                 // Display success notification
                 setSuccess(data.message);
+                console.log("Setting result:", data); // Debug log
+                setResult(data); // Store the entire response data
 
                 // Handle file conversion and download
                 if (data.files && data.files.length > 0) {
@@ -110,12 +115,6 @@ const URLChipForm = () => {
                         document.body.removeChild(link);
                     });
                 }
-
-                const parsedData = data.body && Object.keys(data.body).length > 0 ? JSON.parse(data.body) : null;
-                if (parsedData) {
-                    setResult(parsedData);
-                }
-                setResult(parsedData);
             } else if (data.status === "error") {
                 // Set error state
                 setError({ message: data.message, stack: data?.stack_trace });
@@ -192,6 +191,166 @@ const URLChipForm = () => {
         }
     }, [success]);
 
+    const renderResults = () => {
+        console.log("Current result state:", result);
+        if (!result) return null;
+
+        return (
+            <Box sx={{ width: '100%', mt: theme.spacing(4), maxWidth: '1200px', mx: 'auto' }}>
+                <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
+                    Clustering Results
+                </Typography>
+                
+                {/* Clustering Results Section */}
+                {result.clustering_results && result.clustering_results.map((clusterResult, index) => (
+                    <Accordion key={`cluster-result-${index}`} sx={{ mb: theme.spacing(2) }}>
+                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                            <Typography>
+                                Level {clusterResult.level} - {clusterResult.message}
+                            </Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <Box sx={{ mb: theme.spacing(2) }}>
+                                <Typography variant="h6" gutterBottom>Cluster Info</Typography>
+                                <Box sx={{ 
+                                    p: 2, 
+                                    bgcolor: 'background.paper', 
+                                    borderRadius: 1,
+                                    border: '1px solid',
+                                    borderColor: 'divider'
+                                }}>
+                                    <Typography variant="body1">
+                                        Number of Clusters: {clusterResult.cluster_info.num_clusters}
+                                    </Typography>
+                                    <Typography variant="body1">
+                                        DBCV Score: {clusterResult.cluster_info.dbcv_score.toFixed(3)}
+                                    </Typography>
+                                    <Typography variant="body1">
+                                        Min Cluster Size: {clusterResult.cluster_info.min_cluster_size}
+                                    </Typography>
+                                    <Typography variant="body1">
+                                        Cluster Selection Epsilon: {clusterResult.cluster_info.cluster_selection_epsilon}
+                                    </Typography>
+                                    <Typography variant="body1" sx={{ mt: 1 }}>
+                                        Useful Attributes:
+                                    </Typography>
+                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
+                                        {clusterResult.cluster_info.useful_attributes.map((attr, i) => (
+                                            <Chip key={i} label={attr} size="small" />
+                                        ))}
+                                    </Box>
+                                </Box>
+                            </Box>
+
+                            <Box sx={{ mb: theme.spacing(2) }}>
+                                <Typography variant="h6" gutterBottom>Clusters</Typography>
+                                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                    <TextareaAutosize
+                                        minRows={2}
+                                        maxRows={4}
+                                        style={{ 
+                                            width: '60%', 
+                                            padding: '10px',
+                                            fontFamily: 'monospace',
+                                            borderRadius: '4px',
+                                            border: '1px solid #ccc',
+                                            resize: 'vertical',
+                                            overflow: 'auto'
+                                        }}
+                                        value={JSON.stringify(clusterResult.clusters, null, 2)}
+                                        readOnly
+                                    />
+                                </Box>
+                            </Box>
+                        </AccordionDetails>
+                    </Accordion>
+                ))}
+
+                {/* Processed Clusters Section */}
+                {result.processed_clusters && result.processed_clusters.map((processedCluster, index) => (
+                    <Accordion key={`processed-cluster-${index}`} sx={{ mb: theme.spacing(2) }}>
+                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                            <Typography>
+                                Processed Cluster Level {processedCluster.level}
+                            </Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <Box sx={{ mb: theme.spacing(2) }}>
+                                <Typography variant="h6" gutterBottom>Processed Data</Typography>
+                                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                    <TextareaAutosize
+                                        minRows={2}
+                                        maxRows={4}
+                                        style={{ 
+                                            width: '60%', 
+                                            padding: '10px',
+                                            fontFamily: 'monospace',
+                                            borderRadius: '4px',
+                                            border: '1px solid #ccc',
+                                            resize: 'vertical',
+                                            overflow: 'auto'
+                                        }}
+                                        value={processedCluster.processed_data.data}
+                                        readOnly
+                                    />
+                                </Box>
+                            </Box>
+
+                            <Box sx={{ mb: theme.spacing(2) }}>
+                                <Typography variant="h6" gutterBottom>Sites</Typography>
+                                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                    <TextareaAutosize
+                                        minRows={2}
+                                        maxRows={4}
+                                        style={{ 
+                                            width: '60%', 
+                                            padding: '10px',
+                                            fontFamily: 'monospace',
+                                            borderRadius: '4px',
+                                            border: '1px solid #ccc',
+                                            resize: 'vertical',
+                                            overflow: 'auto'
+                                        }}
+                                        value={JSON.stringify(processedCluster.processed_data.sites, null, 2)}
+                                        readOnly
+                                    />
+                                </Box>
+                            </Box>
+
+                            {/* Full Object Data Section */}
+                            <Box sx={{ mb: theme.spacing(2) }}>
+                                <Accordion>
+                                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                        <Typography>Full Object Data</Typography>
+                                    </AccordionSummary>
+                                    <AccordionDetails>
+                                        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                            <TextareaAutosize
+                                                minRows={2}
+                                                maxRows={4}
+                                                style={{ 
+                                                    width: '60%', 
+                                                    padding: '10px',
+                                                    fontFamily: 'monospace',
+                                                    borderRadius: '4px',
+                                                    border: '1px solid #ccc',
+                                                    resize: 'vertical',
+                                                    overflow: 'auto'
+                                                }}
+                                                value={JSON.stringify(processedCluster.processed_data, null, 2)}
+                                                readOnly
+                                            />
+                                        </Box>
+                                    </AccordionDetails>
+                                </Accordion>
+                            </Box>
+                        </AccordionDetails>
+                    </Accordion>
+                ))}
+            </Box>
+        );
+    };
+
     const renderContent = () => {
         switch (currentView) {
             case 'home':
@@ -230,7 +389,7 @@ const URLChipForm = () => {
                                 gap: theme.spacing(1),
                                 maxHeight: '200px',
                                 overflowY: 'auto',
-                                justifyContent: 'center' // Center the URLs
+                                justifyContent: 'center'
                             }}
                         >
                             {urls.map((url, index) => (
@@ -269,6 +428,11 @@ const URLChipForm = () => {
                                 Clear
                             </Button>
                         </Box>
+                        {result && (
+                            <Box sx={{ mt: 4, width: '100%' }}>
+                                {renderResults()}
+                            </Box>
+                        )}
                     </FormControl>
                 );
             case 'clusters':
@@ -365,7 +529,7 @@ const URLChipForm = () => {
                             </Button>
                         </Box>
                     ))}
-                    <pre>{JSON.stringify(result, null, 2)}</pre>
+                    {/* <pre>{JSON.stringify(result, null, 2)}</pre> */}
                 </Grid>
             )}
             {error && (

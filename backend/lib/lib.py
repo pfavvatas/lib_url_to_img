@@ -19,6 +19,8 @@ import traceback
 import zipfile
 import random
 import glob
+from utils.clustering import perform_clustering_analysis
+
 
 
 
@@ -74,10 +76,58 @@ def process_urls_from_cli(urls, levels, from_api=False):
     
     driver.close()    
     
+    # Clustering
+    # Process computed styles for each level
+    clustering_results = []
+    for level in levels:
+        # Get the computed styles file path for this level
+        computed_styles_file = dataCollector.computed_styles(level=level)[2]
+        print(f"\033[92m computed_styles_file: {computed_styles_file}\033[0m")
+
+        # Process the computed styles file and call clustering function directly
+        try:
+            # Read the computed styles data
+            with open(computed_styles_file, 'r') as file:
+                data = json.load(file)
+            
+            print(f"\033[94m=== CLUSTERING RESULTS FOR LEVEL {level} ===\033[0m")
+            print(f"\033[92mComputed styles file: {computed_styles_file}\033[0m")
+            
+            # Call the clustering function with the data directly
+            clustering_result = perform_clustering_analysis(data)
+            
+            if clustering_result['success']:
+                print(f"\033[92mStatus: success\033[0m")
+                print(f"\033[92mMessage: {clustering_result['message']}\033[0m")
+                
+                print(f"\033[93mNumber of clusters: {clustering_result['cluster_info']['num_clusters']}\033[0m")
+                print(f"\033[93mDBCV Score: {clustering_result['cluster_info']['dbcv_score']:.3f}\033[0m")
+                print(f"\033[93mClusters: {clustering_result['clusters']}\033[0m")
+                
+                # Add level information to the result
+                clustering_result['level'] = level
+                clustering_results.append(clustering_result)
+            else:
+                clustering_results.append({
+                    "level": level,
+                    "status": "error",
+                    "message": f"Level {level}: {clustering_result['message']}"
+                })
+            
+            print(f"\033[94m=== END CLUSTERING RESULTS ===\033[0m\n")
+            
+        except Exception as e:
+            print(f"\033[91mError during clustering: {str(e)}\033[0m")
+            clustering_results.append({
+                "level": level,
+                "status": "error",
+                "message": f"Level {level}: Error during clustering: {str(e)}"
+            })
+    
     if from_api:
-        return {"status": "success", "message": "URLs processed successfully", "file": computed_styles_file}
+        return {"status": "success", "message": "URLs processed successfully", "file": computed_styles_file, "clustering_results": clustering_results}
     else:
-        return {"status": "success", "message": "URLs processed successfully"}
+        return {"status": "success", "message": "URLs processed successfully", "clustering_results": clustering_results}
 
 
 def process_clusters_from_cli(clusters_data, from_api=False):
@@ -163,21 +213,29 @@ def process_clusters_from_cli(clusters_data, from_api=False):
 
     # Read the JSON file
     def find_latest_data_file(directory):
+        # print(f"directory: {directory}")
+        # print(f"directory files: {os.listdir(directory)}")
+        
         # Construct the search pattern
         search_pattern = os.path.join(directory, "data_*.json")
+        # print(f"search_pattern: {search_pattern}")
         
         # Get a list of all matching files
         files = glob.glob(search_pattern)
+        # print(f"files: {files}")
         
         if not files:
             return None
         
         # Find the latest file based on the modification time
         latest_file = max(files, key=os.path.getmtime)
+        # print(f"latest_file: {latest_file}")
         
         return latest_file
-    directory = "/home/pfavvatas/lib_url_to_img/backend/api/results_1"
+
+    directory = "/home/pfavv/lib_url_to_img/backend/api/results"
     file_path = find_latest_data_file(directory)
+    # print(f"file_path: {file_path}")
 
     # Check if the file exists
     if os.path.exists(file_path):
@@ -383,7 +441,7 @@ def process_clusters_from_cli(clusters_data, from_api=False):
     create_html_from_json(json_data, "output_html_files")
         
     # Write results to a file
-    output_file_path = "/home/pfavvatas/lib_url_to_img/backend/api/results_1/WEB.json"
+    output_file_path = "/home/pfavv/lib_url_to_img/backend/api/results/WEB.json"
     with open(output_file_path, "w") as file:
         json.dump(json_data, file, indent=4)
 
@@ -396,28 +454,11 @@ def process_urls_from_api(urls, levels):
     try:
         result = process_urls_from_cli(urls, levels, from_api=True)
         
-        # computed_styles_file = result.get("file")
-
-        # # Create a zip file containing the computed styles file
-        # zip_filename = "computed_styles.zip"
-        # with zipfile.ZipFile(zip_filename, 'w') as zipf:
-        #     zipf.write(computed_styles_file, os.path.basename(computed_styles_file))
-
-        # # Read the zip file into a byte array
-        # with open(zip_filename, 'rb') as zipf:
-        #     zip_data = zipf.read()
-
-        # # Convert the byte array to a hex string
-        # zip_hex_data = zip_data.hex()
-
-        # Delete the zip file
-        # os.remove(zip_filename)
-        
         return {
             "status": result.get("status"), 
             "message": result.get("message"), 
             "body": result.get("data", {}),
-            # "files": [{"filename": zip_filename, "data": zip_hex_data}]
+            "clustering_results": result.get("clustering_results", {})
         }
     except Exception as e:
         error_message = f"Error processing URLs: {str(e)}"
