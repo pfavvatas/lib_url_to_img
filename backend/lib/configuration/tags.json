@@ -326,7 +326,10 @@
         "code,li,ul": "#FB70C2",
         "code,p,div": "#03FE6A",
         "span,h1,div": "#12DCB6",
-        "br,h1,div": "#431606"
+        "br,h1,div": "#431606",
+        "strong,td,tr": "#244B26",
+        "b,td,tr": "#447DA3",
+        "ol,div,div": "#BA3047"
     },
     "tag_order": {
         "b": 1,
@@ -655,6 +658,9 @@
         "code,li,ul": 324,
         "code,p,div": 325,
         "span,h1,div": 326,
-        "br,h1,div": 327
+        "br,h1,div": 327,
+        "strong,td,tr": 328,
+        "b,td,tr": 329,
+        "ol,div,div": 330
     }
 }

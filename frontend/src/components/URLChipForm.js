@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Box, TextField, Chip, FormControl, Button, useTheme, Snackbar, CircularProgress, Grid2 as Grid, TextareaAutosize, Accordion, AccordionSummary, AccordionDetails, Typography, IconButton, Tooltip, Switch, FormControlLabel } from '@mui/material';
+import { Box, TextField, Chip, FormControl, Button, useTheme, Snackbar, CircularProgress, Grid2 as Grid, TextareaAutosize, Accordion, AccordionSummary, AccordionDetails, Typography, IconButton, Tooltip, Card, CardContent, CardHeader, Switch, FormControlLabel } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const URLChipForm = ({ darkMode, onThemeChange }) => {
     const [urls, setUrls] = useState([]);
@@ -19,7 +20,32 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
     const [currentView, setCurrentView] = useState('home'); // State for current view
     const [clusterInput, setClusterInput] = useState(""); // State for cluster input
     const [showResults, setShowResults] = useState(false); // Add this new state
+    const [isNewMode, setIsNewMode] = useState(false);
+    const [abortController, setAbortController] = useState(null);
     const theme = useTheme();
+
+    // Function to extract domain from URL
+    const getDomain = (url) => {
+        try {
+            const urlObj = new URL(url);
+            return urlObj.hostname;
+        } catch {
+            return url;
+        }
+    };
+
+    // Group URLs by domain
+    const groupedUrls = urls.reduce((acc, url) => {
+        const domain = getDomain(url);
+        if (!acc[domain]) {
+            acc[domain] = [];
+        }
+        acc[domain].push(url);
+        return acc;
+    }, {});
+
+    // Sort domains alphabetically
+    const sortedDomains = Object.keys(groupedUrls).sort();
 
     const handleInputChange = (e) => {
         setInputValue(e.target.value);
@@ -82,7 +108,12 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
         }
 
         setLoading(true);
-        setError(null); // Clear previous error
+        setError(null);
+        
+        // Create new AbortController for this request
+        const controller = new AbortController();
+        setAbortController(controller);
+
         try {
             const response = await fetch("http://localhost:5000/process-urls", {
                 method: 'POST',
@@ -90,24 +121,26 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ urls, levels: selectedLevels })
+                body: JSON.stringify({ 
+                    urls, 
+                    levels: selectedLevels,
+                    mode: isNewMode ? 1 : 0
+                }),
+                signal: controller.signal
             });
             const data = await response.json();
-            console.log("API Response:", data); // Debug log
+            console.log("API Response:", data);
 
             if (data.status === "success") {
-                // Display success notification
                 setSuccess(data.message);
-                console.log("Setting result:", data); // Debug log
-                setResult(data); // Store the entire response data
+                console.log("Setting result:", data);
+                setResult(data);
 
-                // Handle file conversion and download
                 if (data.files && data.files.length > 0) {
                     data.files.forEach(file => {
                         const hexString = file.data;
                         const binaryData = new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
                         const blob = new Blob([binaryData], { type: 'application/zip' });
-                        // Generate timestamp
                         const timestamp = new Date().toISOString().replace(/[-:.]/g, '').slice(0, 15);
                         const filenameWithTimestamp = `${timestamp}_${file.filename}`;
                         const link = document.createElement('a');
@@ -119,15 +152,26 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                     });
                 }
             } else if (data.status === "error") {
-                // Set error state
                 setError({ message: data.message, stack: data?.stack_trace });
             }
 
         } catch (error) {
-            console.error("Error:", error);
-            setError({ message: error.message, stack: error.stack });
+            if (error.name === 'AbortError') {
+                setSuccess('Request cancelled');
+            } else {
+                console.error("Error:", error);
+                setError({ message: error.message, stack: error.stack });
+            }
         } finally {
             setLoading(false);
+            setAbortController(null);
+        }
+    };
+
+    const handleCancel = () => {
+        if (abortController) {
+            abortController.abort();
+            setAbortController(null);
         }
     };
 
@@ -429,7 +473,9 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                             resize: 'vertical',
                                             overflow: 'auto'
                                         }}
-                                        value={JSON.stringify(processedCluster.processed_data.sites, null, 2)}
+                                        value={Object.entries(processedCluster.processed_data.sites)
+                                            .map(([url, clusters]) => `"${url}": [${clusters.join(', ')}]`)
+                                            .join(',\n')}
                                         readOnly
                                     />
                                 </Box>
@@ -550,26 +596,114 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                 ))}
                             </Box>
                         </Box>
-                        <Box
-                            sx={{
-                                mt: theme.spacing(2),
-                                display: 'flex',
-                                flexWrap: 'wrap',
-                                gap: theme.spacing(1),
-                                maxHeight: '200px',
-                                overflowY: 'auto',
-                                justifyContent: 'center'
-                            }}
-                        >
-                            {urls.map((url, index) => (
-                                <Chip
-                                    key={index}
-                                    label={url}
-                                    onDelete={() => handleDelete(url)}
-                                    color="primary"
-                                />
+
+                        {/* Mode Switch */}
+                        <Box sx={{ margin: '0 30%', mt: theme.spacing(2), display: 'flex', justifyContent: 'center' }}>
+                            <FormControlLabel
+                                control={
+                                    <Switch
+                                        checked={isNewMode}
+                                        onChange={(e) => setIsNewMode(e.target.checked)}
+                                        color="primary"
+                                    />
+                                }
+                                label={isNewMode ? "New Mode" : "Old Mode"}
+                            />
+                        </Box>
+
+                        {/* URL Cards */}
+                        <Box sx={{ 
+                            margin: '0 30%', 
+                            mt: theme.spacing(2),
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+                            gap: 2
+                        }}>
+                            {sortedDomains.map(domain => (
+                                <Card key={domain} sx={{ 
+                                    height: '100%',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    transition: 'transform 0.2s, box-shadow 0.2s',
+                                    '&:hover': {
+                                        transform: 'translateY(-4px)',
+                                        boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
+                                    },
+                                    boxShadow: '0 4px 8px rgba(0,0,0,0.05)',
+                                    borderRadius: 2,
+                                    border: '1px solid',
+                                    borderColor: 'divider',
+                                    bgcolor: 'background.paper'
+                                }}>
+                                    <CardHeader
+                                        title={domain}
+                                        titleTypographyProps={{ 
+                                            variant: 'h6',
+                                            sx: { 
+                                                fontSize: '1rem',
+                                                fontWeight: 'bold',
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis',
+                                                whiteSpace: 'nowrap',
+                                                color: 'white'
+                                            }
+                                        }}
+                                        sx={{
+                                            bgcolor: 'primary.main',
+                                            color: 'white',
+                                            py: 1.5,
+                                            '& .MuiCardHeader-content': {
+                                                overflow: 'hidden'
+                                            }
+                                        }}
+                                    />
+                                    <CardContent sx={{ 
+                                        flexGrow: 1,
+                                        overflow: 'auto',
+                                        maxHeight: '200px',
+                                        p: 2,
+                                        '&::-webkit-scrollbar': {
+                                            width: '8px',
+                                        },
+                                        '&::-webkit-scrollbar-track': {
+                                            background: 'transparent',
+                                        },
+                                        '&::-webkit-scrollbar-thumb': {
+                                            background: 'rgba(0,0,0,0.2)',
+                                            borderRadius: '4px',
+                                        },
+                                        '&::-webkit-scrollbar-thumb:hover': {
+                                            background: 'rgba(0,0,0,0.3)',
+                                        }
+                                    }}>
+                                        <Box sx={{ 
+                                            display: 'flex', 
+                                            flexWrap: 'wrap', 
+                                            gap: 1 
+                                        }}>
+                                            {groupedUrls[domain].map((url, index) => (
+                                                <Chip
+                                                    key={index}
+                                                    label={url}
+                                                    onDelete={() => handleDelete(url)}
+                                                    color="primary"
+                                                    size="small"
+                                                    sx={{ 
+                                                        mb: 1,
+                                                        '&:hover': {
+                                                            bgcolor: 'primary.main',
+                                                            color: 'primary.contrastText'
+                                                        },
+                                                        transition: 'background-color 0.2s'
+                                                    }}
+                                                />
+                                            ))}
+                                        </Box>
+                                    </CardContent>
+                                </Card>
                             ))}
                         </Box>
+
                         <Box
                             sx={{
                                 mt: theme.spacing(2),
@@ -578,24 +712,40 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                 gap: theme.spacing(2)
                             }}
                         >
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                onClick={handleRun}
-                                sx={{ borderRadius: '20px' }}
-                                disabled={urls.length === 0}
-                            >
-                                Run
-                            </Button>
-                            <Button
-                                variant="contained"
-                                color="secondary"
-                                onClick={handleClear}
-                                sx={{ borderRadius: '20px' }}
-                                disabled={urls.length === 0}
-                            >
-                                Clear
-                            </Button>
+                            {loading ? (
+                                <>
+                                    <Button
+                                        variant="contained"
+                                        color="error"
+                                        onClick={handleCancel}
+                                        sx={{ borderRadius: '20px' }}
+                                    >
+                                        Cancel
+                                    </Button>
+                                    <CircularProgress size={24} sx={{ ml: 1 }} />
+                                </>
+                            ) : (
+                                <>
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={handleRun}
+                                        sx={{ borderRadius: '20px' }}
+                                        disabled={urls.length === 0}
+                                    >
+                                        Run
+                                    </Button>
+                                    <Button
+                                        variant="contained"
+                                        color="secondary"
+                                        onClick={handleClear}
+                                        sx={{ borderRadius: '20px' }}
+                                        disabled={urls.length === 0}
+                                    >
+                                        Clear
+                                    </Button>
+                                </>
+                            )}
                         </Box>
                         {result && (
                             <Box sx={{ mt: 4, width: '100%' }}>
@@ -665,25 +815,6 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                 </Box>
             </Box>
             {renderContent()}
-            {loading && (
-                <Grid
-                    item
-                    xs={12}
-                    sx={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        minHeight: '100vh',
-                        position: 'fixed',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        zIndex: 999
-                    }}
-                >
-                    <CircularProgress />
-                </Grid>
-            )}
             {result && (
                 <Grid
                     item
