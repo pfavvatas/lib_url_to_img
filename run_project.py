@@ -120,14 +120,42 @@ class ProjectLauncher:
             api_dir = self.root_dir / "backend" / "api"
             env = os.environ.copy()
             env['PYTHONPATH'] = str(self.root_dir / "backend" / "lib")
+            env['FLASK_ENV'] = 'development'
+            env['FLASK_DEBUG'] = '1'
             
-            process = subprocess.Popen(
-                [str(python_path), "main.py"],
-                cwd=str(api_dir),
-                env=env
-            )
-            self.processes.append(process)
-            process.wait()
+            # Create output_html_files directory if it doesn't exist
+            output_dir = api_dir / "output_html_files"
+            if not output_dir.exists():
+                output_dir.mkdir(parents=True)
+                print(f"Created output directory: {output_dir}")
+            
+            try:
+                process = subprocess.Popen(
+                    [str(python_path), "main.py"],
+                    cwd=str(api_dir),
+                    env=env,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    text=True
+                )
+                self.processes.append(process)
+                
+                # Print output in real-time
+                while True:
+                    output = process.stdout.readline()
+                    if output == '' and process.poll() is not None:
+                        break
+                    if output:
+                        print(f"API: {output.strip()}")
+                
+                # Check for errors
+                if process.returncode != 0:
+                    error = process.stderr.read()
+                    print(f"API Error: {error}")
+                    
+            except Exception as e:
+                print(f"Error starting API: {e}")
+                raise
         
         print("🐍 Starting Python Flask API (port 5000)...")
         thread = threading.Thread(target=run_api, daemon=True)

@@ -247,11 +247,357 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
         console.log("Current result state:", result);
         if (!result) return null;
 
+        // Handle domain-based results (mode 1)
+        if (result.domain_results) {
+            return (
+                <Box sx={{ width: '100%', mt: theme.spacing(4), maxWidth: '1200px', mx: 'auto' }}>
+                    <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
+                        Domain-Based Clustering Results
+                    </Typography>
+                    
+                    {result.domain_results.map((domainResult, domainIndex) => (
+                        <Accordion 
+                            key={`domain-result-${domainIndex}`} 
+                            sx={{ 
+                                mb: theme.spacing(2),
+                                '&:before': {
+                                    display: 'none',
+                                },
+                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                borderRadius: '8px !important',
+                                overflow: 'hidden'
+                            }}
+                        >
+                            <AccordionSummary 
+                                expandIcon={<ExpandMoreIcon />}
+                                sx={{
+                                    backgroundColor: domainResult.status === 'success' ? 'success.light' : 'error.light',
+                                    '&:hover': {
+                                        backgroundColor: domainResult.status === 'success' ? 'success.main' : 'error.main',
+                                        color: 'white',
+                                    },
+                                    '& .MuiAccordionSummary-expandIconWrapper': {
+                                        color: 'inherit'
+                                    }
+                                }}
+                            >
+                                <Typography sx={{ fontWeight: 'bold' }}>
+                                    Domain: {domainResult.domain} - {domainResult.status}
+                                </Typography>
+                            </AccordionSummary>
+                            <AccordionDetails sx={{ p: 3 }}>
+                                {/* HTML Files Section */}
+                                {domainResult.html_files && domainResult.html_files.length > 0 && (
+                                    <Box sx={{ mb: theme.spacing(2) }}>
+                                        <Typography variant="h6" gutterBottom>Generated HTML Files</Typography>
+                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                            {domainResult.html_files.map((file, index) => (
+                                                <Button
+                                                    key={index}
+                                                    variant="contained"
+                                                    color="primary"
+                                                    onClick={() => window.open(`http://localhost:5000/${file.path}`, '_blank')}
+                                                    sx={{ mb: 1 }}
+                                                >
+                                                    Open {file.filename}
+                                                </Button>
+                                            ))}
+                                        </Box>
+                                    </Box>
+                                )}
+
+                                {/* Rest of the domain result content */}
+                                <Box sx={{ mb: theme.spacing(2) }}>
+                                    <Typography variant="h6" gutterBottom>URLs in Domain</Typography>
+                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                        {domainResult.urls.map((url, index) => (
+                                            <Chip
+                                                key={index}
+                                                label={url}
+                                                color="primary"
+                                                size="small"
+                                            />
+                                        ))}
+                                    </Box>
+                                </Box>
+
+                                {domainResult.status === 'success' && (
+                                    <>
+                                        {/* Clustering Results Section */}
+                                        {domainResult.clustering_results && domainResult.clustering_results.map((clusterResult, index) => (
+                                            <Accordion 
+                                                key={`cluster-result-${domainIndex}-${index}`} 
+                                                sx={{ 
+                                                    mb: theme.spacing(2),
+                                                    '&:before': {
+                                                        display: 'none',
+                                                    },
+                                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                                    borderRadius: '8px !important',
+                                                    overflow: 'hidden'
+                                                }}
+                                            >
+                                                <AccordionSummary 
+                                                    expandIcon={<ExpandMoreIcon />}
+                                                    sx={{
+                                                        backgroundColor: 'primary.light',
+                                                        '&:hover': {
+                                                            backgroundColor: 'primary.main',
+                                                            color: 'white',
+                                                        },
+                                                        '& .MuiAccordionSummary-expandIconWrapper': {
+                                                            color: 'inherit'
+                                                        }
+                                                    }}
+                                                >
+                                                    <Typography sx={{ fontWeight: 'bold' }}>
+                                                        Level {clusterResult.level} - {clusterResult.message}
+                                                    </Typography>
+                                                </AccordionSummary>
+                                                <AccordionDetails sx={{ p: 3 }}>
+                                                    <Box sx={{ mb: theme.spacing(2) }}>
+                                                        <Typography variant="h6" gutterBottom>Cluster Info</Typography>
+                                                        <Box sx={{ 
+                                                            p: 3, 
+                                                            bgcolor: 'background.paper', 
+                                                            borderRadius: 2,
+                                                            border: '1px solid',
+                                                            borderColor: 'divider',
+                                                            display: 'flex',
+                                                            flexDirection: 'column',
+                                                            gap: 2
+                                                        }}>
+                                                            <Box sx={{ 
+                                                                display: 'grid',
+                                                                gridTemplateColumns: '200px 1fr',
+                                                                gap: 2,
+                                                                alignItems: 'center'
+                                                            }}>
+                                                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                                    Number of Clusters:
+                                                                </Typography>
+                                                                <Typography variant="subtitle1">
+                                                                    {clusterResult.cluster_info.num_clusters}
+                                                                </Typography>
+
+                                                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                                    DBCV Score:
+                                                                </Typography>
+                                                                <Typography variant="subtitle1">
+                                                                    {clusterResult.cluster_info.dbcv_score.toFixed(3)}
+                                                                </Typography>
+
+                                                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                                    Min Cluster Size:
+                                                                </Typography>
+                                                                <Typography variant="subtitle1">
+                                                                    {clusterResult.cluster_info.min_cluster_size}
+                                                                </Typography>
+
+                                                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                                    Epsilon:
+                                                                </Typography>
+                                                                <Typography variant="subtitle1">
+                                                                    {clusterResult.cluster_info.cluster_selection_epsilon}
+                                                                </Typography>
+                                                            </Box>
+
+                                                            <Box sx={{ 
+                                                                display: 'flex',
+                                                                flexDirection: 'column',
+                                                                gap: 1,
+                                                                mt: 1
+                                                            }}>
+                                                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                                    Useful Attributes:
+                                                                </Typography>
+                                                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                                                    {clusterResult.cluster_info.useful_attributes.map((attr, i) => (
+                                                                        <Chip 
+                                                                            key={i} 
+                                                                            label={attr} 
+                                                                            size="small"
+                                                                            sx={{ 
+                                                                                bgcolor: 'primary.light',
+                                                                                color: 'primary.contrastText',
+                                                                                '&:hover': {
+                                                                                    bgcolor: 'primary.main'
+                                                                                }
+                                                                            }}
+                                                                        />
+                                                                    ))}
+                                                                </Box>
+                                                            </Box>
+                                                        </Box>
+                                                    </Box>
+
+                                                    <Box sx={{ mb: theme.spacing(2) }}>
+                                                        <Typography variant="h6" gutterBottom>Clusters</Typography>
+                                                        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                                            <TextareaAutosize
+                                                                minRows={2}
+                                                                maxRows={4}
+                                                                style={{ 
+                                                                    width: '60%', 
+                                                                    padding: '10px',
+                                                                    fontFamily: 'monospace',
+                                                                    borderRadius: '4px',
+                                                                    border: '1px solid #ccc',
+                                                                    resize: 'vertical',
+                                                                    overflow: 'auto'
+                                                                }}
+                                                                value={JSON.stringify(clusterResult.clusters, null, 2)}
+                                                                readOnly
+                                                            />
+                                                        </Box>
+                                                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1 }}>
+                                                            <Tooltip title="Copy to clipboard">
+                                                                <IconButton 
+                                                                    size="small" 
+                                                                    onClick={() => handleCopyToClipboard(JSON.stringify(clusterResult.clusters, null, 2))}
+                                                                >
+                                                                    <ContentCopyIcon />
+                                                                </IconButton>
+                                                            </Tooltip>
+                                                        </Box>
+                                                    </Box>
+                                                </AccordionDetails>
+                                            </Accordion>
+                                        ))}
+
+                                        {/* Processed Clusters Section */}
+                                        {domainResult.processed_clusters && domainResult.processed_clusters.map((processedCluster, index) => (
+                                            <Accordion 
+                                                key={`processed-cluster-${domainIndex}-${index}`} 
+                                                sx={{ 
+                                                    mb: theme.spacing(2),
+                                                    '&:before': {
+                                                        display: 'none',
+                                                    },
+                                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                                    borderRadius: '8px !important',
+                                                    overflow: 'hidden'
+                                                }}
+                                            >
+                                                <AccordionSummary 
+                                                    expandIcon={<ExpandMoreIcon />}
+                                                    sx={{
+                                                        backgroundColor: 'secondary.light',
+                                                        '&:hover': {
+                                                            backgroundColor: 'secondary.main',
+                                                            color: 'white',
+                                                        },
+                                                        '& .MuiAccordionSummary-expandIconWrapper': {
+                                                            color: 'inherit'
+                                                        }
+                                                    }}
+                                                >
+                                                    <Typography sx={{ fontWeight: 'bold' }}>
+                                                        Processed Cluster Level {processedCluster.level}
+                                                    </Typography>
+                                                </AccordionSummary>
+                                                <AccordionDetails sx={{ p: 3 }}>
+                                                    <Box sx={{ mb: theme.spacing(2) }}>
+                                                        <Typography variant="h6" gutterBottom>Processed Data</Typography>
+                                                        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                                            <TextareaAutosize
+                                                                minRows={2}
+                                                                maxRows={4}
+                                                                style={{ 
+                                                                    width: '60%', 
+                                                                    padding: '10px',
+                                                                    fontFamily: 'monospace',
+                                                                    borderRadius: '4px',
+                                                                    border: '1px solid #ccc',
+                                                                    resize: 'vertical',
+                                                                    overflow: 'auto'
+                                                                }}
+                                                                value={processedCluster.processed_data.data}
+                                                                readOnly
+                                                            />
+                                                        </Box>
+                                                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1 }}>
+                                                            <Tooltip title="Copy to clipboard">
+                                                                <IconButton 
+                                                                    size="small" 
+                                                                    onClick={() => handleCopyToClipboard(processedCluster.processed_data.data)}
+                                                                >
+                                                                    <ContentCopyIcon />
+                                                                </IconButton>
+                                                            </Tooltip>
+                                                        </Box>
+                                                    </Box>
+
+                                                    <Box sx={{ mb: theme.spacing(2) }}>
+                                                        <Typography variant="h6" gutterBottom>Sites</Typography>
+                                                        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                                            <TextareaAutosize
+                                                                minRows={2}
+                                                                maxRows={4}
+                                                                style={{ 
+                                                                    width: '60%', 
+                                                                    padding: '10px',
+                                                                    fontFamily: 'monospace',
+                                                                    borderRadius: '4px',
+                                                                    border: '1px solid #ccc',
+                                                                    resize: 'vertical',
+                                                                    overflow: 'auto'
+                                                                }}
+                                                                value={Object.entries(processedCluster.processed_data.sites)
+                                                                    .map(([url, clusters]) => `"${url}": [${clusters.join(', ')}]`)
+                                                                    .join(',\n')}
+                                                                readOnly
+                                                            />
+                                                        </Box>
+                                                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1 }}>
+                                                            <Tooltip title="Copy to clipboard">
+                                                                <IconButton 
+                                                                    size="small" 
+                                                                    onClick={() => handleCopyToClipboard(JSON.stringify(processedCluster.processed_data.sites, null, 2))}
+                                                                >
+                                                                    <ContentCopyIcon />
+                                                                </IconButton>
+                                                            </Tooltip>
+                                                        </Box>
+                                                    </Box>
+                                                </AccordionDetails>
+                                            </Accordion>
+                                        ))}
+                                    </>
+                                )}
+                            </AccordionDetails>
+                        </Accordion>
+                    ))}
+                </Box>
+            );
+        }
+
+        // Original results rendering (mode 0)
         return (
             <Box sx={{ width: '100%', mt: theme.spacing(4), maxWidth: '1200px', mx: 'auto' }}>
                 <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
                     Clustering Results
                 </Typography>
+                
+                {/* HTML Files Section */}
+                {result.html_files && result.html_files.length > 0 && (
+                    <Box sx={{ mb: theme.spacing(2) }}>
+                        <Typography variant="h6" gutterBottom>Generated HTML Files</Typography>
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                            {result.html_files.map((file, index) => (
+                                <Button
+                                    key={index}
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={() => window.open(`http://localhost:5000/${file.path}`, '_blank')}
+                                    sx={{ mb: 1 }}
+                                >
+                                    Open {file.filename}
+                                </Button>
+                            ))}
+                        </Box>
+                    </Box>
+                )}
                 
                 {/* Clustering Results Section */}
                 {result.clustering_results && result.clustering_results.map((clusterResult, index) => (
@@ -490,75 +836,6 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                     </Tooltip>
                                 </Box>
                             </Box>
-
-                            {/* Full Object Data Section */}
-                            <Accordion 
-                                sx={{ 
-                                    '&:before': {
-                                        display: 'none',
-                                    },
-                                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                                    borderRadius: '8px !important',
-                                    overflow: 'hidden'
-                                }}
-                            >
-                                <AccordionSummary 
-                                    expandIcon={<ExpandMoreIcon />}
-                                    sx={{
-                                        backgroundColor: 'grey.100',
-                                        '&:hover': {
-                                            backgroundColor: 'grey.200',
-                                        },
-                                        '& .MuiAccordionSummary-expandIconWrapper': {
-                                            color: 'inherit'
-                                        }
-                                    }}
-                                >
-                                    <Typography sx={{ fontWeight: 'medium' }}>
-                                        Full Object Data
-                                    </Typography>
-                                </AccordionSummary>
-                                <AccordionDetails sx={{ p: 2 }}>
-                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                                        <Typography variant="h6">Data</Typography>
-                                        <Tooltip title="Copy to clipboard">
-                                            <IconButton 
-                                                size="small" 
-                                                onClick={() => handleCopyToClipboard(JSON.stringify(processedCluster.processed_data, null, 2))}
-                                            >
-                                                <ContentCopyIcon />
-                                            </IconButton>
-                                        </Tooltip>
-                                    </Box>
-                                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                                        <TextareaAutosize
-                                            minRows={2}
-                                            maxRows={4}
-                                            style={{ 
-                                                width: '60%', 
-                                                padding: '10px',
-                                                fontFamily: 'monospace',
-                                                borderRadius: '4px',
-                                                border: '1px solid #ccc',
-                                                resize: 'vertical',
-                                                overflow: 'auto'
-                                            }}
-                                            value={JSON.stringify(processedCluster.processed_data, null, 2)}
-                                            readOnly
-                                        />
-                                    </Box>
-                                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1 }}>
-                                        <Tooltip title="Copy to clipboard">
-                                            <IconButton 
-                                                size="small" 
-                                                onClick={() => handleCopyToClipboard(JSON.stringify(processedCluster.processed_data, null, 2))}
-                                            >
-                                                <ContentCopyIcon />
-                                            </IconButton>
-                                        </Tooltip>
-                                    </Box>
-                                </AccordionDetails>
-                            </Accordion>
                         </AccordionDetails>
                     </Accordion>
                 ))}
@@ -834,7 +1111,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                             <Button
                                 variant="contained"
                                 color="primary"
-                                onClick={() => window.open(`http://localhost:5005/output_html_files/${file}`, '_blank')}
+                                onClick={() => window.open(`http://localhost:5000/${file}`, '_blank')}
                             >
                                 Open {file}
                             </Button>

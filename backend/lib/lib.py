@@ -80,6 +80,8 @@ def process_urls_from_cli(urls, levels, from_api=False):
     # Process computed styles for each level
     clustering_results = []
     processed_clusters_data = []
+    created_html_files = []  # Track created HTML files
+    
     for level in levels:
         # Get the computed styles file path for this level
         computed_styles_file = dataCollector.computed_styles(level=level)[2]
@@ -117,6 +119,24 @@ def process_urls_from_cli(urls, levels, from_api=False):
                         'level': level,
                         'processed_data': processed_cluster
                     })
+                    
+                    # Track HTML files from processed_cluster
+                    if isinstance(processed_cluster, dict):
+                        if 'html_files' in processed_cluster:
+                            created_html_files.extend(processed_cluster['html_files'])
+                        elif 'data' in processed_cluster:
+                            try:
+                                data_lines = processed_cluster['data'].split('\n')
+                                for line in data_lines:
+                                    if line.startswith('File created:'):
+                                        file_path = line.replace('File created: ', '').strip()
+                                        if file_path.endswith('.html'):
+                                            created_html_files.append({
+                                                'filename': os.path.basename(file_path),
+                                                'path': os.path.join('output_html_files', os.path.basename(file_path))
+                                            })
+                            except Exception as e:
+                                print(f"Error processing HTML files: {e}")
             else:
                 clustering_results.append({
                     "level": level,
@@ -140,14 +160,16 @@ def process_urls_from_cli(urls, levels, from_api=False):
             "message": "URLs processed successfully", 
             "file": computed_styles_file, 
             "clustering_results": clustering_results,
-            "processed_clusters": processed_clusters_data
+            "processed_clusters": processed_clusters_data,
+            "html_files": created_html_files  # Include only the created HTML files
         }
     else:
         return {
             "status": "success", 
             "message": "URLs processed successfully", 
             "clustering_results": clustering_results,
-            "processed_clusters": processed_clusters_data
+            "processed_clusters": processed_clusters_data,
+            "html_files": created_html_files  # Include only the created HTML files
         }
 
 
@@ -384,6 +406,7 @@ def process_clusters_from_cli(clusters_data, from_api=False):
         return value.replace('"', "'")
     
     def create_html_from_json(json_data, output_dir):
+        created_files = []  # Track created files
         def create_element(element_data):
             unique_id = element_data.get("unique_id", None)
             tag_name = element_data.get("tag_name", "div")
@@ -391,11 +414,6 @@ def process_clusters_from_cli(clusters_data, from_api=False):
             children = element_data.get("children", [])
             attributes = element_data.get("attributes", {})
             clusters = element_data.get("clusters", [])
-            
-            # if len(clusters) > 0:
-            #     print(f"Clusters found: {len(clusters)}")
-            # if len(clusters) == 0:
-            #     return f''
             
             #remove from attributes start with -webkit
             attributes = {key: value for key, value in attributes.items() if not key.startswith("-webkit")}
@@ -414,12 +432,6 @@ def process_clusters_from_cli(clusters_data, from_api=False):
             attributes_str = " ".join(
                 f'{key}="{escape_quotes(value)}"' for key, value in other_attributes.items()
             )
-            
-            # if(len(clusters) > 0):
-            #     for cluster in clusters:
-            #         if unique_id in cluster["guids"]:
-            #             style_str += f"; background-color: {cluster['color']}"
-            #             attributes_str += f' data-cluster="{cluster["id"]}"'
             
             if(len(clusters) > 0):
                 for cluster in clusters:
@@ -447,12 +459,16 @@ def process_clusters_from_cli(clusters_data, from_api=False):
                 file.write(final_html)
             
             print(f"File created: {output_file}")
+            created_files.append({
+                'filename': os.path.basename(output_file),
+                'path': output_file
+            })
             data_to_return.append(f"File created: {os.path.abspath(output_file)}")
-            #pathlib.Path(__file__).parent.resolve()
-            # print(f"File created: {os.path.abspath(output_file)}")
-    
 
-    create_html_from_json(json_data, "output_html_files")
+        return created_files
+
+    # Create HTML files and get the list of created files
+    created_html_files = create_html_from_json(json_data, "output_html_files")
         
     # Write results to a file
     output_file_path = "/home/pfavv/lib_url_to_img/backend/api/results/WEB.json"
@@ -466,20 +482,88 @@ def process_clusters_from_cli(clusters_data, from_api=False):
         "status": "success", 
         "message": "Clustering completed successfully", 
         "data": json.dumps(data_to_return),
-        "sites": sites
+        "sites": sites,
+        "html_files": created_html_files  # Return the list of created HTML files
     }
 
-def process_urls_from_api(urls, levels):
+def process_urls_from_api(urls, levels, mode=0):
     try:
-        result = process_urls_from_cli(urls, levels, from_api=True)
+        # Clean up directories only at the start of the API call
+        results_dir = "/home/pfavv/lib_url_to_img/backend/api/results"
+        output_html_dir = "output_html_files"
         
-        return {
-            "status": result.get("status"), 
-            "message": result.get("message"), 
-            "body": result.get("data", {}),
-            "clustering_results": result.get("clustering_results", {}),
-            "processed_clusters": result.get("processed_clusters", {})
-        }
+        # Clean up results directory
+        if os.path.exists(results_dir):
+            for file in os.listdir(results_dir):
+                file_path = os.path.join(results_dir, file)
+                try:
+                    if os.path.isfile(file_path):
+                        os.unlink(file_path)
+                except Exception as e:
+                    print(f"Error deleting {file_path}: {e}")
+        
+        # Clean up output_html_files directory
+        if os.path.exists(output_html_dir):
+            for file in os.listdir(output_html_dir):
+                file_path = os.path.join(output_html_dir, file)
+                try:
+                    if os.path.isfile(file_path):
+                        os.unlink(file_path)
+                except Exception as e:
+                    print(f"Error deleting {file_path}: {e}")
+
+        if mode == 0:
+            # Original behavior - process all URLs together
+            result = process_urls_from_cli(urls, levels, from_api=True)
+            return {
+                "status": result.get("status"), 
+                "message": result.get("message"), 
+                "body": result.get("data", {}),
+                "clustering_results": result.get("clustering_results", {}),
+                "processed_clusters": result.get("processed_clusters", {}),
+                "html_files": result.get("html_files", [])  # Use tracked HTML files
+            }
+        else:
+            # Mode 1 - process URLs by domain
+            from urllib.parse import urlparse
+            
+            # Group URLs by domain
+            domain_groups = {}
+            for url in urls:
+                domain = urlparse(url).netloc
+                if domain not in domain_groups:
+                    domain_groups[domain] = []
+                domain_groups[domain].append(url)
+            
+            # Process each domain group separately
+            all_results = {
+                "status": "success",
+                "message": "URLs processed successfully by domain",
+                "domain_results": []
+            }
+            
+            for domain, domain_urls in domain_groups.items():
+                try:
+                    domain_result = process_urls_from_cli(domain_urls, levels, from_api=True)
+                    all_results["domain_results"].append({
+                        "domain": domain,
+                        "urls": domain_urls,
+                        "status": domain_result.get("status"),
+                        "message": domain_result.get("message"),
+                        "clustering_results": domain_result.get("clustering_results", {}),
+                        "processed_clusters": domain_result.get("processed_clusters", {}),
+                        "html_files": domain_result.get("html_files", [])  # Use tracked HTML files
+                    })
+                except Exception as e:
+                    all_results["domain_results"].append({
+                        "domain": domain,
+                        "urls": domain_urls,
+                        "status": "error",
+                        "message": str(e)
+                    })
+            
+            return all_results
+            
     except Exception as e:
         error_message = f"Error processing URLs: {str(e)}"
         stack_trace = traceback.format_exc()
