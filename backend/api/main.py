@@ -192,5 +192,14 @@ def open_browser():
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
+    debug_mode = os.getenv('FLASK_DEBUG', 'true').lower() in ['true', '1', 'yes']
+    use_reloader = os.getenv('FLASK_USE_RELOADER', 'false').lower() in ['true', '1', 'yes']
+    
     open_browser()
-    app.run(debug=True, host='0.0.0.0', port=port)
+    app.run(
+        debug=debug_mode, 
+        host='0.0.0.0', 
+        port=port, 
+        use_reloader=use_reloader, 
+        threaded=True
+    )
