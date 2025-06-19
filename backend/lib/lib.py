@@ -147,11 +147,15 @@ def process_urls_from_cli(urls, levels, from_api=False):
             print(f"\033[94m=== END CLUSTERING RESULTS ===\033[0m\n")
             
         except Exception as e:
+            import traceback
+            error_details = traceback.format_exc()
             print(f"\033[91mError during clustering: {str(e)}\033[0m")
+            print(f"\033[91mStack trace: {error_details}\033[0m")
             clustering_results.append({
                 "level": level,
                 "status": "error",
-                "message": f"Level {level}: Error during clustering: {str(e)}"
+                "message": f"Level {level}: Error during clustering: {str(e)}",
+                "stack_trace": error_details
             })
     
     if from_api:

@@ -221,8 +221,39 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
     };
 
     const handleCopyToClipboard = (text) => {
-        navigator.clipboard.writeText(text);
+        // Clean up the text to remove excessive spacing and newlines
+        let cleanedText = text;
+        
+        // If it's JSON, format it more compactly
+        if (typeof text === 'object' || text.startsWith('{') || text.startsWith('[')) {
+            try {
+                const parsed = typeof text === 'object' ? text : JSON.parse(text);
+                cleanedText = JSON.stringify(parsed, null, 1); // Use 1 space instead of 2
+            } catch (e) {
+                // If it's not valid JSON, just use the original text
+                cleanedText = text;
+            }
+        }
+        
+        navigator.clipboard.writeText(cleanedText);
         setSuccess('Copied to clipboard!');
+    };
+
+    // Custom formatting function for sites data
+    const formatSitesData = (sitesData) => {
+        const sites = sitesData;
+        let formatted = 'sites: {\n';
+        
+        Object.entries(sites).forEach(([url, array], index) => {
+            formatted += `  "${url}":\n[${array.join(',')}]`;
+            if (index < Object.keys(sites).length - 1) {
+                formatted += ',';
+            }
+            formatted += '\n';
+        });
+        
+        formatted += '}';
+        return formatted;
     };
 
     useEffect(() => {
@@ -340,9 +371,9 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                 <AccordionSummary 
                                                     expandIcon={<ExpandMoreIcon />}
                                                     sx={{
-                                                        backgroundColor: 'primary.light',
+                                                        backgroundColor: clusterResult.status === 'error' ? 'error.light' : 'primary.light',
                                                         '&:hover': {
-                                                            backgroundColor: 'primary.main',
+                                                            backgroundColor: clusterResult.status === 'error' ? 'error.main' : 'primary.main',
                                                             color: 'white',
                                                         },
                                                         '& .MuiAccordionSummary-expandIconWrapper': {
@@ -355,112 +386,155 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                     </Typography>
                                                 </AccordionSummary>
                                                 <AccordionDetails sx={{ p: 3 }}>
-                                                    <Box sx={{ mb: theme.spacing(2) }}>
-                                                        <Typography variant="h6" gutterBottom>Cluster Info</Typography>
-                                                        <Box sx={{ 
-                                                            p: 3, 
-                                                            bgcolor: 'background.paper', 
-                                                            borderRadius: 2,
-                                                            border: '1px solid',
-                                                            borderColor: 'divider',
-                                                            display: 'flex',
-                                                            flexDirection: 'column',
-                                                            gap: 2
-                                                        }}>
+                                                    {/* Show error message if status is error */}
+                                                    {clusterResult.status === 'error' && (
+                                                        <Box sx={{ mb: theme.spacing(2) }}>
+                                                            <Typography variant="h6" gutterBottom color="error">
+                                                                Error in Level {clusterResult.level}
+                                                            </Typography>
                                                             <Box sx={{ 
-                                                                display: 'grid',
-                                                                gridTemplateColumns: '200px 1fr',
-                                                                gap: 2,
-                                                                alignItems: 'center'
+                                                                p: 3, 
+                                                                bgcolor: 'error.light', 
+                                                                borderRadius: 2,
+                                                                border: '1px solid',
+                                                                borderColor: 'error.main',
+                                                                color: 'error.contrastText'
                                                             }}>
-                                                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                                                                    Number of Clusters:
+                                                                <Typography variant="body1">
+                                                                    {clusterResult.message}
                                                                 </Typography>
-                                                                <Typography variant="subtitle1">
-                                                                    {clusterResult.cluster_info.num_clusters}
-                                                                </Typography>
-
-                                                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                                                                    DBCV Score:
-                                                                </Typography>
-                                                                <Typography variant="subtitle1">
-                                                                    {clusterResult.cluster_info.dbcv_score.toFixed(3)}
-                                                                </Typography>
-
-                                                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                                                                    Min Cluster Size:
-                                                                </Typography>
-                                                                <Typography variant="subtitle1">
-                                                                    {clusterResult.cluster_info.min_cluster_size}
-                                                                </Typography>
-
-                                                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                                                                    Epsilon:
-                                                                </Typography>
-                                                                <Typography variant="subtitle1">
-                                                                    {clusterResult.cluster_info.cluster_selection_epsilon}
-                                                                </Typography>
+                                                                {clusterResult.stack_trace && (
+                                                                    <Box sx={{ mt: 2, p: 2, bgcolor: 'rgba(0,0,0,0.1)', borderRadius: 1 }}>
+                                                                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                                                                            Stack Trace:
+                                                                        </Typography>
+                                                                        <pre style={{ 
+                                                                            fontSize: '0.8rem', 
+                                                                            overflow: 'auto', 
+                                                                            maxHeight: '200px',
+                                                                            margin: 0,
+                                                                            whiteSpace: 'pre-wrap'
+                                                                        }}>
+                                                                            {clusterResult.stack_trace}
+                                                                        </pre>
+                                                                    </Box>
+                                                                )}
                                                             </Box>
+                                                        </Box>
+                                                    )}
 
+                                                    {/* Show cluster info only if it exists and status is not error */}
+                                                    {clusterResult.cluster_info && clusterResult.status !== 'error' && (
+                                                        <Box sx={{ mb: theme.spacing(2) }}>
+                                                            <Typography variant="h6" gutterBottom>Cluster Info</Typography>
                                                             <Box sx={{ 
+                                                                p: 3, 
+                                                                bgcolor: 'background.paper', 
+                                                                borderRadius: 2,
+                                                                border: '1px solid',
+                                                                borderColor: 'divider',
                                                                 display: 'flex',
                                                                 flexDirection: 'column',
-                                                                gap: 1,
-                                                                mt: 1
+                                                                gap: 2
                                                             }}>
-                                                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                                                                    Useful Attributes:
-                                                                </Typography>
-                                                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                                                                    {clusterResult.cluster_info.useful_attributes.map((attr, i) => (
-                                                                        <Chip 
-                                                                            key={i} 
-                                                                            label={attr} 
-                                                                            size="small"
-                                                                            sx={{ 
-                                                                                bgcolor: 'primary.light',
-                                                                                color: 'primary.contrastText',
-                                                                                '&:hover': {
-                                                                                    bgcolor: 'primary.main'
-                                                                                }
-                                                                            }}
-                                                                        />
-                                                                    ))}
+                                                                <Box sx={{ 
+                                                                    display: 'grid',
+                                                                    gridTemplateColumns: '200px 1fr',
+                                                                    gap: 2,
+                                                                    alignItems: 'center'
+                                                                }}>
+                                                                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                                        Number of Clusters:
+                                                                    </Typography>
+                                                                    <Typography variant="subtitle1">
+                                                                        {clusterResult.cluster_info.num_clusters}
+                                                                    </Typography>
+
+                                                                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                                        DBCV Score:
+                                                                    </Typography>
+                                                                    <Typography variant="subtitle1">
+                                                                        {clusterResult.cluster_info.dbcv_score.toFixed(3)}
+                                                                    </Typography>
+
+                                                                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                                        Min Cluster Size:
+                                                                    </Typography>
+                                                                    <Typography variant="subtitle1">
+                                                                        {clusterResult.cluster_info.min_cluster_size}
+                                                                    </Typography>
+
+                                                                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                                        Epsilon:
+                                                                    </Typography>
+                                                                    <Typography variant="subtitle1">
+                                                                        {clusterResult.cluster_info.cluster_selection_epsilon}
+                                                                    </Typography>
+                                                                </Box>
+
+                                                                <Box sx={{ 
+                                                                    display: 'flex',
+                                                                    flexDirection: 'column',
+                                                                    gap: 1,
+                                                                    mt: 1
+                                                                }}>
+                                                                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                                        Useful Attributes:
+                                                                    </Typography>
+                                                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                                                        {clusterResult.cluster_info.useful_attributes.map((attr, i) => (
+                                                                            <Chip 
+                                                                                key={i} 
+                                                                                label={attr} 
+                                                                                size="small"
+                                                                                sx={{ 
+                                                                                    bgcolor: 'primary.light',
+                                                                                    color: 'primary.contrastText',
+                                                                                    '&:hover': {
+                                                                                        bgcolor: 'primary.main'
+                                                                                    }
+                                                                                }}
+                                                                            />
+                                                                        ))}
+                                                                    </Box>
                                                                 </Box>
                                                             </Box>
                                                         </Box>
-                                                    </Box>
+                                                    )}
 
-                                                    <Box sx={{ mb: theme.spacing(2) }}>
-                                                        <Typography variant="h6" gutterBottom>Clusters</Typography>
-                                                        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                                                            <TextareaAutosize
-                                                                minRows={2}
-                                                                maxRows={4}
-                                                                style={{ 
-                                                                    width: '60%', 
-                                                                    padding: '10px',
-                                                                    fontFamily: 'monospace',
-                                                                    borderRadius: '4px',
-                                                                    border: '1px solid #ccc',
-                                                                    resize: 'vertical',
-                                                                    overflow: 'auto'
-                                                                }}
-                                                                value={JSON.stringify(clusterResult.clusters, null, 2)}
-                                                                readOnly
-                                                            />
+                                                    {/* Show clusters only if they exist and status is not error */}
+                                                    {clusterResult.clusters && clusterResult.status !== 'error' && (
+                                                        <Box sx={{ mb: theme.spacing(2) }}>
+                                                            <Typography variant="h6" gutterBottom>Clusters</Typography>
+                                                            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                                                <TextareaAutosize
+                                                                    minRows={2}
+                                                                    maxRows={4}
+                                                                    style={{ 
+                                                                        width: '60%', 
+                                                                        padding: '10px',
+                                                                        fontFamily: 'monospace',
+                                                                        borderRadius: '4px',
+                                                                        border: '1px solid #ccc',
+                                                                        resize: 'vertical',
+                                                                        overflow: 'auto'
+                                                                    }}
+                                                                    value={JSON.stringify(clusterResult.clusters, null, 1)}
+                                                                    readOnly
+                                                                />
+                                                            </Box>
+                                                            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1 }}>
+                                                                <Tooltip title="Copy to clipboard">
+                                                                    <IconButton 
+                                                                        size="small" 
+                                                                        onClick={() => handleCopyToClipboard(JSON.stringify(clusterResult.clusters, null, 1))}
+                                                                    >
+                                                                        <ContentCopyIcon />
+                                                                    </IconButton>
+                                                                </Tooltip>
+                                                            </Box>
                                                         </Box>
-                                                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1 }}>
-                                                            <Tooltip title="Copy to clipboard">
-                                                                <IconButton 
-                                                                    size="small" 
-                                                                    onClick={() => handleCopyToClipboard(JSON.stringify(clusterResult.clusters, null, 2))}
-                                                                >
-                                                                    <ContentCopyIcon />
-                                                                </IconButton>
-                                                            </Tooltip>
-                                                        </Box>
-                                                    </Box>
+                                                    )}
                                                 </AccordionDetails>
                                             </Accordion>
                                         ))}
@@ -543,9 +617,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                                     resize: 'vertical',
                                                                     overflow: 'auto'
                                                                 }}
-                                                                value={Object.entries(processedCluster.processed_data.sites)
-                                                                    .map(([url, clusters]) => `"${url}": [${clusters.join(', ')}]`)
-                                                                    .join(',\n')}
+                                                                value={formatSitesData(processedCluster.processed_data.sites)}
                                                                 readOnly
                                                             />
                                                         </Box>
@@ -553,7 +625,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                             <Tooltip title="Copy to clipboard">
                                                                 <IconButton 
                                                                     size="small" 
-                                                                    onClick={() => handleCopyToClipboard(JSON.stringify(processedCluster.processed_data.sites, null, 2))}
+                                                                    onClick={() => handleCopyToClipboard(formatSitesData(processedCluster.processed_data.sites))}
                                                                 >
                                                                     <ContentCopyIcon />
                                                                 </IconButton>
@@ -616,9 +688,9 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                         <AccordionSummary 
                             expandIcon={<ExpandMoreIcon />}
                             sx={{
-                                backgroundColor: 'primary.light',
+                                backgroundColor: clusterResult.status === 'error' ? 'error.light' : 'primary.light',
                                 '&:hover': {
-                                    backgroundColor: 'primary.main',
+                                    backgroundColor: clusterResult.status === 'error' ? 'error.main' : 'primary.main',
                                     color: 'white',
                                 },
                                 '& .MuiAccordionSummary-expandIconWrapper': {
@@ -631,112 +703,155 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                             </Typography>
                         </AccordionSummary>
                         <AccordionDetails sx={{ p: 3 }}>
-                            <Box sx={{ mb: theme.spacing(2) }}>
-                                <Typography variant="h6" gutterBottom>Cluster Info</Typography>
-                                <Box sx={{ 
-                                    p: 3, 
-                                    bgcolor: 'background.paper', 
-                                    borderRadius: 2,
-                                    border: '1px solid',
-                                    borderColor: 'divider',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    gap: 2
-                                }}>
+                            {/* Show error message if status is error */}
+                            {clusterResult.status === 'error' && (
+                                <Box sx={{ mb: theme.spacing(2) }}>
+                                    <Typography variant="h6" gutterBottom color="error">
+                                        Error in Level {clusterResult.level}
+                                    </Typography>
                                     <Box sx={{ 
-                                        display: 'grid',
-                                        gridTemplateColumns: '200px 1fr',
-                                        gap: 2,
-                                        alignItems: 'center'
+                                        p: 3, 
+                                        bgcolor: 'error.light', 
+                                        borderRadius: 2,
+                                        border: '1px solid',
+                                        borderColor: 'error.main',
+                                        color: 'error.contrastText'
                                     }}>
-                                        <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                                            Number of Clusters:
+                                        <Typography variant="body1">
+                                            {clusterResult.message}
                                         </Typography>
-                                        <Typography variant="subtitle1">
-                                            {clusterResult.cluster_info.num_clusters}
-                                        </Typography>
-
-                                        <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                                            DBCV Score:
-                                        </Typography>
-                                        <Typography variant="subtitle1">
-                                            {clusterResult.cluster_info.dbcv_score.toFixed(3)}
-                                        </Typography>
-
-                                        <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                                            Min Cluster Size:
-                                        </Typography>
-                                        <Typography variant="subtitle1">
-                                            {clusterResult.cluster_info.min_cluster_size}
-                                        </Typography>
-
-                                        <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                                            Epsilon:
-                                        </Typography>
-                                        <Typography variant="subtitle1">
-                                            {clusterResult.cluster_info.cluster_selection_epsilon}
-                                        </Typography>
+                                        {clusterResult.stack_trace && (
+                                            <Box sx={{ mt: 2, p: 2, bgcolor: 'rgba(0,0,0,0.1)', borderRadius: 1 }}>
+                                                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                                                    Stack Trace:
+                                                </Typography>
+                                                <pre style={{ 
+                                                    fontSize: '0.8rem', 
+                                                    overflow: 'auto', 
+                                                    maxHeight: '200px',
+                                                    margin: 0,
+                                                    whiteSpace: 'pre-wrap'
+                                                }}>
+                                                    {clusterResult.stack_trace}
+                                                </pre>
+                                            </Box>
+                                        )}
                                     </Box>
+                                </Box>
+                            )}
 
+                            {/* Show cluster info only if it exists and status is not error */}
+                            {clusterResult.cluster_info && clusterResult.status !== 'error' && (
+                                <Box sx={{ mb: theme.spacing(2) }}>
+                                    <Typography variant="h6" gutterBottom>Cluster Info</Typography>
                                     <Box sx={{ 
+                                        p: 3, 
+                                        bgcolor: 'background.paper', 
+                                        borderRadius: 2,
+                                        border: '1px solid',
+                                        borderColor: 'divider',
                                         display: 'flex',
                                         flexDirection: 'column',
-                                        gap: 1,
-                                        mt: 1
+                                        gap: 2
                                     }}>
-                                        <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                                            Useful Attributes:
-                                        </Typography>
-                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                                            {clusterResult.cluster_info.useful_attributes.map((attr, i) => (
-                                                <Chip 
-                                                    key={i} 
-                                                    label={attr} 
-                                                    size="small"
-                                                    sx={{ 
-                                                        bgcolor: 'primary.light',
-                                                        color: 'primary.contrastText',
-                                                        '&:hover': {
-                                                            bgcolor: 'primary.main'
-                                                        }
-                                                    }}
-                                                />
-                                            ))}
+                                        <Box sx={{ 
+                                            display: 'grid',
+                                            gridTemplateColumns: '200px 1fr',
+                                            gap: 2,
+                                            alignItems: 'center'
+                                        }}>
+                                            <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                Number of Clusters:
+                                            </Typography>
+                                            <Typography variant="subtitle1">
+                                                {clusterResult.cluster_info.num_clusters}
+                                            </Typography>
+
+                                            <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                DBCV Score:
+                                            </Typography>
+                                            <Typography variant="subtitle1">
+                                                {clusterResult.cluster_info.dbcv_score.toFixed(3)}
+                                            </Typography>
+
+                                            <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                Min Cluster Size:
+                                            </Typography>
+                                            <Typography variant="subtitle1">
+                                                {clusterResult.cluster_info.min_cluster_size}
+                                            </Typography>
+
+                                            <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                Epsilon:
+                                            </Typography>
+                                            <Typography variant="subtitle1">
+                                                {clusterResult.cluster_info.cluster_selection_epsilon}
+                                            </Typography>
+                                        </Box>
+
+                                        <Box sx={{ 
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            gap: 1,
+                                            mt: 1
+                                        }}>
+                                            <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                Useful Attributes:
+                                            </Typography>
+                                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                                {clusterResult.cluster_info.useful_attributes.map((attr, i) => (
+                                                    <Chip 
+                                                        key={i} 
+                                                        label={attr} 
+                                                        size="small"
+                                                        sx={{ 
+                                                            bgcolor: 'primary.light',
+                                                            color: 'primary.contrastText',
+                                                            '&:hover': {
+                                                                bgcolor: 'primary.main'
+                                                            }
+                                                        }}
+                                                    />
+                                                ))}
+                                            </Box>
                                         </Box>
                                     </Box>
                                 </Box>
-                            </Box>
+                            )}
 
-                            <Box sx={{ mb: theme.spacing(2) }}>
-                                <Typography variant="h6" gutterBottom>Clusters</Typography>
-                                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                                    <TextareaAutosize
-                                        minRows={2}
-                                        maxRows={4}
-                                        style={{ 
-                                            width: '60%', 
-                                            padding: '10px',
-                                            fontFamily: 'monospace',
-                                            borderRadius: '4px',
-                                            border: '1px solid #ccc',
-                                            resize: 'vertical',
-                                            overflow: 'auto'
-                                        }}
-                                        value={JSON.stringify(clusterResult.clusters, null, 2)}
-                                        readOnly
-                                    />
+                            {/* Show clusters only if they exist and status is not error */}
+                            {clusterResult.clusters && clusterResult.status !== 'error' && (
+                                <Box sx={{ mb: theme.spacing(2) }}>
+                                    <Typography variant="h6" gutterBottom>Clusters</Typography>
+                                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                        <TextareaAutosize
+                                            minRows={2}
+                                            maxRows={4}
+                                            style={{ 
+                                                width: '60%', 
+                                                padding: '10px',
+                                                fontFamily: 'monospace',
+                                                borderRadius: '4px',
+                                                border: '1px solid #ccc',
+                                                resize: 'vertical',
+                                                overflow: 'auto'
+                                            }}
+                                            value={JSON.stringify(clusterResult.clusters, null, 1)}
+                                            readOnly
+                                        />
+                                    </Box>
+                                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1 }}>
+                                        <Tooltip title="Copy to clipboard">
+                                            <IconButton 
+                                                size="small" 
+                                                onClick={() => handleCopyToClipboard(JSON.stringify(clusterResult.clusters, null, 1))}
+                                            >
+                                                <ContentCopyIcon />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </Box>
                                 </Box>
-                                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1 }}>
-                                    <Tooltip title="Copy to clipboard">
-                                        <IconButton 
-                                            size="small" 
-                                            onClick={() => handleCopyToClipboard(JSON.stringify(clusterResult.clusters, null, 2))}
-                                        >
-                                            <ContentCopyIcon />
-                                        </IconButton>
-                                    </Tooltip>
-                                </Box>
-                            </Box>
+                            )}
                         </AccordionDetails>
                     </Accordion>
                 ))}
@@ -819,9 +934,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                             resize: 'vertical',
                                             overflow: 'auto'
                                         }}
-                                        value={Object.entries(processedCluster.processed_data.sites)
-                                            .map(([url, clusters]) => `"${url}": [${clusters.join(', ')}]`)
-                                            .join(',\n')}
+                                        value={formatSitesData(processedCluster.processed_data.sites)}
                                         readOnly
                                     />
                                 </Box>
@@ -829,7 +942,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                     <Tooltip title="Copy to clipboard">
                                         <IconButton 
                                             size="small" 
-                                            onClick={() => handleCopyToClipboard(JSON.stringify(processedCluster.processed_data.sites, null, 2))}
+                                            onClick={() => handleCopyToClipboard(formatSitesData(processedCluster.processed_data.sites))}
                                         >
                                             <ContentCopyIcon />
                                         </IconButton>

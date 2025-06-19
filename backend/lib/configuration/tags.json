@@ -329,7 +329,9 @@
         "br,h1,div": "#431606",
         "strong,td,tr": "#244B26",
         "b,td,tr": "#447DA3",
-        "ol,div,div": "#BA3047"
+        "ol,div,div": "#BA3047",
+        "meta": "#688ADF",
+        "em": "#A52780"
     },
     "tag_order": {
         "b": 1,
@@ -661,6 +663,8 @@
         "br,h1,div": 327,
         "strong,td,tr": 328,
         "b,td,tr": 329,
-        "ol,div,div": 330
+        "ol,div,div": 330,
+        "meta": 331,
+        "em": 332
     }
 }
