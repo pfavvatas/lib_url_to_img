@@ -10,7 +10,14 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../lib'))
 from lib import process_urls_from_api, process_clusters_from_api
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all domains
+# Configure CORS more specifically
+CORS(app, resources={
+    r"/*": {
+        "origins": ["http://localhost:3000", "http://127.0.0.1:3000"],
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Accept", "Authorization"]
+    }
+})
 
 # Enable Swagger only if the environment variable is set
 enable_swagger = os.getenv('ENABLE_SWAGGER', 'true').lower() in ['true', '1', 'yes']
@@ -149,8 +156,20 @@ def process_urls():
     levels = data.get('levels', [])
     mode = data.get('mode', 0)  # Default to mode 0 if not specified
     results = process_urls_from_api(urls, levels, mode)
-    return jsonify(results)
-  
+    response = jsonify(results)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    return response
+
+@app.route('/process-urls', methods=['OPTIONS'])
+def process_urls_options():
+    response = jsonify({})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    return response
+
 @app.route('/process-clusters', methods=['POST'])
 def process_clusters():
     """
@@ -180,7 +199,19 @@ def process_clusters():
     clusters_data = data.get('clusters', '')
     # Process the clusters data
     results = process_clusters_from_api(clusters_data)
-    return jsonify(results)
+    response = jsonify(results)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    return response
+
+@app.route('/process-clusters', methods=['OPTIONS'])
+def process_clusters_options():
+    response = jsonify({})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    return response
 
 def run_price_processes(urls):
     # Dummy implementation, replace with your existing processing logic
