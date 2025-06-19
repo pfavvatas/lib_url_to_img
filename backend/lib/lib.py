@@ -21,8 +21,8 @@ import random
 import glob
 from utils.clustering import perform_clustering_analysis
 
-
-
+# Get the project root directory (2 levels up from this file)
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 def find_chromedriver(port=9515):
     try:
@@ -265,7 +265,7 @@ def process_clusters_from_cli(clusters_data, from_api=False):
         latest_file = max(files, key=os.path.getmtime)
         return latest_file
 
-    directory = "/home/pfavv/lib_url_to_img/backend/api/results"
+    directory = os.path.join(PROJECT_ROOT, "backend", "api", "results")
     file_path = find_latest_data_file(directory)
 
     # Check if the file exists
@@ -471,7 +471,7 @@ def process_clusters_from_cli(clusters_data, from_api=False):
     created_html_files = create_html_from_json(json_data, "output_html_files")
         
     # Write results to a file
-    output_file_path = "/home/pfavv/lib_url_to_img/backend/api/results/WEB.json"
+    output_file_path = os.path.join(PROJECT_ROOT, "backend", "api", "results", "WEB.json")
     with open(output_file_path, "w") as file:
         json.dump(json_data, file, indent=4)
 
@@ -489,7 +489,7 @@ def process_clusters_from_cli(clusters_data, from_api=False):
 def process_urls_from_api(urls, levels, mode=0):
     try:
         # Clean up directories only at the start of the API call
-        results_dir = "/home/pfavv/lib_url_to_img/backend/api/results"
+        results_dir = os.path.join(PROJECT_ROOT, "backend", "api", "results")
         output_html_dir = "output_html_files"
         
         # Clean up results directory
