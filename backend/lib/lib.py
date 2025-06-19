@@ -398,6 +398,15 @@ def process_clusters_from_cli(clusters_data, from_api=False):
         # "-webkit-transition-delay", "-webkit-animation-delay", 
         # "-webkit-animation-duration", "-webkit-animation-iteration-count", 
         # "-webkit-animation-timing-function", "-webkit-animation-name"
+        
+        # Text Decoration Properties
+				"text-decoration-style",
+				"text-decoration-color",
+				# "text-decoration-thickness",
+				# "text-decoration-skip-ink",
+				# "text-decoration-skip-ink-adjust",
+				# "text-decoration-skip-ink-adjust-mode",
+				# "text-decoration-skip-ink-adjust-mode-adjustment"
     ]
     
     def escape_quotes(value):
