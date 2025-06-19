@@ -1,26 +1,30 @@
 #!/bin/bash
+# Script to check and kill processes using project ports
 
-echo "🔍 Checking for existing processes on required ports..."
+echo "🔍 Checking for processes using project ports..."
 
-# Function to check and kill process on a port
-check_and_kill_port() {
-    local port=$1
-    local process_id=$(lsof -ti:$port)
+PORTS=(3000 5000 5005)
+
+for port in "${PORTS[@]}"; do
+    echo "Checking port $port..."
     
-    if [ ! -z "$process_id" ]; then
-        echo "⚠️  Found process running on port $port (PID: $process_id)"
-        echo "🛑 Killing process..."
-        kill -9 $process_id
-        echo "✅ Process killed"
+    # Find processes using the port
+    if command -v lsof &> /dev/null; then
+        PIDS=$(lsof -ti:$port 2>/dev/null)
+        if [ ! -z "$PIDS" ]; then
+            echo "⚠️  Found processes using port $port: $PIDS"
+            echo "🛑 Killing processes..."
+            echo $PIDS | xargs kill -9
+            echo "✅ Killed processes on port $port"
+        else
+            echo "✅ Port $port is free"
+        fi
     else
-        echo "✅ No process running on port $port"
+        echo "⚠️  lsof not available, cannot check port $port"
     fi
-}
+done
 
-# Check and kill processes on required ports
-check_and_kill_port 3000  # React frontend
-check_and_kill_port 5000  # Python API
-check_and_kill_port 3001  # Node server
+echo "🎯 Port check complete!"
 
 echo ""
 echo "🚀 Starting the application..."

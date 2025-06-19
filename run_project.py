@@ -13,11 +13,16 @@ import signal
 import webbrowser
 from pathlib import Path
 import socket
+import atexit
 
 class ProjectLauncher:
     def __init__(self):
         self.processes = []
         self.root_dir = Path(__file__).parent
+        self.running = True
+        
+        # Register cleanup function
+        atexit.register(self.cleanup)
         
     def check_and_kill_port(self, port):
         """Check if a port is in use and kill the process if it is"""
@@ -40,9 +45,13 @@ class ProjectLauncher:
                         subprocess.run(f'taskkill /F /PID {pid}', shell=True)
                 else:  # Unix/Linux/Mac
                     cmd = f'lsof -ti:{port}'
-                    pid = subprocess.run(cmd, shell=True, capture_output=True, text=True).stdout.strip()
-                    if pid:
-                        subprocess.run(f'kill -9 {pid}', shell=True)
+                    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+                    if result.stdout.strip():
+                        pids = result.stdout.strip().split('\n')
+                        for pid in pids:
+                            if pid.strip():
+                                subprocess.run(f'kill -9 {pid.strip()}', shell=True)
+                                print(f"✅ Killed process {pid.strip()} on port {port}")
                 print(f"✅ Killed process on port {port}")
                 return True
             except Exception as e:
@@ -122,6 +131,7 @@ class ProjectLauncher:
             env['PYTHONPATH'] = str(self.root_dir / "backend" / "lib")
             env['FLASK_ENV'] = 'development'
             env['FLASK_DEBUG'] = '1'
+            env['FLASK_USE_RELOADER'] = 'false'  # Disable reloader to prevent multiple processes
             
             # Create output_html_files directory if it doesn't exist
             output_dir = api_dir / "output_html_files"
@@ -141,7 +151,7 @@ class ProjectLauncher:
                 self.processes.append(process)
                 
                 # Print output in real-time
-                while True:
+                while self.running and process.poll() is None:
                     output = process.stdout.readline()
                     if output == '' and process.poll() is not None:
                         break
@@ -149,7 +159,7 @@ class ProjectLauncher:
                         print(f"API: {output.strip()}")
                 
                 # Check for errors
-                if process.returncode != 0:
+                if process.returncode != 0 and process.returncode is not None:
                     error = process.stderr.read()
                     print(f"API Error: {error}")
                     
@@ -224,13 +234,42 @@ with socketserver.TCPServer(("", PORT), Handler) as httpd:
     
     def cleanup(self):
         """Clean up all processes"""
+        if not self.running:
+            return
+            
+        self.running = False
         print("\n🛑 Shutting down all services...")
+        
+        # Kill all child processes
         for process in self.processes:
             try:
-                process.terminate()
-                process.wait(timeout=5)
-            except subprocess.TimeoutExpired:
-                process.kill()
+                if process.poll() is None:  # Process is still running
+                    print(f"Terminating process {process.pid}...")
+                    process.terminate()
+                    try:
+                        process.wait(timeout=5)
+                    except subprocess.TimeoutExpired:
+                        print(f"Force killing process {process.pid}...")
+                        process.kill()
+                        process.wait()
+            except Exception as e:
+                print(f"Error terminating process: {e}")
+        
+        # Also kill any remaining processes on our ports
+        for port in [3000, 5000, 5005]:
+            try:
+                if os.name != 'nt':  # Unix/Linux/Mac
+                    cmd = f'lsof -ti:{port}'
+                    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+                    if result.stdout.strip():
+                        pids = result.stdout.strip().split('\n')
+                        for pid in pids:
+                            if pid.strip():
+                                subprocess.run(f'kill -9 {pid.strip()}', shell=True)
+                                print(f"Killed remaining process {pid.strip()} on port {port}")
+            except Exception as e:
+                print(f"Error killing processes on port {port}: {e}")
+        
         print("✅ All services stopped")
     
     def run(self):
@@ -278,7 +317,7 @@ with socketserver.TCPServer(("", PORT), Handler) as httpd:
             
             # Keep main thread alive
             try:
-                while True:
+                while self.running:
                     time.sleep(1)
             except KeyboardInterrupt:
                 pass
@@ -304,5 +343,7 @@ if __name__ == "__main__":
         sys.exit(0)
     
     signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+    
     launcher = ProjectLauncher()
     launcher.run() 
