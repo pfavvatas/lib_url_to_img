@@ -27,3 +27,7 @@ __pycache__
 venv/*
 /venv
 venv/bin/activate
+thesis/thanasis/*
+results/*
+backend/api/error.log
+backend/api/error.log

@@ -256,6 +256,265 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
         return formatted;
     };
 
+    // Function to format duration in a readable way
+    const formatDuration = (seconds) => {
+        if (seconds < 1) {
+            return `${(seconds * 1000).toFixed(2)}ms`;
+        } else if (seconds < 60) {
+            return `${seconds.toFixed(2)}s`;
+        } else {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${minutes}m ${remainingSeconds.toFixed(2)}s`;
+        }
+    };
+
+    // Function to render timing logs
+    const renderTimingLogs = (timingLogs) => {
+        if (!timingLogs) return null;
+
+        return (
+            <Accordion 
+                sx={{ 
+                    mb: theme.spacing(2),
+                    '&:before': {
+                        display: 'none',
+                    },
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                    borderRadius: '8px !important',
+                    overflow: 'hidden'
+                }}
+            >
+                <AccordionSummary 
+                    expandIcon={<ExpandMoreIcon />}
+                    sx={{
+                        backgroundColor: 'info.light',
+                        '&:hover': {
+                            backgroundColor: 'info.main',
+                            color: 'white',
+                        },
+                        '& .MuiAccordionSummary-expandIconWrapper': {
+                            color: 'inherit'
+                        }
+                    }}
+                >
+                    <Typography sx={{ fontWeight: 'bold' }}>
+                        ⏱️ Performance Metrics & Timing Logs
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails sx={{ p: 3 }}>
+                    {/* Overall Performance Metrics */}
+                    {timingLogs.performance_metrics && (
+                        <Box sx={{ mb: theme.spacing(3) }}>
+                            <Typography variant="h6" gutterBottom>📊 Overall Performance</Typography>
+                            <Box sx={{ 
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                                gap: 2,
+                                p: 2,
+                                bgcolor: 'background.paper',
+                                borderRadius: 2,
+                                border: '1px solid',
+                                borderColor: 'divider'
+                            }}>
+                                <Box>
+                                    <Typography variant="subtitle2" color="text.secondary">Total Processing Time</Typography>
+                                    <Typography variant="h6" color="primary">
+                                        {formatDuration(timingLogs.performance_metrics.total_processing_time)}
+                                    </Typography>
+                                </Box>
+                                <Box>
+                                    <Typography variant="subtitle2" color="text.secondary">Average Time per URL</Typography>
+                                    <Typography variant="h6" color="primary">
+                                        {formatDuration(timingLogs.performance_metrics.average_time_per_url)}
+                                    </Typography>
+                                </Box>
+                                <Box>
+                                    <Typography variant="subtitle2" color="text.secondary">Average Time per Level</Typography>
+                                    <Typography variant="h6" color="primary">
+                                        {formatDuration(timingLogs.performance_metrics.average_time_per_level)}
+                                    </Typography>
+                                </Box>
+                                <Box>
+                                    <Typography variant="subtitle2" color="text.secondary">URLs Processed</Typography>
+                                    <Typography variant="h6" color="primary">
+                                        {timingLogs.performance_metrics.urls_processed}
+                                    </Typography>
+                                </Box>
+                                <Box>
+                                    <Typography variant="subtitle2" color="text.secondary">Levels Processed</Typography>
+                                    <Typography variant="h6" color="primary">
+                                        {timingLogs.performance_metrics.levels_processed}
+                                    </Typography>
+                                </Box>
+                                <Box>
+                                    <Typography variant="subtitle2" color="text.secondary">HTML Files Generated</Typography>
+                                    <Typography variant="h6" color="primary">
+                                        {timingLogs.performance_metrics.html_files_generated}
+                                    </Typography>
+                                </Box>
+                                <Box>
+                                    <Typography variant="subtitle2" color="text.secondary">Clusters Generated</Typography>
+                                    <Typography variant="h6" color="primary">
+                                        {timingLogs.performance_metrics.clusters_generated}
+                                    </Typography>
+                                </Box>
+                            </Box>
+                        </Box>
+                    )}
+
+                    {/* Detailed Step Timing */}
+                    {timingLogs.steps && (
+                        <Box sx={{ mb: theme.spacing(3) }}>
+                            <Typography variant="h6" gutterBottom>🔧 Step-by-Step Timing</Typography>
+                            {Object.entries(timingLogs.steps).map(([stepName, stepData]) => (
+                                <Accordion 
+                                    key={stepName}
+                                    sx={{ 
+                                        mb: theme.spacing(1),
+                                        '&:before': { display: 'none' },
+                                        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                                        borderRadius: '4px !important'
+                                    }}
+                                >
+                                    <AccordionSummary 
+                                        expandIcon={<ExpandMoreIcon />}
+                                        sx={{
+                                            backgroundColor: 'grey.50',
+                                            '&:hover': { backgroundColor: 'grey.100' }
+                                        }}
+                                    >
+                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+                                            <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                {stepData.description || stepName}
+                                            </Typography>
+                                            <Typography variant="subtitle2" color="primary" sx={{ fontWeight: 'bold' }}>
+                                                {formatDuration(stepData.duration)}
+                                            </Typography>
+                                        </Box>
+                                    </AccordionSummary>
+                                    <AccordionDetails sx={{ p: 2 }}>
+                                        <Box sx={{ 
+                                            display: 'grid',
+                                            gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+                                            gap: 1,
+                                            mb: 2
+                                        }}>
+                                            <Box>
+                                                <Typography variant="caption" color="text.secondary">Duration</Typography>
+                                                <Typography variant="body2">{formatDuration(stepData.duration)}</Typography>
+                                            </Box>
+                                            <Box>
+                                                <Typography variant="caption" color="text.secondary">Start Time</Typography>
+                                                <Typography variant="body2">{new Date(stepData.start_time * 1000).toLocaleTimeString()}</Typography>
+                                            </Box>
+                                            <Box>
+                                                <Typography variant="caption" color="text.secondary">End Time</Typography>
+                                                <Typography variant="body2">{new Date(stepData.end_time * 1000).toLocaleTimeString()}</Typography>
+                                            </Box>
+                                        </Box>
+                                        
+                                        {/* Additional step-specific data */}
+                                        {stepData.urls_processed && (
+                                            <Box sx={{ mb: 1 }}>
+                                                <Typography variant="caption" color="text.secondary">URLs Processed: </Typography>
+                                                <Typography variant="body2" component="span">{stepData.urls_processed}</Typography>
+                                            </Box>
+                                        )}
+                                        {stepData.levels_processed && (
+                                            <Box sx={{ mb: 1 }}>
+                                                <Typography variant="caption" color="text.secondary">Levels Processed: </Typography>
+                                                <Typography variant="body2" component="span">{stepData.levels_processed.join(', ')}</Typography>
+                                            </Box>
+                                        )}
+                                        {stepData.data_reused && (
+                                            <Box sx={{ mb: 1 }}>
+                                                <Typography variant="caption" color="text.secondary">Data Reused: </Typography>
+                                                <Typography variant="body2" component="span">✅ Yes</Typography>
+                                            </Box>
+                                        )}
+                                    </AccordionDetails>
+                                </Accordion>
+                            ))}
+                        </Box>
+                    )}
+
+                    {/* Cluster Info */}
+                    {timingLogs.cluster_info && Object.keys(timingLogs.cluster_info).length > 0 && (
+                        <Box sx={{ mb: theme.spacing(3) }}>
+                            <Typography variant="h6" gutterBottom>🎯 Cluster Information</Typography>
+                            {Object.entries(timingLogs.cluster_info).map(([levelKey, clusterInfo]) => (
+                                <Accordion 
+                                    key={levelKey}
+                                    sx={{ 
+                                        mb: theme.spacing(1),
+                                        '&:before': { display: 'none' },
+                                        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                                        borderRadius: '4px !important'
+                                    }}
+                                >
+                                    <AccordionSummary 
+                                        expandIcon={<ExpandMoreIcon />}
+                                        sx={{
+                                            backgroundColor: 'success.light',
+                                            '&:hover': { backgroundColor: 'success.main', color: 'white' }
+                                        }}
+                                    >
+                                        <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                            📊 Level {clusterInfo.level || levelKey.replace('level_', '')} - {clusterInfo.num_clusters} Clusters
+                                        </Typography>
+                                    </AccordionSummary>
+                                    <AccordionDetails sx={{ p: 2 }}>
+                                        <Box sx={{ 
+                                            display: 'grid',
+                                            gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+                                            gap: 2
+                                        }}>
+                                            <Box>
+                                                <Typography variant="caption" color="text.secondary">Number of Clusters</Typography>
+                                                <Typography variant="h6">{clusterInfo.num_clusters}</Typography>
+                                            </Box>
+                                            <Box>
+                                                <Typography variant="caption" color="text.secondary">DBCV Score</Typography>
+                                                <Typography variant="h6">{clusterInfo.dbcv_score?.toFixed(3) || 'N/A'}</Typography>
+                                            </Box>
+                                            <Box>
+                                                <Typography variant="caption" color="text.secondary">Min Cluster Size</Typography>
+                                                <Typography variant="h6">{clusterInfo.min_cluster_size}</Typography>
+                                            </Box>
+                                            <Box>
+                                                <Typography variant="caption" color="text.secondary">Epsilon</Typography>
+                                                <Typography variant="h6">{clusterInfo.cluster_selection_epsilon}</Typography>
+                                            </Box>
+                                        </Box>
+                                        {clusterInfo.useful_attributes && (
+                                            <Box sx={{ mt: 2 }}>
+                                                <Typography variant="subtitle2" gutterBottom>Useful Attributes:</Typography>
+                                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                                    {clusterInfo.useful_attributes.map((attr, i) => (
+                                                        <Chip 
+                                                            key={i} 
+                                                            label={attr} 
+                                                            size="small"
+                                                            sx={{ 
+                                                                bgcolor: 'primary.light',
+                                                                color: 'primary.contrastText'
+                                                            }}
+                                                        />
+                                                    ))}
+                                                </Box>
+                                            </Box>
+                                        )}
+                                    </AccordionDetails>
+                                </Accordion>
+                            ))}
+                        </Box>
+                    )}
+                </AccordionDetails>
+            </Accordion>
+        );
+    };
+
     useEffect(() => {
         if (warning) {
             const timer = setTimeout(() => {
@@ -278,13 +537,196 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
         console.log("Current result state:", result);
         if (!result) return null;
 
+        // Helper function to collect all HTML files from any result structure
+        const collectAllHtmlFiles = (resultData) => {
+            let allFiles = [];
+            
+            if (resultData.html_files) {
+                allFiles = allFiles.concat(resultData.html_files);
+            }
+            
+            if (resultData.domain_results) {
+                resultData.domain_results.forEach(domainResult => {
+                    if (domainResult.html_files) {
+                        allFiles = allFiles.concat(domainResult.html_files);
+                    }
+                });
+            }
+            
+            return allFiles;
+        };
+
+        // Render unified HTML files section
+        const renderUnifiedHtmlFilesSection = (resultData) => {
+            const allHtmlFiles = collectAllHtmlFiles(resultData);
+            
+            if (allHtmlFiles.length === 0) return null;
+
+            // Group files by level
+            const filesByLevel = allHtmlFiles.reduce((acc, file) => {
+                const level = file.level || 'unknown';
+                if (!acc[level]) acc[level] = [];
+                acc[level].push(file);
+                return acc;
+            }, {});
+
+            // Sort levels numerically
+            const sortedLevels = Object.keys(filesByLevel).sort((a, b) => {
+                if (a === 'unknown') return 1;
+                if (b === 'unknown') return -1;
+                return parseInt(a) - parseInt(b);
+            });
+
+            return (
+                <Accordion 
+                    defaultExpanded={true}
+                    sx={{ 
+                        mb: theme.spacing(3),
+                        '&:before': {
+                            display: 'none',
+                        },
+                        boxShadow: '0 4px 8px rgba(0,0,0,0.15)',
+                        borderRadius: '12px !important',
+                        overflow: 'hidden'
+                    }}
+                >
+                    <AccordionSummary 
+                        expandIcon={<ExpandMoreIcon />}
+                        sx={{
+                            backgroundColor: 'success.light',
+                            '&:hover': {
+                                backgroundColor: 'success.main',
+                                color: 'white',
+                            },
+                            '& .MuiAccordionSummary-expandIconWrapper': {
+                                color: 'inherit'
+                            }
+                        }}
+                    >
+                        <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+                            📁 Generated Files ({allHtmlFiles.length} files)
+                        </Typography>
+                    </AccordionSummary>
+                    <AccordionDetails sx={{ p: 3 }}>
+                        {sortedLevels.map(level => (
+                            <Accordion 
+                                key={level}
+                                sx={{ 
+                                    mb: 2,
+                                    '&:before': { display: 'none' },
+                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                    borderRadius: '8px !important',
+                                    overflow: 'hidden'
+                                }}
+                            >
+                                <AccordionSummary 
+                                    expandIcon={<ExpandMoreIcon />}
+                                    sx={{
+                                        backgroundColor: 'secondary.light',
+                                        '&:hover': {
+                                            backgroundColor: 'secondary.main',
+                                            color: 'white',
+                                        },
+                                        '& .MuiAccordionSummary-expandIconWrapper': {
+                                            color: 'inherit'
+                                        }
+                                    }}
+                                >
+                                    <Typography sx={{ fontWeight: 'bold' }}>
+                                        📊 Level {level} ({filesByLevel[level].length} files)
+                                    </Typography>
+                                </AccordionSummary>
+                                <AccordionDetails sx={{ p: 3 }}>
+                                    {(() => {
+                                        // Group files by domain within each level
+                                        const filesByDomain = filesByLevel[level].reduce((acc, file) => {
+                                            const domain = file.domain || file.clean_domain || 'unknown';
+                                            if (!acc[domain]) acc[domain] = [];
+                                            acc[domain].push(file);
+                                            return acc;
+                                        }, {});
+
+                                        return Object.entries(filesByDomain).map(([domain, domainFiles]) => (
+                                            <Box key={domain} sx={{ mb: 3 }}>
+                                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 2, color: 'primary.main' }}>
+                                                    🌐 {domain} ({domainFiles.length} files)
+                                                </Typography>
+                                                <Grid container spacing={2}>
+                                                    {domainFiles.map((file, index) => (
+                                                        <Grid item xs={12} sm={6} md={4} key={index}>
+                                                            <Card 
+                                                                sx={{ 
+                                                                    cursor: 'pointer',
+                                                                    transition: 'all 0.2s ease-in-out',
+                                                                    '&:hover': {
+                                                                        transform: 'translateY(-2px)',
+                                                                        boxShadow: '0 4px 8px rgba(0,0,0,0.15)'
+                                                                    }
+                                                                }}
+                                                                onClick={() => window.open(`http://localhost:5000/${file.path}`, '_blank')}
+                                                            >
+                                                                <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                                                                    <Typography 
+                                                                        variant="subtitle2" 
+                                                                        sx={{ 
+                                                                            fontWeight: 'bold',
+                                                                            mb: 1,
+                                                                            overflow: 'hidden',
+                                                                            textOverflow: 'ellipsis',
+                                                                            whiteSpace: 'nowrap'
+                                                                        }}
+                                                                        title={file.title || file.filename}
+                                                                    >
+                                                                        {file.title || file.filename}
+                                                                    </Typography>
+                                                                    <Typography 
+                                                                        variant="caption" 
+                                                                        color="text.secondary"
+                                                                        sx={{ 
+                                                                            display: 'block',
+                                                                            mb: 1,
+                                                                            overflow: 'hidden',
+                                                                            textOverflow: 'ellipsis',
+                                                                            whiteSpace: 'nowrap'
+                                                                        }}
+                                                                        title={file.url}
+                                                                    >
+                                                                        {file.url}
+                                                                    </Typography>
+                                                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                                        <Typography variant="caption" color="text.secondary">
+                                                                            📄 {file.url_identifier || file.short_id}
+                                                                        </Typography>
+                                                                        <Typography variant="caption" color="text.secondary">
+                                                                            {file.file_size_kb ? `💾 ${file.file_size_kb.toFixed(1)} KB` : ''}
+                                                                        </Typography>
+                                                                    </Box>
+                                                                </CardContent>
+                                                            </Card>
+                                                        </Grid>
+                                                    ))}
+                                                </Grid>
+                                            </Box>
+                                        ));
+                                    })()}
+                                </AccordionDetails>
+                            </Accordion>
+                        ))}
+                    </AccordionDetails>
+                </Accordion>
+            );
+        };
+
         // Handle domain-based results (mode 1)
         if (result.domain_results) {
             return (
                 <Box sx={{ width: '100%', mt: theme.spacing(4), maxWidth: '1200px', mx: 'auto' }}>
                     <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
-                        Domain-Based Clustering Results
+                        🌐 Domain-Based Clustering Results
                     </Typography>
+                    
+                    {/* Unified HTML Files Section */}
+                    {renderUnifiedHtmlFilesSection(result)}
                     
                     {result.domain_results.map((domainResult, domainIndex) => (
                         <Accordion 
@@ -632,6 +1074,9 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                             </Tooltip>
                                                         </Box>
                                                     </Box>
+
+                                                    {/* Timing Logs Section for Processed Clusters */}
+                                                    {processedCluster.timing_logs && renderTimingLogs(processedCluster.timing_logs)}
                                                 </AccordionDetails>
                                             </Accordion>
                                         ))}
@@ -640,6 +1085,9 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                             </AccordionDetails>
                         </Accordion>
                     ))}
+                    
+                    {/* Timing Logs Section for Domain Results */}
+                    {result.timing_logs && renderTimingLogs(result.timing_logs)}
                 </Box>
             );
         }
@@ -648,11 +1096,14 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
         return (
             <Box sx={{ width: '100%', mt: theme.spacing(4), maxWidth: '1200px', mx: 'auto' }}>
                 <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
-                    Clustering Results
+                    🧮 Clustering Results
                 </Typography>
                 
-                {/* HTML Files Section */}
-                {result.html_files && result.html_files.length > 0 && (
+                {/* Unified HTML Files Section */}
+                {renderUnifiedHtmlFilesSection(result)}
+                
+                {/* Original HTML Files Section - keeping for backup */}
+                {false && result.html_files && result.html_files.length > 0 && (
                     <Box sx={{ mb: theme.spacing(2) }}>
                         <Typography variant="h6" gutterBottom>Generated HTML Files</Typography>
                         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
@@ -699,7 +1150,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                             }}
                         >
                             <Typography sx={{ fontWeight: 'bold' }}>
-                                Level {clusterResult.level} - {clusterResult.message}
+                                🧮 Level {clusterResult.level} - {clusterResult.status === 'error' ? '❌' : '✅'} {clusterResult.message}
                             </Typography>
                         </AccordionSummary>
                         <AccordionDetails sx={{ p: 3 }}>
@@ -707,7 +1158,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                             {clusterResult.status === 'error' && (
                                 <Box sx={{ mb: theme.spacing(2) }}>
                                     <Typography variant="h6" gutterBottom color="error">
-                                        Error in Level {clusterResult.level}
+                                        ❌ Error in Level {clusterResult.level}
                                     </Typography>
                                     <Box sx={{ 
                                         p: 3, 
@@ -743,7 +1194,9 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                             {/* Show cluster info only if it exists and status is not error */}
                             {clusterResult.cluster_info && clusterResult.status !== 'error' && (
                                 <Box sx={{ mb: theme.spacing(2) }}>
-                                    <Typography variant="h6" gutterBottom>Cluster Info</Typography>
+                                    <Typography variant="h6" gutterBottom>
+                                        Cluster Info
+                                    </Typography>
                                     <Box sx={{ 
                                         p: 3, 
                                         bgcolor: 'background.paper', 
@@ -822,7 +1275,9 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                             {/* Show clusters only if they exist and status is not error */}
                             {clusterResult.clusters && clusterResult.status !== 'error' && (
                                 <Box sx={{ mb: theme.spacing(2) }}>
-                                    <Typography variant="h6" gutterBottom>Clusters</Typography>
+                                    <Typography variant="h6" gutterBottom>
+                                        🎯 Clusters
+                                    </Typography>
                                     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                                         <TextareaAutosize
                                             minRows={2}
@@ -884,7 +1339,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                             }}
                         >
                             <Typography sx={{ fontWeight: 'bold' }}>
-                                Processed Cluster Level {processedCluster.level}
+                                ⚙️ Processed Cluster Level {processedCluster.level}
                             </Typography>
                         </AccordionSummary>
                         <AccordionDetails sx={{ p: 3 }}>
@@ -949,9 +1404,15 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                     </Tooltip>
                                 </Box>
                             </Box>
+
+                            {/* Timing Logs Section for Processed Clusters */}
+                            {processedCluster.timing_logs && renderTimingLogs(processedCluster.timing_logs)}
                         </AccordionDetails>
                     </Accordion>
                 ))}
+
+                {/* Timing Logs Section for Regular Results */}
+                {result.timing_logs && renderTimingLogs(result.timing_logs)}
             </Box>
         );
     };
@@ -974,7 +1435,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                             />
                         </Box>
                         <Box sx={{ position: 'relative', margin: '0 30%', mt: theme.spacing(2), display: 'flex', justifyContent: 'center' }}>
-                            <Box sx={{ position: 'absolute', top: '-10px', left: '10px', backgroundColor: 'white', padding: '0 5px', fontWeight: 'bold' }}>Levels</Box>
+                            <Box sx={{ position: 'absolute', top: '-10px', left: '10px', backgroundColor: 'white', padding: '0 5px', fontWeight: 'bold' }}>📊 Levels</Box>
                             <Box sx={{ border: '1px solid', borderColor: 'grey.400', borderRadius: '8px', padding: theme.spacing(2), display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: theme.spacing(1), width: '-webkit-fill-available' }}>
                                 {Array.from({ length: 10 }, (_, i) => i + 1).map(level => (
                                     <Chip
@@ -997,7 +1458,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                         color="primary"
                                     />
                                 }
-                                label={isNewMode ? "New Mode" : "Old Mode"}
+                                label={isNewMode ? "🌐 Process by Domain" : "📦 Process All Together"}
                             />
                         </Box>
 
@@ -1110,7 +1571,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                         onClick={handleCancel}
                                         sx={{ borderRadius: '20px' }}
                                     >
-                                        Cancel
+                                        ⏹️ Cancel
                                     </Button>
                                     <CircularProgress size={24} sx={{ ml: 1 }} />
                                 </>
@@ -1123,7 +1584,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                         sx={{ borderRadius: '20px' }}
                                         disabled={urls.length === 0}
                                     >
-                                        Run
+                                        ▶️ Run
                                     </Button>
                                     <Button
                                         variant="contained"
@@ -1132,7 +1593,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                         sx={{ borderRadius: '20px' }}
                                         disabled={urls.length === 0}
                                     >
-                                        Clear
+                                        🗑️ Clear
                                     </Button>
                                 </>
                             )}
@@ -1199,9 +1660,9 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                 mb: theme.spacing(2)
             }}>
                 <Box sx={{ display: 'flex', gap: theme.spacing(2) }}>
-                    <Button variant="contained" onClick={() => setCurrentView('home')}>Home</Button>
-                    <Button variant="contained" onClick={() => setCurrentView('clusters')}>Clusters</Button>
-                    <Button variant="contained" onClick={() => setCurrentView('view3')}>View 3</Button>
+                    <Button variant="contained" onClick={() => setCurrentView('home')}>🏠 Home</Button>
+                    <Button variant="contained" onClick={() => setCurrentView('clusters')}>🎯 Clusters</Button>
+                    <Button variant="contained" onClick={() => setCurrentView('view3')}>👁️ View 3</Button>
                 </Box>
             </Box>
             {renderContent()}

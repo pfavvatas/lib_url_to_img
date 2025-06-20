@@ -1,0 +1,402 @@
+{
+  "cluster_info": {
+    "level_1": {
+      "cluster_selection_epsilon": 0.666,
+      "dbcv_score": 0.5515733055198233,
+      "min_cluster_size": 11,
+      "num_clusters": 4,
+      "useful_attributes": [
+        "cursor",
+        "font-size",
+        "font-style",
+        "font-weight",
+        "line-height",
+        "text-align"
+      ]
+    }
+  },
+  "performance_metrics": {
+    "average_time_per_level": 38.069539070129395,
+    "average_time_per_url": 38.069539070129395,
+    "clusters_generated": 4,
+    "html_files_generated": 1,
+    "levels_processed": 1,
+    "total_processing_time": 38.069539070129395,
+    "urls_processed": 1
+  },
+  "steps": {
+    "chromedriver_setup": {
+      "description": "ChromeDriver initialization and configuration",
+      "duration": 0.7983641624450684,
+      "end_time": 1750397724.9553108,
+      "start_time": 1750397724.1569471
+    },
+    "clustering_level_1": {
+      "clusters_generated": 4,
+      "computed_styles_file": "results/computed_styles_level_1/computed_styles_20250620082121.json",
+      "dbcv_score": 0.5515733055198233,
+      "description": "Complete clustering processing for level 1",
+      "duration": 9.93320083618164,
+      "end_time": 1750397762.2262816,
+      "file_size_bytes": 8230662,
+      "file_size_mb": 7.849370956420898,
+      "level": 1,
+      "start_time": 1750397752.2930808,
+      "sub_steps": {
+        "cluster_processing": {
+          "description": "Processing cluster results and generating HTML",
+          "duration": 0.4448864459991455,
+          "html_files_created": 1
+        },
+        "clustering_analysis": {
+          "algorithm": "HDBSCAN",
+          "description": "Performing clustering analysis",
+          "duration": 4.201931953430176,
+          "message": "Clustering successful with 4 clusters and DBCV score: 0.552",
+          "success": true
+        },
+        "file_reading": {
+          "description": "Reading computed styles file",
+          "duration": 0.015142202377319336,
+          "file_size_bytes": 8230662,
+          "file_size_mb": 7.849370956420898
+        }
+      },
+      "useful_attributes_count": 6
+    },
+    "computed_styles_generation": {
+      "description": "Generating computed styles for all levels",
+      "detailed_timing": {
+        "level_1": {
+          "computed_styles_file": "results/computed_styles_level_1/computed_styles_20250620082121.json",
+          "description": "Generating computed styles for level 1",
+          "distinct_attributes": 431,
+          "duration": 4.858172178268433,
+          "end_time": 1750397752.1757653,
+          "file_size_bytes": 8230662,
+          "level": 1,
+          "start_time": 1750397747.3175921,
+          "total_unique_attributes": 431
+        }
+      },
+      "duration": 9.78034520149231,
+      "end_time": 1750397752.1883042,
+      "levels_processed": [
+        1
+      ],
+      "start_time": 1750397742.4079592,
+      "total_unique_attributes": 431
+    },
+    "data_collection": {
+      "description": "URL data collection and processing",
+      "detailed_timing": {
+        "computed_styles_level_1": {
+          "computed_styles_file": "results/computed_styles_level_1/computed_styles_20250620082121.json",
+          "description": "Generating computed styles for level 1",
+          "distinct_attributes": 431,
+          "duration": 5.257914304733276,
+          "end_time": 1750397757.5509984,
+          "file_size_bytes": 8230662,
+          "level": 1,
+          "start_time": 1750397752.2930832,
+          "total_unique_attributes": 431
+        },
+        "data_saving": {
+          "description": "Saving collected data to JSON file",
+          "duration": 0.2687807083129883,
+          "end_time": 1750397742.4079487,
+          "file_name": "results/data_20250620082121.json",
+          "file_size_bytes": 21144786,
+          "file_size_change": 21144786,
+          "file_size_mb": 20.165239334106445,
+          "start_time": 1750397742.1391678,
+          "total_unique_ids": 1,
+          "urls_saved": 1
+        },
+        "levels": [
+          1
+        ],
+        "start_time": 1750397724.9553397,
+        "total_urls": 1,
+        "url_processing": {
+          "url_1": {
+            "description": "Processing URL 1 of 1",
+            "detailed_timing": {
+              "end_time": 1750397742.1385274,
+              "file_operations": {
+                "combinations_by_level_file": {
+                  "duration": 0.0022430419921875,
+                  "file_name": "CombinationsByLevel..json",
+                  "folder": "results/https_www.dia-trofis.gr_lifestyle_vassilopita-i-tixeri-apo-ton-ilia-mamalaki_"
+                },
+                "combinations_file": {
+                  "duration": 0.01409459114074707,
+                  "file_name": "Combinations..json",
+                  "folder": "results/https_www.dia-trofis.gr_lifestyle_vassilopita-i-tixeri-apo-ton-ilia-mamalaki_"
+                },
+                "combinations_tags_file": {
+                  "duration": 0.0003204345703125,
+                  "file_name": "CombinationsTags..json",
+                  "folder": "results/https_www.dia-trofis.gr_lifestyle_vassilopita-i-tixeri-apo-ton-ilia-mamalaki_"
+                },
+                "data_file": {
+                  "duration": 0.22313904762268066,
+                  "file_name": "Data..json",
+                  "folder": "results/https_www.dia-trofis.gr_lifestyle_vassilopita-i-tixeri-apo-ton-ilia-mamalaki_"
+                }
+              },
+              "start_time": 1750397724.9553869,
+              "steps": {
+                "browser_navigation": {
+                  "description": "Browser navigation to URL",
+                  "duration": 2.7227704524993896,
+                  "end_time": 1750397727.6781602,
+                  "start_time": 1750397724.95539
+                },
+                "combinations_generation": {
+                  "combinations_count": 199,
+                  "description": "Combinations generation and reversed forms",
+                  "duration": 0.01926422119140625,
+                  "end_time": 1750397742.0790133,
+                  "file_operation": {
+                    "duration": 0.01409459114074707,
+                    "file_name": "Combinations..json"
+                  },
+                  "start_time": 1750397742.0597494
+                },
+                "combinations_tags_by_unique_id": {
+                  "description": "Combinations tags by unique ID generation",
+                  "duration": 0.0003266334533691406,
+                  "end_time": 1750397742.085662,
+                  "file_operation": {
+                    "duration": 0.0003204345703125,
+                    "file_name": "CombinationsTags..json"
+                  },
+                  "start_time": 1750397742.0853353,
+                  "unique_ids_count": 199
+                },
+                "data_storage": {
+                  "description": "Storing data in collector",
+                  "duration": 0.00027370452880859375,
+                  "end_time": 1750397742.1385264,
+                  "start_time": 1750397742.1382527
+                },
+                "html_parsing": {
+                  "description": "HTML parsing and data extraction",
+                  "duration": 14.381392240524292,
+                  "end_time": 1750397742.0597234,
+                  "file_operation": {
+                    "duration": 0.22313904762268066,
+                    "file_name": "Data..json"
+                  },
+                  "start_time": 1750397727.6783314,
+                  "tag_name": "body"
+                },
+                "image_creation": {
+                  "description": "Image creation from combinations",
+                  "duration": 0.0023305416107177734,
+                  "end_time": 1750397742.1382508,
+                  "start_time": 1750397742.1359203
+                },
+                "image_data_generation": {
+                  "description": "Image data generation",
+                  "duration": 0.04375910758972168,
+                  "end_time": 1750397742.1359127,
+                  "file_operation": {
+                    "duration": 0.0022430419921875,
+                    "file_name": "CombinationsByLevel..json"
+                  },
+                  "start_time": 1750397742.0921538
+                },
+                "level_combinations_search": {
+                  "combinations_by_level_count": 1,
+                  "description": "Level-based combinations search",
+                  "duration": 0.006310939788818359,
+                  "end_time": 1750397742.0853338,
+                  "levels_processed": [
+                    1
+                  ],
+                  "start_time": 1750397742.079023
+                },
+                "tag_color_map_generation": {
+                  "description": "Tag color map generation",
+                  "duration": 0.006462812423706055,
+                  "end_time": 1750397742.092131,
+                  "file_name": "/home/pfavv/lib_url_to_img/backend/api/../lib/utils/../configuration/tags.json",
+                  "start_time": 1750397742.0856683
+                },
+                "url_parsing": {
+                  "description": "URL parsing and folder creation",
+                  "duration": 0.0001609325408935547,
+                  "end_time": 1750397727.6783283,
+                  "folder_name": "results/https_www.dia-trofis.gr_lifestyle_vassilopita-i-tixeri-apo-ton-ilia-mamalaki_",
+                  "start_time": 1750397727.6781673
+                }
+              },
+              "total_duration": 17.18314003944397,
+              "unique_id": 17503977249555224296810,
+              "url": "https://www.dia-trofis.gr/lifestyle/vassilopita-i-tixeri-apo-ton-ilia-mamalaki/"
+            },
+            "duration": 17.183770179748535,
+            "end_time": 1750397742.1391232,
+            "start_time": 1750397724.9553528,
+            "unique_id": 17503977249555224296810,
+            "url": "https://www.dia-trofis.gr/lifestyle/vassilopita-i-tixeri-apo-ton-ilia-mamalaki/"
+          }
+        }
+      },
+      "duration": 17.18384885787964,
+      "end_time": 1750397742.1391623,
+      "levels_processed": [
+        1
+      ],
+      "start_time": 1750397724.9553137,
+      "url_timing_logs": {
+        "17503977249555224296810": {
+          "end_time": 1750397742.1385274,
+          "file_operations": {
+            "combinations_by_level_file": {
+              "duration": 0.0022430419921875,
+              "file_name": "CombinationsByLevel..json",
+              "folder": "results/https_www.dia-trofis.gr_lifestyle_vassilopita-i-tixeri-apo-ton-ilia-mamalaki_"
+            },
+            "combinations_file": {
+              "duration": 0.01409459114074707,
+              "file_name": "Combinations..json",
+              "folder": "results/https_www.dia-trofis.gr_lifestyle_vassilopita-i-tixeri-apo-ton-ilia-mamalaki_"
+            },
+            "combinations_tags_file": {
+              "duration": 0.0003204345703125,
+              "file_name": "CombinationsTags..json",
+              "folder": "results/https_www.dia-trofis.gr_lifestyle_vassilopita-i-tixeri-apo-ton-ilia-mamalaki_"
+            },
+            "data_file": {
+              "duration": 0.22313904762268066,
+              "file_name": "Data..json",
+              "folder": "results/https_www.dia-trofis.gr_lifestyle_vassilopita-i-tixeri-apo-ton-ilia-mamalaki_"
+            }
+          },
+          "start_time": 1750397724.9553869,
+          "steps": {
+            "browser_navigation": {
+              "description": "Browser navigation to URL",
+              "duration": 2.7227704524993896,
+              "end_time": 1750397727.6781602,
+              "start_time": 1750397724.95539
+            },
+            "combinations_generation": {
+              "combinations_count": 199,
+              "description": "Combinations generation and reversed forms",
+              "duration": 0.01926422119140625,
+              "end_time": 1750397742.0790133,
+              "file_operation": {
+                "duration": 0.01409459114074707,
+                "file_name": "Combinations..json"
+              },
+              "start_time": 1750397742.0597494
+            },
+            "combinations_tags_by_unique_id": {
+              "description": "Combinations tags by unique ID generation",
+              "duration": 0.0003266334533691406,
+              "end_time": 1750397742.085662,
+              "file_operation": {
+                "duration": 0.0003204345703125,
+                "file_name": "CombinationsTags..json"
+              },
+              "start_time": 1750397742.0853353,
+              "unique_ids_count": 199
+            },
+            "data_storage": {
+              "description": "Storing data in collector",
+              "duration": 0.00027370452880859375,
+              "end_time": 1750397742.1385264,
+              "start_time": 1750397742.1382527
+            },
+            "html_parsing": {
+              "description": "HTML parsing and data extraction",
+              "duration": 14.381392240524292,
+              "end_time": 1750397742.0597234,
+              "file_operation": {
+                "duration": 0.22313904762268066,
+                "file_name": "Data..json"
+              },
+              "start_time": 1750397727.6783314,
+              "tag_name": "body"
+            },
+            "image_creation": {
+              "description": "Image creation from combinations",
+              "duration": 0.0023305416107177734,
+              "end_time": 1750397742.1382508,
+              "start_time": 1750397742.1359203
+            },
+            "image_data_generation": {
+              "description": "Image data generation",
+              "duration": 0.04375910758972168,
+              "end_time": 1750397742.1359127,
+              "file_operation": {
+                "duration": 0.0022430419921875,
+                "file_name": "CombinationsByLevel..json"
+              },
+              "start_time": 1750397742.0921538
+            },
+            "level_combinations_search": {
+              "combinations_by_level_count": 1,
+              "description": "Level-based combinations search",
+              "duration": 0.006310939788818359,
+              "end_time": 1750397742.0853338,
+              "levels_processed": [
+                1
+              ],
+              "start_time": 1750397742.079023
+            },
+            "tag_color_map_generation": {
+              "description": "Tag color map generation",
+              "duration": 0.006462812423706055,
+              "end_time": 1750397742.092131,
+              "file_name": "/home/pfavv/lib_url_to_img/backend/api/../lib/utils/../configuration/tags.json",
+              "start_time": 1750397742.0856683
+            },
+            "url_parsing": {
+              "description": "URL parsing and folder creation",
+              "duration": 0.0001609325408935547,
+              "end_time": 1750397727.6783283,
+              "folder_name": "results/https_www.dia-trofis.gr_lifestyle_vassilopita-i-tixeri-apo-ton-ilia-mamalaki_",
+              "start_time": 1750397727.6781673
+            }
+          },
+          "total_duration": 17.18314003944397,
+          "unique_id": 17503977249555224296810,
+          "url": "https://www.dia-trofis.gr/lifestyle/vassilopita-i-tixeri-apo-ton-ilia-mamalaki/"
+        }
+      },
+      "urls_processed": 1
+    },
+    "data_saving": {
+      "description": "Saving collected data to JSON files",
+      "detailed_timing": {
+        "description": "Saving collected data to JSON file",
+        "duration": 0.2687807083129883,
+        "end_time": 1750397742.4079487,
+        "file_name": "results/data_20250620082121.json",
+        "file_size_bytes": 21144786,
+        "file_size_change": 21144786,
+        "file_size_mb": 20.165239334106445,
+        "start_time": 1750397742.1391678,
+        "total_unique_ids": 1,
+        "urls_saved": 1
+      },
+      "duration": 0.26879048347473145,
+      "end_time": 1750397742.4079568,
+      "start_time": 1750397742.1391664
+    },
+    "image_data_collection": {
+      "description": "Image data collection and processing",
+      "duration": 0.001295328140258789,
+      "end_time": 1750397752.189607,
+      "start_time": 1750397752.1883116
+    }
+  },
+  "total_duration": 38.069539070129395,
+  "total_end_time": 1750397762.2263572,
+  "total_start_time": 1750397724.1568182
+}

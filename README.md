@@ -100,10 +100,10 @@ https://www.kb.cert.org/vuls/id/366027
 https://www.kb.cert.org/vuls/id/229438
 
 
-https://akispetretzikis.com/recipe/7817/mpakaliaros-me-prasa
-
-https://akispetretzikis.com/en/recipe/7817/mpakaliaros-me-prasa
-
+https://www.dia-trofis.gr/lifestyle/vassilopita-i-tixeri-apo-ton-ilia-mamalaki/
+https://www.dia-trofis.gr/lifestyle/pos-den-tha-ksefigete-tis-imeres-tou-pasxa/
+https://www.gastronomos.gr/syntagh/spitika-kraker-me-paprika/313344/
+https://www.gastronomos.gr/syntagh/koyloyrakia-kakaoy-nistisima-choris-anamoni/313773/
 
 
 #TEST

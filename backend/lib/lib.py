@@ -46,43 +46,177 @@ def find_chromedriver(port=9515):
         
 
 def process_urls_from_cli(urls, levels, from_api=False):
+    print(f"DEBUG: process_urls_from_cli called with urls={urls}, levels={levels}, from_api={from_api}")
+    
+    # Initialize timing logs
+    timing_logs = {
+        "total_start_time": time.time(),
+        "steps": {},
+        "cluster_info": {},
+        "performance_metrics": {}
+    }
+    
+    print(f"DEBUG: Timing logs initialized: {list(timing_logs.keys())}")
+    
     config_path = os.path.join(os.path.dirname(__file__), 'config.json')
     config = Config(config_path)
 
     debug_mode = getattr(config, 'debug', False)
     if debug_mode: print(config)
-        
-    service = find_chromedriver()
-    if service:
-        chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("--window-size=1920,1080")
-        chrome_options.binary_location = "/opt/google/chrome/chrome"  # Specify the correct path to your Chrome binary
-        driver = webdriver.Chrome(service=service, options=chrome_options)
     
+    # Step 1: ChromeDriver setup timing (conditional)
+    step_start = time.time()
+    
+    # Pre-check for existing data to potentially skip ChromeDriver setup
+    results_dir = os.path.join(PROJECT_ROOT, "backend", "api", "results")
+    existing_data_files = []
+    if os.path.exists(results_dir):
+        existing_data_files = [f for f in os.listdir(results_dir) if f.startswith("data_") and f.endswith(".json")]
+    
+    will_skip_data_collection = False
+    if existing_data_files and from_api:
+        import time as time_module
+        latest_file = max(existing_data_files, key=lambda f: os.path.getmtime(os.path.join(results_dir, f)))
+        latest_file_time = os.path.getmtime(os.path.join(results_dir, latest_file))
+        current_time = time_module.time()
+        will_skip_data_collection = (current_time - latest_file_time) < 300
+    
+    driver = None
+    if will_skip_data_collection:
+        print(f"\033[93mSkipping ChromeDriver setup - using existing data\033[0m")
+    else:
+        service = find_chromedriver()
+        if service:
+            chrome_options = webdriver.ChromeOptions()
+            chrome_options.add_argument("--headless")
+            chrome_options.add_argument("--no-sandbox")
+            chrome_options.add_argument("--disable-dev-shm-usage")
+            chrome_options.add_argument("--disable-gpu")
+            chrome_options.add_argument("--window-size=1920,1080")
+            chrome_options.binary_location = "/opt/google/chrome/chrome"  # Specify the correct path to your Chrome binary
+            driver = webdriver.Chrome(service=service, options=chrome_options)
+    
+    timing_logs["steps"]["chromedriver_setup"] = {
+        "start_time": step_start,
+        "end_time": time.time(),
+        "duration": time.time() - step_start,
+        "description": "ChromeDriver initialization and configuration" + (" (skipped)" if will_skip_data_collection else ""),
+        "skipped": will_skip_data_collection
+    }
 
+    # Step 2: Data collection timing (with existing data check)
+    step_start = time.time()
     dataCollector = DataCollector()
-    dataCollector.collect_data(urls, levels, driver, config)
+    
+    # Check for existing data before starting expensive data collection
+    results_dir = os.path.join(PROJECT_ROOT, "backend", "api", "results")
+    existing_data_files = []
+    if os.path.exists(results_dir):
+        existing_data_files = [f for f in os.listdir(results_dir) if f.startswith("data_") and f.endswith(".json")]
+    
+    skip_data_collection = False
+    if existing_data_files and not from_api:
+        # For CLI usage, prompt user about existing data
+        print(f"\033[93mFound {len(existing_data_files)} existing data files. Skip data collection? (y/n)\033[0m")
+        user_input = input().lower().strip()
+        skip_data_collection = user_input in ['y', 'yes']
+    elif existing_data_files and from_api:
+        # For API usage, check if we have recent data (within 1 hour)
+        import time as time_module
+        latest_file = max(existing_data_files, key=lambda f: os.path.getmtime(os.path.join(results_dir, f)))
+        latest_file_time = os.path.getmtime(os.path.join(results_dir, latest_file))
+        current_time = time_module.time()
+        # Skip if data is less than 5 minutes old (300 seconds)
+        skip_data_collection = (current_time - latest_file_time) < 300
+        
+        if skip_data_collection:
+            print(f"\033[92mUsing existing data file: {latest_file} (created {(current_time - latest_file_time)/60:.1f} minutes ago)\033[0m")
+    
+    if skip_data_collection:
+        # Load existing data instead of collecting new data
+        latest_file_path = os.path.join(results_dir, latest_file)
+        with open(latest_file_path, 'r') as f:
+            existing_data = json.load(f)
+        dataCollector.url_data = existing_data
+        dataCollector.timing_logs = {"data_collection": {"description": "Skipped - using existing data", "duration": 0}}
+        dataCollector.url_timing_logs = {}
+        print(f"\033[92mLoaded {len(existing_data)} existing records from {latest_file}\033[0m")
+    else:
+        # Collect new data as usual
+        if driver is None:
+            # If driver setup was skipped, we need to set it up now
+            service = find_chromedriver()
+            if service:
+                chrome_options = webdriver.ChromeOptions()
+                chrome_options.add_argument("--headless")
+                chrome_options.add_argument("--no-sandbox")
+                chrome_options.add_argument("--disable-dev-shm-usage")
+                chrome_options.add_argument("--disable-gpu")
+                chrome_options.add_argument("--window-size=1920,1080")
+                chrome_options.binary_location = "/opt/google/chrome/chrome"
+                driver = webdriver.Chrome(service=service, options=chrome_options)
+        dataCollector.collect_data(urls, levels, driver, config)
+    
+    timing_logs["steps"]["data_collection"] = {
+        "start_time": step_start,
+        "end_time": time.time(),
+        "duration": time.time() - step_start,
+        "description": "URL data collection and processing" + (" (using existing data)" if skip_data_collection else ""),
+        "urls_processed": len(urls),
+        "levels_processed": levels,
+        "data_reused": skip_data_collection,
+        "detailed_timing": dataCollector.timing_logs,  # Include detailed timing from DataCollector
+        "url_timing_logs": dataCollector.url_timing_logs  # Include per-URL detailed timing
+    }
+
+    # Step 3: Data saving timing
+    step_start = time.time()
     dataCollector.save_data()
+    timing_logs["steps"]["data_saving"] = {
+        "start_time": step_start,
+        "end_time": time.time(),
+        "duration": time.time() - step_start,
+        "description": "Saving collected data to JSON files",
+        "detailed_timing": dataCollector.timing_logs.get("data_saving", {})
+    }
+
+    # Step 4: Computed styles generation timing
+    step_start = time.time()
     total_unique_attributes, attribute_values, computed_styles_file = dataCollector.computed_styles(level=1)
     for level in levels:
         dataCollector.computed_styles(level=level)
+    timing_logs["steps"]["computed_styles_generation"] = {
+        "start_time": step_start,
+        "end_time": time.time(),
+        "duration": time.time() - step_start,
+        "description": "Generating computed styles for all levels",
+        "levels_processed": levels,
+        "total_unique_attributes": total_unique_attributes,
+        "detailed_timing": {f"level_{level}": dataCollector.timing_logs.get(f"computed_styles_level_{level}", {}) for level in levels}
+    }
 
+    # Step 5: Image data collection timing
+    step_start = time.time()
     image_data_collector = ImageDataCollector(dataCollector.url_data)
     image_data_collector.save_to_json()
+    timing_logs["steps"]["image_data_collection"] = {
+        "start_time": step_start,
+        "end_time": time.time(),
+        "duration": time.time() - step_start,
+        "description": "Image data collection and processing"
+    }
     
-    driver.close()    
+    if driver:
+        driver.close()    
     
-    # Clustering
-    # Process computed styles for each level
+    # Step 6: Clustering processing timing
     clustering_results = []
     processed_clusters_data = []
     created_html_files = []  # Track created HTML files
     
     for level in levels:
+        level_start_time = time.time()
+        
         # Get the computed styles file path for this level
         computed_styles_file = dataCollector.computed_styles(level=level)[2]
         print(f"\033[92m computed_styles_file: {computed_styles_file}\033[0m")
@@ -90,14 +224,21 @@ def process_urls_from_cli(urls, levels, from_api=False):
         # Process the computed styles file and call clustering function directly
         try:
             # Read the computed styles data
+            clustering_read_start = time.time()
             with open(computed_styles_file, 'r') as file:
                 data = json.load(file)
+            clustering_read_time = time.time() - clustering_read_start
+            
+            # Get file size information
+            file_size = os.path.getsize(computed_styles_file) if os.path.exists(computed_styles_file) else 0
             
             print(f"\033[94m=== CLUSTERING RESULTS FOR LEVEL {level} ===\033[0m")
             print(f"\033[92mComputed styles file: {computed_styles_file}\033[0m")
             
             # Call the clustering function with the data directly
+            clustering_analysis_start = time.time()
             clustering_result = perform_clustering_analysis(data)
+            clustering_analysis_time = time.time() - clustering_analysis_start
             
             if clustering_result['success']:
                 print(f"\033[92mStatus: success\033[0m")
@@ -107,17 +248,24 @@ def process_urls_from_cli(urls, levels, from_api=False):
                 print(f"\033[93mDBCV Score: {clustering_result['cluster_info']['dbcv_score']:.3f}\033[0m")
                 print(f"\033[93mClusters: {clustering_result['clusters']}\033[0m")
                 
+                # Store cluster info in timing logs
+                timing_logs["cluster_info"][f"level_{level}"] = clustering_result['cluster_info']
+                
                 # Add level information to the result
                 clustering_result['level'] = level
                 clustering_results.append(clustering_result)
 
                 # Process clusters for this level
                 if 'clusters' in clustering_result:
+                    cluster_processing_start = time.time()
                     cluster_data = json.dumps(clustering_result['clusters'])
-                    processed_cluster = process_clusters_from_cli(cluster_data, from_api=True)
+                    processed_cluster = process_clusters_from_cli(cluster_data, from_api=True, level_info=level)
+                    cluster_processing_time = time.time() - cluster_processing_start
+                    
                     processed_clusters_data.append({
                         'level': level,
-                        'processed_data': processed_cluster
+                        'processed_data': processed_cluster,
+                        'timing_logs': processed_cluster.get('timing_logs', {})  # Include timing logs from cluster processing
                     })
                     
                     # Track HTML files from processed_cluster
@@ -137,12 +285,74 @@ def process_urls_from_cli(urls, levels, from_api=False):
                                             })
                             except Exception as e:
                                 print(f"Error processing HTML files: {e}")
+                
+                # Store level-specific timing with detailed information
+                timing_logs["steps"][f"clustering_level_{level}"] = {
+                    "start_time": level_start_time,
+                    "end_time": time.time(),
+                    "duration": time.time() - level_start_time,
+                    "description": f"Complete clustering processing for level {level}",
+                    "level": level,
+                    "computed_styles_file": computed_styles_file,
+                    "file_size_bytes": file_size,
+                    "file_size_mb": file_size / (1024 * 1024),
+                    "clusters_generated": clustering_result['cluster_info']['num_clusters'] if clustering_result['success'] else 0,
+                    "dbcv_score": clustering_result['cluster_info']['dbcv_score'] if clustering_result['success'] else 0,
+                    "useful_attributes_count": len(clustering_result['cluster_info']['useful_attributes']) if clustering_result['success'] else 0,
+                    "sub_steps": {
+                        "file_reading": {
+                            "duration": clustering_read_time,
+                            "description": "Reading computed styles file",
+                            "file_size_bytes": file_size,
+                            "file_size_mb": file_size / (1024 * 1024)
+                        },
+                        "clustering_analysis": {
+                            "duration": clustering_analysis_time,
+                            "description": "Performing clustering analysis",
+                            "algorithm": "HDBSCAN",
+                            "success": clustering_result['success'],
+                            "message": clustering_result['message']
+                        },
+                        "cluster_processing": {
+                            "duration": cluster_processing_time,
+                            "description": "Processing cluster results and generating HTML",
+                            "html_files_created": len(created_html_files) if isinstance(processed_cluster, dict) and 'html_files' in processed_cluster else 0
+                        }
+                    }
+                }
             else:
                 clustering_results.append({
                     "level": level,
                     "status": "error",
                     "message": f"Level {level}: {clustering_result['message']}"
                 })
+                
+                timing_logs["steps"][f"clustering_level_{level}"] = {
+                    "start_time": level_start_time,
+                    "end_time": time.time(),
+                    "duration": time.time() - level_start_time,
+                    "description": f"Clustering processing for level {level} (ERROR)",
+                    "level": level,
+                    "computed_styles_file": computed_styles_file,
+                    "file_size_bytes": file_size,
+                    "file_size_mb": file_size / (1024 * 1024),
+                    "error": clustering_result['message'],
+                    "sub_steps": {
+                        "file_reading": {
+                            "duration": clustering_read_time,
+                            "description": "Reading computed styles file",
+                            "file_size_bytes": file_size,
+                            "file_size_mb": file_size / (1024 * 1024)
+                        },
+                        "clustering_analysis": {
+                            "duration": clustering_analysis_time,
+                            "description": "Performing clustering analysis",
+                            "algorithm": "HDBSCAN",
+                            "success": False,
+                            "error": clustering_result['message']
+                        }
+                    }
+                }
             
             print(f"\033[94m=== END CLUSTERING RESULTS ===\033[0m\n")
             
@@ -157,15 +367,47 @@ def process_urls_from_cli(urls, levels, from_api=False):
                 "message": f"Level {level}: Error during clustering: {str(e)}",
                 "stack_trace": error_details
             })
+            
+            timing_logs["steps"][f"clustering_level_{level}"] = {
+                "start_time": level_start_time,
+                "end_time": time.time(),
+                "duration": time.time() - level_start_time,
+                "description": f"Clustering processing for level {level} (EXCEPTION)",
+                "level": level,
+                "computed_styles_file": computed_styles_file,
+                "error": str(e),
+                "stack_trace": error_details
+            }
+    
+    # Calculate total processing time
+    timing_logs["total_end_time"] = time.time()
+    timing_logs["total_duration"] = timing_logs["total_end_time"] - timing_logs["total_start_time"]
+    
+    # Calculate performance metrics
+    timing_logs["performance_metrics"] = {
+        "total_processing_time": timing_logs["total_duration"],
+        "average_time_per_url": timing_logs["total_duration"] / len(urls) if urls else 0,
+        "average_time_per_level": timing_logs["total_duration"] / len(levels) if levels else 0,
+        "urls_processed": len(urls),
+        "levels_processed": len(levels),
+        "html_files_generated": len(created_html_files),
+        "clusters_generated": sum(len(result.get('clusters', [])) for result in clustering_results if result.get('status') != 'error')
+    }
+    
+    print(f"DEBUG: About to return timing logs. Keys: {list(timing_logs.keys())}")
+    print(f"DEBUG: Performance metrics: {timing_logs.get('performance_metrics', {})}")
     
     if from_api:
+        print(f"DEBUG: Timing logs keys: {list(timing_logs.keys())}")
+        print(f"DEBUG: Performance metrics: {timing_logs.get('performance_metrics', {})}")
         return {
             "status": "success", 
             "message": "URLs processed successfully", 
             "file": computed_styles_file, 
             "clustering_results": clustering_results,
             "processed_clusters": processed_clusters_data,
-            "html_files": created_html_files  # Include only the created HTML files
+            "html_files": created_html_files,  # Include only the created HTML files
+            "timing_logs": timing_logs  # Add timing logs to the response
         }
     else:
         return {
@@ -173,11 +415,19 @@ def process_urls_from_cli(urls, levels, from_api=False):
             "message": "URLs processed successfully", 
             "clustering_results": clustering_results,
             "processed_clusters": processed_clusters_data,
-            "html_files": created_html_files  # Include only the created HTML files
+            "html_files": created_html_files,  # Include only the created HTML files
+            "timing_logs": timing_logs  # Add timing logs to the response
         }
 
 
-def process_clusters_from_cli(clusters_data, from_api=False):
+def process_clusters_from_cli(clusters_data, from_api=False, level_info=None):
+    # Initialize timing logs for cluster processing
+    cluster_timing_logs = {
+        "start_time": time.time(),
+        "steps": {},
+        "file_operations": {}
+    }
+    
     class Cluster:
         def __init__(self, id, color, guids):
             self.id = id
@@ -200,7 +450,9 @@ def process_clusters_from_cli(clusters_data, from_api=False):
             if isinstance(obj, Cluster):
                 return obj.__dict__
             return super().default(obj)
-        
+    
+    # Step 1: Data parsing and cluster creation
+    step_start = time.time()
     data = clusters_data
     data = json.loads(data)
         
@@ -224,6 +476,14 @@ def process_clusters_from_cli(clusters_data, from_api=False):
             color = generate_random_color()
         cluster = Cluster(id=f"cluster_{i}", color=color, guids=guids)
         clusters.append(cluster)
+    
+    cluster_timing_logs["steps"]["data_parsing"] = {
+        "start_time": step_start,
+        "end_time": time.time(),
+        "duration": time.time() - step_start,
+        "description": "Parsing cluster data and creating cluster objects",
+        "clusters_created": len(clusters)
+    }
         
     data_to_return = []
     # Print clusters to verify
@@ -231,6 +491,8 @@ def process_clusters_from_cli(clusters_data, from_api=False):
         print(cluster)
         data_to_return.append(cluster.print_results_one_line())
         
+    # Step 2: GUID collection and site mapping
+    step_start = time.time()
     # Collect all GUIDs from clusters
     all_cluster_guids = set()
     for cluster in clusters:
@@ -275,9 +537,11 @@ def process_clusters_from_cli(clusters_data, from_api=False):
     # Check if the file exists
     if os.path.exists(file_path):
         file_size = os.path.getsize(file_path)
+        file_read_start = time.time()
         with open(file_path, "r") as file:
             json_data = json.load(file)
             num_keys = len(json_data)
+        file_read_time = time.time() - file_read_start
         
         print(f"File found: {file_path}")
         print(f"File size: {file_size} bytes")
@@ -291,6 +555,8 @@ def process_clusters_from_cli(clusters_data, from_api=False):
         return {"status": "error", "message": "File not found", "data": data_to_return}
 
     # Process the JSON data
+    guid_processing_start = time.time()
+    processed_guids = 0
     for key, guid_data in json_data.items():
         html_data = guid_data.get("html_data")
         if html_data:
@@ -298,8 +564,36 @@ def process_clusters_from_cli(clusters_data, from_api=False):
             print(f"Processing GUID: {key} for URL: {site_url}")
             data_to_return.append(f"Processing GUID: {key} for URL: {site_url}")
             search_html_data(html_data, site_url)
+            processed_guids += 1
         if "combinations_by_level" in guid_data:
             guid_data.pop("combinations_by_level")
+    guid_processing_time = time.time() - guid_processing_start
+
+    cluster_timing_logs["steps"]["guid_processing"] = {
+        "start_time": step_start,
+        "end_time": time.time(),
+        "duration": time.time() - step_start,
+        "description": "Processing GUIDs and creating site mappings",
+        "total_guids": len(all_cluster_guids),
+        "sites_found": len(sites),
+        "file_size_bytes": file_size if os.path.exists(file_path) else 0,
+        "file_size_mb": (file_size / (1024 * 1024)) if os.path.exists(file_path) else 0,
+        "guid_count": num_keys if os.path.exists(file_path) else 0,
+        "processed_guids": processed_guids,
+        "file_operations": {
+            "file_read": {
+                "duration": file_read_time,
+                "file_path": file_path,
+                "file_size_bytes": file_size,
+                "file_size_mb": file_size / (1024 * 1024)
+            },
+            "guid_processing": {
+                "duration": guid_processing_time,
+                "guids_processed": processed_guids,
+                "processing_rate": processed_guids / guid_processing_time if guid_processing_time > 0 else 0
+            }
+        }
+    }
 
     # Format sites as a string object
     sites_str = "sites = {\n"
@@ -418,8 +712,13 @@ def process_clusters_from_cli(clusters_data, from_api=False):
             value = str(value)
         return value.replace('"', "'")
     
-    def create_html_from_json(json_data, output_dir):
+    # Step 3: HTML file generation
+    step_start = time.time()
+    def create_html_from_json(json_data, output_dir, level_info=None):
         created_files = []  # Track created files
+        total_html_size = 0
+        files_created = 0
+        
         def create_element(element_data):
             unique_id = element_data.get("unique_id", None)
             tag_name = element_data.get("tag_name", "div")
@@ -463,54 +762,205 @@ def process_clusters_from_cli(clusters_data, from_api=False):
             html_data = guid_data.get("html_data", {})
             html_content = create_element(html_data)
             
-            # Only generate the body part
-            final_html = f"<html>{html_content}</html>"
+            # Get URL and create better filename with full path information
+            url = guid_data.get('url', '')
+            try:
+                from urllib.parse import urlparse
+                parsed_url = urlparse(url)
+                domain = parsed_url.netloc.replace('www.', '') if url else 'unknown'
+                # Clean domain for filename (remove special characters)
+                clean_domain = ''.join(c for c in domain if c.isalnum() or c in '-._').rstrip('.')
+                
+                # Extract meaningful path information
+                path = parsed_url.path.strip('/')
+                if path:
+                    # Take the last meaningful part of the path (like article slug)
+                    path_parts = path.split('/')
+                    # Get the last non-empty part, or combine last 2 parts if short
+                    if len(path_parts) >= 2 and len(path_parts[-1]) < 10:
+                        url_identifier = '_'.join(path_parts[-2:])
+                    else:
+                        url_identifier = path_parts[-1] if path_parts[-1] else path_parts[-2] if len(path_parts) > 1 else 'page'
+                    
+                    # Clean the URL identifier (keep only safe characters)
+                    url_identifier = ''.join(c for c in url_identifier if c.isalnum() or c in '-_')[:50]  # Limit length
+                else:
+                    url_identifier = 'home'
+            except:
+                clean_domain = 'unknown'
+                url_identifier = 'page'
             
-            output_file = os.path.join(output_dir, f"{key}.html")
+            # Use the FULL GUID - this is the key fix!
+            full_guid = key  # This is the complete GUID
+            short_id = key[:8] if len(key) >= 8 else key  # Only for display in title
             
-            with open(output_file, "w") as file:
+            # Create level-specific directory
+            level_str = f"level_{level_info}" if level_info else "unknown_level"
+            level_dir = os.path.join(output_dir, level_str)
+            if not os.path.exists(level_dir):
+                os.makedirs(level_dir)
+            
+            # Create descriptive filename: level_domain_urlidentifier_fullguid.html
+            if clean_domain and clean_domain != 'unknown':
+                filename = f"{level_str}_{clean_domain}_{url_identifier}_{full_guid}.html"
+            else:
+                filename = f"{level_str}_{url_identifier}_{full_guid}.html"
+                
+            # Add page title for better HTML structure with URL identifier
+            if url_identifier and url_identifier != 'page' and url_identifier != 'home':
+                page_title = f"Level {level_info} - {domain}/{url_identifier} ({short_id})" if level_info else f"{domain}/{url_identifier} ({short_id})"
+            else:
+                page_title = f"Level {level_info} - {domain} ({short_id})" if level_info else f"{domain} ({short_id})"
+            final_html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{page_title}</title>
+    <style>
+        body {{ margin: 0; padding: 20px; font-family: Arial, sans-serif; }}
+        .header {{ background: #f5f5f5; padding: 10px; margin-bottom: 20px; border-radius: 5px; }}
+        .info {{ color: #666; font-size: 14px; }}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>{page_title}</h2>
+        <div class="info">
+            <strong>URL:</strong> {url}<br>
+            <strong>GUID:</strong> {key}<br>
+            <strong>Generated:</strong> {time.strftime('%Y-%m-%d %H:%M:%S')}
+        </div>
+    </div>
+    <div class="content">
+        {html_content}
+    </div>
+</body>
+</html>"""
+            
+            output_file = os.path.join(level_dir, filename)
+            
+            file_write_start = time.time()
+            with open(output_file, "w", encoding='utf-8') as file:
                 file.write(final_html)
+            file_write_time = time.time() - file_write_start
+            
+            # Get file size
+            file_size = os.path.getsize(output_file) if os.path.exists(output_file) else 0
+            total_html_size += file_size
+            files_created += 1
             
             print(f"File created: {output_file}")
+            # Store relative path from output_html_files directory for web serving
+            relative_path = os.path.join(level_str, filename)
             created_files.append({
-                'filename': os.path.basename(output_file),
-                'path': output_file
+                'filename': filename,
+                'path': f"output_html_files/{relative_path}",
+                'full_path': output_file,
+                'file_size_bytes': file_size,
+                'file_size_kb': file_size / 1024,
+                'write_time': file_write_time,
+                'level': level_info,
+                'domain': domain,
+                'clean_domain': clean_domain,
+                'url_identifier': url_identifier,
+                'short_id': short_id,
+                'full_guid': full_guid,
+                'url': url,
+                'title': page_title,
+                'guid': key
             })
             data_to_return.append(f"File created: {os.path.abspath(output_file)}")
 
-        return created_files
+        return created_files, total_html_size, files_created
 
     # Create HTML files and get the list of created files
-    created_html_files = create_html_from_json(json_data, "output_html_files")
+    html_creation_start = time.time()
+    created_html_files, total_html_size, files_created = create_html_from_json(json_data, "output_html_files", level_info)
+    html_creation_time = time.time() - html_creation_start
+    
+    cluster_timing_logs["steps"]["html_generation"] = {
+        "start_time": step_start,
+        "end_time": time.time(),
+        "duration": time.time() - step_start,
+        "description": "Generating HTML files from processed data",
+        "html_files_created": len(created_html_files),
+        "total_html_size_bytes": total_html_size,
+        "total_html_size_mb": total_html_size / (1024 * 1024),
+        "average_file_size_bytes": total_html_size / len(created_html_files) if created_html_files else 0,
+        "average_file_size_kb": (total_html_size / len(created_html_files)) / 1024 if created_html_files else 0,
+        "html_creation_time": html_creation_time,
+        "files_per_second": len(created_html_files) / html_creation_time if html_creation_time > 0 else 0,
+        "bytes_per_second": total_html_size / html_creation_time if html_creation_time > 0 else 0
+    }
         
+    # Step 4: Results file writing
+    step_start = time.time()
     # Write results to a file
     output_file_path = os.path.join(PROJECT_ROOT, "backend", "api", "results", "WEB.json")
+    
+    # Get file size before writing
+    file_size_before = os.path.getsize(output_file_path) if os.path.exists(output_file_path) else 0
+    
+    file_write_start = time.time()
     with open(output_file_path, "w") as file:
         json.dump(json_data, file, indent=4)
+    file_write_time = time.time() - file_write_start
+    
+    # Get file size after writing
+    file_size_after = os.path.getsize(output_file_path) if os.path.exists(output_file_path) else 0
 
     print(f"Results written to: {output_file_path}")
     data_to_return.append(f"Results written to: {output_file_path}")
+    
+    cluster_timing_logs["steps"]["results_writing"] = {
+        "start_time": step_start,
+        "end_time": time.time(),
+        "duration": time.time() - step_start,
+        "description": "Writing final results to WEB.json file",
+        "file_path": output_file_path,
+        "file_size_before_bytes": file_size_before,
+        "file_size_after_bytes": file_size_after,
+        "file_size_change_bytes": file_size_after - file_size_before,
+        "file_size_mb": file_size_after / (1024 * 1024),
+        "file_write_time": file_write_time,
+        "write_speed_mb_per_second": (file_size_after / (1024 * 1024)) / file_write_time if file_write_time > 0 else 0
+    }
+
+    # Calculate total processing time
+    cluster_timing_logs["end_time"] = time.time()
+    cluster_timing_logs["total_duration"] = cluster_timing_logs["end_time"] - cluster_timing_logs["start_time"]
 
     return {
         "status": "success", 
         "message": "Clustering completed successfully", 
         "data": json.dumps(data_to_return),
         "sites": sites,
-        "html_files": created_html_files  # Return the list of created HTML files
+        "html_files": created_html_files,  # Return the list of created HTML files
+        "timing_logs": cluster_timing_logs  # Add timing logs to the response
     }
 
 def process_urls_from_api(urls, levels, mode=0):
     try:
         # Clean up directories only at the start of the API call
+        # But preserve data files for reuse functionality
         results_dir = os.path.join(PROJECT_ROOT, "backend", "api", "results")
         output_html_dir = "output_html_files"
         
-        # Clean up results directory
+        # Clean up results directory (but keep recent data files for reuse)
         if os.path.exists(results_dir):
+            import time as time_module
+            current_time = time_module.time()
             for file in os.listdir(results_dir):
                 file_path = os.path.join(results_dir, file)
                 try:
                     if os.path.isfile(file_path):
+                        # Keep recent data files (less than 5 minutes old) for reuse
+                        if file.startswith("data_") and file.endswith(".json"):
+                            file_age = current_time - os.path.getmtime(file_path)
+                            if file_age < 300:  # Keep files less than 5 minutes old
+                                print(f"Keeping recent data file: {file} (age: {file_age:.1f}s)")
+                                continue
                         os.unlink(file_path)
                 except Exception as e:
                     print(f"Error deleting {file_path}: {e}")
@@ -534,7 +984,8 @@ def process_urls_from_api(urls, levels, mode=0):
                 "body": result.get("data", {}),
                 "clustering_results": result.get("clustering_results", {}),
                 "processed_clusters": result.get("processed_clusters", {}),
-                "html_files": result.get("html_files", [])  # Use tracked HTML files
+                "html_files": result.get("html_files", []),  # Use tracked HTML files
+                "timing_logs": result.get("timing_logs", {})  # Include timing logs
             }
         else:
             # Mode 1 - process URLs by domain
@@ -565,7 +1016,8 @@ def process_urls_from_api(urls, levels, mode=0):
                         "message": domain_result.get("message"),
                         "clustering_results": domain_result.get("clustering_results", {}),
                         "processed_clusters": domain_result.get("processed_clusters", {}),
-                        "html_files": domain_result.get("html_files", [])  # Use tracked HTML files
+                        "html_files": domain_result.get("html_files", []),  # Use tracked HTML files
+                        "timing_logs": domain_result.get("timing_logs", {})  # Include timing logs
                     })
                 except Exception as e:
                     all_results["domain_results"].append({
@@ -597,7 +1049,8 @@ def process_clusters_from_api(clusters_data):
         return {
             "status": result.get("status"), 
             "message": result.get("message"), 
-            "body": result.get("data", {})
+            "body": result.get("data", {}),
+            "timing_logs": result.get("timing_logs", {})  # Include timing logs
         }
     except Exception as e:
         error_message = f"Error processing clusters: {str(e)}"

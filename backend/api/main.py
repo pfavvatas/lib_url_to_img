@@ -13,7 +13,7 @@ app = Flask(__name__)
 # Configure CORS more specifically
 CORS(app, resources={
     r"/*": {
-        "origins": ["http://localhost:3000", "http://127.0.0.1:3000"],
+        "origins": ["http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:3001", "http://127.0.0.1:3001"],
         "methods": ["GET", "POST", "OPTIONS"],
         "allow_headers": ["Content-Type", "Accept", "Authorization"]
     }
@@ -102,7 +102,7 @@ def serve_html(filename):
             os.makedirs(OUTPUT_HTML_DIR)
             print(f"Created directory: {OUTPUT_HTML_DIR}")
         
-        # Check if file exists
+        # Handle level-based directory structure (e.g., level_1/filename.html)
         file_path = os.path.join(OUTPUT_HTML_DIR, filename)
         if not os.path.exists(file_path):
             print(f"File not found: {file_path}")
@@ -110,7 +110,10 @@ def serve_html(filename):
             return render_template_string(FILE_NOT_FOUND_TEMPLATE, filename=filename), 404
             
         print(f"Serving file: {file_path}")
-        return send_from_directory(OUTPUT_HTML_DIR, filename)
+        # Use the directory containing the file for send_from_directory
+        directory = os.path.dirname(file_path)
+        basename = os.path.basename(file_path)
+        return send_from_directory(directory, basename)
     except Exception as e:
         print(f"Error serving file: {str(e)}")
         return render_template_string(FILE_NOT_FOUND_TEMPLATE, filename=filename), 500
