@@ -8,6 +8,7 @@ import sys
 # Add the lib directory to the system path
 sys.path.append(os.path.join(os.path.dirname(__file__), '../lib'))
 from lib import process_urls_from_api, process_clusters_from_api
+from utils.cache_manager import CacheManager
 
 app = Flask(__name__)
 # Configure CORS more specifically
@@ -118,6 +119,77 @@ def serve_html(filename):
         print(f"Error serving file: {str(e)}")
         return render_template_string(FILE_NOT_FOUND_TEMPLATE, filename=filename), 500
 
+@app.route('/site-similarity', methods=['POST'])
+def site_similarity():
+    """
+    Compute site similarity analysis
+    ---
+    tags:
+      - Site Analysis
+    parameters:
+      - name: sites
+        in: body
+        required: true
+        schema:
+          type: object
+          properties:
+            sites:
+              type: object
+              description: Dictionary with site URLs as keys and cluster ID arrays as values
+              example: {"site1.com": [1, 2, 3], "site2.com": [1, 3, 2]}
+    responses:
+      200:
+        description: Site similarity analysis results
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+            message:
+              type: string
+            data:
+              type: object
+    """
+    try:
+        data = request.json
+        sites_data = data.get('sites', {})
+        
+        if not sites_data:
+            return jsonify({
+                "status": "error",
+                "message": "Sites data is required",
+                "data": None
+            }), 400
+        
+        # Import here to avoid circular imports
+        sys.path.append(os.path.join(os.path.dirname(__file__), '../lib'))
+        from utils.site_similarity import compute_site_cosine_similarity
+        
+        result = compute_site_cosine_similarity(sites_data)
+        
+        response = jsonify(result)
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        return response
+        
+    except Exception as e:
+        import traceback
+        return jsonify({
+            "status": "error",
+            "message": f"Error in site similarity analysis: {str(e)}",
+            "data": None,
+            "traceback": traceback.format_exc()
+        }), 500
+
+@app.route('/site-similarity', methods=['OPTIONS'])
+def site_similarity_options():
+    response = jsonify({})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    return response
+
 @app.route('/process-urls', methods=['POST'])
 def process_urls():
     """
@@ -210,6 +282,254 @@ def process_clusters():
 
 @app.route('/process-clusters', methods=['OPTIONS'])
 def process_clusters_options():
+    response = jsonify({})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    return response
+
+# Initialize cache manager
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+cache_manager = CacheManager(cache_dir=os.path.join(PROJECT_ROOT, "backend", "api", "cache"))
+
+@app.route('/cache/stats', methods=['GET'])
+def get_cache_stats():
+    """
+    Get cache statistics
+    ---
+    tags:
+      - Cache Management
+    responses:
+      200:
+        description: Cache statistics
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+            data:
+              type: object
+    """
+    try:
+        stats = cache_manager.get_cache_stats()
+        
+        response = jsonify({
+            "status": "success",
+            "data": stats
+        })
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        return response
+        
+    except Exception as e:
+        import traceback
+        return jsonify({
+            "status": "error",
+            "message": f"Error getting cache stats: {str(e)}",
+            "traceback": traceback.format_exc()
+        }), 500
+
+@app.route('/cache/entries', methods=['GET'])
+def list_cache_entries():
+    """
+    List all cache entries
+    ---
+    tags:
+      - Cache Management
+    responses:
+      200:
+        description: List of cache entries
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+            data:
+              type: array
+    """
+    try:
+        entries = cache_manager.list_cache_entries()
+        
+        response = jsonify({
+            "status": "success",
+            "data": entries
+        })
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        return response
+        
+    except Exception as e:
+        import traceback
+        return jsonify({
+            "status": "error",
+            "message": f"Error listing cache entries: {str(e)}",
+            "traceback": traceback.format_exc()
+        }), 500
+
+@app.route('/cache/cleanup', methods=['POST'])
+def cleanup_cache():
+    """
+    Clean up expired cache entries
+    ---
+    tags:
+      - Cache Management
+    parameters:
+      - name: ttl_hours
+        in: body
+        required: false
+        schema:
+          type: object
+          properties:
+            ttl_hours:
+              type: integer
+              description: TTL in hours (optional, uses default if not provided)
+    responses:
+      200:
+        description: Cleanup results
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+            message:
+              type: string
+            removed_count:
+              type: integer
+    """
+    try:
+        data = request.json or {}
+        ttl_hours = data.get('ttl_hours')
+        
+        removed_count = cache_manager.cleanup_expired(ttl_hours)
+        
+        response = jsonify({
+            "status": "success",
+            "message": f"Cleanup completed",
+            "removed_count": removed_count
+        })
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        return response
+        
+    except Exception as e:
+        import traceback
+        return jsonify({
+            "status": "error",
+            "message": f"Error during cache cleanup: {str(e)}",
+            "traceback": traceback.format_exc()
+        }), 500
+
+@app.route('/cache/clear', methods=['POST'])
+def clear_cache():
+    """
+    Clear all cache entries
+    ---
+    tags:
+      - Cache Management
+    responses:
+      200:
+        description: Clear cache results
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+            message:
+              type: string
+            removed_count:
+              type: integer
+    """
+    try:
+        removed_count = cache_manager.clear_all_cache()
+        
+        response = jsonify({
+            "status": "success",
+            "message": f"All cache cleared",
+            "removed_count": removed_count
+        })
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        return response
+        
+    except Exception as e:
+        import traceback
+        return jsonify({
+            "status": "error",
+            "message": f"Error clearing cache: {str(e)}",
+            "traceback": traceback.format_exc()
+        }), 500
+
+@app.route('/cache/check', methods=['POST'])
+def check_cache():
+    """
+    Check if cache exists for specific URLs and levels
+    ---
+    tags:
+      - Cache Management
+    parameters:
+      - name: request_data
+        in: body
+        required: true
+        schema:
+          type: object
+          properties:
+            urls:
+              type: array
+              items:
+                type: string
+            levels:
+              type: array
+              items:
+                type: integer
+            ttl_hours:
+              type: integer
+              description: Custom TTL in hours (optional)
+    responses:
+      200:
+        description: Cache check results
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+            has_cache:
+              type: boolean
+            cache_key:
+              type: string
+    """
+    try:
+        data = request.json
+        urls = data.get('urls', [])
+        levels = data.get('levels', [])
+        ttl_hours = data.get('ttl_hours')
+        
+        has_cache, cache_key = cache_manager.has_valid_cache(urls, levels, ttl_hours)
+        
+        response = jsonify({
+            "status": "success",
+            "has_cache": has_cache,
+            "cache_key": cache_key[:8] + "..." if cache_key else None
+        })
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        return response
+        
+    except Exception as e:
+        import traceback
+        return jsonify({
+            "status": "error",
+            "message": f"Error checking cache: {str(e)}",
+            "traceback": traceback.format_exc()
+        }), 500
+
+# OPTIONS endpoints for cache management
+@app.route('/cache/<path:endpoint>', methods=['OPTIONS'])
+def cache_options(endpoint):
     response = jsonify({})
     response.headers.add('Access-Control-Allow-Origin', '*')
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')

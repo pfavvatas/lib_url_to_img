@@ -37,7 +37,7 @@ def process_url(url, levels, driver, config, unique_id, dataCollector):
     except WebDriverException as e:
         with open('errors.log', 'a') as f:
             f.write(f"Error processing URL {url}: {str(e)}\n")
-        print('\033[91m' + "Error: " + url + '\033[0m')
+        print('\033[91m' + "Error navigating to URL: " + url + " - " + str(e) + '\033[0m')
         url_timing["steps"]["browser_navigation"] = {
             "start_time": step_start,
             "end_time": time.time(),
@@ -45,7 +45,12 @@ def process_url(url, levels, driver, config, unique_id, dataCollector):
             "description": "Browser navigation to URL",
             "error": str(e)
         }
-        return
+        # Return error timing instead of None
+        url_timing["total_duration"] = time.time() - url_timing["start_time"]
+        url_timing["end_time"] = time.time()
+        url_timing["error"] = str(e)
+        url_timing["failed_step"] = "browser_navigation"
+        return url_timing
     
     # Step 0.1: URL parsing and folder creation
     step_start = time.time()

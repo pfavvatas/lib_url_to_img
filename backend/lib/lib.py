@@ -20,6 +20,8 @@ import zipfile
 import random
 import glob
 from utils.clustering import perform_clustering_analysis
+from utils.site_similarity import compute_site_cosine_similarity
+from utils.cache_manager import CacheManager
 
 # Get the project root directory (2 levels up from this file)
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -64,26 +66,41 @@ def process_urls_from_cli(urls, levels, from_api=False):
     debug_mode = getattr(config, 'debug', False)
     if debug_mode: print(config)
     
-    # Step 1: ChromeDriver setup timing (conditional)
+    # Initialize enhanced cache manager
+    cache_dir = os.path.join(PROJECT_ROOT, "backend", "api", "cache")
+    cache_ttl_hours = 24 if not from_api else 1  # 24 hours for CLI, 1 hour for API
+    cache_manager = CacheManager(cache_dir=cache_dir, default_ttl_hours=cache_ttl_hours)
+    
+    # Step 1: Check for cached data
     step_start = time.time()
     
-    # Pre-check for existing data to potentially skip ChromeDriver setup
-    results_dir = os.path.join(PROJECT_ROOT, "backend", "api", "results")
-    existing_data_files = []
-    if os.path.exists(results_dir):
-        existing_data_files = [f for f in os.listdir(results_dir) if f.startswith("data_") and f.endswith(".json")]
+    has_cache, cache_key = cache_manager.has_valid_cache(urls, levels, cache_ttl_hours)
+    cache_check_time = time.time() - step_start
     
     will_skip_data_collection = False
-    if existing_data_files and from_api:
-        import time as time_module
-        latest_file = max(existing_data_files, key=lambda f: os.path.getmtime(os.path.join(results_dir, f)))
-        latest_file_time = os.path.getmtime(os.path.join(results_dir, latest_file))
-        current_time = time_module.time()
-        will_skip_data_collection = (current_time - latest_file_time) < 300
+    cached_data = None
     
+    if has_cache:
+        # Try to load cached data
+        cached_data = cache_manager.get_cached_data(cache_key)
+        if cached_data:
+            will_skip_data_collection = True
+            cache_stats = cache_manager.get_cache_stats()
+            print(f"\033[92m✅ Found valid cached data (key: {cache_key[:8]}...)\033[0m")
+            print(f"\033[94m📊 Cache stats: {cache_stats['total_entries']} entries, {cache_stats['total_size_mb']:.1f} MB total\033[0m")
+        else:
+            print(f"\033[93m⚠️  Cache key found but data corrupted, will regenerate\033[0m")
+    
+    if not from_api and has_cache:
+        # For CLI usage, still prompt user about cached data
+        print(f"\033[93mFound cached data for these URLs and levels. Use cached data? (y/n)\033[0m")
+        user_input = input().lower().strip()
+        will_skip_data_collection = user_input in ['y', 'yes'] and cached_data is not None
+    
+    # Step 2: ChromeDriver setup timing (conditional)
     driver = None
     if will_skip_data_collection:
-        print(f"\033[93mSkipping ChromeDriver setup - using existing data\033[0m")
+        print(f"\033[93mSkipping ChromeDriver setup - using cached data\033[0m")
     else:
         service = find_chromedriver()
         if service:
@@ -96,53 +113,39 @@ def process_urls_from_cli(urls, levels, from_api=False):
             chrome_options.binary_location = "/opt/google/chrome/chrome"  # Specify the correct path to your Chrome binary
             driver = webdriver.Chrome(service=service, options=chrome_options)
     
-    timing_logs["steps"]["chromedriver_setup"] = {
+    timing_logs["steps"]["cache_check"] = {
         "start_time": step_start,
+        "end_time": step_start + cache_check_time,
+        "duration": cache_check_time,
+        "description": "Checking for cached data",
+        "cache_hit": has_cache and cached_data is not None,
+        "cache_key": cache_key[:8] + "..." if cache_key else None,
+        "will_use_cache": will_skip_data_collection
+    }
+    
+    timing_logs["steps"]["chromedriver_setup"] = {
+        "start_time": step_start + cache_check_time,
         "end_time": time.time(),
-        "duration": time.time() - step_start,
+        "duration": time.time() - (step_start + cache_check_time),
         "description": "ChromeDriver initialization and configuration" + (" (skipped)" if will_skip_data_collection else ""),
         "skipped": will_skip_data_collection
     }
 
-    # Step 2: Data collection timing (with existing data check)
+    # Step 3: Data collection timing (with enhanced caching)
     step_start = time.time()
     dataCollector = DataCollector()
     
-    # Check for existing data before starting expensive data collection
-    results_dir = os.path.join(PROJECT_ROOT, "backend", "api", "results")
-    existing_data_files = []
-    if os.path.exists(results_dir):
-        existing_data_files = [f for f in os.listdir(results_dir) if f.startswith("data_") and f.endswith(".json")]
-    
-    skip_data_collection = False
-    if existing_data_files and not from_api:
-        # For CLI usage, prompt user about existing data
-        print(f"\033[93mFound {len(existing_data_files)} existing data files. Skip data collection? (y/n)\033[0m")
-        user_input = input().lower().strip()
-        skip_data_collection = user_input in ['y', 'yes']
-    elif existing_data_files and from_api:
-        # For API usage, check if we have recent data (within 1 hour)
-        import time as time_module
-        latest_file = max(existing_data_files, key=lambda f: os.path.getmtime(os.path.join(results_dir, f)))
-        latest_file_time = os.path.getmtime(os.path.join(results_dir, latest_file))
-        current_time = time_module.time()
-        # Skip if data is less than 5 minutes old (300 seconds)
-        skip_data_collection = (current_time - latest_file_time) < 300
-        
-        if skip_data_collection:
-            print(f"\033[92mUsing existing data file: {latest_file} (created {(current_time - latest_file_time)/60:.1f} minutes ago)\033[0m")
-    
-    if skip_data_collection:
-        # Load existing data instead of collecting new data
-        latest_file_path = os.path.join(results_dir, latest_file)
-        with open(latest_file_path, 'r') as f:
-            existing_data = json.load(f)
-        dataCollector.url_data = existing_data
-        dataCollector.timing_logs = {"data_collection": {"description": "Skipped - using existing data", "duration": 0}}
+    if will_skip_data_collection and cached_data:
+        # Load cached data
+        dataCollector.url_data = cached_data
+        dataCollector.timing_logs = {"data_collection": {"description": "Skipped - using cached data", "duration": 0}}
         dataCollector.url_timing_logs = {}
-        print(f"\033[92mLoaded {len(existing_data)} existing records from {latest_file}\033[0m")
+        print(f"\033[92mLoaded {len(cached_data)} cached records for {len(urls)} URLs\033[0m")
     else:
-        # Collect new data as usual
+        # Collect new data
+        print(f"\033[94m🔄 Starting fresh data collection for {len(urls)} URLs, levels {levels}\033[0m")
+        data_collection_start = time.time()
+        
         if driver is None:
             # If driver setup was skipped, we need to set it up now
             service = find_chromedriver()
@@ -155,16 +158,24 @@ def process_urls_from_cli(urls, levels, from_api=False):
                 chrome_options.add_argument("--window-size=1920,1080")
                 chrome_options.binary_location = "/opt/google/chrome/chrome"
                 driver = webdriver.Chrome(service=service, options=chrome_options)
+        
         dataCollector.collect_data(urls, levels, driver, config)
+        
+        # Save collected data to cache
+        data_collection_time = time.time() - data_collection_start
+        cache_key = cache_manager.save_to_cache(urls, levels, dataCollector.url_data, data_collection_time)
+        print(f"\033[92m💾 Data saved to cache (key: {cache_key[:8]}..., processing time: {data_collection_time:.2f}s)\033[0m")
     
     timing_logs["steps"]["data_collection"] = {
         "start_time": step_start,
         "end_time": time.time(),
         "duration": time.time() - step_start,
-        "description": "URL data collection and processing" + (" (using existing data)" if skip_data_collection else ""),
+        "description": "URL data collection and processing" + (" (using cached data)" if will_skip_data_collection else ""),
         "urls_processed": len(urls),
         "levels_processed": levels,
-        "data_reused": skip_data_collection,
+        "data_reused": will_skip_data_collection,
+        "cache_used": will_skip_data_collection,
+        "cache_key": cache_key[:8] + "..." if cache_key else None,
         "detailed_timing": dataCollector.timing_logs,  # Include detailed timing from DataCollector
         "url_timing_logs": dataCollector.url_timing_logs  # Include per-URL detailed timing
     }
@@ -604,6 +615,31 @@ def process_clusters_from_cli(clusters_data, from_api=False, level_info=None):
     # Print the sites mapping
     print("\n" + sites_str)
     data_to_return.append(sites_str)
+    
+    # Step 2.5: Compute site similarity analysis
+    similarity_step_start = time.time()
+    site_similarity_result = compute_site_cosine_similarity(sites)
+    similarity_step_time = time.time() - similarity_step_start
+    
+    cluster_timing_logs["steps"]["site_similarity_analysis"] = {
+        "start_time": similarity_step_start,
+        "end_time": time.time(),
+        "duration": similarity_step_time,
+        "description": "Computing cosine similarity between sites",
+        "sites_analyzed": len(sites),
+        "success": site_similarity_result["status"] == "success"
+    }
+    
+    print(f"\033[94m=== SITE SIMILARITY ANALYSIS ===\033[0m")
+    if site_similarity_result["status"] == "success":
+        print(f"\033[92mSite similarity analysis completed successfully\033[0m")
+        print(f"\033[93mSites analyzed: {site_similarity_result['data']['summary']['total_sites']}\033[0m")
+        print(f"\033[93mAverage similarity: {site_similarity_result['data']['summary']['average_similarity']:.2f}%\033[0m")
+        data_to_return.append(f"Site similarity analysis completed for {site_similarity_result['data']['summary']['total_sites']} sites")
+    else:
+        print(f"\033[91mSite similarity analysis failed: {site_similarity_result['message']}\033[0m")
+        data_to_return.append(f"Site similarity analysis failed: {site_similarity_result['message']}")
+    print(f"\033[94m=== END SITE SIMILARITY ANALYSIS ===\033[0m\n")
 
     # List of valid CSS properties
     VALID_CSS_PROPERTIES = [
@@ -937,7 +973,8 @@ def process_clusters_from_cli(clusters_data, from_api=False, level_info=None):
         "data": json.dumps(data_to_return),
         "sites": sites,
         "html_files": created_html_files,  # Return the list of created HTML files
-        "timing_logs": cluster_timing_logs  # Add timing logs to the response
+        "timing_logs": cluster_timing_logs,  # Add timing logs to the response
+        "site_similarity": site_similarity_result  # Add site similarity results
     }
 
 def process_urls_from_api(urls, levels, mode=0):

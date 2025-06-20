@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Box, TextField, Chip, FormControl, Button, useTheme, Snackbar, CircularProgress, Grid2 as Grid, TextareaAutosize, Accordion, AccordionSummary, AccordionDetails, Typography, IconButton, Tooltip, Card, CardContent, CardHeader, Switch, FormControlLabel } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -6,6 +6,22 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import DeleteIcon from '@mui/icons-material/Delete';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import html2pdf from 'html2pdf.js';
+
+/*
+🎨 CONSISTENT COLOR SCHEME:
+- Primary sections (main content): primary.light / primary.main 
+  - Generated Files, Site Similarity Analysis, Clustering Results
+- Secondary sections (sub-content): grey.200 / grey.300
+  - Level accordions, Processed Clusters, Domain Results
+- Info sections (neutral): grey.100 / grey.200  
+  - Timing Logs, Performance Metrics
+- Success/Error states: success.light/main, error.light/main
+  - Only for actual success/error conditions
+- Data visualization: Keep semantic colors
+  - Similarity matrix: success (green), warning (yellow), primary (blue)
+*/
 
 const URLChipForm = ({ darkMode, onThemeChange }) => {
     const [urls, setUrls] = useState([]);
@@ -22,6 +38,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
     const [showResults, setShowResults] = useState(false); // Add this new state
     const [isNewMode, setIsNewMode] = useState(false);
     const [abortController, setAbortController] = useState(null);
+    const similarityRef = useRef(null);
     const theme = useTheme();
 
     // Function to extract domain from URL
@@ -269,6 +286,571 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
         }
     };
 
+    // Function to create site labels
+    const createSiteLabel = (index) => {
+        return `site_${index + 1}`;
+    };
+
+    // Function to generate PDF from similarity results
+    const generatePDF = (siteSimilarity, level = null) => {
+        if (!siteSimilarity || siteSimilarity.status !== 'success' || !siteSimilarity.data) return;
+
+        const { data } = siteSimilarity;
+        const { matrix, sites, summary } = data;
+        
+        // Create a temporary container for PDF content
+        const pdfContent = document.createElement('div');
+        pdfContent.style.fontFamily = 'Arial, sans-serif';
+        pdfContent.style.padding = '20px';
+        pdfContent.style.backgroundColor = 'white';
+        pdfContent.style.color = 'black';
+
+        // Add title
+        const title = document.createElement('h1');
+        title.style.textAlign = 'center';
+        title.style.marginBottom = '20px';
+        title.style.color = '#1976d2';
+        title.innerHTML = level ? 
+            `Site Similarity Analysis - Level ${level}` : 
+            'Site Similarity Analysis';
+        pdfContent.appendChild(title);
+
+        // Add timestamp
+        const timestamp = document.createElement('p');
+        timestamp.style.textAlign = 'center';
+        timestamp.style.fontSize = '12px';
+        timestamp.style.color = '#666';
+        timestamp.style.marginBottom = '30px';
+        timestamp.innerHTML = `Generated on: ${new Date().toLocaleString()}`;
+        pdfContent.appendChild(timestamp);
+
+        // Add site reference
+        const siteRefTitle = document.createElement('h2');
+        siteRefTitle.innerHTML = 'Site Reference';
+        siteRefTitle.style.borderBottom = '2px solid #1976d2';
+        siteRefTitle.style.paddingBottom = '5px';
+        siteRefTitle.style.marginBottom = '15px';
+        pdfContent.appendChild(siteRefTitle);
+
+        sites.forEach((site, index) => {
+            const siteItem = document.createElement('div');
+            siteItem.style.marginBottom = '8px';
+            siteItem.style.padding = '8px';
+            siteItem.style.border = '1px solid #ddd';
+            siteItem.style.borderRadius = '4px';
+            siteItem.innerHTML = `<strong style="color: #1976d2;">${createSiteLabel(index)}:</strong> ${site}`;
+            pdfContent.appendChild(siteItem);
+        });
+
+        // Add summary statistics
+        const summaryTitle = document.createElement('h2');
+        summaryTitle.innerHTML = 'Summary Statistics';
+        summaryTitle.style.borderBottom = '2px solid #1976d2';
+        summaryTitle.style.paddingBottom = '5px';
+        summaryTitle.style.marginTop = '30px';
+        summaryTitle.style.marginBottom = '15px';
+        pdfContent.appendChild(summaryTitle);
+
+        const summaryGrid = document.createElement('div');
+        summaryGrid.style.display = 'grid';
+        summaryGrid.style.gridTemplateColumns = 'repeat(2, 1fr)';
+        summaryGrid.style.gap = '15px';
+        summaryGrid.style.marginBottom = '30px';
+
+        const summaryItems = [
+            { label: 'Total Sites', value: summary.total_sites },
+            { label: 'Average Similarity', value: `${summary.average_similarity.toFixed(2)}%` },
+            { label: 'Maximum Similarity', value: `${summary.max_similarity.toFixed(2)}%` },
+            { label: 'Minimum Similarity', value: `${summary.min_similarity.toFixed(2)}%` }
+        ];
+
+        summaryItems.forEach(item => {
+            const summaryItem = document.createElement('div');
+            summaryItem.style.padding = '10px';
+            summaryItem.style.border = '1px solid #ddd';
+            summaryItem.style.borderRadius = '4px';
+            summaryItem.style.textAlign = 'center';
+            summaryItem.innerHTML = `
+                <div style="font-size: 12px; color: #666; margin-bottom: 5px;">${item.label}</div>
+                <div style="font-size: 18px; font-weight: bold; color: #1976d2;">${item.value}</div>
+            `;
+            summaryGrid.appendChild(summaryItem);
+        });
+        pdfContent.appendChild(summaryGrid);
+
+        // Add similarity matrix
+        const matrixTitle = document.createElement('h2');
+        matrixTitle.innerHTML = 'Cosine Similarity Matrix (%)';
+        matrixTitle.style.borderBottom = '2px solid #1976d2';
+        matrixTitle.style.paddingBottom = '5px';
+        matrixTitle.style.marginBottom = '15px';
+        pdfContent.appendChild(matrixTitle);
+
+        // Create table
+        const table = document.createElement('table');
+        table.style.width = '100%';
+        table.style.borderCollapse = 'collapse';
+        table.style.fontSize = '10px';
+        table.style.marginBottom = '20px';
+
+        // Table header
+        const thead = document.createElement('thead');
+        const headerRow = document.createElement('tr');
+        
+        // Empty cell for top-left corner
+        const emptyCell = document.createElement('th');
+        emptyCell.style.padding = '8px';
+        emptyCell.style.border = '1px solid #ddd';
+        emptyCell.style.backgroundColor = '#f5f5f5';
+        emptyCell.style.fontWeight = 'bold';
+        emptyCell.innerHTML = '';
+        headerRow.appendChild(emptyCell);
+
+        // Column headers
+        sites.forEach((site, index) => {
+            const th = document.createElement('th');
+            th.style.padding = '8px';
+            th.style.border = '1px solid #ddd';
+            th.style.backgroundColor = '#f5f5f5';
+            th.style.fontWeight = 'bold';
+            th.style.textAlign = 'center';
+            th.style.fontSize = '9px';
+            th.innerHTML = createSiteLabel(index);
+            headerRow.appendChild(th);
+        });
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        // Table body
+        const tbody = document.createElement('tbody');
+        sites.forEach((rowSite, rowIndex) => {
+            const tr = document.createElement('tr');
+            
+            // Row header
+            const rowHeader = document.createElement('th');
+            rowHeader.style.padding = '8px';
+            rowHeader.style.border = '1px solid #ddd';
+            rowHeader.style.backgroundColor = '#f5f5f5';
+            rowHeader.style.fontWeight = 'bold';
+            rowHeader.style.textAlign = 'center';
+            rowHeader.style.fontSize = '9px';
+            rowHeader.innerHTML = createSiteLabel(rowIndex);
+            tr.appendChild(rowHeader);
+
+            // Data cells
+            sites.forEach((colSite, colIndex) => {
+                const td = document.createElement('td');
+                const similarity = matrix[rowSite][colSite];
+                const isHighSimilarity = similarity > 80;
+                const isMediumSimilarity = similarity > 50;
+                const isDiagonal = rowIndex === colIndex;
+
+                td.style.padding = '8px';
+                td.style.border = '1px solid #ddd';
+                td.style.textAlign = 'center';
+                td.style.fontSize = '9px';
+                
+                if (isDiagonal) {
+                    td.style.backgroundColor = '#e3f2fd';
+                    td.style.fontWeight = 'bold';
+                } else if (isHighSimilarity) {
+                    td.style.backgroundColor = '#e8f5e8';
+                } else if (isMediumSimilarity) {
+                    td.style.backgroundColor = '#fff3e0';
+                }
+
+                td.innerHTML = similarity.toFixed(2);
+                tr.appendChild(td);
+            });
+            tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        pdfContent.appendChild(table);
+
+        // Add legend
+        const legendTitle = document.createElement('h3');
+        legendTitle.innerHTML = 'Color Legend';
+        legendTitle.style.marginTop = '20px';
+        legendTitle.style.marginBottom = '10px';
+        pdfContent.appendChild(legendTitle);
+
+        const legend = document.createElement('div');
+        legend.style.display = 'flex';
+        legend.style.flexWrap = 'wrap';
+        legend.style.gap = '15px';
+        legend.style.fontSize = '10px';
+
+        const legendItems = [
+            { color: '#e3f2fd', label: 'Same Site (100%)' },
+            { color: '#e8f5e8', label: 'High Similarity (>80%)' },
+            { color: '#fff3e0', label: 'Medium Similarity (>50%)' },
+            { color: 'white', label: 'Low Similarity (≤50%)' }
+        ];
+
+        legendItems.forEach(item => {
+            const legendItem = document.createElement('div');
+            legendItem.style.display = 'flex';
+            legendItem.style.alignItems = 'center';
+            legendItem.style.gap = '5px';
+            legendItem.innerHTML = `
+                <div style="width: 15px; height: 15px; background-color: ${item.color}; border: 1px solid #ccc;"></div>
+                <span>${item.label}</span>
+            `;
+            legend.appendChild(legendItem);
+        });
+        pdfContent.appendChild(legend);
+
+        // Generate PDF
+        const opt = {
+            margin: 0.5,
+            filename: level ? 
+                `similarity-analysis-level-${level}-${new Date().toISOString().slice(0, 10)}.pdf` :
+                `similarity-analysis-${new Date().toISOString().slice(0, 10)}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }
+        };
+
+        html2pdf().set(opt).from(pdfContent).save().then(() => {
+            setSuccess('PDF downloaded successfully!');
+        }).catch((error) => {
+            console.error('PDF generation error:', error);
+            setError({ message: 'Failed to generate PDF', stack: error.toString() });
+        });
+    };
+
+    // Function to render site similarity results
+    const renderSiteSimilarityResults = (siteSimilarity, level = null) => {
+        if (!siteSimilarity || siteSimilarity.status !== 'success' || !siteSimilarity.data) return null;
+
+        const { data } = siteSimilarity;
+        const { matrix, sites, summary } = data;
+
+        return (
+            <Accordion 
+                sx={{ 
+                    mb: theme.spacing(2),
+                    '&:before': {
+                        display: 'none',
+                    },
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                    borderRadius: '8px !important',
+                    overflow: 'hidden'
+                }}
+            >
+                <AccordionSummary 
+                    expandIcon={<ExpandMoreIcon />}
+                    sx={{
+                        backgroundColor: 'primary.light',
+                        '&:hover': {
+                            backgroundColor: 'primary.main',
+                            color: 'white',
+                        },
+                        '& .MuiAccordionSummary-expandIconWrapper': {
+                            color: 'inherit'
+                        }
+                    }}
+                >
+                    <Typography sx={{ fontWeight: 'bold' }}>
+                        📊 Cosine Similarity Matrix ({summary.total_sites} sites)
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails sx={{ p: 3 }}>
+                    {/* Summary Statistics */}
+                    <Box sx={{ 
+                        mb: theme.spacing(3),
+                        p: 2,
+                        backgroundColor: 'background.paper',
+                        borderRadius: 2,
+                        border: '1px solid',
+                        borderColor: 'divider'
+                    }}>
+                        <Typography variant="h6" gutterBottom>📊 Summary Statistics</Typography>
+                        <Box sx={{ 
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                            gap: 2
+                        }}>
+                            <Box>
+                                <Typography variant="subtitle2" color="text.secondary">Total Sites</Typography>
+                                <Typography variant="h6" color="primary">{summary.total_sites}</Typography>
+                            </Box>
+                            <Box>
+                                <Typography variant="subtitle2" color="text.secondary">Average Similarity</Typography>
+                                <Typography variant="h6" color="primary">{summary.average_similarity.toFixed(2)}%</Typography>
+                            </Box>
+                            <Box>
+                                <Typography variant="subtitle2" color="text.secondary">Maximum Similarity</Typography>
+                                <Typography variant="h6" color="primary">{summary.max_similarity.toFixed(2)}%</Typography>
+                            </Box>
+                            <Box>
+                                <Typography variant="subtitle2" color="text.secondary">Minimum Similarity</Typography>
+                                <Typography variant="h6" color="primary">{summary.min_similarity.toFixed(2)}%</Typography>
+                            </Box>
+                        </Box>
+                    </Box>
+
+                    {/* Similarity Matrix Table */}
+                    <Box sx={{ mb: theme.spacing(2) }}>
+                        <Typography variant="h6" gutterBottom>🔢 Cosine Similarity Matrix (%)</Typography>
+                        <Box sx={{ 
+                            overflowX: 'auto',
+                            maxHeight: '500px',
+                            border: '1px solid',
+                            borderColor: 'divider',
+                            borderRadius: 1
+                        }}>
+                            <table style={{ 
+                                width: '100%', 
+                                borderCollapse: 'collapse',
+                                minWidth: 'auto',
+                                fontSize: '0.9rem'
+                            }}>
+                                <thead>
+                                    <tr style={{ backgroundColor: theme.palette.grey[100] }}>
+                                        <th style={{ 
+                                            padding: '12px', 
+                                            border: '1px solid #ddd',
+                                            textAlign: 'left',
+                                            fontWeight: 'bold',
+                                            position: 'sticky',
+                                            top: 0,
+                                            backgroundColor: theme.palette.grey[100],
+                                            zIndex: 1
+                                        }}>
+                                            Site
+                                        </th>
+                                        {sites.map((site, index) => (
+                                            <th key={index} style={{ 
+                                                padding: '8px 12px', 
+                                                border: '1px solid #ddd',
+                                                textAlign: 'center',
+                                                fontWeight: 'bold',
+                                                position: 'sticky',
+                                                top: 0,
+                                                backgroundColor: theme.palette.grey[100],
+                                                zIndex: 1,
+                                                minWidth: '80px',
+                                                maxWidth: '100px',
+                                                fontSize: '0.9rem'
+                                            }}>
+                                                <Tooltip title={site} arrow>
+                                                    <span style={{ 
+                                                        fontWeight: 'bold', 
+                                                        color: theme.palette.primary.main 
+                                                    }}>
+                                                        {createSiteLabel(index)}
+                                                    </span>
+                                                </Tooltip>
+                                            </th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {sites.map((rowSite, rowIndex) => (
+                                        <tr key={rowIndex}>
+                                            <td style={{ 
+                                                padding: '8px 12px', 
+                                                border: '1px solid #ddd',
+                                                fontWeight: 'bold',
+                                                backgroundColor: theme.palette.grey[50],
+                                                position: 'sticky',
+                                                left: 0,
+                                                zIndex: 1,
+                                                minWidth: '80px',
+                                                maxWidth: '100px',
+                                                fontSize: '0.9rem',
+                                                textAlign: 'center'
+                                            }}>
+                                                <Tooltip title={rowSite} arrow>
+                                                    <span style={{ 
+                                                        fontWeight: 'bold', 
+                                                        color: theme.palette.primary.main 
+                                                    }}>
+                                                        {createSiteLabel(rowIndex)}
+                                                    </span>
+                                                </Tooltip>
+                                            </td>
+                                            {sites.map((colSite, colIndex) => {
+                                                const similarity = matrix[rowSite][colSite];
+                                                const isHighSimilarity = similarity > 80;
+                                                const isMediumSimilarity = similarity > 50;
+                                                const isDiagonal = rowIndex === colIndex;
+                                                
+                                                return (
+                                                    <td key={colIndex} style={{ 
+                                                        padding: '8px', 
+                                                        border: '1px solid #ddd',
+                                                        textAlign: 'center',
+                                                        fontSize: '0.85rem',
+                                                        minWidth: '60px',
+                                                        backgroundColor: isDiagonal 
+                                                            ? theme.palette.primary.light 
+                                                            : isHighSimilarity 
+                                                                ? theme.palette.success.light 
+                                                                : isMediumSimilarity 
+                                                                    ? theme.palette.warning.light 
+                                                                    : 'white',
+                                                        color: isDiagonal 
+                                                            ? theme.palette.primary.contrastText 
+                                                            : isHighSimilarity 
+                                                                ? theme.palette.success.contrastText 
+                                                                : isMediumSimilarity 
+                                                                    ? theme.palette.warning.contrastText 
+                                                                    : 'inherit',
+                                                        fontWeight: isDiagonal ? 'bold' : 'normal'
+                                                    }}>
+                                                        {similarity.toFixed(2)}
+                                                    </td>
+                                                );
+                                            })}
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </Box>
+                    </Box>
+
+                    {/* Site Reference - Compact */}
+                    <Box sx={{ 
+                        mt: 2,
+                        p: 1.5,
+                        backgroundColor: 'grey.50',
+                        borderRadius: 1,
+                        border: '1px solid',
+                        borderColor: 'grey.300'
+                    }}>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                            Site Labels:
+                        </Typography>
+                        <Box sx={{ 
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 0.5,
+                            maxHeight: '150px',
+                            overflowY: 'auto'
+                        }}>
+                            {sites.map((site, index) => (
+                                <Box key={index} sx={{ 
+                                    display: 'flex', 
+                                    alignItems: 'flex-start', 
+                                    gap: 1,
+                                    py: 0.5,
+                                    px: 0.5,
+                                    border: '1px solid',
+                                    borderColor: 'grey.200',
+                                    borderRadius: 0.5,
+                                    backgroundColor: 'white'
+                                }}>
+                                    <Typography variant="caption" sx={{ 
+                                        fontWeight: 'bold', 
+                                        color: 'primary.main',
+                                        minWidth: '50px',
+                                        mt: 0.25
+                                    }}>
+                                        {createSiteLabel(index)}:
+                                    </Typography>
+                                    <Tooltip title={site} arrow placement="top">
+                                        <Typography variant="caption" sx={{ 
+                                            color: 'text.secondary',
+                                            flex: 1,
+                                            fontSize: '0.7rem',
+                                            lineHeight: 1.3,
+                                            wordBreak: 'break-all',
+                                            cursor: 'help'
+                                        }}>
+                                            {site}
+                                        </Typography>
+                                    </Tooltip>
+                                </Box>
+                            ))}
+                        </Box>
+                    </Box>
+
+                    {/* Color Legend */}
+                    <Box sx={{ 
+                        display: 'flex', 
+                        flexWrap: 'wrap', 
+                        gap: 2, 
+                        mt: 1,
+                        p: 1.5,
+                        backgroundColor: 'grey.50',
+                        borderRadius: 1,
+                        border: '1px solid',
+                        borderColor: 'grey.300'
+                    }}>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mr: 1 }}>Colors:</Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                            <Box sx={{ 
+                                width: 16, 
+                                height: 16, 
+                                backgroundColor: theme.palette.primary.light,
+                                border: '1px solid #ccc'
+                            }} />
+                            <Typography variant="caption" sx={{ fontSize: '0.75rem' }}>Same Site</Typography>
+                        </Box>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                            <Box sx={{ 
+                                width: 16, 
+                                height: 16, 
+                                backgroundColor: theme.palette.success.light,
+                                border: '1px solid #ccc'
+                            }} />
+                            <Typography variant="caption" sx={{ fontSize: '0.75rem' }}>High (&gt;80%)</Typography>
+                        </Box>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                            <Box sx={{ 
+                                width: 16, 
+                                height: 16, 
+                                backgroundColor: theme.palette.warning.light,
+                                border: '1px solid #ccc'
+                            }} />
+                            <Typography variant="caption" sx={{ fontSize: '0.75rem' }}>Medium (&gt;50%)</Typography>
+                        </Box>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                            <Box sx={{ 
+                                width: 16, 
+                                height: 16, 
+                                backgroundColor: 'white',
+                                border: '1px solid #ccc'
+                            }} />
+                            <Typography variant="caption" sx={{ fontSize: '0.75rem' }}>Low (≤50%)</Typography>
+                        </Box>
+                    </Box>
+
+                    {/* Action Buttons */}
+                    <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 2 }}>
+                        <Tooltip title="Copy similarity matrix to clipboard">
+                            <IconButton 
+                                size="small" 
+                                onClick={() => handleCopyToClipboard(JSON.stringify(matrix, null, 2))}
+                                sx={{ 
+                                    backgroundColor: 'grey.100',
+                                    '&:hover': { backgroundColor: 'grey.200' }
+                                }}
+                            >
+                                <ContentCopyIcon />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Download PDF report">
+                            <IconButton 
+                                size="small" 
+                                onClick={() => generatePDF(siteSimilarity, level)}
+                                sx={{ 
+                                    backgroundColor: 'error.light',
+                                    color: 'error.contrastText',
+                                    '&:hover': { backgroundColor: 'error.main' }
+                                }}
+                            >
+                                <PictureAsPdfIcon />
+                            </IconButton>
+                        </Tooltip>
+                    </Box>
+                </AccordionDetails>
+            </Accordion>
+        );
+    };
+
     // Function to render timing logs
     const renderTimingLogs = (timingLogs) => {
         if (!timingLogs) return null;
@@ -288,10 +870,10 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                 <AccordionSummary 
                     expandIcon={<ExpandMoreIcon />}
                     sx={{
-                        backgroundColor: 'info.light',
+                        backgroundColor: 'grey.100',
                         '&:hover': {
-                            backgroundColor: 'info.main',
-                            color: 'white',
+                            backgroundColor: 'grey.200',
+                            color: 'text.primary',
                         },
                         '& .MuiAccordionSummary-expandIconWrapper': {
                             color: 'inherit'
@@ -456,8 +1038,8 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                     <AccordionSummary 
                                         expandIcon={<ExpandMoreIcon />}
                                         sx={{
-                                            backgroundColor: 'success.light',
-                                            '&:hover': { backgroundColor: 'success.main', color: 'white' }
+                                            backgroundColor: 'grey.100',
+                                            '&:hover': { backgroundColor: 'grey.200', color: 'text.primary' }
                                         }}
                                     >
                                         <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
@@ -541,19 +1123,50 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
         const collectAllHtmlFiles = (resultData) => {
             let allFiles = [];
             
+            console.log("🔍 DEBUG: collectAllHtmlFiles input:", resultData);
+            
             if (resultData.html_files) {
+                console.log("📁 Found top-level html_files:", resultData.html_files.length);
                 allFiles = allFiles.concat(resultData.html_files);
             }
             
             if (resultData.domain_results) {
-                resultData.domain_results.forEach(domainResult => {
+                console.log("🌐 Found domain_results:", resultData.domain_results.length);
+                resultData.domain_results.forEach((domainResult, index) => {
+                    console.log(`📊 Domain ${index + 1} (${domainResult.domain}):`, domainResult.html_files?.length || 0, "files");
                     if (domainResult.html_files) {
+                        domainResult.html_files.forEach(file => {
+                            console.log(`  - File domain: ${file.domain}, clean_domain: ${file.clean_domain}, filename: ${file.filename}`);
+                        });
                         allFiles = allFiles.concat(domainResult.html_files);
                     }
                 });
             }
             
-            return allFiles;
+            // Remove duplicates based on filename (backend bug workaround)
+            const uniqueFiles = allFiles.filter((file, index, self) => 
+                index === self.findIndex(f => f.filename === file.filename)
+            );
+            
+            console.log("📁 Total collected files:", allFiles.length);
+            console.log("📁 After deduplication:", uniqueFiles.length);
+            console.log("📊 Files by domain:", uniqueFiles.reduce((acc, file) => {
+                const domain = file.domain || file.clean_domain || 'unknown';
+                acc[domain] = (acc[domain] || 0) + 1;
+                return acc;
+            }, {}));
+            
+            // Show warning if we detected duplicates (backend bug)
+            if (allFiles.length > uniqueFiles.length) {
+                console.warn("🚨 BACKEND BUG DETECTED: Duplicate files found and removed", {
+                    total: allFiles.length,
+                    unique: uniqueFiles.length,
+                    duplicates: allFiles.length - uniqueFiles.length
+                });
+                setWarning(`⚠️ Backend issue detected: ${allFiles.length - uniqueFiles.length} duplicate files removed. Domain processing may have incorrect metadata.`);
+            }
+            
+            return uniqueFiles;
         };
 
         // Render unified HTML files section
@@ -593,9 +1206,9 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                     <AccordionSummary 
                         expandIcon={<ExpandMoreIcon />}
                         sx={{
-                            backgroundColor: 'success.light',
+                            backgroundColor: 'primary.light',
                             '&:hover': {
-                                backgroundColor: 'success.main',
+                                backgroundColor: 'primary.main',
                                 color: 'white',
                             },
                             '& .MuiAccordionSummary-expandIconWrapper': {
@@ -622,10 +1235,10 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                 <AccordionSummary 
                                     expandIcon={<ExpandMoreIcon />}
                                     sx={{
-                                        backgroundColor: 'secondary.light',
+                                        backgroundColor: 'grey.200',
                                         '&:hover': {
-                                            backgroundColor: 'secondary.main',
-                                            color: 'white',
+                                            backgroundColor: 'grey.300',
+                                            color: 'text.primary',
                                         },
                                         '& .MuiAccordionSummary-expandIconWrapper': {
                                             color: 'inherit'
@@ -639,12 +1252,26 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                 <AccordionDetails sx={{ p: 3 }}>
                                     {(() => {
                                         // Group files by domain within each level
-                                        const filesByDomain = filesByLevel[level].reduce((acc, file) => {
-                                            const domain = file.domain || file.clean_domain || 'unknown';
-                                            if (!acc[domain]) acc[domain] = [];
-                                            acc[domain].push(file);
-                                            return acc;
-                                        }, {});
+                                        // FIXED: Use the correct domain from API structure to handle backend bug
+                                        const filesByDomain = {};
+                                        
+                                        filesByLevel[level].forEach(file => {
+                                            // Try to get the correct domain from the file's metadata
+                                            let correctDomain = file.domain || file.clean_domain || 'unknown';
+                                            
+                                            // If we have domain_results, try to find the correct domain by matching HTML files
+                                            if (result.domain_results) {
+                                                for (const domainResult of result.domain_results) {
+                                                    if (domainResult.html_files && domainResult.html_files.some(f => f.filename === file.filename)) {
+                                                        correctDomain = domainResult.domain.replace('www.', '');
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                            
+                                            if (!filesByDomain[correctDomain]) filesByDomain[correctDomain] = [];
+                                            filesByDomain[correctDomain].push({...file, corrected_domain: correctDomain});
+                                        });
 
                                         return Object.entries(filesByDomain).map(([domain, domainFiles]) => (
                                             <Box key={domain} sx={{ mb: 3 }}>
@@ -722,11 +1349,59 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
             return (
                 <Box sx={{ width: '100%', mt: theme.spacing(4), maxWidth: '1200px', mx: 'auto' }}>
                     <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
-                        🌐 Domain-Based Clustering Results
+                        🌐 Domain-Based Processing Results (Mode 1)
                     </Typography>
+                    
+
                     
                     {/* Unified HTML Files Section */}
                     {renderUnifiedHtmlFilesSection(result)}
+                    
+                    {/* Combined Site Similarity Results for All Domains */}
+                    {result.domain_results && result.domain_results.some(dr => dr.processed_clusters && dr.processed_clusters.some(pc => pc.processed_data && pc.processed_data.site_similarity)) && (
+                        <Accordion 
+                            sx={{ 
+                                mb: theme.spacing(2),
+                                '&:before': {
+                                    display: 'none',
+                                },
+                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                borderRadius: '8px !important',
+                                overflow: 'hidden'
+                            }}
+                        >
+                            <AccordionSummary 
+                                expandIcon={<ExpandMoreIcon />}
+                                sx={{
+                                    backgroundColor: 'primary.light',
+                                    '&:hover': {
+                                        backgroundColor: 'primary.main',
+                                        color: 'white',
+                                    },
+                                    '& .MuiAccordionSummary-expandIconWrapper': {
+                                        color: 'inherit'
+                                    }
+                                }}
+                            >
+                                <Typography sx={{ fontWeight: 'bold' }}>
+                                    🔍 Site Similarity Analysis by Domain
+                                </Typography>
+                            </AccordionSummary>
+                            <AccordionDetails sx={{ p: 3 }}>
+                                {result.domain_results.map((domainResult, domainIndex) => (
+                                    domainResult.processed_clusters && domainResult.processed_clusters.map((processedCluster, clusterIndex) => (
+                                        processedCluster.processed_data && processedCluster.processed_data.site_similarity &&
+                                        <div key={`domain-${domainIndex}-similarity-${clusterIndex}`} style={{ marginBottom: '24px' }}>
+                                            <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: 'primary.main' }}>
+                                                📊 {domainResult.domain} - Level {processedCluster.level}
+                                            </Typography>
+                                            {renderSiteSimilarityResults(processedCluster.processed_data.site_similarity, processedCluster.level)}
+                                        </div>
+                                    ))
+                                ))}
+                            </AccordionDetails>
+                        </Accordion>
+                    )}
                     
                     {result.domain_results.map((domainResult, domainIndex) => (
                         <Accordion 
@@ -744,10 +1419,10 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                             <AccordionSummary 
                                 expandIcon={<ExpandMoreIcon />}
                                 sx={{
-                                    backgroundColor: domainResult.status === 'success' ? 'success.light' : 'error.light',
+                                    backgroundColor: domainResult.status === 'success' ? 'grey.200' : 'error.light',
                                     '&:hover': {
-                                        backgroundColor: domainResult.status === 'success' ? 'success.main' : 'error.main',
-                                        color: 'white',
+                                        backgroundColor: domainResult.status === 'success' ? 'grey.300' : 'error.main',
+                                        color: domainResult.status === 'success' ? 'text.primary' : 'white',
                                     },
                                     '& .MuiAccordionSummary-expandIconWrapper': {
                                         color: 'inherit'
@@ -763,19 +1438,61 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                 {domainResult.html_files && domainResult.html_files.length > 0 && (
                                     <Box sx={{ mb: theme.spacing(2) }}>
                                         <Typography variant="h6" gutterBottom>Generated HTML Files</Typography>
-                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                        <Grid container spacing={2}>
                                             {domainResult.html_files.map((file, index) => (
-                                                <Button
-                                                    key={index}
-                                                    variant="contained"
-                                                    color="primary"
-                                                    onClick={() => window.open(`http://localhost:5000/${file.path}`, '_blank')}
-                                                    sx={{ mb: 1 }}
-                                                >
-                                                    Open {file.filename}
-                                                </Button>
+                                                <Grid item xs={12} sm={6} md={4} key={index}>
+                                                    <Card 
+                                                        sx={{ 
+                                                            cursor: 'pointer',
+                                                            transition: 'all 0.2s ease-in-out',
+                                                            '&:hover': {
+                                                                transform: 'translateY(-2px)',
+                                                                boxShadow: '0 4px 8px rgba(0,0,0,0.15)'
+                                                            }
+                                                        }}
+                                                        onClick={() => window.open(`http://localhost:5000/${file.path}`, '_blank')}
+                                                    >
+                                                        <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                                                            <Typography 
+                                                                variant="subtitle2" 
+                                                                sx={{ 
+                                                                    fontWeight: 'bold',
+                                                                    mb: 1,
+                                                                    overflow: 'hidden',
+                                                                    textOverflow: 'ellipsis',
+                                                                    whiteSpace: 'nowrap'
+                                                                }}
+                                                                title={file.title || file.filename}
+                                                            >
+                                                                {file.title || file.filename}
+                                                            </Typography>
+                                                            <Typography 
+                                                                variant="caption" 
+                                                                color="text.secondary"
+                                                                sx={{ 
+                                                                    display: 'block',
+                                                                    mb: 1,
+                                                                    overflow: 'hidden',
+                                                                    textOverflow: 'ellipsis',
+                                                                    whiteSpace: 'nowrap'
+                                                                }}
+                                                                title={file.url}
+                                                            >
+                                                                {file.url}
+                                                            </Typography>
+                                                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                                <Typography variant="caption" color="text.secondary">
+                                                                    📄 {file.url_identifier || file.short_id}
+                                                                </Typography>
+                                                                <Typography variant="caption" color="text.secondary">
+                                                                    {file.file_size_kb ? `💾 ${file.file_size_kb.toFixed(1)} KB` : ''}
+                                                                </Typography>
+                                                            </Box>
+                                                        </CardContent>
+                                                    </Card>
+                                                </Grid>
                                             ))}
-                                        </Box>
+                                        </Grid>
                                     </Box>
                                 )}
 
@@ -998,10 +1715,10 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                 <AccordionSummary 
                                                     expandIcon={<ExpandMoreIcon />}
                                                     sx={{
-                                                        backgroundColor: 'secondary.light',
+                                                        backgroundColor: 'grey.200',
                                                         '&:hover': {
-                                                            backgroundColor: 'secondary.main',
-                                                            color: 'white',
+                                                            backgroundColor: 'grey.300',
+                                                            color: 'text.primary',
                                                         },
                                                         '& .MuiAccordionSummary-expandIconWrapper': {
                                                             color: 'inherit'
@@ -1101,6 +1818,17 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                 
                 {/* Unified HTML Files Section */}
                 {renderUnifiedHtmlFilesSection(result)}
+                
+                {/* Site Similarity Results by Level */}
+                {result.processed_clusters && result.processed_clusters.map((processedCluster, clusterIndex) => (
+                    processedCluster.processed_data && processedCluster.processed_data.site_similarity &&
+                    <div key={`similarity-${clusterIndex}`}>
+                        <Typography variant="h6" sx={{ mt: 2, mb: 1, fontWeight: 'bold' }}>
+                            🔍 Site Similarity Analysis - Level {processedCluster.level}
+                        </Typography>
+                        {renderSiteSimilarityResults(processedCluster.processed_data.site_similarity, processedCluster.level)}
+                    </div>
+                ))}
                 
                 {/* Original HTML Files Section - keeping for backup */}
                 {false && result.html_files && result.html_files.length > 0 && (
@@ -1328,10 +2056,10 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                         <AccordionSummary 
                             expandIcon={<ExpandMoreIcon />}
                             sx={{
-                                backgroundColor: 'secondary.light',
+                                backgroundColor: 'grey.200',
                                 '&:hover': {
-                                    backgroundColor: 'secondary.main',
-                                    color: 'white',
+                                    backgroundColor: 'grey.300',
+                                    color: 'text.primary',
                                 },
                                 '& .MuiAccordionSummary-expandIconWrapper': {
                                     color: 'inherit'

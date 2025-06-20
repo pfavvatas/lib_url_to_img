@@ -5,3 +5,4 @@ from .files import writeToFile, FileExtensions, FileNames, FilePaths
 from .image import *
 from .DataCollector import *
 from .ImageDataCollector import *
+from .cache_manager import CacheManager
