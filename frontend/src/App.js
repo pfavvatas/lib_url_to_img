@@ -27,7 +27,7 @@ function App() {
         <AppBar position="static">
           <Toolbar>
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              lib url to img
+              WebSRC: A Dataset for Web-Based Structural Reading Comprehension
             </Typography>
             <Tooltip title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}>
               <IconButton color="inherit" onClick={handleThemeChange}>

@@ -1,0 +1,271 @@
+\chapter{API Documentation}
+\label{appendix:api-docs}
+
+\section{REST API Endpoints}
+\label{app:rest_api}
+
+The {\name} system provides a comprehensive REST API for programmatic access to all functionality. This section documents all available endpoints, request/response formats, and usage examples.
+
+\subsection{Base Configuration}
+
+\begin{itemize}
+\item \textbf{Base URL:} \texttt{http://localhost:5000}
+\item \textbf{Content-Type:} \texttt{application/json}
+\item \textbf{Authentication:} None (local deployment)
+\item \textbf{Rate Limiting:} 100 requests per minute
+\end{itemize}
+
+\section{Core Processing Endpoints}
+\label{app:core_endpoints}
+
+\subsection{Process URLs}
+
+\textbf{Endpoint:} \texttt{POST /process-urls}
+
+Primary endpoint for processing website URLs and generating clustering analysis.
+
+\textbf{Request Parameters:}
+
+\begin{table}[h]
+\centering
+\caption{Process URLs Request Parameters}
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Parameter} & \textbf{Type} & \textbf{Required} & \textbf{Description} \\
+\hline
+\texttt{urls} & Array[String] & Yes & List of URLs to process \\
+\texttt{levels} & Array[Integer] & Yes & DOM analysis levels [1,2,3] \\
+\texttt{mode} & Integer & No & Processing mode (default: 0) \\
+\texttt{custom\_ttl\_hours} & Integer & No & Cache TTL in hours \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{Example Request:}
+\begin{lstlisting}[language=json]
+{
+  "urls": [
+    "https://example.com",
+    "https://test.com",
+    "https://sample.org"
+  ],
+  "levels": [1, 2, 3],
+  "mode": 0,
+  "custom_ttl_hours": 24
+}
+\end{lstlisting}
+
+\textbf{Response Format:}
+\begin{lstlisting}[language=json]
+{
+  "status": "success",
+  "data": {
+    "processing_time": 15.7,
+    "cache_hit_rate": 73.2,
+    "total_elements_processed": 1247,
+    "clusters_generated": 12,
+    "outliers_count": 89,
+    "dbcv_scores": {
+      "level_1": 0.347,
+      "level_2": 0.392,
+      "level_3": 0.421
+    },
+    "visualization_path": "/results/viz_1697834567890.html"
+  }
+}
+\end{lstlisting}
+
+\subsection{Site Similarity Analysis}
+
+\textbf{Endpoint:} \texttt{POST /site-similarity}
+
+Computes cosine similarity between website structures.
+
+\textbf{Request Example:}
+\begin{lstlisting}[language=json]
+{
+  "urls": ["https://site1.com", "https://site2.com"],
+  "levels": [1, 2],
+  "similarity_metric": "cosine"
+}
+\end{lstlisting}
+
+\textbf{Response Format:}
+\begin{lstlisting}[language=json]
+{
+  "status": "success",
+  "data": {
+    "similarity_matrix": [
+      [1.0, 0.847],
+      [0.847, 1.0]
+    ],
+    "similarity_score": 0.847,
+    "analysis_details": {
+      "common_features": 156,
+      "total_features": 184,
+      "feature_overlap_percentage": 84.7
+    }
+  }
+}
+\end{lstlisting}
+
+\section{Cache Management Endpoints}
+\label{app:cache_endpoints}
+
+\subsection{Cache Statistics}
+
+\textbf{Endpoint:} \texttt{GET /cache/stats}
+
+Returns comprehensive cache performance metrics.
+
+\textbf{Response Format:}
+\begin{lstlisting}[language=json]
+{
+  "status": "success",
+  "data": {
+    "cache_performance": {
+      "overall_hit_rate": 85.3,
+      "complete_cache_hit_rate": 73.2,
+      "partial_cache_hit_rate": 42.1,
+      "total_requests": 2847,
+      "cache_hits": 2428,
+      "cache_misses": 419
+    },
+    "storage_statistics": {
+      "total_cache_size_mb": 234.7,
+      "complete_cache_size_mb": 178.3,
+      "partial_cache_size_mb": 56.4,
+      "cache_entries": 847
+    },
+    "performance_metrics": {
+      "average_response_time_cached": 0.15,
+      "average_response_time_uncached": 8.7,
+      "processing_time_reduction_percent": 71.7,
+      "network_requests_saved_percent": 70.1
+    }
+  }
+}
+\end{lstlisting}
+
+\subsection{Cache Operations}
+
+\textbf{Clear Cache:} \texttt{DELETE /cache/clear}
+
+\textbf{Cache Cleanup:} \texttt{POST /cache/cleanup}
+
+\textbf{Cache Configuration:} \texttt{GET /cache/config}
+
+\section{Error Handling}
+\label{app:error_handling}
+
+All API endpoints follow a consistent error response format:
+
+\textbf{Error Response Format:}
+\begin{lstlisting}[language=json]
+{
+  "status": "error",
+  "error": {
+    "code": "INVALID_PARAMETERS",
+    "message": "The provided URLs list is empty",
+    "details": {
+      "parameter": "urls",
+      "expected": "non-empty array",
+      "received": "empty array"
+    },
+    "timestamp": "2024-12-16T10:30:45Z"
+  }
+}
+\end{lstlisting}
+
+\subsection{Common Error Codes}
+
+\begin{table}[h]
+\centering
+\caption{API Error Codes}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Code} & \textbf{HTTP Status} & \textbf{Description} \\
+\hline
+\texttt{INVALID\_PARAMETERS} & 400 & Invalid request parameters \\
+\texttt{URL\_FETCH\_ERROR} & 422 & Failed to fetch website content \\
+\texttt{PROCESSING\_ERROR} & 500 & Internal processing error \\
+\texttt{CACHE\_ERROR} & 500 & Cache system error \\
+\texttt{CLUSTERING\_ERROR} & 500 & Clustering algorithm error \\
+\texttt{TIMEOUT\_ERROR} & 504 & Request timeout exceeded \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{API Client Examples}
+\label{app:client_examples}
+
+\subsection{Python Client Example}
+
+\begin{lstlisting}[language=Python]
+import requests
+import json
+
+def process_urls(urls, levels=[1, 2, 3]):
+    endpoint = "http://localhost:5000/process-urls"
+    payload = {
+        "urls": urls,
+        "levels": levels,
+        "mode": 0
+    }
+    
+    response = requests.post(endpoint, json=payload)
+    
+    if response.status_code == 200:
+        result = response.json()
+        print(f"Processing completed in {result['data']['processing_time']}s")
+        return result
+    else:
+        print(f"Error: {response.status_code}")
+        return None
+
+# Usage example
+urls = ["https://example.com", "https://test.com"]
+result = process_urls(urls)
+\end{lstlisting}
+
+\subsection{JavaScript Client Example}
+
+\begin{lstlisting}[language=JavaScript]
+async function processUrls(urls, levels = [1, 2, 3]) {
+    const endpoint = 'http://localhost:5000/process-urls';
+    const payload = {
+        urls: urls,
+        levels: levels,
+        mode: 0
+    };
+    
+    try {
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            console.log(`Processing completed in ${result.data.processing_time}s`);
+            return result;
+        } else {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        return null;
+    }
+}
+
+// Usage example
+const urls = ['https://example.com', 'https://test.com'];
+processUrls(urls).then(result => {
+    if (result) {
+        console.log('Success:', result);
+    }
+});
+\end{lstlisting} 
