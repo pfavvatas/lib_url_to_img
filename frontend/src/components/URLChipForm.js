@@ -985,56 +985,74 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                     },
                     boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                     borderRadius: '8px !important',
-                    overflow: 'hidden'
+                    overflow: 'hidden',
+                    backgroundColor: darkMode ? '#2a2a2a' : 'background.paper'
                 }}
             >
                 <AccordionSummary 
                     expandIcon={<ExpandMoreIcon />}
                     sx={{
-                        backgroundColor: 'primary.light',
+                        backgroundColor: darkMode ? '#333' : 'primary.light',
+                        color: darkMode ? '#ffffff' : 'inherit',
                         '&:hover': {
-                            backgroundColor: 'primary.main',
-                            color: 'white',
+                            backgroundColor: darkMode ? '#404040' : 'primary.main',
+                            color: darkMode ? '#ffffff' : 'white',
                         },
                         '& .MuiAccordionSummary-expandIconWrapper': {
                             color: 'inherit'
                         }
                     }}
                 >
-                    <Typography sx={{ fontWeight: 'bold' }}>
+                    <Typography sx={{ 
+                        fontWeight: 'bold',
+                        color: darkMode ? '#ffffff' : 'inherit'
+                    }}>
                         📊 Cosine Similarity Matrix ({summary.total_sites} sites)
                     </Typography>
                 </AccordionSummary>
-                <AccordionDetails sx={{ p: 3 }}>
+                <AccordionDetails sx={{ 
+                    p: 3,
+                    backgroundColor: darkMode ? '#2a2a2a' : 'background.paper'
+                }}>
                     {/* Summary Statistics */}
                     <Box sx={{ 
                         mb: theme.spacing(3),
                         p: 2,
-                        backgroundColor: 'background.paper',
+                        backgroundColor: darkMode ? '#2a2a2a' : 'background.paper',
                         borderRadius: 2,
                         border: '1px solid',
-                        borderColor: 'divider'
+                        borderColor: darkMode ? '#555' : 'divider'
                     }}>
-                        <Typography variant="h6" gutterBottom>📊 Summary Statistics</Typography>
+                        <Typography variant="h6" gutterBottom sx={{
+                            color: darkMode ? '#ffffff' : 'inherit'
+                        }}>📊 Summary Statistics</Typography>
                         <Box sx={{ 
                             display: 'grid',
                             gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
                             gap: 2
                         }}>
                             <Box>
-                                <Typography variant="subtitle2" color="text.secondary">Total Sites</Typography>
+                                <Typography variant="subtitle2" sx={{
+                                    color: darkMode ? '#aaa' : 'text.secondary'
+                                }}>Total Sites</Typography>
                                 <Typography variant="h6" color="primary">{summary.total_sites}</Typography>
                             </Box>
                             <Box>
-                                <Typography variant="subtitle2" color="text.secondary">Average Similarity</Typography>
+                                <Typography variant="subtitle2" sx={{
+                                    color: darkMode ? '#aaa' : 'text.secondary'
+                                }}>Average Similarity</Typography>
                                 <Typography variant="h6" color="primary">{summary.average_similarity.toFixed(2)}%</Typography>
                             </Box>
                             <Box>
-                                <Typography variant="subtitle2" color="text.secondary">Maximum Similarity</Typography>
+                                <Typography variant="subtitle2" sx={{
+                                    color: darkMode ? '#aaa' : 'text.secondary'
+                                }}>Maximum Similarity</Typography>
                                 <Typography variant="h6" color="primary">{summary.max_similarity.toFixed(2)}%</Typography>
                             </Box>
                             <Box>
-                                <Typography variant="subtitle2" color="text.secondary">Minimum Similarity</Typography>
+                                <Typography variant="subtitle2" sx={{
+                                    color: darkMode ? '#aaa' : 'text.secondary'
+                                }}>Minimum Similarity</Typography>
                                 <Typography variant="h6" color="primary">{summary.min_similarity.toFixed(2)}%</Typography>
                             </Box>
                         </Box>
@@ -1042,12 +1060,14 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
 
                     {/* Similarity Matrix Table */}
                     <Box sx={{ mb: theme.spacing(2) }}>
-                        <Typography variant="h6" gutterBottom>🔢 Cosine Similarity Matrix (%)</Typography>
+                        <Typography variant="h6" gutterBottom sx={{
+                            color: darkMode ? '#ffffff' : 'inherit'
+                        }}>🔢 Cosine Similarity Matrix (%)</Typography>
                         <Box sx={{ 
                             overflowX: 'auto',
                             maxHeight: '500px',
                             border: '1px solid',
-                            borderColor: 'divider',
+                            borderColor: darkMode ? '#555' : 'divider',
                             borderRadius: 1
                         }}>
                             <table style={{ 
@@ -1057,15 +1077,18 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                 fontSize: '0.9rem'
                             }}>
                                 <thead>
-                                    <tr style={{ backgroundColor: theme.palette.grey[100] }}>
+                                    <tr style={{ 
+                                        backgroundColor: darkMode ? '#404040' : theme.palette.grey[100] 
+                                    }}>
                                         <th style={{ 
                                             padding: '12px', 
-                                            border: '1px solid #ddd',
+                                            border: darkMode ? '1px solid #555' : '1px solid #ddd',
                                             textAlign: 'left',
                                             fontWeight: 'bold',
                                             position: 'sticky',
                                             top: 0,
-                                            backgroundColor: theme.palette.grey[100],
+                                            backgroundColor: darkMode ? '#404040' : theme.palette.grey[100],
+                                            color: darkMode ? '#ffffff' : 'inherit',
                                             zIndex: 1
                                         }}>
                                             Site
@@ -1073,12 +1096,13 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                         {sites.map((site, index) => (
                                             <th key={index} style={{ 
                                                 padding: '8px 12px', 
-                                                border: '1px solid #ddd',
+                                                border: darkMode ? '1px solid #555' : '1px solid #ddd',
                                                 textAlign: 'center',
                                                 fontWeight: 'bold',
                                                 position: 'sticky',
                                                 top: 0,
-                                                backgroundColor: theme.palette.grey[100],
+                                                backgroundColor: darkMode ? '#404040' : theme.palette.grey[100],
+                                                color: darkMode ? '#ffffff' : 'inherit',
                                                 zIndex: 1,
                                                 minWidth: '80px',
                                                 maxWidth: '100px',
@@ -1101,9 +1125,10 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                         <tr key={rowIndex}>
                                             <td style={{ 
                                                 padding: '8px 12px', 
-                                                border: '1px solid #ddd',
+                                                border: darkMode ? '1px solid #555' : '1px solid #ddd',
                                                 fontWeight: 'bold',
-                                                backgroundColor: theme.palette.grey[50],
+                                                backgroundColor: darkMode ? '#333' : theme.palette.grey[50],
+                                                color: darkMode ? '#ffffff' : 'inherit',
                                                 position: 'sticky',
                                                 left: 0,
                                                 zIndex: 1,
@@ -1127,27 +1152,31 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                 const isMediumSimilarity = similarity > 50;
                                                 const isDiagonal = rowIndex === colIndex;
                                                 
+                                                // Define colors for dark and light modes
+                                                let bgColor, textColor;
+                                                if (isDiagonal) {
+                                                    bgColor = theme.palette.primary.light;
+                                                    textColor = theme.palette.primary.contrastText;
+                                                } else if (isHighSimilarity) {
+                                                    bgColor = darkMode ? '#2e7d32' : theme.palette.success.light;
+                                                    textColor = darkMode ? '#ffffff' : theme.palette.success.contrastText;
+                                                } else if (isMediumSimilarity) {
+                                                    bgColor = darkMode ? '#f57c00' : theme.palette.warning.light;
+                                                    textColor = darkMode ? '#ffffff' : theme.palette.warning.contrastText;
+                                                } else {
+                                                    bgColor = darkMode ? '#2a2a2a' : 'white';
+                                                    textColor = darkMode ? '#ffffff' : 'inherit';
+                                                }
+                                                
                                                 return (
                                                     <td key={colIndex} style={{ 
                                                         padding: '8px', 
-                                                        border: '1px solid #ddd',
+                                                        border: darkMode ? '1px solid #555' : '1px solid #ddd',
                                                         textAlign: 'center',
                                                         fontSize: '0.85rem',
                                                         minWidth: '60px',
-                                                        backgroundColor: isDiagonal 
-                                                            ? theme.palette.primary.light 
-                                                            : isHighSimilarity 
-                                                                ? theme.palette.success.light 
-                                                                : isMediumSimilarity 
-                                                                    ? theme.palette.warning.light 
-                                                                    : 'white',
-                                                        color: isDiagonal 
-                                                            ? theme.palette.primary.contrastText 
-                                                            : isHighSimilarity 
-                                                                ? theme.palette.success.contrastText 
-                                                                : isMediumSimilarity 
-                                                                    ? theme.palette.warning.contrastText 
-                                                                    : 'inherit',
+                                                        backgroundColor: bgColor,
+                                                        color: textColor,
                                                         fontWeight: isDiagonal ? 'bold' : 'normal'
                                                     }}>
                                                         {similarity.toFixed(2)}
@@ -1165,12 +1194,16 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                     <Box sx={{ 
                         mt: 2,
                         p: 1.5,
-                        backgroundColor: 'grey.50',
+                        backgroundColor: darkMode ? '#2a2a2a' : 'grey.50',
                         borderRadius: 1,
                         border: '1px solid',
-                        borderColor: 'grey.300'
+                        borderColor: darkMode ? '#555' : 'grey.300'
                     }}>
-                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                        <Typography variant="subtitle2" sx={{ 
+                            fontWeight: 'bold', 
+                            mb: 1,
+                            color: darkMode ? '#ffffff' : 'inherit'
+                        }}>
                             Site Labels:
                         </Typography>
                         <Box sx={{ 
@@ -1188,9 +1221,9 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                     py: 0.5,
                                     px: 0.5,
                                     border: '1px solid',
-                                    borderColor: 'grey.200',
+                                    borderColor: darkMode ? '#555' : 'grey.200',
                                     borderRadius: 0.5,
-                                    backgroundColor: 'white'
+                                    backgroundColor: darkMode ? '#333' : 'white'
                                 }}>
                                     <Typography variant="caption" sx={{ 
                                         fontWeight: 'bold', 
@@ -1202,7 +1235,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                     </Typography>
                                     <Tooltip title={site} arrow placement="top">
                                         <Typography variant="caption" sx={{ 
-                                            color: 'text.secondary',
+                                            color: darkMode ? '#aaa' : 'text.secondary',
                                             flex: 1,
                                             fontSize: '0.7rem',
                                             lineHeight: 1.3,
@@ -1224,47 +1257,63 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                         gap: 2, 
                         mt: 1,
                         p: 1.5,
-                        backgroundColor: 'grey.50',
+                        backgroundColor: darkMode ? '#2a2a2a' : 'grey.50',
                         borderRadius: 1,
                         border: '1px solid',
-                        borderColor: 'grey.300'
+                        borderColor: darkMode ? '#555' : 'grey.300'
                     }}>
-                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mr: 1 }}>Colors:</Typography>
+                        <Typography variant="subtitle2" sx={{ 
+                            fontWeight: 'bold', 
+                            mr: 1,
+                            color: darkMode ? '#ffffff' : 'inherit'
+                        }}>Colors:</Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                             <Box sx={{ 
                                 width: 16, 
                                 height: 16, 
                                 backgroundColor: theme.palette.primary.light,
-                                border: '1px solid #ccc'
+                                border: darkMode ? '1px solid #555' : '1px solid #ccc'
                             }} />
-                            <Typography variant="caption" sx={{ fontSize: '0.75rem' }}>Same Site</Typography>
+                            <Typography variant="caption" sx={{ 
+                                fontSize: '0.75rem',
+                                color: darkMode ? '#aaa' : 'inherit'
+                            }}>Same Site</Typography>
                         </Box>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                             <Box sx={{ 
                                 width: 16, 
                                 height: 16, 
-                                backgroundColor: theme.palette.success.light,
-                                border: '1px solid #ccc'
+                                backgroundColor: darkMode ? '#2e7d32' : theme.palette.success.light,
+                                border: darkMode ? '1px solid #555' : '1px solid #ccc'
                             }} />
-                            <Typography variant="caption" sx={{ fontSize: '0.75rem' }}>High (&gt;80%)</Typography>
+                            <Typography variant="caption" sx={{ 
+                                fontSize: '0.75rem',
+                                color: darkMode ? '#aaa' : 'inherit'
+                            }}>High (&gt;80%)</Typography>
                         </Box>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                             <Box sx={{ 
                                 width: 16, 
                                 height: 16, 
-                                backgroundColor: theme.palette.warning.light,
-                                border: '1px solid #ccc'
+                                backgroundColor: darkMode ? '#f57c00' : theme.palette.warning.light,
+                                border: darkMode ? '1px solid #555' : '1px solid #ccc'
                             }} />
-                            <Typography variant="caption" sx={{ fontSize: '0.75rem' }}>Medium (&gt;50%)</Typography>
+                            <Typography variant="caption" sx={{ 
+                                fontSize: '0.75rem',
+                                color: darkMode ? '#aaa' : 'inherit'
+                            }}>Medium (&gt;50%)</Typography>
                         </Box>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                             <Box sx={{ 
                                 width: 16, 
                                 height: 16, 
-                                backgroundColor: 'white',
-                                border: '1px solid #ccc'
+                                backgroundColor: darkMode ? '#2a2a2a' : 'white',
+                                border: darkMode ? '1px solid #555' : '1px solid #ccc'
                             }} />
-                            <Typography variant="caption" sx={{ fontSize: '0.75rem' }}>Low (≤50%)</Typography>
+                            <Typography variant="caption" sx={{ 
+                                fontSize: '0.75rem',
+                                color: darkMode ? '#aaa' : 'inherit'
+                            }}>Low (≤50%)</Typography>
                         </Box>
                     </Box>
 
@@ -1275,8 +1324,11 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                 size="small" 
                                 onClick={() => handleCopyToClipboard(JSON.stringify(matrix, null, 2))}
                                 sx={{ 
-                                    backgroundColor: 'grey.100',
-                                    '&:hover': { backgroundColor: 'grey.200' }
+                                    backgroundColor: darkMode ? '#404040' : 'grey.100',
+                                    color: darkMode ? '#ffffff' : 'inherit',
+                                    '&:hover': { 
+                                        backgroundColor: darkMode ? '#505050' : 'grey.200'
+                                    }
                                 }}
                             >
                                 <ContentCopyIcon />
@@ -1797,7 +1849,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
         // Handle domain-based results (mode 1)
         if (result.domain_results) {
             return (
-                <Box sx={{ width: '100%', mt: theme.spacing(4), maxWidth: '1200px', mx: 'auto' }}>
+                <Box sx={{ width: '100%', mt: theme.spacing(4), maxWidth: '1600px', mx: 'auto', px: 2 }}>
                     <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
                         🌐 Domain-Based Processing Results (Mode 1)
                     </Typography>
@@ -1863,31 +1915,48 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                 },
                                 boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                                 borderRadius: '8px !important',
-                                overflow: 'hidden'
+                                overflow: 'hidden',
+                                backgroundColor: darkMode ? '#2a2a2a' : 'background.paper'
                             }}
                         >
                             <AccordionSummary 
                                 expandIcon={<ExpandMoreIcon />}
                                 sx={{
-                                    backgroundColor: domainResult.status === 'success' ? 'grey.200' : 'error.light',
+                                    backgroundColor: domainResult.status === 'success' 
+                                        ? (darkMode ? '#333' : 'grey.200') 
+                                        : 'error.light',
+                                    color: darkMode ? '#ffffff' : 'inherit',
                                     '&:hover': {
-                                        backgroundColor: domainResult.status === 'success' ? 'grey.300' : 'error.main',
-                                        color: domainResult.status === 'success' ? 'text.primary' : 'white',
+                                        backgroundColor: domainResult.status === 'success' 
+                                            ? (darkMode ? '#404040' : 'grey.300') 
+                                            : 'error.main',
+                                        color: domainResult.status === 'success' 
+                                            ? (darkMode ? '#ffffff' : 'text.primary') 
+                                            : 'white',
                                     },
                                     '& .MuiAccordionSummary-expandIconWrapper': {
                                         color: 'inherit'
                                     }
                                 }}
                             >
-                                <Typography sx={{ fontWeight: 'bold' }}>
+                                <Typography sx={{ 
+                                    fontWeight: 'bold',
+                                    color: darkMode ? '#ffffff' : 'inherit'
+                                }}>
                                     Domain: {domainResult.domain} - {domainResult.status}
                                 </Typography>
                             </AccordionSummary>
-                            <AccordionDetails sx={{ p: 3 }}>
+                            <AccordionDetails sx={{ 
+                                p: 3,
+                                backgroundColor: darkMode ? '#2a2a2a' : 'background.paper',
+                                color: darkMode ? '#ffffff' : 'inherit'
+                            }}>
                                 {/* HTML Files Section */}
                                 {domainResult.html_files && domainResult.html_files.length > 0 && (
                                     <Box sx={{ mb: theme.spacing(2) }}>
-                                        <Typography variant="h6" gutterBottom>Generated HTML Files</Typography>
+                                        <Typography variant="h6" gutterBottom sx={{
+                                            color: darkMode ? '#ffffff' : 'inherit'
+                                        }}>Generated HTML Files</Typography>
                                         <Grid container spacing={2}>
                                             {domainResult.html_files.map((file, index) => (
                                                 <Grid item xs={12} sm={6} md={4} key={index}>
@@ -1948,7 +2017,9 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
 
                                 {/* Rest of the domain result content */}
                                 <Box sx={{ mb: theme.spacing(2) }}>
-                                    <Typography variant="h6" gutterBottom>URLs in Domain</Typography>
+                                    <Typography variant="h6" gutterBottom sx={{
+                                        color: darkMode ? '#ffffff' : 'inherit'
+                                    }}>URLs in Domain</Typography>
                                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                                         {domainResult.urls.map((url, index) => (
                                             <Chip
@@ -1965,36 +2036,49 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                     <>
                                         {/* Clustering Results Section */}
                                         {domainResult.clustering_results && domainResult.clustering_results.map((clusterResult, index) => (
-                                            <Accordion 
-                                                key={`cluster-result-${domainIndex}-${index}`} 
-                                                sx={{ 
-                                                    mb: theme.spacing(2),
-                                                    '&:before': {
-                                                        display: 'none',
-                                                    },
-                                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                                                    borderRadius: '8px !important',
-                                                    overflow: 'hidden'
-                                                }}
-                                            >
+                                                                        <Accordion 
+                                key={`cluster-result-${domainIndex}-${index}`} 
+                                sx={{ 
+                                    mb: theme.spacing(2),
+                                    '&:before': {
+                                        display: 'none',
+                                    },
+                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                    borderRadius: '8px !important',
+                                    overflow: 'hidden',
+                                    backgroundColor: darkMode ? '#2a2a2a' : 'background.paper'
+                                }}
+                            >
                                                 <AccordionSummary 
                                                     expandIcon={<ExpandMoreIcon />}
                                                     sx={{
-                                                        backgroundColor: clusterResult.status === 'error' ? 'error.light' : 'primary.light',
+                                                        backgroundColor: clusterResult.status === 'error' 
+                                                            ? 'error.light' 
+                                                            : (darkMode ? '#333' : 'primary.light'),
+                                                        color: darkMode ? '#ffffff' : 'inherit',
                                                         '&:hover': {
-                                                            backgroundColor: clusterResult.status === 'error' ? 'error.main' : 'primary.main',
-                                                            color: 'white',
+                                                            backgroundColor: clusterResult.status === 'error' 
+                                                                ? 'error.main' 
+                                                                : (darkMode ? '#404040' : 'primary.main'),
+                                                            color: darkMode ? '#ffffff' : 'white',
                                                         },
                                                         '& .MuiAccordionSummary-expandIconWrapper': {
                                                             color: 'inherit'
                                                         }
                                                     }}
                                                 >
-                                                    <Typography sx={{ fontWeight: 'bold' }}>
+                                                    <Typography sx={{ 
+                                                        fontWeight: 'bold',
+                                                        color: darkMode ? '#ffffff' : 'inherit'
+                                                    }}>
                                                         Level {clusterResult.level} - {clusterResult.message}
                                                     </Typography>
                                                 </AccordionSummary>
-                                                <AccordionDetails sx={{ p: 3 }}>
+                                                <AccordionDetails sx={{ 
+                                                    p: 3,
+                                                    backgroundColor: darkMode ? '#2a2a2a' : 'background.paper',
+                                                    color: darkMode ? '#ffffff' : 'inherit'
+                                                }}>
                                                     {/* Show error message if status is error */}
                                                     {clusterResult.status === 'error' && (
                                                         <Box sx={{ mb: theme.spacing(2) }}>
@@ -2035,7 +2119,9 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                     {/* Show cluster info only if it exists and status is not error */}
                                                     {clusterResult.cluster_info && clusterResult.status !== 'error' && (
                                                         <Box sx={{ mb: theme.spacing(2) }}>
-                                                            <Typography variant="h6" gutterBottom>Cluster Info</Typography>
+                                                            <Typography variant="h6" gutterBottom sx={{
+                                                                color: darkMode ? '#ffffff' : 'inherit'
+                                                            }}>Cluster Info</Typography>
                                                             <Box sx={{ 
                                                                 p: 3, 
                                                                 bgcolor: 'background.paper', 
@@ -2114,7 +2200,9 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                     {/* Show clusters only if they exist and status is not error */}
                                                     {clusterResult.clusters && clusterResult.status !== 'error' && (
                                                         <Box sx={{ mb: theme.spacing(2) }}>
-                                                            <Typography variant="h6" gutterBottom>Clusters</Typography>
+                                                            <Typography variant="h6" gutterBottom sx={{
+                                                                color: darkMode ? '#ffffff' : 'inherit'
+                                                            }}>Clusters</Typography>
                                                             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                                                                 <TextareaAutosize
                                                                     minRows={2}
@@ -2159,29 +2247,40 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                     },
                                                     boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                                                     borderRadius: '8px !important',
-                                                    overflow: 'hidden'
+                                                    overflow: 'hidden',
+                                                    backgroundColor: darkMode ? '#2a2a2a' : 'background.paper'
                                                 }}
                                             >
                                                 <AccordionSummary 
                                                     expandIcon={<ExpandMoreIcon />}
                                                     sx={{
-                                                        backgroundColor: 'grey.200',
+                                                        backgroundColor: darkMode ? '#333' : 'grey.200',
+                                                        color: darkMode ? '#ffffff' : 'inherit',
                                                         '&:hover': {
-                                                            backgroundColor: 'grey.300',
-                                                            color: 'text.primary',
+                                                            backgroundColor: darkMode ? '#404040' : 'grey.300',
+                                                            color: darkMode ? '#ffffff' : 'text.primary',
                                                         },
                                                         '& .MuiAccordionSummary-expandIconWrapper': {
                                                             color: 'inherit'
                                                         }
                                                     }}
                                                 >
-                                                    <Typography sx={{ fontWeight: 'bold' }}>
+                                                    <Typography sx={{ 
+                                                        fontWeight: 'bold',
+                                                        color: darkMode ? '#ffffff' : 'inherit'
+                                                    }}>
                                                         Processed Cluster Level {processedCluster.level}
                                                     </Typography>
                                                 </AccordionSummary>
-                                                <AccordionDetails sx={{ p: 3 }}>
+                                                <AccordionDetails sx={{ 
+                                                    p: 3,
+                                                    backgroundColor: darkMode ? '#2a2a2a' : 'background.paper',
+                                                    color: darkMode ? '#ffffff' : 'inherit'
+                                                }}>
                                                     <Box sx={{ mb: theme.spacing(2) }}>
-                                                        <Typography variant="h6" gutterBottom>Processed Data</Typography>
+                                                        <Typography variant="h6" gutterBottom sx={{
+                                                            color: darkMode ? '#ffffff' : 'inherit'
+                                                        }}>Processed Data</Typography>
                                                         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                                                             <TextareaAutosize
                                                                 minRows={2}
@@ -2212,7 +2311,9 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                     </Box>
 
                                                     <Box sx={{ mb: theme.spacing(2) }}>
-                                                        <Typography variant="h6" gutterBottom>Sites</Typography>
+                                                        <Typography variant="h6" gutterBottom sx={{
+                                                            color: darkMode ? '#ffffff' : 'inherit'
+                                                        }}>Sites</Typography>
                                                         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                                                             <TextareaAutosize
                                                                 minRows={2}
@@ -2261,7 +2362,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
 
         // Original results rendering (mode 0)
         return (
-            <Box sx={{ width: '100%', mt: theme.spacing(4), maxWidth: '1200px', mx: 'auto' }}>
+            <Box sx={{ width: '100%', mt: theme.spacing(4), maxWidth: '1600px', mx: 'auto', px: 2 }}>
                 <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
                     🧮 Clustering Results
                 </Typography>
@@ -2311,27 +2412,40 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                             },
                             boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                             borderRadius: '8px !important',
-                            overflow: 'hidden'
+                            overflow: 'hidden',
+                            backgroundColor: darkMode ? '#2a2a2a' : 'background.paper'
                         }}
                     >
                         <AccordionSummary 
                             expandIcon={<ExpandMoreIcon />}
                             sx={{
-                                backgroundColor: clusterResult.status === 'error' ? 'error.light' : 'primary.light',
+                                backgroundColor: clusterResult.status === 'error' 
+                                    ? 'error.light' 
+                                    : (darkMode ? '#333' : 'primary.light'),
+                                color: darkMode ? '#ffffff' : 'inherit',
                                 '&:hover': {
-                                    backgroundColor: clusterResult.status === 'error' ? 'error.main' : 'primary.main',
-                                    color: 'white',
+                                    backgroundColor: clusterResult.status === 'error' 
+                                        ? 'error.main' 
+                                        : (darkMode ? '#404040' : 'primary.main'),
+                                    color: darkMode ? '#ffffff' : 'white',
                                 },
                                 '& .MuiAccordionSummary-expandIconWrapper': {
                                     color: 'inherit'
                                 }
                             }}
                         >
-                            <Typography sx={{ fontWeight: 'bold' }}>
+                            <Typography sx={{ 
+                                fontWeight: 'bold',
+                                color: darkMode ? '#ffffff' : 'inherit'
+                            }}>
                                 🧮 Level {clusterResult.level} - {clusterResult.status === 'error' ? '❌' : '✅'} {clusterResult.message}
                             </Typography>
                         </AccordionSummary>
-                        <AccordionDetails sx={{ p: 3 }}>
+                        <AccordionDetails sx={{ 
+                            p: 3,
+                            backgroundColor: darkMode ? '#2a2a2a' : 'background.paper',
+                            color: darkMode ? '#ffffff' : 'inherit'
+                        }}>
                             {/* Show error message if status is error */}
                             {clusterResult.status === 'error' && (
                                 <Box sx={{ mb: theme.spacing(2) }}>
@@ -2372,7 +2486,9 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                             {/* Show cluster info only if it exists and status is not error */}
                             {clusterResult.cluster_info && clusterResult.status !== 'error' && (
                                 <Box sx={{ mb: theme.spacing(2) }}>
-                                    <Typography variant="h6" gutterBottom>
+                                    <Typography variant="h6" gutterBottom sx={{
+                                        color: darkMode ? '#ffffff' : 'inherit'
+                                    }}>
                                         Cluster Info
                                     </Typography>
                                     <Box sx={{ 
@@ -2453,7 +2569,9 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                             {/* Show clusters only if they exist and status is not error */}
                             {clusterResult.clusters && clusterResult.status !== 'error' && (
                                 <Box sx={{ mb: theme.spacing(2) }}>
-                                    <Typography variant="h6" gutterBottom>
+                                    <Typography variant="h6" gutterBottom sx={{
+                                        color: darkMode ? '#ffffff' : 'inherit'
+                                    }}>
                                         🎯 Clusters
                                     </Typography>
                                     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
@@ -2500,29 +2618,40 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                             },
                             boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                             borderRadius: '8px !important',
-                            overflow: 'hidden'
+                            overflow: 'hidden',
+                            backgroundColor: darkMode ? '#2a2a2a' : 'background.paper'
                         }}
                     >
                         <AccordionSummary 
                             expandIcon={<ExpandMoreIcon />}
                             sx={{
-                                backgroundColor: 'grey.200',
+                                backgroundColor: darkMode ? '#333' : 'grey.200',
+                                color: darkMode ? '#ffffff' : 'inherit',
                                 '&:hover': {
-                                    backgroundColor: 'grey.300',
-                                    color: 'text.primary',
+                                    backgroundColor: darkMode ? '#404040' : 'grey.300',
+                                    color: darkMode ? '#ffffff' : 'text.primary',
                                 },
                                 '& .MuiAccordionSummary-expandIconWrapper': {
                                     color: 'inherit'
                                 }
                             }}
                         >
-                            <Typography sx={{ fontWeight: 'bold' }}>
+                            <Typography sx={{ 
+                                fontWeight: 'bold',
+                                color: darkMode ? '#ffffff' : 'inherit'
+                            }}>
                                 ⚙️ Processed Cluster Level {processedCluster.level}
                             </Typography>
                         </AccordionSummary>
-                        <AccordionDetails sx={{ p: 3 }}>
+                        <AccordionDetails sx={{ 
+                            p: 3,
+                            backgroundColor: darkMode ? '#2a2a2a' : 'background.paper',
+                            color: darkMode ? '#ffffff' : 'inherit'
+                        }}>
                             <Box sx={{ mb: theme.spacing(2) }}>
-                                <Typography variant="h6" gutterBottom>Processed Data</Typography>
+                                <Typography variant="h6" gutterBottom sx={{
+                                    color: darkMode ? '#ffffff' : 'inherit'
+                                }}>Processed Data</Typography>
                                 <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                                     <TextareaAutosize
                                         minRows={2}
@@ -2553,7 +2682,9 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                             </Box>
 
                             <Box sx={{ mb: theme.spacing(2) }}>
-                                <Typography variant="h6" gutterBottom>Sites</Typography>
+                                <Typography variant="h6" gutterBottom sx={{
+                                    color: darkMode ? '#ffffff' : 'inherit'
+                                }}>Sites</Typography>
                                 <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                                     <TextareaAutosize
                                         minRows={2}
@@ -2600,7 +2731,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
             case 'home':
                 return (
                     <FormControl fullWidth>
-                        <Box sx={{ margin: '0 30%' }}>
+                        <Box sx={{ maxWidth: '1400px', mx: 'auto', px: 3 }}>
                             <TextField
                                 label="Paste your URLs"
                                 placeholder="Paste URLs and press Enter (supports multiple URLs)"
@@ -2613,11 +2744,56 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                 multiline
                                 maxRows={4}
                                 helperText="💡 Paste multiple URLs separated by newlines or spaces"
+                                sx={{
+                                    ...(darkMode && {
+                                        '& .MuiOutlinedInput-root': {
+                                            backgroundColor: '#2a2a2a',
+                                            '& fieldset': {
+                                                borderColor: '#555',
+                                            },
+                                            '&:hover fieldset': {
+                                                borderColor: '#777',
+                                            },
+                                            '&.Mui-focused fieldset': {
+                                                borderColor: '#1976d2',
+                                            },
+                                        },
+                                        '& .MuiInputLabel-root': {
+                                            color: '#ccc',
+                                        },
+                                        '& .MuiFormHelperText-root': {
+                                            color: '#aaa',
+                                        },
+                                        '& .MuiOutlinedInput-input': {
+                                            color: '#fff',
+                                        }
+                                    })
+                                }}
                             />
                         </Box>
-                        <Box sx={{ position: 'relative', margin: '0 30%', mt: theme.spacing(2), display: 'flex', justifyContent: 'center' }}>
-                            <Box sx={{ position: 'absolute', top: '-10px', left: '10px', backgroundColor: 'white', padding: '0 5px', fontWeight: 'bold' }}>📊 Levels</Box>
-                            <Box sx={{ border: '1px solid', borderColor: 'grey.400', borderRadius: '8px', padding: theme.spacing(2), display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: theme.spacing(1), width: '-webkit-fill-available' }}>
+                        <Box sx={{ position: 'relative', maxWidth: '1400px', mx: 'auto', px: 3, mt: theme.spacing(2), display: 'flex', justifyContent: 'center' }}>
+                            <Box sx={{ 
+                                position: 'absolute', 
+                                top: '-10px', 
+                                left: '23px', 
+                                backgroundColor: darkMode ? '#121212' : 'white', 
+                                color: darkMode ? '#ffffff' : 'inherit',
+                                padding: '0 5px', 
+                                fontWeight: 'bold', 
+                                zIndex: 10 
+                            }}>📊 Levels</Box>
+                            <Box sx={{ 
+                                border: '1px solid', 
+                                borderColor: darkMode ? '#555' : 'grey.400', 
+                                borderRadius: '8px', 
+                                padding: theme.spacing(2), 
+                                display: 'flex', 
+                                flexWrap: 'wrap', 
+                                justifyContent: 'center', 
+                                gap: theme.spacing(1), 
+                                width: '100%',
+                                backgroundColor: darkMode ? '#1e1e1e' : 'transparent'
+                            }}>
                                 {Array.from({ length: 10 }, (_, i) => i + 1).map(level => (
                                     <Chip
                                         key={level}
@@ -2630,7 +2806,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                         </Box>
 
                         {/* Mode Switch */}
-                        <Box sx={{ margin: '0 30%', mt: theme.spacing(2), display: 'flex', justifyContent: 'center' }}>
+                        <Box sx={{ maxWidth: '1400px', mx: 'auto', px: 3, mt: theme.spacing(2), display: 'flex', justifyContent: 'center' }}>
                             <FormControlLabel
                                 control={
                                     <Switch
@@ -2645,11 +2821,13 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
 
                         {/* URL Cards */}
                         <Box sx={{ 
-                            margin: '0 30%', 
+                            maxWidth: '1400px', 
+                            mx: 'auto',
+                            px: 3,
                             mt: theme.spacing(2),
                             display: 'grid',
-                            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-                            gap: 2
+                            gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
+                            gap: 3
                         }}>
                             {sortedDomains.map(domain => (
                                 <Card key={domain} sx={{ 
@@ -2659,13 +2837,14 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                     transition: 'transform 0.2s, box-shadow 0.2s',
                                     '&:hover': {
                                         transform: 'translateY(-4px)',
-                                        boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
+                                        boxShadow: darkMode ? '0 8px 16px rgba(0,0,0,0.3)' : '0 8px 16px rgba(0,0,0,0.1)',
                                     },
-                                    boxShadow: '0 4px 8px rgba(0,0,0,0.05)',
+                                    boxShadow: darkMode ? '0 4px 8px rgba(0,0,0,0.2)' : '0 4px 8px rgba(0,0,0,0.05)',
                                     borderRadius: 2,
                                     border: '1px solid',
-                                    borderColor: 'divider',
-                                    bgcolor: 'background.paper'
+                                    borderColor: darkMode ? '#555' : 'divider',
+                                    bgcolor: darkMode ? '#2a2a2a' : 'background.paper',
+                                    color: darkMode ? '#ffffff' : 'inherit'
                                 }}>
                                     <CardHeader
                                         title={domain}
@@ -2681,7 +2860,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                             }
                                         }}
                                         sx={{
-                                            bgcolor: 'primary.main',
+                                            bgcolor: darkMode ? '#1976d2' : 'primary.main',
                                             color: 'white',
                                             py: 1.5,
                                             '& .MuiCardHeader-content': {
@@ -2788,30 +2967,41 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                 );
             case 'clusters':
                 return (
-                    <Box sx={{ width: '100%', maxWidth: '600px', margin: '0 auto' }}>
+                    <Box sx={{ width: '100%', maxWidth: '1400px', mx: 'auto', px: 3 }}>
                         <textarea
                             rows={10}
                             placeholder="Paste your cluster results here"
-                            style={{ width: '100%', padding: '10px', boxSizing: 'border-box', maxHeight: '300px', overflowY: 'scroll' }}
+                            style={{ 
+                                width: '100%', 
+                                padding: '15px', 
+                                boxSizing: 'border-box', 
+                                minHeight: '300px', 
+                                fontSize: '14px', 
+                                fontFamily: 'monospace', 
+                                border: darkMode ? '2px solid #555' : '2px solid #ddd', 
+                                borderRadius: '8px',
+                                backgroundColor: darkMode ? '#2a2a2a' : 'white',
+                                color: darkMode ? '#ffffff' : 'inherit'
+                            }}
                             value={clusterInput}
                             onChange={(e) => setClusterInput(e.target.value)}
                         />
-                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: theme.spacing(2) }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: theme.spacing(3) }}>
                             <Button
                                 variant="contained"
                                 color="primary"
                                 onClick={handleClusterRun}
-                                sx={{ borderRadius: '20px' }}
+                                sx={{ borderRadius: '20px', px: 4, py: 1.5 }}
                                 disabled={clusterInput.trim() === ''}
                             >
-                                Run
+                                ▶️ Run Clustering
                             </Button>
                         </Box>
                     </Box>
                 );
             case 'experiments':
                 return (
-                    <Box sx={{ width: '100%', maxWidth: '1400px', margin: '0 auto', p: 3 }}>
+                    <Box sx={{ width: '100%', maxWidth: '1600px', mx: 'auto', px: 3, py: 2 }}>
                         <Typography variant="h4" gutterBottom sx={{ textAlign: 'center', mb: 4 }}>
                             🧪 Experiment Management - Thesis Data Collection
                         </Typography>
@@ -2983,7 +3173,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
 
                         {/* Experiment Results */}
                         {experimentResults && (
-                            <Box sx={{ width: '100%', mt: theme.spacing(4), maxWidth: '1200px', mx: 'auto' }}>
+                            <Box sx={{ width: '100%', mt: theme.spacing(4), maxWidth: '1600px', mx: 'auto', px: 2 }}>
                                 {/* Experiment Summary */}
                                 <Card sx={{ mb: 3 }}>
                                     <CardHeader title="📊 Experiment Summary" />
@@ -3068,7 +3258,8 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                             borderColor: 'success.light',
                                             borderRadius: 3,
                                             overflow: 'hidden',
-                                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                                            backgroundColor: darkMode ? '#2a2a2a' : 'background.paper'
                                         }}>
                                             <CardHeader 
                                                 title={
@@ -3117,7 +3308,11 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                 }}
                                             />
                                             <Collapse in={!collapsed} timeout="auto" unmountOnExit>
-                                                <CardContent sx={{ p: 3 }}>
+                                                <CardContent sx={{ 
+                                                    p: 3,
+                                                    backgroundColor: darkMode ? '#2a2a2a' : 'background.paper',
+                                                    color: darkMode ? '#ffffff' : 'inherit'
+                                                }}>
 
                                                 {/* Use the same renderUnifiedHtmlFilesSection function */}
                                                 {(() => {
@@ -3304,21 +3499,41 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                 );
             case 'results':
                 return (
-                    <Box sx={{ width: '100%', maxWidth: '1400px', margin: '0 auto', p: 3 }}>
+                    <Box sx={{ width: '100%', maxWidth: '1600px', mx: 'auto', px: 3, py: 2 }}>
                         <Typography variant="h4" gutterBottom sx={{ textAlign: 'center', mb: 4 }}>
                             📊 Results Archive - Previous Experiments
                         </Typography>
 
                         {/* Archive Controls */}
-                        <Card sx={{ mb: 3 }}>
-                            <CardHeader title="🗂️ Experiment Archive Controls" />
+                        <Card sx={{ 
+                            mb: 3,
+                            backgroundColor: darkMode ? '#2a2a2a' : 'background.paper',
+                            color: darkMode ? '#ffffff' : 'inherit'
+                        }}>
+                            <CardHeader 
+                                title="🗂️ Experiment Archive Controls"
+                                sx={{
+                                    backgroundColor: darkMode ? '#333' : 'transparent',
+                                    color: darkMode ? '#ffffff' : 'inherit'
+                                }}
+                            />
                             <CardContent sx={{ p: 3 }}>
                                 <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
                                     <Button 
                                         variant="outlined" 
                                         onClick={loadArchiveExperiments}
                                         disabled={archiveLoading}
-                                        sx={{ borderRadius: '20px' }}
+                                        sx={{ 
+                                            borderRadius: '20px',
+                                            ...(darkMode && {
+                                                borderColor: '#555',
+                                                color: '#fff',
+                                                '&:hover': {
+                                                    borderColor: '#777',
+                                                    backgroundColor: 'rgba(255,255,255,0.1)'
+                                                }
+                                            })
+                                        }}
                                     >
                                         {archiveLoading ? (
                                             <>
@@ -3333,7 +3548,17 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                         <Button 
                                             variant="outlined" 
                                             onClick={() => setSelectedExperiment(null)}
-                                            sx={{ borderRadius: '20px' }}
+                                            sx={{ 
+                                                borderRadius: '20px',
+                                                ...(darkMode && {
+                                                    borderColor: '#555',
+                                                    color: '#fff',
+                                                    '&:hover': {
+                                                        borderColor: '#777',
+                                                        backgroundColor: 'rgba(255,255,255,0.1)'
+                                                    }
+                                                })
+                                            }}
                                         >
                                             ⬅️ Back to List
                                         </Button>
@@ -3344,8 +3569,18 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
 
                         {/* Experiment Selection */}
                         {!selectedExperiment && archiveExperiments.length > 0 && (
-                            <Card sx={{ mb: 3 }}>
-                                <CardHeader title={`📚 Available Experiments (${archiveExperiments.length})`} />
+                            <Card sx={{ 
+                                mb: 3,
+                                backgroundColor: darkMode ? '#2a2a2a' : 'background.paper',
+                                color: darkMode ? '#ffffff' : 'inherit'
+                            }}>
+                                <CardHeader 
+                                    title={`📚 Available Experiments (${archiveExperiments.length})`}
+                                    sx={{
+                                        backgroundColor: darkMode ? '#333' : 'transparent',
+                                        color: darkMode ? '#ffffff' : 'inherit'
+                                    }}
+                                />
                                 <CardContent sx={{ maxHeight: '500px', overflow: 'auto' }}>
                                     <Grid container spacing={3}>
                                         {archiveExperiments.map((experiment, index) => (
@@ -3354,35 +3589,57 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                     sx={{ 
                                                         cursor: 'pointer',
                                                         transition: 'all 0.2s',
+                                                        backgroundColor: darkMode ? '#333' : 'background.paper',
+                                                        color: darkMode ? '#ffffff' : 'inherit',
                                                         '&:hover': {
                                                             transform: 'translateY(-2px)',
-                                                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                                                            boxShadow: darkMode 
+                                                                ? '0 4px 12px rgba(0,0,0,0.4)' 
+                                                                : '0 4px 12px rgba(0,0,0,0.15)',
+                                                            backgroundColor: darkMode ? '#404040' : undefined
                                                         },
                                                         border: '1px solid',
-                                                        borderColor: 'divider'
+                                                        borderColor: darkMode ? '#555' : 'divider'
                                                     }}
                                                     onClick={() => loadExperimentDetails(experiment.id)}
                                                 >
                                                     <CardContent sx={{ p: 2 }}>
-                                                        <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1, fontSize: '1rem' }}>
+                                                        <Typography variant="h6" sx={{ 
+                                                            fontWeight: 'bold', 
+                                                            mb: 1, 
+                                                            fontSize: '1rem',
+                                                            color: darkMode ? '#ffffff' : 'inherit'
+                                                        }}>
                                                             {experiment.name}
                                                         </Typography>
-                                                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+                                                        <Typography variant="caption" sx={{ 
+                                                            display: 'block', 
+                                                            mb: 1,
+                                                            color: darkMode ? '#aaa' : 'text.secondary'
+                                                        }}>
                                                             {experiment.timestamp}
                                                         </Typography>
                                                         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, mb: 1 }}>
                                                             <Box>
-                                                                <Typography variant="caption" color="text.secondary">Tests</Typography>
-                                                                <Typography variant="subtitle2">{experiment.total_tests}</Typography>
+                                                                <Typography variant="caption" sx={{ 
+                                                                    color: darkMode ? '#aaa' : 'text.secondary'
+                                                                }}>Tests</Typography>
+                                                                <Typography variant="subtitle2" sx={{
+                                                                    color: darkMode ? '#ffffff' : 'inherit'
+                                                                }}>{experiment.total_tests}</Typography>
                                                             </Box>
                                                             <Box>
-                                                                <Typography variant="caption" color="text.secondary">Success Rate</Typography>
+                                                                <Typography variant="caption" sx={{ 
+                                                                    color: darkMode ? '#aaa' : 'text.secondary'
+                                                                }}>Success Rate</Typography>
                                                                 <Typography variant="subtitle2" color="success.main">
                                                                     {experiment.success_rate.toFixed(1)}%
                                                                 </Typography>
                                                             </Box>
                                                         </Box>
-                                                        <Typography variant="caption" color="text.secondary">
+                                                        <Typography variant="caption" sx={{ 
+                                                            color: darkMode ? '#aaa' : 'text.secondary'
+                                                        }}>
                                                             Duration: {formatDuration(experiment.duration)}
                                                         </Typography>
                                                     </CardContent>
@@ -3396,55 +3653,88 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
 
                         {/* Selected Experiment Details */}
                         {selectedExperiment && (
-                            <Box sx={{ width: '100%', mt: theme.spacing(2), maxWidth: '1200px', mx: 'auto' }}>
+                            <Box sx={{ width: '100%', mt: theme.spacing(2), maxWidth: '1600px', mx: 'auto', px: 2 }}>
                                 {/* Experiment Summary */}
-                                <Card sx={{ mb: 3 }}>
+                                <Card sx={{ 
+                                    mb: 3,
+                                    backgroundColor: darkMode ? '#2a2a2a' : 'background.paper',
+                                    color: darkMode ? '#ffffff' : 'inherit'
+                                }}>
                                     <CardHeader 
                                         title={`📊 ${selectedExperiment.experiment_info.name}`}
                                         subheader={`Experiment ID: ${selectedExperiment.id}`}
+                                        sx={{
+                                            backgroundColor: darkMode ? '#333' : 'transparent',
+                                            color: darkMode ? '#ffffff' : 'inherit',
+                                            '& .MuiCardHeader-subheader': {
+                                                color: darkMode ? '#aaa' : 'text.secondary'
+                                            }
+                                        }}
                                     />
                                     <CardContent>
                                         <Grid container spacing={3}>
                                             <Grid item xs={12} md={6}>
-                                                <Typography variant="h6" gutterBottom>📈 Performance Summary</Typography>
+                                                <Typography variant="h6" gutterBottom sx={{
+                                                    color: darkMode ? '#ffffff' : 'inherit'
+                                                }}>📈 Performance Summary</Typography>
                                                 <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
                                                     <Box>
-                                                        <Typography variant="caption" color="text.secondary">Total Tests</Typography>
-                                                        <Typography variant="h6">{selectedExperiment.experiment_info.total_tests}</Typography>
+                                                        <Typography variant="caption" sx={{
+                                                            color: darkMode ? '#aaa' : 'text.secondary'
+                                                        }}>Total Tests</Typography>
+                                                        <Typography variant="h6" sx={{
+                                                            color: darkMode ? '#ffffff' : 'inherit'
+                                                        }}>{selectedExperiment.experiment_info.total_tests}</Typography>
                                                     </Box>
                                                     <Box>
-                                                        <Typography variant="caption" color="text.secondary">Success Rate</Typography>
+                                                        <Typography variant="caption" sx={{
+                                                            color: darkMode ? '#aaa' : 'text.secondary'
+                                                        }}>Success Rate</Typography>
                                                         <Typography variant="h6" color="success.main">
                                                             {selectedExperiment.experiment_info.success_rate.toFixed(1)}%
                                                         </Typography>
                                                     </Box>
                                                     <Box>
-                                                        <Typography variant="caption" color="text.secondary">Successful</Typography>
+                                                        <Typography variant="caption" sx={{
+                                                            color: darkMode ? '#aaa' : 'text.secondary'
+                                                        }}>Successful</Typography>
                                                         <Typography variant="h6" color="success.main">
                                                             {selectedExperiment.experiment_info.successful_tests}
                                                         </Typography>
                                                     </Box>
                                                     <Box>
-                                                        <Typography variant="caption" color="text.secondary">Failed</Typography>
+                                                        <Typography variant="caption" sx={{
+                                                            color: darkMode ? '#aaa' : 'text.secondary'
+                                                        }}>Failed</Typography>
                                                         <Typography variant="h6" color="error.main">
                                                             {selectedExperiment.experiment_info.failed_tests}
                                                         </Typography>
                                                     </Box>
                                                     <Box>
-                                                        <Typography variant="caption" color="text.secondary">Duration</Typography>
-                                                        <Typography variant="h6">
+                                                        <Typography variant="caption" sx={{
+                                                            color: darkMode ? '#aaa' : 'text.secondary'
+                                                        }}>Duration</Typography>
+                                                        <Typography variant="h6" sx={{
+                                                            color: darkMode ? '#ffffff' : 'inherit'
+                                                        }}>
                                                             {formatDuration(selectedExperiment.experiment_info.duration)}
                                                         </Typography>
                                                     </Box>
                                                 </Box>
                                             </Grid>
                                             <Grid item xs={12} md={6}>
-                                                <Typography variant="h6" gutterBottom>📁 Generated Files</Typography>
+                                                <Typography variant="h6" gutterBottom sx={{
+                                                    color: darkMode ? '#ffffff' : 'inherit'
+                                                }}>📁 Generated Files</Typography>
                                                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                                                     {/* Gnuplot Files */}
                                                     {selectedExperiment.gnuplot_files && selectedExperiment.gnuplot_files.length > 0 && (
                                                         <Box>
-                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                                                            <Typography variant="subtitle2" sx={{ 
+                                                                fontWeight: 'bold', 
+                                                                mb: 1,
+                                                                color: darkMode ? '#ffffff' : 'inherit'
+                                                            }}>
                                                                 📊 Gnuplot Data Files ({selectedExperiment.gnuplot_files.length})
                                                             </Typography>
                                                             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
@@ -3462,16 +3752,22 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                                         }}
                                                                         sx={{ 
                                                                             cursor: 'pointer',
+                                                                            backgroundColor: darkMode ? '#555' : undefined,
+                                                                            color: darkMode ? '#fff' : undefined,
                                                                             '&:hover': {
-                                                                                backgroundColor: 'primary.light',
-                                                                                color: 'primary.contrastText'
+                                                                                backgroundColor: darkMode ? '#777' : 'primary.light',
+                                                                                color: darkMode ? '#fff' : 'primary.contrastText'
                                                                             }
                                                                         }}
                                                                         title="Left-click to download, Ctrl+click to copy content"
                                                                     />
                                                                 ))}
                                                             </Box>
-                                                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
+                                                            <Typography variant="caption" sx={{ 
+                                                                display: 'block', 
+                                                                mt: 1,
+                                                                color: darkMode ? '#aaa' : 'text.secondary'
+                                                            }}>
                                                                 💡 Left-click to download, Ctrl+click to copy content
                                                             </Typography>
                                                         </Box>
@@ -3480,7 +3776,11 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                     {/* Generated Images */}
                                                     {selectedExperiment.generated_images && selectedExperiment.generated_images.length > 0 && (
                                                         <Box sx={{ mt: 2 }}>
-                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                                                            <Typography variant="subtitle2" sx={{ 
+                                                                fontWeight: 'bold', 
+                                                                mb: 1,
+                                                                color: darkMode ? '#ffffff' : 'inherit'
+                                                            }}>
                                                                 🖼️ Generated Images ({selectedExperiment.generated_images.length})
                                                             </Typography>
                                                             <Grid container spacing={2}>
@@ -3489,9 +3789,14 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                                         <Card sx={{ 
                                                                             cursor: 'pointer',
                                                                             transition: 'all 0.2s',
+                                                                            backgroundColor: darkMode ? '#333' : 'background.paper',
+                                                                            color: darkMode ? '#ffffff' : 'inherit',
                                                                             '&:hover': {
                                                                                 transform: 'translateY(-2px)',
-                                                                                boxShadow: '0 4px 8px rgba(0,0,0,0.15)'
+                                                                                boxShadow: darkMode 
+                                                                                    ? '0 4px 8px rgba(0,0,0,0.4)' 
+                                                                                    : '0 4px 8px rgba(0,0,0,0.15)',
+                                                                                backgroundColor: darkMode ? '#404040' : undefined
                                                                             }
                                                                         }}>
                                                                             <CardContent sx={{ p: 2 }}>
@@ -3505,7 +3810,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                                                                 maxWidth: '100%', 
                                                                                                 maxHeight: '120px',
                                                                                                 objectFit: 'contain',
-                                                                                                border: '1px solid #ddd',
+                                                                                                border: darkMode ? '1px solid #555' : '1px solid #ddd',
                                                                                                 borderRadius: '4px'
                                                                                             }}
                                                                                             onError={(e) => {
@@ -3514,10 +3819,18 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                                                         />
                                                                                     </Box>
                                                                                 )}
-                                                                                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                                                                                <Typography variant="subtitle2" sx={{ 
+                                                                                    fontWeight: 'bold', 
+                                                                                    mb: 1,
+                                                                                    color: darkMode ? '#ffffff' : 'inherit'
+                                                                                }}>
                                                                                     {image.chart_type}
                                                                                 </Typography>
-                                                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+                                                                                <Typography variant="caption" sx={{ 
+                                                                                    display: 'block', 
+                                                                                    mb: 1,
+                                                                                    color: darkMode ? '#aaa' : 'text.secondary'
+                                                                                }}>
                                                                                     Format: {image.format} • {image.size_kb.toFixed(1)} KB
                                                                                 </Typography>
                                                                                 <Button
@@ -3528,6 +3841,16 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                                                         const url = `http://localhost:5000/experiments/results/${selectedExperiment.id}/images/${image.filename}`;
                                                                                         window.open(url, '_blank');
                                                                                         setSuccess(`Opened ${image.filename} in new tab`);
+                                                                                    }}
+                                                                                    sx={{
+                                                                                        ...(darkMode && {
+                                                                                            borderColor: '#555',
+                                                                                            color: '#fff',
+                                                                                            '&:hover': {
+                                                                                                borderColor: '#777',
+                                                                                                backgroundColor: 'rgba(255,255,255,0.1)'
+                                                                                            }
+                                                                                        })
                                                                                     }}
                                                                                 >
                                                                                     🔗 Open
@@ -3557,7 +3880,8 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                             borderColor: 'primary.light',
                                             borderRadius: 3,
                                             overflow: 'hidden',
-                                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                                            backgroundColor: darkMode ? '#2a2a2a' : 'background.paper'
                                         }}>
                                             <CardHeader 
                                                 title={
@@ -3606,7 +3930,11 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                 }}
                                             />
                                             <Collapse in={!collapsed} timeout="auto" unmountOnExit>
-                                                <CardContent sx={{ p: 3 }}>
+                                                <CardContent sx={{ 
+                                                    p: 3,
+                                                    backgroundColor: darkMode ? '#2a2a2a' : 'background.paper',
+                                                    color: darkMode ? '#ffffff' : 'inherit'
+                                                }}>
                                                     {/* Handle Mode 0 results (processed_clusters) */}
                                                     {result.processed_clusters && result.processed_clusters.map((processedCluster, clusterIndex) => (
                                                         processedCluster.processed_data && processedCluster.processed_data.site_similarity &&
@@ -3639,23 +3967,36 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                                 mb: theme.spacing(1),
                                                                 '&:before': { display: 'none' },
                                                                 boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                                                                borderRadius: '4px !important'
+                                                                borderRadius: '4px !important',
+                                                                backgroundColor: darkMode ? '#333' : 'background.paper'
                                                             }}
                                                         >
                                                             <AccordionSummary 
                                                                 expandIcon={<ExpandMoreIcon />}
                                                                 sx={{
-                                                                    backgroundColor: clusterResult.status === 'error' ? 'error.light' : 'grey.100',
+                                                                    backgroundColor: clusterResult.status === 'error' 
+                                                                        ? 'error.light' 
+                                                                        : (darkMode ? '#404040' : 'grey.100'),
+                                                                    color: darkMode ? '#ffffff' : 'inherit',
                                                                     '&:hover': {
-                                                                        backgroundColor: clusterResult.status === 'error' ? 'error.main' : 'grey.200',
+                                                                        backgroundColor: clusterResult.status === 'error' 
+                                                                            ? 'error.main' 
+                                                                            : (darkMode ? '#505050' : 'grey.200'),
                                                                     }
                                                                 }}
                                                             >
-                                                                <Typography sx={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
+                                                                <Typography sx={{ 
+                                                                    fontWeight: 'bold', 
+                                                                    fontSize: '0.9rem',
+                                                                    color: darkMode ? '#ffffff' : 'inherit'
+                                                                }}>
                                                                     🧮 Level {clusterResult.level} - {clusterResult.status === 'error' ? '❌' : '✅'} {clusterResult.message}
                                                                 </Typography>
                                                             </AccordionSummary>
-                                                            <AccordionDetails sx={{ p: 2 }}>
+                                                            <AccordionDetails sx={{ 
+                                                                p: 2,
+                                                                backgroundColor: darkMode ? '#2a2a2a' : 'background.paper'
+                                                            }}>
                                                                 {clusterResult.status === 'error' ? (
                                                                     <Typography variant="body2" color="error">
                                                                         {clusterResult.message}
@@ -3664,16 +4005,28 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                                     clusterResult.cluster_info && (
                                                                         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 1 }}>
                                                                             <Box>
-                                                                                <Typography variant="caption" color="text.secondary">Clusters</Typography>
-                                                                                <Typography variant="subtitle2">{clusterResult.cluster_info.num_clusters}</Typography>
+                                                                                <Typography variant="caption" sx={{
+                                                                                    color: darkMode ? '#aaa' : 'text.secondary'
+                                                                                }}>Clusters</Typography>
+                                                                                <Typography variant="subtitle2" sx={{
+                                                                                    color: darkMode ? '#ffffff' : 'inherit'
+                                                                                }}>{clusterResult.cluster_info.num_clusters}</Typography>
                                                                             </Box>
                                                                             <Box>
-                                                                                <Typography variant="caption" color="text.secondary">DBCV Score</Typography>
-                                                                                <Typography variant="subtitle2">{clusterResult.cluster_info.dbcv_score?.toFixed(3)}</Typography>
+                                                                                <Typography variant="caption" sx={{
+                                                                                    color: darkMode ? '#aaa' : 'text.secondary'
+                                                                                }}>DBCV Score</Typography>
+                                                                                <Typography variant="subtitle2" sx={{
+                                                                                    color: darkMode ? '#ffffff' : 'inherit'
+                                                                                }}>{clusterResult.cluster_info.dbcv_score?.toFixed(3)}</Typography>
                                                                             </Box>
                                                                             <Box>
-                                                                                <Typography variant="caption" color="text.secondary">Attributes</Typography>
-                                                                                <Typography variant="subtitle2">{clusterResult.cluster_info.useful_attributes?.length || 0}</Typography>
+                                                                                <Typography variant="caption" sx={{
+                                                                                    color: darkMode ? '#aaa' : 'text.secondary'
+                                                                                }}>Attributes</Typography>
+                                                                                <Typography variant="subtitle2" sx={{
+                                                                                    color: darkMode ? '#ffffff' : 'inherit'
+                                                                                }}>{clusterResult.cluster_info.useful_attributes?.length || 0}</Typography>
                                                                             </Box>
                                                                         </Box>
                                                                     )
@@ -3691,23 +4044,36 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                                     mb: theme.spacing(1),
                                                                     '&:before': { display: 'none' },
                                                                     boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                                                                    borderRadius: '4px !important'
+                                                                    borderRadius: '4px !important',
+                                                                    backgroundColor: darkMode ? '#333' : 'background.paper'
                                                                 }}
                                                             >
                                                                 <AccordionSummary 
                                                                     expandIcon={<ExpandMoreIcon />}
                                                                     sx={{
-                                                                        backgroundColor: clusterResult.status === 'error' ? 'error.light' : 'grey.100',
+                                                                        backgroundColor: clusterResult.status === 'error' 
+                                                                            ? 'error.light' 
+                                                                            : (darkMode ? '#404040' : 'grey.100'),
+                                                                        color: darkMode ? '#ffffff' : 'inherit',
                                                                         '&:hover': {
-                                                                            backgroundColor: clusterResult.status === 'error' ? 'error.main' : 'grey.200',
+                                                                            backgroundColor: clusterResult.status === 'error' 
+                                                                                ? 'error.main' 
+                                                                                : (darkMode ? '#505050' : 'grey.200'),
                                                                         }
                                                                     }}
                                                                 >
-                                                                    <Typography sx={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
+                                                                    <Typography sx={{ 
+                                                                        fontWeight: 'bold', 
+                                                                        fontSize: '0.9rem',
+                                                                        color: darkMode ? '#ffffff' : 'inherit'
+                                                                    }}>
                                                                         🧮 {domainResult.domain} - Level {clusterResult.level} - {clusterResult.status === 'error' ? '❌' : '✅'} {clusterResult.message}
                                                                     </Typography>
                                                                 </AccordionSummary>
-                                                                <AccordionDetails sx={{ p: 2 }}>
+                                                                <AccordionDetails sx={{ 
+                                                                    p: 2,
+                                                                    backgroundColor: darkMode ? '#2a2a2a' : 'background.paper'
+                                                                }}>
                                                                     {clusterResult.status === 'error' ? (
                                                                         <Typography variant="body2" color="error">
                                                                             {clusterResult.message}
@@ -3716,16 +4082,28 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                                         clusterResult.cluster_info && (
                                                                             <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 1 }}>
                                                                                 <Box>
-                                                                                    <Typography variant="caption" color="text.secondary">Clusters</Typography>
-                                                                                    <Typography variant="subtitle2">{clusterResult.cluster_info.num_clusters}</Typography>
+                                                                                    <Typography variant="caption" sx={{
+                                                                                        color: darkMode ? '#aaa' : 'text.secondary'
+                                                                                    }}>Clusters</Typography>
+                                                                                    <Typography variant="subtitle2" sx={{
+                                                                                        color: darkMode ? '#ffffff' : 'inherit'
+                                                                                    }}>{clusterResult.cluster_info.num_clusters}</Typography>
                                                                                 </Box>
                                                                                 <Box>
-                                                                                    <Typography variant="caption" color="text.secondary">DBCV Score</Typography>
-                                                                                    <Typography variant="subtitle2">{clusterResult.cluster_info.dbcv_score?.toFixed(3)}</Typography>
+                                                                                    <Typography variant="caption" sx={{
+                                                                                        color: darkMode ? '#aaa' : 'text.secondary'
+                                                                                    }}>DBCV Score</Typography>
+                                                                                    <Typography variant="subtitle2" sx={{
+                                                                                        color: darkMode ? '#ffffff' : 'inherit'
+                                                                                    }}>{clusterResult.cluster_info.dbcv_score?.toFixed(3)}</Typography>
                                                                                 </Box>
                                                                                 <Box>
-                                                                                    <Typography variant="caption" color="text.secondary">Attributes</Typography>
-                                                                                    <Typography variant="subtitle2">{clusterResult.cluster_info.useful_attributes?.length || 0}</Typography>
+                                                                                    <Typography variant="caption" sx={{
+                                                                                        color: darkMode ? '#aaa' : 'text.secondary'
+                                                                                    }}>Attributes</Typography>
+                                                                                    <Typography variant="subtitle2" sx={{
+                                                                                        color: darkMode ? '#ffffff' : 'inherit'
+                                                                                    }}>{clusterResult.cluster_info.useful_attributes?.length || 0}</Typography>
                                                                                 </Box>
                                                                             </Box>
                                                                         )
@@ -3752,12 +4130,21 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
 
                         {/* Empty State */}
                         {!archiveLoading && archiveExperiments.length === 0 && (
-                            <Card sx={{ textAlign: 'center', py: 4 }}>
+                            <Card sx={{ 
+                                textAlign: 'center', 
+                                py: 4,
+                                backgroundColor: darkMode ? '#2a2a2a' : 'background.paper',
+                                color: darkMode ? '#ffffff' : 'inherit'
+                            }}>
                                 <CardContent>
-                                    <Typography variant="h6" color="text.secondary" gutterBottom>
+                                    <Typography variant="h6" gutterBottom sx={{
+                                        color: darkMode ? '#aaa' : 'text.secondary'
+                                    }}>
                                         📭 No experiments found
                                     </Typography>
-                                    <Typography variant="body2" color="text.secondary">
+                                    <Typography variant="body2" sx={{
+                                        color: darkMode ? '#aaa' : 'text.secondary'
+                                    }}>
                                         Run some experiments first to see results here.
                                     </Typography>
                                 </CardContent>
@@ -3767,7 +4154,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                 );
             case 'config':
                 return (
-                    <Box sx={{ width: '100%', maxWidth: '1200px', margin: '0 auto', p: 3 }}>
+                    <Box sx={{ width: '100%', maxWidth: '1600px', mx: 'auto', px: 3, py: 2 }}>
                         <Typography variant="h4" gutterBottom sx={{ textAlign: 'center', mb: 4 }}>
                             ⚙️ Custom Experiment Configuration Builder
                         </Typography>
@@ -4056,47 +4443,235 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
         <Grid
             container
             direction="column"
-            justifyContent="center"
-            alignItems="center"
-            spacing={4}
+            justifyContent="flex-start"
+            alignItems="stretch"
+            spacing={2}
             sx={{
-                paddingTop: theme.spacing(4),
-                paddingLeft: theme.spacing(2),
-                paddingRight: theme.spacing(2),
+                paddingTop: theme.spacing(1),
+                paddingLeft: theme.spacing(1),
+                paddingRight: theme.spacing(1),
                 boxSizing: 'border-box',
-                bgcolor: 'background.default',
+                bgcolor: darkMode ? '#121212' : 'background.default',
                 minHeight: '100vh',
-                transition: 'background-color 0.3s ease'
+                transition: 'background-color 0.3s ease',
+                width: '100%',
+                color: darkMode ? '#ffffff' : 'inherit'
             }}
         >
+            {/* Fixed Top Navigation Bar */}
             <Box sx={{ 
-                display: 'flex', 
-                justifyContent: 'center', 
-                width: '100%', 
-                maxWidth: '1200px',
-                mb: theme.spacing(2)
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                zIndex: 1000,
+                backgroundColor: darkMode ? '#1a1a1a' : 'background.paper',
+                borderBottom: '1px solid',
+                borderColor: darkMode ? '#333' : 'divider',
+                boxShadow: darkMode ? '0 2px 8px rgba(0,0,0,0.5)' : '0 2px 4px rgba(0,0,0,0.1)',
+                py: 1.5,
+                px: 3
             }}>
-                <Box sx={{ display: 'flex', gap: theme.spacing(2) }}>
-                    <Button variant="contained" onClick={() => setCurrentView('home')}>🏠 Home</Button>
-                    <Button variant="contained" onClick={() => setCurrentView('clusters')}>🎯 Clusters</Button>
-                    <Button variant="contained" onClick={() => setCurrentView('experiments')}>🧪 Experiments</Button>
-                    <Button variant="contained" onClick={() => setCurrentView('results')}>📊 Results Archive</Button>
-                    <Button variant="contained" onClick={() => setCurrentView('config')}>⚙️ Config Builder</Button>
-                    <Button variant="contained" onClick={() => setCurrentView('view3')}>👁️ View 3</Button>
+                <Box sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    width: '100%',
+                    maxWidth: '1600px',
+                    mx: 'auto'
+                }}>
+                    {/* Left: Site Title */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', minWidth: '200px' }}>
+                        <Typography 
+                            variant="h5" 
+                            sx={{ 
+                                fontWeight: 'bold',
+                                background: darkMode 
+                                    ? 'linear-gradient(45deg, #64B5F6 30%, #42A5F5 90%)'
+                                    : 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+                                backgroundClip: 'text',
+                                WebkitBackgroundClip: 'text',
+                                WebkitTextFillColor: 'transparent',
+                                fontSize: { xs: '1.2rem', sm: '1.5rem' }
+                            }}
+                        >
+                            🌐 URL to Image
+                        </Typography>
+                    </Box>
+                    
+                    {/* Center: Navigation Buttons */}
+                    <Box sx={{ display: 'flex', gap: theme.spacing(1), flexWrap: 'wrap', justifyContent: 'center' }}>
+                        <Button 
+                            variant={currentView === 'home' ? 'contained' : 'outlined'} 
+                            onClick={() => setCurrentView('home')}
+                            sx={{ 
+                                minWidth: '100px', 
+                                fontSize: '0.875rem',
+                                ...(darkMode && currentView !== 'home' && {
+                                    borderColor: '#555',
+                                    color: '#fff',
+                                    '&:hover': {
+                                        borderColor: '#777',
+                                        backgroundColor: 'rgba(255,255,255,0.1)'
+                                    }
+                                })
+                            }}
+                            size="small"
+                        >
+                            🏠 Home
+                        </Button>
+                        <Button 
+                            variant={currentView === 'clusters' ? 'contained' : 'outlined'} 
+                            onClick={() => setCurrentView('clusters')}
+                            sx={{ 
+                                minWidth: '100px', 
+                                fontSize: '0.875rem',
+                                ...(darkMode && currentView !== 'clusters' && {
+                                    borderColor: '#555',
+                                    color: '#fff',
+                                    '&:hover': {
+                                        borderColor: '#777',
+                                        backgroundColor: 'rgba(255,255,255,0.1)'
+                                    }
+                                })
+                            }}
+                            size="small"
+                        >
+                            🎯 Clusters
+                        </Button>
+                        <Button 
+                            variant={currentView === 'experiments' ? 'contained' : 'outlined'} 
+                            onClick={() => setCurrentView('experiments')}
+                            sx={{ 
+                                minWidth: '120px', 
+                                fontSize: '0.875rem',
+                                ...(darkMode && currentView !== 'experiments' && {
+                                    borderColor: '#555',
+                                    color: '#fff',
+                                    '&:hover': {
+                                        borderColor: '#777',
+                                        backgroundColor: 'rgba(255,255,255,0.1)'
+                                    }
+                                })
+                            }}
+                            size="small"
+                        >
+                            🧪 Experiments
+                        </Button>
+                        <Button 
+                            variant={currentView === 'results' ? 'contained' : 'outlined'} 
+                            onClick={() => setCurrentView('results')}
+                            sx={{ 
+                                minWidth: '130px', 
+                                fontSize: '0.875rem',
+                                ...(darkMode && currentView !== 'results' && {
+                                    borderColor: '#555',
+                                    color: '#fff',
+                                    '&:hover': {
+                                        borderColor: '#777',
+                                        backgroundColor: 'rgba(255,255,255,0.1)'
+                                    }
+                                })
+                            }}
+                            size="small"
+                        >
+                            📊 Results
+                        </Button>
+                        <Button 
+                            variant={currentView === 'config' ? 'contained' : 'outlined'} 
+                            onClick={() => setCurrentView('config')}
+                            sx={{ 
+                                minWidth: '120px', 
+                                fontSize: '0.875rem',
+                                ...(darkMode && currentView !== 'config' && {
+                                    borderColor: '#555',
+                                    color: '#fff',
+                                    '&:hover': {
+                                        borderColor: '#777',
+                                        backgroundColor: 'rgba(255,255,255,0.1)'
+                                    }
+                                })
+                            }}
+                            size="small"
+                        >
+                            ⚙️ Config
+                        </Button>
+                        <Button 
+                            variant={currentView === 'view3' ? 'contained' : 'outlined'} 
+                            onClick={() => setCurrentView('view3')}
+                            sx={{ 
+                                minWidth: '100px', 
+                                fontSize: '0.875rem',
+                                ...(darkMode && currentView !== 'view3' && {
+                                    borderColor: '#555',
+                                    color: '#fff',
+                                    '&:hover': {
+                                        borderColor: '#777',
+                                        backgroundColor: 'rgba(255,255,255,0.1)'
+                                    }
+                                })
+                            }}
+                            size="small"
+                        >
+                            👁️ View 3
+                        </Button>
+                    </Box>
+                    
+                    {/* Right: GitHub Link and Dark Mode Toggle */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: '200px', justifyContent: 'flex-end' }}>
+                        <Tooltip title="View on GitHub">
+                            <IconButton
+                                component="a"
+                                href="https://github.com/your-username/lib_url_to_img"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                sx={{
+                                    color: darkMode ? '#fff' : 'text.primary',
+                                    '&:hover': {
+                                        color: darkMode ? '#64B5F6' : 'primary.main',
+                                        transform: 'scale(1.1)',
+                                        backgroundColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.04)'
+                                    },
+                                    transition: 'all 0.2s ease-in-out'
+                                }}
+                            >
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                                </svg>
+                            </IconButton>
+                        </Tooltip>
+                        
+                        <Tooltip title="Toggle dark mode">
+                            <IconButton
+                                onClick={onThemeChange}
+                                sx={{
+                                    color: darkMode ? '#fff' : 'text.primary',
+                                    '&:hover': {
+                                        color: darkMode ? '#FFD54F' : 'primary.main',
+                                        transform: 'rotate(180deg)',
+                                        backgroundColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.04)'
+                                    },
+                                    transition: 'all 0.3s ease-in-out'
+                                }}
+                            >
+                                {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+                            </IconButton>
+                        </Tooltip>
+                    </Box>
                 </Box>
             </Box>
+            
+            {/* Spacer for fixed navigation */}
+            <Box sx={{ height: '80px' }} />
             {renderContent()}
             {result && (
                 <Grid
                     item
                     xs={12}
-                    sm={8}
-                    md={6}
                     sx={{
-                        mt: theme.spacing(4),
+                        mt: theme.spacing(2),
                         width: '100%',
-                        padding: theme.spacing(4),
-                        borderRadius: '8px',
+                        px: theme.spacing(2),
                         overflowX: 'auto'
                     }}
                 >
@@ -4118,12 +4693,13 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                 <Grid
                     item
                     xs={12}
-                    sm={8}
-                    md={6}
                     sx={{
-                        mt: theme.spacing(4),
+                        mt: theme.spacing(2),
                         width: '100%',
-                        padding: theme.spacing(4),
+                        mx: 'auto',
+                        maxWidth: '1400px',
+                        px: theme.spacing(3),
+                        py: theme.spacing(3),
                         borderRadius: '8px',
                         overflowX: 'auto',
                         backgroundColor: '#f8d7da',
@@ -4163,9 +4739,9 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                     onClick={handleScrollToTop}
                     sx={{
                         position: 'fixed',
-                        bottom: 16,
-                        right: 16,
-                        zIndex: 1000,
+                        bottom: 24,
+                        right: 24,
+                        zIndex: 999,
                         boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
                         '&:hover': {
                             transform: 'translateY(-2px)',

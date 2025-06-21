@@ -71,37 +71,66 @@ def process_urls_from_cli(urls, levels, from_api=False):
     cache_ttl_hours = 24 if not from_api else 1  # 24 hours for CLI, 1 hour for API
     cache_manager = CacheManager(cache_dir=cache_dir, default_ttl_hours=cache_ttl_hours)
     
-    # Step 1: Check for cached data
+    # Step 1: Check for cached data (both complete and partial)
     step_start = time.time()
     
-    has_cache, cache_key = cache_manager.has_valid_cache(urls, levels, cache_ttl_hours)
+    has_complete_cache, cache_key = cache_manager.has_valid_cache(urls, levels, cache_ttl_hours)
+    cached_url_data, urls_to_process = cache_manager.get_partial_cached_data(urls, levels, cache_ttl_hours)
+    
     cache_check_time = time.time() - step_start
     
     will_skip_data_collection = False
-    cached_data = None
+    complete_cached_data = None
     
-    if has_cache:
-        # Try to load cached data
-        cached_data = cache_manager.get_cached_data(cache_key)
-        if cached_data:
+    # Check for complete cache first
+    if has_complete_cache:
+        complete_cached_data = cache_manager.get_cached_data(cache_key)
+        if complete_cached_data:
             will_skip_data_collection = True
             cache_stats = cache_manager.get_cache_stats()
-            print(f"\033[92m✅ Found valid cached data (key: {cache_key[:8]}...)\033[0m")
+            print(f"\033[92m✅ Found COMPLETE cached data (key: {cache_key[:8]}...)\033[0m")
             print(f"\033[94m📊 Cache stats: {cache_stats['total_entries']} entries, {cache_stats['total_size_mb']:.1f} MB total\033[0m")
         else:
-            print(f"\033[93m⚠️  Cache key found but data corrupted, will regenerate\033[0m")
+            print(f"\033[93m⚠️  Complete cache key found but data corrupted, checking partial cache\033[0m")
     
-    if not from_api and has_cache:
+    # Check partial cache if no complete cache
+    if not will_skip_data_collection and cached_url_data:
+        print(f"\033[96m🔍 Found PARTIAL cached data for {len(urls) - len(urls_to_process)}/{len(urls)} URLs\033[0m")
+        print(f"\033[96m📋 URLs from cache: {[url for url in urls if url not in urls_to_process]}\033[0m")
+        print(f"\033[96m🔄 URLs to process: {urls_to_process}\033[0m")
+        
+        cache_stats = cache_manager.get_cache_stats()
+        print(f"\033[94m📊 Cache stats: {cache_stats['complete_cache_entries']} complete + {cache_stats['individual_url_entries']} individual entries\033[0m")
+    elif not will_skip_data_collection and not cached_url_data:
+        print(f"\033[93m❌ No cached data found - will process all {len(urls)} URLs\033[0m")
+    
+    if not from_api and (has_complete_cache or cached_url_data):
         # For CLI usage, still prompt user about cached data
-        print(f"\033[93mFound cached data for these URLs and levels. Use cached data? (y/n)\033[0m")
+        cache_type = "complete" if has_complete_cache else "partial"
+        cache_detail = f"all {len(urls)} URLs" if has_complete_cache else f"{len(urls) - len(urls_to_process)}/{len(urls)} URLs"
+        print(f"\033[93mFound {cache_type} cached data for {cache_detail}. Use cached data? (y/n)\033[0m")
         user_input = input().lower().strip()
-        will_skip_data_collection = user_input in ['y', 'yes'] and cached_data is not None
-    
+        
+        if user_input in ['y', 'yes']:
+            if has_complete_cache and complete_cached_data:
+                will_skip_data_collection = True
+            elif cached_url_data:
+                # Use partial cache - will only process missing URLs
+                pass
+        else:
+            # User chose not to use cache
+            will_skip_data_collection = False
+            cached_url_data = {}
+            urls_to_process = urls.copy()
+
     # Step 2: ChromeDriver setup timing (conditional)
     driver = None
     if will_skip_data_collection:
-        print(f"\033[93mSkipping ChromeDriver setup - using cached data\033[0m")
+        print(f"\033[93mSkipping ChromeDriver setup - using complete cached data\033[0m")
+    elif not urls_to_process:
+        print(f"\033[93mSkipping ChromeDriver setup - all URLs cached individually\033[0m")
     else:
+        print(f"\033[94mSetting up ChromeDriver for {len(urls_to_process)} URLs\033[0m")
         service = find_chromedriver()
         if service:
             chrome_options = webdriver.ChromeOptions()
@@ -117,33 +146,43 @@ def process_urls_from_cli(urls, levels, from_api=False):
         "start_time": step_start,
         "end_time": step_start + cache_check_time,
         "duration": cache_check_time,
-        "description": "Checking for cached data",
-        "cache_hit": has_cache and cached_data is not None,
+        "description": "Checking for cached data (complete and partial)",
+        "complete_cache_hit": has_complete_cache and complete_cached_data is not None,
+        "partial_cache_hit": bool(cached_url_data),
+        "cached_urls_count": len(urls) - len(urls_to_process),
+        "urls_to_process_count": len(urls_to_process),
         "cache_key": cache_key[:8] + "..." if cache_key else None,
-        "will_use_cache": will_skip_data_collection
+        "will_use_complete_cache": will_skip_data_collection,
+        "will_use_partial_cache": bool(cached_url_data) and not will_skip_data_collection
     }
     
     timing_logs["steps"]["chromedriver_setup"] = {
         "start_time": step_start + cache_check_time,
         "end_time": time.time(),
         "duration": time.time() - (step_start + cache_check_time),
-        "description": "ChromeDriver initialization and configuration" + (" (skipped)" if will_skip_data_collection else ""),
-        "skipped": will_skip_data_collection
+        "description": f"ChromeDriver initialization and configuration for {len(urls_to_process)} URLs" + 
+                      (" (skipped - complete cache)" if will_skip_data_collection else 
+                       " (skipped - all cached)" if not urls_to_process else ""),
+        "skipped": will_skip_data_collection or not urls_to_process
     }
 
     # Step 3: Data collection timing (with enhanced caching)
     step_start = time.time()
     dataCollector = DataCollector()
     
-    if will_skip_data_collection and cached_data:
-        # Load cached data
-        dataCollector.url_data = cached_data
-        dataCollector.timing_logs = {"data_collection": {"description": "Skipped - using cached data", "duration": 0}}
+    if will_skip_data_collection and complete_cached_data:
+        # Load complete cached data
+        dataCollector.url_data = complete_cached_data
+        dataCollector.timing_logs = {"data_collection": {"description": "Skipped - using complete cached data", "duration": 0}}
         dataCollector.url_timing_logs = {}
-        print(f"\033[92mLoaded {len(cached_data)} cached records for {len(urls)} URLs\033[0m")
-    else:
-        # Collect new data
-        print(f"\033[94m🔄 Starting fresh data collection for {len(urls)} URLs, levels {levels}\033[0m")
+        print(f"\033[92m✅ Loaded {len(complete_cached_data)} cached records for {len(urls)} URLs (COMPLETE CACHE)\033[0m")
+    
+    elif urls_to_process:
+        # Collect new data for non-cached URLs
+        print(f"\033[94m🔄 Starting data collection for {len(urls_to_process)} non-cached URLs\033[0m")
+        if cached_url_data:
+            print(f"\033[96m📦 Using cached data for {len(urls) - len(urls_to_process)} URLs\033[0m")
+        
         data_collection_start = time.time()
         
         if driver is None:
@@ -159,22 +198,46 @@ def process_urls_from_cli(urls, levels, from_api=False):
                 chrome_options.binary_location = "/opt/google/chrome/chrome"
                 driver = webdriver.Chrome(service=service, options=chrome_options)
         
-        dataCollector.collect_data(urls, levels, driver, config)
+        # Collect data for new URLs only
+        dataCollector.collect_data(urls_to_process, levels, driver, config)
         
-        # Save collected data to cache
+        # Merge with cached data if available
+        if cached_url_data:
+            merged_data = {**cached_url_data, **dataCollector.url_data}
+            dataCollector.url_data = merged_data
+            print(f"\033[96m🔗 Merged {len(cached_url_data)} cached + {len(dataCollector.url_data) - len(cached_url_data)} new records\033[0m")
+        
+        # Save ALL data to cache (complete set)
         data_collection_time = time.time() - data_collection_start
         cache_key = cache_manager.save_to_cache(urls, levels, dataCollector.url_data, data_collection_time)
         print(f"\033[92m💾 Data saved to cache (key: {cache_key[:8]}..., processing time: {data_collection_time:.2f}s)\033[0m")
+    
+    else:
+        # All URLs are cached individually
+        dataCollector.url_data = cached_url_data
+        dataCollector.timing_logs = {"data_collection": {"description": "Skipped - all URLs cached individually", "duration": 0}}
+        dataCollector.url_timing_logs = {}
+        print(f"\033[92m✅ All {len(urls)} URLs found in cache - no processing needed!\033[0m")
+        
+        # Save complete cache entry for this combination for future use
+        cache_key = cache_manager.save_to_cache(urls, levels, dataCollector.url_data, 0)
+        print(f"\033[96m📦 Created complete cache entry for this URL combination (key: {cache_key[:8]}...)\033[0m")
     
     timing_logs["steps"]["data_collection"] = {
         "start_time": step_start,
         "end_time": time.time(),
         "duration": time.time() - step_start,
-        "description": "URL data collection and processing" + (" (using cached data)" if will_skip_data_collection else ""),
-        "urls_processed": len(urls),
+        "description": f"URL data collection and processing" + 
+                      (" (using complete cache)" if will_skip_data_collection else 
+                       f" (partial cache: {len(urls) - len(urls_to_process)}/{len(urls)} cached)" if cached_url_data else 
+                       " (no cache)"),
+        "urls_processed": len(urls_to_process),
+        "urls_from_cache": len(urls) - len(urls_to_process),
+        "total_urls": len(urls),
         "levels_processed": levels,
-        "data_reused": will_skip_data_collection,
-        "cache_used": will_skip_data_collection,
+        "cache_efficiency": f"{((len(urls) - len(urls_to_process)) / len(urls) * 100):.1f}%" if urls else "0%",
+        "data_reused": will_skip_data_collection or bool(cached_url_data),
+        "cache_type": "complete" if will_skip_data_collection else "partial" if cached_url_data else "none",
         "cache_key": cache_key[:8] + "..." if cache_key else None,
         "detailed_timing": dataCollector.timing_logs,  # Include detailed timing from DataCollector
         "url_timing_logs": dataCollector.url_timing_logs  # Include per-URL detailed timing
@@ -394,19 +457,25 @@ def process_urls_from_cli(urls, levels, from_api=False):
     timing_logs["total_end_time"] = time.time()
     timing_logs["total_duration"] = timing_logs["total_end_time"] - timing_logs["total_start_time"]
     
-    # Calculate performance metrics
+    # Calculate performance metrics with cache efficiency
+    cache_efficiency = ((len(urls) - len(urls_to_process)) / len(urls) * 100) if urls else 0
     timing_logs["performance_metrics"] = {
         "total_processing_time": timing_logs["total_duration"],
         "average_time_per_url": timing_logs["total_duration"] / len(urls) if urls else 0,
         "average_time_per_level": timing_logs["total_duration"] / len(levels) if levels else 0,
         "urls_processed": len(urls),
+        "urls_from_cache": len(urls) - len(urls_to_process),
+        "urls_newly_processed": len(urls_to_process),
+        "cache_efficiency_percent": cache_efficiency,
         "levels_processed": len(levels),
         "html_files_generated": len(created_html_files),
-        "clusters_generated": sum(len(result.get('clusters', [])) for result in clustering_results if result.get('status') != 'error')
+        "clusters_generated": sum(len(result.get('clusters', [])) for result in clustering_results if result.get('status') != 'error'),
+        "cache_savings": f"Saved processing {len(urls) - len(urls_to_process)}/{len(urls)} URLs ({cache_efficiency:.1f}%)"
     }
     
     print(f"DEBUG: About to return timing logs. Keys: {list(timing_logs.keys())}")
     print(f"DEBUG: Performance metrics: {timing_logs.get('performance_metrics', {})}")
+    print(f"\033[92m🎯 CACHE EFFICIENCY: {cache_efficiency:.1f}% - Saved processing {len(urls) - len(urls_to_process)}/{len(urls)} URLs\033[0m")
     
     if from_api:
         print(f"DEBUG: Timing logs keys: {list(timing_logs.keys())}")
