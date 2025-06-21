@@ -34,3 +34,4 @@ backend/api/error.log
 backend/api/cache/*
 output_html_files/*
 notes.txt
+backend/api/experiment_results/*

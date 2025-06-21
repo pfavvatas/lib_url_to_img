@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Box, TextField, Chip, FormControl, Button, useTheme, Snackbar, CircularProgress, Grid2 as Grid, TextareaAutosize, Accordion, AccordionSummary, AccordionDetails, Typography, IconButton, Tooltip, Card, CardContent, CardHeader, Switch, FormControlLabel } from '@mui/material';
+import { Box, TextField, Chip, FormControl, Button, useTheme, Snackbar, CircularProgress, Grid2 as Grid, TextareaAutosize, Accordion, AccordionSummary, AccordionDetails, Typography, IconButton, Tooltip, Card, CardContent, CardHeader, Switch, FormControlLabel, Fab, Collapse } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -7,6 +7,8 @@ import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import html2pdf from 'html2pdf.js';
 
 /*
@@ -32,13 +34,45 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
     const [result, setResult] = useState(null);
     const [filePaths, setFilePaths] = useState(null);
     const [error, setError] = useState(null); // State for error message and stack trace
-    const [selectedLevels, setSelectedLevels] = useState([]); // State for selected levels
+    const [selectedLevels, setSelectedLevels] = useState([]);
     const [currentView, setCurrentView] = useState('home'); // State for current view
     const [clusterInput, setClusterInput] = useState(""); // State for cluster input
     const [showResults, setShowResults] = useState(false); // Add this new state
     const [isNewMode, setIsNewMode] = useState(false);
     const [abortController, setAbortController] = useState(null);
     const similarityRef = useRef(null);
+    
+    // Experiments state
+    const [experimentTestCases, setExperimentTestCases] = useState([]);
+    const [selectedTestCases, setSelectedTestCases] = useState([]);
+    const [experimentConfig, setExperimentConfig] = useState(null);
+    const [experimentLoading, setExperimentLoading] = useState(false);
+    const [experimentResults, setExperimentResults] = useState(null);
+    const [experimentName, setExperimentName] = useState('');
+    const [experimentFilters, setExperimentFilters] = useState({});
+    const [gnuplotGuide, setGnuplotGuide] = useState(null);
+    const [showGnuplotGuide, setShowGnuplotGuide] = useState(false);
+    
+    // Results Archive state
+    const [archiveExperiments, setArchiveExperiments] = useState([]);
+    const [selectedExperiment, setSelectedExperiment] = useState(null);
+    const [archiveLoading, setArchiveLoading] = useState(false);
+    
+    // Config Builder state
+    const [customConfig, setCustomConfig] = useState({
+        experiment_name: '',
+        available_urls: [],
+        modes: [0, 1],
+        levels: [1],
+        url_combinations: [2, 3],
+        max_combinations: 25
+    });
+    const [configUrlInput, setConfigUrlInput] = useState('');
+    
+    // Scroll to top and card collapse state
+    const [showScrollTop, setShowScrollTop] = useState(false);
+    const [collapsedCards, setCollapsedCards] = useState(new Set());
+    
     const theme = useTheme();
 
     // Function to extract domain from URL
@@ -91,18 +125,36 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
     };
 
     const addUrls = (input) => {
-        // const newUrls = input.split(/\s+/).filter(url => url.trim().length > 0);
-				const newUrls = input.match(/"[^"]+"|\S+/g).map(url => url.replace(/(^"|"$)/g, ''));
-        const validUrls = newUrls.filter(url => isValidUrl(url));
-        const invalidUrls = newUrls.filter(url => !isValidUrl(url));
+        // Parse multiple URLs from input (handles newlines, spaces, quotes)
+        const urlPattern = /https?:\/\/[^\s\n\r]+/g;
+        const foundUrls = input.match(urlPattern) || [];
+        
+        // Also try splitting by whitespace and filtering, handle quoted URLs
+        const quotedUrls = input.match(/"[^"]+"|\S+/g)?.map(url => url.replace(/(^"|"$)/g, '')) || [];
+        const splitUrls = input.split(/[\s\n\r]+/).filter(url => url.trim().length > 0);
+        const allUrls = [...new Set([...foundUrls, ...quotedUrls, ...splitUrls])]; // Remove duplicates
+        
+        const validUrls = allUrls.filter(url => isValidUrl(url.trim()));
+        const invalidUrls = allUrls.filter(url => !isValidUrl(url.trim()));
 
         if (invalidUrls.length > 0) {
-            setWarning(`Invalid URLs: ${invalidUrls.join(', ')}`);
+            setWarning(`Invalid URLs skipped: ${invalidUrls.slice(0, 3).join(', ')}${invalidUrls.length > 3 ? '...' : ''}`);
         }
 
         if (validUrls.length > 0) {
-            setUrls([...urls, ...validUrls]);
+            // Remove duplicates from existing URLs
+            const existingUrls = new Set(urls);
+            const newUrls = validUrls.filter(url => !existingUrls.has(url.trim()));
+            
+            if (newUrls.length > 0) {
+                setUrls([...urls, ...newUrls.map(url => url.trim())]);
+                setSuccess(`Added ${newUrls.length} new URLs${validUrls.length > newUrls.length ? ` (${validUrls.length - newUrls.length} duplicates skipped)` : ''}`);
+            } else {
+                setWarning('All URLs are already added');
+            }
             setInputValue('');
+        } else if (allUrls.length > 0) {
+            setWarning('No valid URLs found in the pasted text');
         }
     };
 
@@ -152,6 +204,9 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                 setSuccess(data.message);
                 console.log("Setting result:", data);
                 setResult(data);
+                
+                // Play success notification sound
+                playNotificationSound(true);
 
                 if (data.files && data.files.length > 0) {
                     data.files.forEach(file => {
@@ -170,6 +225,8 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                 }
             } else if (data.status === "error") {
                 setError({ message: data.message, stack: data?.stack_trace });
+                // Play error notification sound
+                playNotificationSound(false);
             }
 
         } catch (error) {
@@ -178,6 +235,8 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
             } else {
                 console.error("Error:", error);
                 setError({ message: error.message, stack: error.stack });
+                // Play error notification sound
+                playNotificationSound(false);
             }
         } finally {
             setLoading(false);
@@ -256,6 +315,360 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
         setSuccess('Copied to clipboard!');
     };
 
+    // Experiment Management Functions
+    const loadExperimentConfig = async () => {
+        try {
+            const response = await fetch("http://localhost:5000/experiments/config");
+            const data = await response.json();
+            if (data.status === "success") {
+                setExperimentConfig(data.config);
+            } else {
+                setError({ message: data.message });
+            }
+        } catch (error) {
+            setError({ message: `Failed to load experiment config: ${error.message}` });
+        }
+    };
+
+    const loadTestCases = async () => {
+        setExperimentLoading(true);
+        try {
+            const response = await fetch("http://localhost:5000/experiments/test-cases");
+            const data = await response.json();
+            if (data.status === "success") {
+                setExperimentTestCases(data.test_cases);
+                setSuccess(`Loaded ${data.total_count} test cases`);
+            } else {
+                setError({ message: data.message });
+            }
+        } catch (error) {
+            setError({ message: `Failed to load test cases: ${error.message}` });
+        } finally {
+            setExperimentLoading(false);
+        }
+    };
+
+    const filterTestCases = async (filters) => {
+        setExperimentLoading(true);
+        try {
+            const response = await fetch("http://localhost:5000/experiments/filter-test-cases", {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ filters })
+            });
+            const data = await response.json();
+            if (data.status === "success") {
+                setExperimentTestCases(data.test_cases);
+                setSuccess(`Filtered to ${data.total_count} test cases (from ${data.original_count})`);
+            } else {
+                setError({ message: data.message });
+            }
+        } catch (error) {
+            setError({ message: `Failed to filter test cases: ${error.message}` });
+        } finally {
+            setExperimentLoading(false);
+        }
+    };
+
+    const runExperimentBatch = async () => {
+        if (selectedTestCases.length === 0) {
+            setWarning("Please select at least one test case to run");
+            return;
+        }
+
+        setExperimentLoading(true);
+        setError(null);
+
+        try {
+            const response = await fetch("http://localhost:5000/experiments/run-batch", {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    experiment_name: experimentName || 'Thesis Experiment',
+                    selected_test_cases: selectedTestCases
+                })
+            });
+            const data = await response.json();
+
+            if (data.status === "success") {
+                setExperimentResults(data.experiment_summary);
+                setSuccess(`Experiment completed! ${data.experiment_summary.experiment_info.successful_tests} successful tests`);
+                // Play success notification sound
+                playNotificationSound(true);
+            } else {
+                setError({ message: data.message, stack: data?.traceback });
+                // Play error notification sound
+                playNotificationSound(false);
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            setError({ message: error.message, stack: error.stack });
+            // Play error notification sound
+            playNotificationSound(false);
+        } finally {
+            setExperimentLoading(false);
+        }
+    };
+
+    const handleTestCaseSelection = (testCase, isSelected) => {
+        if (isSelected) {
+            setSelectedTestCases([...selectedTestCases, testCase]);
+        } else {
+            setSelectedTestCases(selectedTestCases.filter(tc => tc.id !== testCase.id));
+        }
+    };
+
+    const handleSelectAllTestCases = (selectAll) => {
+        if (selectAll) {
+            setSelectedTestCases([...experimentTestCases]);
+        } else {
+            setSelectedTestCases([]);
+        }
+    };
+
+    const loadGnuplotGuide = async () => {
+        try {
+            const response = await fetch("http://localhost:5000/experiments/gnuplot-guide");
+            const data = await response.json();
+            if (data.status === "success") {
+                setGnuplotGuide(data.guide);
+                setShowGnuplotGuide(true);
+            } else {
+                setError({ message: data.message });
+            }
+        } catch (error) {
+            setError({ message: `Failed to load gnuplot guide: ${error.message}` });
+        }
+    };
+
+    // Results Archive Functions
+    const loadArchiveExperiments = async () => {
+        setArchiveLoading(true);
+        try {
+            const response = await fetch("http://localhost:5000/experiments/results/list");
+            const data = await response.json();
+            if (data.status === "success") {
+                setArchiveExperiments(data.experiments);
+                setSuccess(`Loaded ${data.total_count} experiment results`);
+            } else {
+                setError({ message: data.message });
+            }
+        } catch (error) {
+            setError({ message: `Failed to load experiment results: ${error.message}` });
+        } finally {
+            setArchiveLoading(false);
+        }
+    };
+
+    const loadExperimentDetails = async (experimentId) => {
+        setArchiveLoading(true);
+        try {
+            const response = await fetch(`http://localhost:5000/experiments/results/${experimentId}`);
+            const data = await response.json();
+            if (data.status === "success") {
+                setSelectedExperiment(data.experiment_data);
+                setSuccess(`Loaded experiment: ${data.experiment_data.experiment_info.name}`);
+            } else {
+                setError({ message: data.message });
+            }
+        } catch (error) {
+            setError({ message: `Failed to load experiment details: ${error.message}` });
+        } finally {
+            setArchiveLoading(false);
+        }
+    };
+
+    const handleGnuplotFileClick = async (experimentId, filename, action = 'download') => {
+        try {
+            if (action === 'download') {
+                // Download the file
+                const downloadUrl = `http://localhost:5000/experiments/results/${experimentId}/files/${filename}`;
+                const link = document.createElement('a');
+                link.href = downloadUrl;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                setSuccess(`Downloaded ${filename}`);
+            } else if (action === 'preview') {
+                // Get file content for preview/copy
+                const response = await fetch(`http://localhost:5000/experiments/results/${experimentId}/files/${filename}/content`);
+                const data = await response.json();
+                if (data.status === "success") {
+                    // Copy content to clipboard
+                    await navigator.clipboard.writeText(data.content);
+                    setSuccess(`Copied ${filename} content to clipboard`);
+                } else {
+                    setError({ message: data.message });
+                }
+            }
+        } catch (error) {
+            setError({ message: `Failed to ${action} ${filename}: ${error.message}` });
+        }
+    };
+
+    // Config Builder Functions
+    const addConfigUrls = (input) => {
+        // Parse multiple URLs from input (handles newlines, spaces, quotes)
+        const urlPattern = /https?:\/\/[^\s\n\r]+/g;
+        const foundUrls = input.match(urlPattern) || [];
+        
+        // Also try splitting by whitespace and filtering
+        const splitUrls = input.split(/[\s\n\r]+/).filter(url => url.trim().length > 0);
+        const allUrls = [...new Set([...foundUrls, ...splitUrls])]; // Remove duplicates
+        
+        const validUrls = allUrls.filter(url => isValidUrl(url.trim()));
+        const invalidUrls = allUrls.filter(url => !isValidUrl(url.trim()));
+        
+        if (invalidUrls.length > 0) {
+            setWarning(`Invalid URLs skipped: ${invalidUrls.slice(0, 3).join(', ')}${invalidUrls.length > 3 ? '...' : ''}`);
+        }
+        
+        if (validUrls.length > 0) {
+            // Remove duplicates from existing URLs
+            const existingUrls = new Set(customConfig.available_urls);
+            const newUrls = validUrls.filter(url => !existingUrls.has(url.trim()));
+            
+            if (newUrls.length > 0) {
+                setCustomConfig(prev => ({
+                    ...prev,
+                    available_urls: [...prev.available_urls, ...newUrls.map(url => url.trim())]
+                }));
+                setSuccess(`Added ${newUrls.length} new URLs${validUrls.length > newUrls.length ? ` (${validUrls.length - newUrls.length} duplicates skipped)` : ''}`);
+            } else {
+                setWarning('All URLs are already added');
+            }
+            setConfigUrlInput('');
+        } else if (allUrls.length > 0) {
+            setWarning('No valid URLs found in the pasted text');
+        }
+    };
+    
+    const addConfigUrl = () => {
+        if (configUrlInput.trim()) {
+            addConfigUrls(configUrlInput.trim());
+        } else {
+            setWarning('Please enter a URL');
+        }
+    };
+    
+    const handleConfigUrlPaste = (e) => {
+        e.preventDefault();
+        const pastedText = e.clipboardData.getData('text');
+        addConfigUrls(pastedText);
+    };
+
+    const removeConfigUrl = (indexToRemove) => {
+        setCustomConfig(prev => ({
+            ...prev,
+            available_urls: prev.available_urls.filter((_, index) => index !== indexToRemove)
+        }));
+    };
+
+    const runCustomExperiment = async () => {
+        if (customConfig.available_urls.length === 0) {
+            setWarning('Please add at least one URL');
+            return;
+        }
+        if (customConfig.levels.length === 0) {
+            setWarning('Please select at least one level');
+            return;
+        }
+
+        setExperimentLoading(true);
+        setError(null);
+
+        try {
+            // Generate test cases based on custom config
+            const testCases = [];
+            let testIndex = 1;
+
+            for (const mode of customConfig.modes) {
+                for (const urlCount of customConfig.url_combinations) {
+                    if (urlCount <= customConfig.available_urls.length) {
+                        // Create a test case
+                        const selectedUrls = customConfig.available_urls.slice(0, urlCount);
+                        const testCase = {
+                            id: `custom_${testIndex.toString().padStart(3, '0')}_${mode}_L${customConfig.levels.join('_')}_U${urlCount}`,
+                            name: `Custom Mode ${mode} - Levels ${customConfig.levels.join(',')} - ${urlCount} URLs`,
+                            description: `Custom test using Mode ${mode}, levels ${customConfig.levels.join(',')}, ${urlCount} URLs`,
+                            mode: mode,
+                            levels: customConfig.levels,
+                            urls: selectedUrls,
+                            url_count: urlCount,
+                            estimated_duration: urlCount * customConfig.levels.length * 0.5,
+                            priority: 'custom'
+                        };
+                        testCases.push(testCase);
+                        testIndex++;
+
+                        if (testCases.length >= customConfig.max_combinations) {
+                            break;
+                        }
+                    }
+                }
+                if (testCases.length >= customConfig.max_combinations) {
+                    break;
+                }
+            }
+
+            // Run the experiment batch
+            const response = await fetch("http://localhost:5000/experiments/run-batch", {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    experiment_name: customConfig.experiment_name || 'Custom Experiment',
+                    selected_test_cases: testCases
+                })
+            });
+            const data = await response.json();
+
+            if (data.status === "success") {
+                setExperimentResults(data.experiment_summary);
+                setSuccess(`Custom experiment completed! ${data.experiment_summary.experiment_info.successful_tests} successful tests`);
+                // Play success notification sound
+                playNotificationSound(true);
+                
+                // Switch to experiments view to see results
+                setCurrentView('experiments');
+            } else {
+                setError({ message: data.message, stack: data?.traceback });
+                // Play error notification sound
+                playNotificationSound(false);
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            setError({ message: error.message, stack: error.stack });
+            // Play error notification sound
+            playNotificationSound(false);
+        } finally {
+            setExperimentLoading(false);
+        }
+    };
+
+    // Load experiment config on component mount
+    useEffect(() => {
+        if (currentView === 'experiments' && !experimentConfig) {
+            loadExperimentConfig();
+        }
+    }, [currentView, experimentConfig]);
+
+    // Load archive experiments when switching to results view
+    useEffect(() => {
+        if (currentView === 'results' && archiveExperiments.length === 0) {
+            loadArchiveExperiments();
+        }
+    }, [currentView, archiveExperiments.length]);
+
     // Custom formatting function for sites data
     const formatSitesData = (sitesData) => {
         const sites = sitesData;
@@ -289,6 +702,43 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
     // Function to create site labels
     const createSiteLabel = (index) => {
         return `site_${index + 1}`;
+    };
+
+    // Scroll to top functionality
+    const handleScrollToTop = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    };
+
+    // Handle scroll events
+    useEffect(() => {
+        const handleScroll = () => {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            setShowScrollTop(scrollTop > 300); // Show button after scrolling 300px
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    // Card collapse functionality
+    const toggleCardCollapse = (cardId) => {
+        const newCollapsedCards = new Set(collapsedCards);
+        if (newCollapsedCards.has(cardId)) {
+            // Card is expanded, remove from set to collapse it
+            newCollapsedCards.delete(cardId);
+        } else {
+            // Card is collapsed, add to set to expand it
+            newCollapsedCards.add(cardId);
+        }
+        setCollapsedCards(newCollapsedCards);
+    };
+
+    const isCardCollapsed = (cardId) => {
+        // Default to collapsed (true) if not in the set, expanded (false) if in the set
+        return !collapsedCards.has(cardId);
     };
 
     // Function to generate PDF from similarity results
@@ -2153,13 +2603,16 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                         <Box sx={{ margin: '0 30%' }}>
                             <TextField
                                 label="Paste your URLs"
-                                placeholder="Paste URLs and press Enter"
+                                placeholder="Paste URLs and press Enter (supports multiple URLs)"
                                 value={inputValue}
                                 onChange={handleInputChange}
                                 onKeyDown={handleKeyDown}
                                 onPaste={handlePaste}
                                 fullWidth
                                 variant="outlined"
+                                multiline
+                                maxRows={4}
+                                helperText="💡 Paste multiple URLs separated by newlines or spaces"
                             />
                         </Box>
                         <Box sx={{ position: 'relative', margin: '0 30%', mt: theme.spacing(2), display: 'flex', justifyContent: 'center' }}>
@@ -2356,10 +2809,1246 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                         </Box>
                     </Box>
                 );
+            case 'experiments':
+                return (
+                    <Box sx={{ width: '100%', maxWidth: '1400px', margin: '0 auto', p: 3 }}>
+                        <Typography variant="h4" gutterBottom sx={{ textAlign: 'center', mb: 4 }}>
+                            🧪 Experiment Management - Thesis Data Collection
+                        </Typography>
+
+                        {/* Experiment Configuration Display */}
+                        {experimentConfig && (
+                            <Accordion sx={{ mb: 3 }}>
+                                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                    <Typography variant="h6">📋 Experiment Configuration</Typography>
+                                </AccordionSummary>
+                                <AccordionDetails>
+                                    <Grid container spacing={2}>
+                                        <Grid item xs={12} md={6}>
+                                            <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>Available URLs:</Typography>
+                                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+                                                {experimentConfig.test_configuration.available_urls.map((url, index) => (
+                                                    <Chip key={index} label={url} size="small" color="primary" />
+                                                ))}
+                                            </Box>
+                                        </Grid>
+                                        <Grid item xs={12} md={6}>
+                                            <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>Test Parameters:</Typography>
+                                            <Typography variant="body2">Modes: {experimentConfig.test_configuration.test_parameters.modes.join(', ')}</Typography>
+                                            <Typography variant="body2">Max URLs per test: {experimentConfig.test_configuration.max_urls_per_test}</Typography>
+                                            <Typography variant="body2">URL Set Sizes: {Object.values(experimentConfig.test_configuration.url_combinations).flat().join(', ')}</Typography>
+                                        </Grid>
+                                    </Grid>
+                                </AccordionDetails>
+                            </Accordion>
+                        )}
+
+                        {/* Experiment Controls */}
+                        <Card sx={{ mb: 3, p: 3 }}>
+                            <Typography variant="h6" gutterBottom>🚀 Experiment Controls</Typography>
+                            <Grid container spacing={3} alignItems="center">
+                                <Grid item xs={12} md={4}>
+                                    <TextField
+                                        fullWidth
+                                        label="Experiment Name"
+                                        value={experimentName}
+                                        onChange={(e) => setExperimentName(e.target.value)}
+                                        placeholder="e.g., Thesis_Mode_Comparison_2024"
+                                    />
+                                </Grid>
+                                <Grid item xs={12} md={8}>
+                                    <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                                        <Button 
+                                            variant="outlined" 
+                                            onClick={loadTestCases}
+                                            disabled={experimentLoading}
+                                        >
+                                            📊 Load All Test Cases
+                                        </Button>
+                                        <Button 
+                                            variant="outlined" 
+                                            onClick={() => filterTestCases({ priority: ['high', 'medium'] })}
+                                            disabled={experimentLoading}
+                                        >
+                                            🔍 Filter High/Medium Priority
+                                        </Button>
+                                        <Button 
+                                            variant="outlined" 
+                                            onClick={() => filterTestCases({ max_url_count: 5 })}
+                                            disabled={experimentLoading}
+                                        >
+                                            📱 Small Tests (≤5 URLs)
+                                        </Button>
+                                        <Button 
+                                            variant="outlined" 
+                                            onClick={loadGnuplotGuide}
+                                            sx={{ backgroundColor: 'info.light', color: 'info.contrastText' }}
+                                        >
+                                            📊 Gnuplot Guide
+                                        </Button>
+                                    </Box>
+                                </Grid>
+                            </Grid>
+                        </Card>
+
+                        {/* Test Cases Selection */}
+                        {experimentTestCases.length > 0 && (
+                            <Card sx={{ mb: 3 }}>
+                                <CardHeader 
+                                    title={`📝 Test Cases (${experimentTestCases.length} available)`}
+                                    action={
+                                        <Box>
+                                            <FormControlLabel
+                                                control={
+                                                    <Switch
+                                                        checked={selectedTestCases.length === experimentTestCases.length}
+                                                        onChange={(e) => handleSelectAllTestCases(e.target.checked)}
+                                                    />
+                                                }
+                                                label="Select All"
+                                            />
+                                            <Typography variant="caption" sx={{ ml: 2 }}>
+                                                Selected: {selectedTestCases.length}
+                                            </Typography>
+                                        </Box>
+                                    }
+                                />
+                                <CardContent sx={{ maxHeight: '400px', overflow: 'auto' }}>
+                                    <Grid container spacing={2}>
+                                        {experimentTestCases.map((testCase, index) => (
+                                            <Grid item xs={12} sm={6} md={4} key={testCase.id}>
+                                                <Card 
+                                                    sx={{ 
+                                                        border: selectedTestCases.some(tc => tc.id === testCase.id) ? '2px solid' : '1px solid',
+                                                        borderColor: selectedTestCases.some(tc => tc.id === testCase.id) ? 'primary.main' : 'divider',
+                                                        cursor: 'pointer',
+                                                        transition: 'all 0.2s'
+                                                    }}
+                                                    onClick={() => handleTestCaseSelection(testCase, !selectedTestCases.some(tc => tc.id === testCase.id))}
+                                                >
+                                                    <CardContent sx={{ p: 2 }}>
+                                                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                                                            {testCase.name}
+                                                        </Typography>
+                                                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+                                                            {testCase.id}
+                                                        </Typography>
+                                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 1 }}>
+                                                            <Chip label={`Mode ${testCase.mode}`} size="small" color={testCase.mode === 0 ? 'primary' : 'secondary'} />
+                                                            <Chip label={`${testCase.url_count} URLs`} size="small" />
+                                                            <Chip label={testCase.priority} size="small" color={testCase.priority === 'high' ? 'error' : testCase.priority === 'medium' ? 'warning' : 'default'} />
+                                                        </Box>
+                                                        <Typography variant="caption" color="text.secondary">
+                                                            Est. {testCase.estimated_duration.toFixed(1)} min
+                                                        </Typography>
+                                                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                                                            Levels: {Array.isArray(testCase.levels) ? testCase.levels.join(', ') : testCase.levels}
+                                                        </Typography>
+                                                    </CardContent>
+                                                </Card>
+                                            </Grid>
+                                        ))}
+                                    </Grid>
+                                </CardContent>
+                            </Card>
+                        )}
+
+                        {/* Run Experiment Button */}
+                        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                size="large"
+                                onClick={runExperimentBatch}
+                                disabled={experimentLoading || selectedTestCases.length === 0}
+                                sx={{ 
+                                    borderRadius: '20px',
+                                    px: 4,
+                                    py: 1.5,
+                                    fontSize: '1.1rem'
+                                }}
+                            >
+                                {experimentLoading ? (
+                                    <>
+                                        <CircularProgress size={20} sx={{ mr: 2 }} />
+                                        Running Experiments...
+                                    </>
+                                ) : (
+                                    <>
+                                        🚀 Run {selectedTestCases.length} Selected Tests
+                                    </>
+                                )}
+                            </Button>
+                        </Box>
+
+                        {/* Experiment Results */}
+                        {experimentResults && (
+                            <Box sx={{ width: '100%', mt: theme.spacing(4), maxWidth: '1200px', mx: 'auto' }}>
+                                {/* Experiment Summary */}
+                                <Card sx={{ mb: 3 }}>
+                                    <CardHeader title="📊 Experiment Summary" />
+                                    <CardContent>
+                                        <Grid container spacing={3}>
+                                            <Grid item xs={12} md={6}>
+                                                <Typography variant="h6" gutterBottom>📈 Performance Overview</Typography>
+                                                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+                                                    <Box>
+                                                        <Typography variant="caption" color="text.secondary">Total Tests</Typography>
+                                                        <Typography variant="h6">{experimentResults.experiment_info.total_tests}</Typography>
+                                                    </Box>
+                                                    <Box>
+                                                        <Typography variant="caption" color="text.secondary">Success Rate</Typography>
+                                                        <Typography variant="h6" color="success.main">
+                                                            {experimentResults.experiment_info.success_rate.toFixed(1)}%
+                                                        </Typography>
+                                                    </Box>
+                                                    <Box>
+                                                        <Typography variant="caption" color="text.secondary">Successful</Typography>
+                                                        <Typography variant="h6" color="success.main">
+                                                            {experimentResults.experiment_info.successful_tests}
+                                                        </Typography>
+                                                    </Box>
+                                                    <Box>
+                                                        <Typography variant="caption" color="text.secondary">Failed</Typography>
+                                                        <Typography variant="h6" color="error.main">
+                                                            {experimentResults.experiment_info.failed_tests}
+                                                        </Typography>
+                                                    </Box>
+                                                    <Box>
+                                                        <Typography variant="caption" color="text.secondary">Duration</Typography>
+                                                        <Typography variant="h6">
+                                                            {formatDuration(experimentResults.experiment_info.duration)}
+                                                        </Typography>
+                                                    </Box>
+                                                </Box>
+                                            </Grid>
+                                            <Grid item xs={12} md={6}>
+                                                <Typography variant="h6" gutterBottom>📊 Gnuplot Data Generated</Typography>
+                                                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                                                    Data files for thesis analysis have been created and are ready for gnuplot visualization.
+                                                    Check the experiment results folder for:
+                                                </Typography>
+                                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                                    <Chip label="📊 processing_times.dat" size="small" />
+                                                    <Chip label="🎯 cluster_counts.dat" size="small" />
+                                                    <Chip label="📄 html_file_counts.dat" size="small" />
+                                                    <Chip label="📈 *.gnuplot scripts" size="small" />
+                                                </Box>
+                                                <Box sx={{ mt: 2 }}>
+                                                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                                                        To generate plots:
+                                                    </Typography>
+                                                    <Typography variant="caption" sx={{ 
+                                                        fontFamily: 'monospace',
+                                                        fontSize: '0.75rem',
+                                                        display: 'block',
+                                                        backgroundColor: 'grey.100',
+                                                        p: 1,
+                                                        borderRadius: 1
+                                                    }}>
+                                                        cd experiment_results/[timestamp]_[name]/gnuplot_data<br/>
+                                                        gnuplot processing_time_plot.gnuplot<br/>
+                                                        gnuplot cluster_count_plot.gnuplot
+                                                    </Typography>
+                                                </Box>
+                                            </Grid>
+                                        </Grid>
+                                    </CardContent>
+                                </Card>
+
+                                {/* Process each result with better visual separation */}
+                                {experimentResults.results && experimentResults.results.map((result, index) => {
+                                    const cardId = `experiment-result-${index}`;
+                                    const collapsed = isCardCollapsed(cardId);
+                                    
+                                    return result.status === 'success' && (
+                                        <Card key={index} sx={{ 
+                                            mb: 4, 
+                                            border: '2px solid',
+                                            borderColor: 'success.light',
+                                            borderRadius: 3,
+                                            overflow: 'hidden',
+                                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                                        }}>
+                                            <CardHeader 
+                                                title={
+                                                    <Typography variant="h5" sx={{ 
+                                                        fontWeight: 'bold',
+                                                        color: 'white',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: 1
+                                                    }}>
+                                                        🧮 Test: {result.test_metadata?.test_name || `Test ${index + 1}`}
+                                                    </Typography>
+                                                }
+                                                subheader={
+                                                    <Typography variant="subtitle1" sx={{ color: 'rgba(255,255,255,0.8)' }}>
+                                                        ID: {result.test_metadata?.test_id} | Duration: {formatDuration(result.test_metadata?.duration || 0)}
+                                                    </Typography>
+                                                }
+                                                action={
+                                                    <Tooltip title={collapsed ? "Expand card" : "Collapse card"}>
+                                                        <IconButton
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                toggleCardCollapse(cardId);
+                                                            }}
+                                                            sx={{
+                                                                color: 'white',
+                                                                '&:hover': {
+                                                                    backgroundColor: 'rgba(255,255,255,0.1)'
+                                                                }
+                                                            }}
+                                                        >
+                                                            {collapsed ? <ExpandMoreIcon /> : <ExpandLessIcon />}
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                }
+                                                onClick={() => toggleCardCollapse(cardId)}
+                                                sx={{
+                                                    backgroundColor: 'success.main',
+                                                    color: 'white',
+                                                    py: 2,
+                                                    cursor: 'pointer',
+                                                    '&:hover': {
+                                                        backgroundColor: 'success.dark'
+                                                    }
+                                                }}
+                                            />
+                                            <Collapse in={!collapsed} timeout="auto" unmountOnExit>
+                                                <CardContent sx={{ p: 3 }}>
+
+                                                {/* Use the same renderUnifiedHtmlFilesSection function */}
+                                                {(() => {
+                                                    const collectAllHtmlFiles = (resultData) => {
+                                                        let allFiles = [];
+                                                        
+                                                        if (resultData.html_files) {
+                                                            allFiles = allFiles.concat(resultData.html_files);
+                                                        }
+                                                        
+                                                        if (resultData.domain_results) {
+                                                            resultData.domain_results.forEach((domainResult) => {
+                                                                if (domainResult.html_files) {
+                                                                    allFiles = allFiles.concat(domainResult.html_files);
+                                                                }
+                                                            });
+                                                        }
+                                                        
+                                                        const uniqueFiles = allFiles.filter((file, index, self) => 
+                                                            index === self.findIndex(f => f.filename === file.filename)
+                                                        );
+                                                        
+                                                        return uniqueFiles;
+                                                    };
+
+                                                    const allHtmlFiles = collectAllHtmlFiles(result);
+                                                    if (allHtmlFiles.length === 0) return null;
+
+                                                    const filesByLevel = allHtmlFiles.reduce((acc, file) => {
+                                                        const level = file.level || 'unknown';
+                                                        if (!acc[level]) acc[level] = [];
+                                                        acc[level].push(file);
+                                                        return acc;
+                                                    }, {});
+
+                                                    const sortedLevels = Object.keys(filesByLevel).sort((a, b) => {
+                                                        if (a === 'unknown') return 1;
+                                                        if (b === 'unknown') return -1;
+                                                        return parseInt(a) - parseInt(b);
+                                                    });
+
+                                                    return (
+                                                        <Accordion 
+                                                            sx={{ 
+                                                                mb: theme.spacing(2),
+                                                                '&:before': { display: 'none' },
+                                                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                                                borderRadius: '8px !important',
+                                                                overflow: 'hidden'
+                                                            }}
+                                                        >
+                                                            <AccordionSummary 
+                                                                expandIcon={<ExpandMoreIcon />}
+                                                                sx={{
+                                                                    backgroundColor: 'grey.200',
+                                                                    '&:hover': {
+                                                                        backgroundColor: 'grey.300',
+                                                                    },
+                                                                }}
+                                                            >
+                                                                <Typography sx={{ fontWeight: 'bold' }}>
+                                                                    📁 Generated Files ({allHtmlFiles.length} files)
+                                                                </Typography>
+                                                            </AccordionSummary>
+                                                            <AccordionDetails sx={{ p: 2 }}>
+                                                                {sortedLevels.map(level => (
+                                                                    <Box key={level} sx={{ mb: 2 }}>
+                                                                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1, color: 'primary.main' }}>
+                                                                            📊 Level {level} ({filesByLevel[level].length} files)
+                                                                        </Typography>
+                                                                        <Grid container spacing={1}>
+                                                                            {filesByLevel[level].map((file, fileIndex) => (
+                                                                                <Grid item xs={12} sm={6} md={4} key={fileIndex}>
+                                                                                    <Card 
+                                                                                        sx={{ 
+                                                                                            cursor: 'pointer',
+                                                                                            transition: 'all 0.2s ease-in-out',
+                                                                                            '&:hover': {
+                                                                                                transform: 'translateY(-1px)',
+                                                                                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                                                                                            }
+                                                                                        }}
+                                                                                        onClick={() => window.open(`http://localhost:5000/${file.path}`, '_blank')}
+                                                                                    >
+                                                                                        <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
+                                                                                            <Typography 
+                                                                                                variant="caption" 
+                                                                                                sx={{ 
+                                                                                                    fontWeight: 'bold',
+                                                                                                    display: 'block',
+                                                                                                    mb: 0.5,
+                                                                                                    overflow: 'hidden',
+                                                                                                    textOverflow: 'ellipsis',
+                                                                                                    whiteSpace: 'nowrap'
+                                                                                                }}
+                                                                                                title={file.title || file.filename}
+                                                                                            >
+                                                                                                {file.title || file.filename}
+                                                                                            </Typography>
+                                                                                            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.6rem' }}>
+                                                                                                {file.file_size_kb ? `${file.file_size_kb.toFixed(1)} KB` : ''}
+                                                                                            </Typography>
+                                                                                        </CardContent>
+                                                                                    </Card>
+                                                                                </Grid>
+                                                                            ))}
+                                                                        </Grid>
+                                                                    </Box>
+                                                                ))}
+                                                            </AccordionDetails>
+                                                        </Accordion>
+                                                    );
+                                                })()}
+
+                                                {/* Site Similarity Results */}
+                                                {result.processed_clusters && result.processed_clusters.map((processedCluster, clusterIndex) => (
+                                                    processedCluster.processed_data && processedCluster.processed_data.site_similarity &&
+                                                    <div key={`similarity-${clusterIndex}`}>
+                                                        <Typography variant="h6" sx={{ mt: 2, mb: 1, fontWeight: 'bold' }}>
+                                                            🔍 Site Similarity Analysis - Level {processedCluster.level}
+                                                        </Typography>
+                                                        {renderSiteSimilarityResults(processedCluster.processed_data.site_similarity, processedCluster.level)}
+                                                    </div>
+                                                ))}
+
+                                                {/* Clustering Results Summary */}
+                                                {result.clustering_results && result.clustering_results.map((clusterResult, clusterIndex) => (
+                                                    <Accordion 
+                                                        key={`cluster-${clusterIndex}`} 
+                                                        sx={{ 
+                                                            mb: theme.spacing(1),
+                                                            '&:before': { display: 'none' },
+                                                            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                                                            borderRadius: '4px !important'
+                                                        }}
+                                                    >
+                                                        <AccordionSummary 
+                                                            expandIcon={<ExpandMoreIcon />}
+                                                            sx={{
+                                                                backgroundColor: clusterResult.status === 'error' ? 'error.light' : 'grey.100',
+                                                                '&:hover': {
+                                                                    backgroundColor: clusterResult.status === 'error' ? 'error.main' : 'grey.200',
+                                                                }
+                                                            }}
+                                                        >
+                                                            <Typography sx={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
+                                                                🧮 Level {clusterResult.level} - {clusterResult.status === 'error' ? '❌' : '✅'} {clusterResult.message}
+                                                            </Typography>
+                                                        </AccordionSummary>
+                                                        <AccordionDetails sx={{ p: 2 }}>
+                                                            {clusterResult.status === 'error' ? (
+                                                                <Typography variant="body2" color="error">
+                                                                    {clusterResult.message}
+                                                                </Typography>
+                                                            ) : (
+                                                                clusterResult.cluster_info && (
+                                                                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 1 }}>
+                                                                        <Box>
+                                                                            <Typography variant="caption" color="text.secondary">Clusters</Typography>
+                                                                            <Typography variant="subtitle2">{clusterResult.cluster_info.num_clusters}</Typography>
+                                                                        </Box>
+                                                                        <Box>
+                                                                            <Typography variant="caption" color="text.secondary">DBCV Score</Typography>
+                                                                            <Typography variant="subtitle2">{clusterResult.cluster_info.dbcv_score?.toFixed(3)}</Typography>
+                                                                        </Box>
+                                                                        <Box>
+                                                                            <Typography variant="caption" color="text.secondary">Attributes</Typography>
+                                                                            <Typography variant="subtitle2">{clusterResult.cluster_info.useful_attributes?.length || 0}</Typography>
+                                                                        </Box>
+                                                                    </Box>
+                                                                )
+                                                            )}
+                                                        </AccordionDetails>
+                                                    </Accordion>
+                                                ))}
+                                                </CardContent>
+                                            </Collapse>
+                                        </Card>
+                                    );
+                                })}
+                            </Box>
+                        )}
+                    </Box>
+                );
+            case 'results':
+                return (
+                    <Box sx={{ width: '100%', maxWidth: '1400px', margin: '0 auto', p: 3 }}>
+                        <Typography variant="h4" gutterBottom sx={{ textAlign: 'center', mb: 4 }}>
+                            📊 Results Archive - Previous Experiments
+                        </Typography>
+
+                        {/* Archive Controls */}
+                        <Card sx={{ mb: 3 }}>
+                            <CardHeader title="🗂️ Experiment Archive Controls" />
+                            <CardContent sx={{ p: 3 }}>
+                                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
+                                    <Button 
+                                        variant="outlined" 
+                                        onClick={loadArchiveExperiments}
+                                        disabled={archiveLoading}
+                                        sx={{ borderRadius: '20px' }}
+                                    >
+                                        {archiveLoading ? (
+                                            <>
+                                                <CircularProgress size={16} sx={{ mr: 1 }} />
+                                                Loading...
+                                            </>
+                                        ) : (
+                                            '🔄 Refresh Archive'
+                                        )}
+                                    </Button>
+                                    {selectedExperiment && (
+                                        <Button 
+                                            variant="outlined" 
+                                            onClick={() => setSelectedExperiment(null)}
+                                            sx={{ borderRadius: '20px' }}
+                                        >
+                                            ⬅️ Back to List
+                                        </Button>
+                                    )}
+                                </Box>
+                            </CardContent>
+                        </Card>
+
+                        {/* Experiment Selection */}
+                        {!selectedExperiment && archiveExperiments.length > 0 && (
+                            <Card sx={{ mb: 3 }}>
+                                <CardHeader title={`📚 Available Experiments (${archiveExperiments.length})`} />
+                                <CardContent sx={{ maxHeight: '500px', overflow: 'auto' }}>
+                                    <Grid container spacing={3}>
+                                        {archiveExperiments.map((experiment, index) => (
+                                            <Grid item xs={12} sm={6} md={4} key={experiment.id}>
+                                                <Card 
+                                                    sx={{ 
+                                                        cursor: 'pointer',
+                                                        transition: 'all 0.2s',
+                                                        '&:hover': {
+                                                            transform: 'translateY(-2px)',
+                                                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                                                        },
+                                                        border: '1px solid',
+                                                        borderColor: 'divider'
+                                                    }}
+                                                    onClick={() => loadExperimentDetails(experiment.id)}
+                                                >
+                                                    <CardContent sx={{ p: 2 }}>
+                                                        <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1, fontSize: '1rem' }}>
+                                                            {experiment.name}
+                                                        </Typography>
+                                                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+                                                            {experiment.timestamp}
+                                                        </Typography>
+                                                        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, mb: 1 }}>
+                                                            <Box>
+                                                                <Typography variant="caption" color="text.secondary">Tests</Typography>
+                                                                <Typography variant="subtitle2">{experiment.total_tests}</Typography>
+                                                            </Box>
+                                                            <Box>
+                                                                <Typography variant="caption" color="text.secondary">Success Rate</Typography>
+                                                                <Typography variant="subtitle2" color="success.main">
+                                                                    {experiment.success_rate.toFixed(1)}%
+                                                                </Typography>
+                                                            </Box>
+                                                        </Box>
+                                                        <Typography variant="caption" color="text.secondary">
+                                                            Duration: {formatDuration(experiment.duration)}
+                                                        </Typography>
+                                                    </CardContent>
+                                                </Card>
+                                            </Grid>
+                                        ))}
+                                    </Grid>
+                                </CardContent>
+                            </Card>
+                        )}
+
+                        {/* Selected Experiment Details */}
+                        {selectedExperiment && (
+                            <Box sx={{ width: '100%', mt: theme.spacing(2), maxWidth: '1200px', mx: 'auto' }}>
+                                {/* Experiment Summary */}
+                                <Card sx={{ mb: 3 }}>
+                                    <CardHeader 
+                                        title={`📊 ${selectedExperiment.experiment_info.name}`}
+                                        subheader={`Experiment ID: ${selectedExperiment.id}`}
+                                    />
+                                    <CardContent>
+                                        <Grid container spacing={3}>
+                                            <Grid item xs={12} md={6}>
+                                                <Typography variant="h6" gutterBottom>📈 Performance Summary</Typography>
+                                                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+                                                    <Box>
+                                                        <Typography variant="caption" color="text.secondary">Total Tests</Typography>
+                                                        <Typography variant="h6">{selectedExperiment.experiment_info.total_tests}</Typography>
+                                                    </Box>
+                                                    <Box>
+                                                        <Typography variant="caption" color="text.secondary">Success Rate</Typography>
+                                                        <Typography variant="h6" color="success.main">
+                                                            {selectedExperiment.experiment_info.success_rate.toFixed(1)}%
+                                                        </Typography>
+                                                    </Box>
+                                                    <Box>
+                                                        <Typography variant="caption" color="text.secondary">Successful</Typography>
+                                                        <Typography variant="h6" color="success.main">
+                                                            {selectedExperiment.experiment_info.successful_tests}
+                                                        </Typography>
+                                                    </Box>
+                                                    <Box>
+                                                        <Typography variant="caption" color="text.secondary">Failed</Typography>
+                                                        <Typography variant="h6" color="error.main">
+                                                            {selectedExperiment.experiment_info.failed_tests}
+                                                        </Typography>
+                                                    </Box>
+                                                    <Box>
+                                                        <Typography variant="caption" color="text.secondary">Duration</Typography>
+                                                        <Typography variant="h6">
+                                                            {formatDuration(selectedExperiment.experiment_info.duration)}
+                                                        </Typography>
+                                                    </Box>
+                                                </Box>
+                                            </Grid>
+                                            <Grid item xs={12} md={6}>
+                                                <Typography variant="h6" gutterBottom>📁 Generated Files</Typography>
+                                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                                    {/* Gnuplot Files */}
+                                                    {selectedExperiment.gnuplot_files && selectedExperiment.gnuplot_files.length > 0 && (
+                                                        <Box>
+                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                                                                📊 Gnuplot Data Files ({selectedExperiment.gnuplot_files.length})
+                                                            </Typography>
+                                                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                                                {selectedExperiment.gnuplot_files.map((file, index) => (
+                                                                    <Chip
+                                                                        key={index}
+                                                                        label={file.filename}
+                                                                        size="small"
+                                                                        onClick={(e) => {
+                                                                            if (e.ctrlKey || e.metaKey) {
+                                                                                handleGnuplotFileClick(selectedExperiment.id, file.filename, 'preview');
+                                                                            } else {
+                                                                                handleGnuplotFileClick(selectedExperiment.id, file.filename, 'download');
+                                                                            }
+                                                                        }}
+                                                                        sx={{ 
+                                                                            cursor: 'pointer',
+                                                                            '&:hover': {
+                                                                                backgroundColor: 'primary.light',
+                                                                                color: 'primary.contrastText'
+                                                                            }
+                                                                        }}
+                                                                        title="Left-click to download, Ctrl+click to copy content"
+                                                                    />
+                                                                ))}
+                                                            </Box>
+                                                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
+                                                                💡 Left-click to download, Ctrl+click to copy content
+                                                            </Typography>
+                                                        </Box>
+                                                    )}
+
+                                                    {/* Generated Images */}
+                                                    {selectedExperiment.generated_images && selectedExperiment.generated_images.length > 0 && (
+                                                        <Box sx={{ mt: 2 }}>
+                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                                                                🖼️ Generated Images ({selectedExperiment.generated_images.length})
+                                                            </Typography>
+                                                            <Grid container spacing={2}>
+                                                                {selectedExperiment.generated_images.map((image, index) => (
+                                                                    <Grid item xs={12} sm={6} md={4} key={index}>
+                                                                        <Card sx={{ 
+                                                                            cursor: 'pointer',
+                                                                            transition: 'all 0.2s',
+                                                                            '&:hover': {
+                                                                                transform: 'translateY(-2px)',
+                                                                                boxShadow: '0 4px 8px rgba(0,0,0,0.15)'
+                                                                            }
+                                                                        }}>
+                                                                            <CardContent sx={{ p: 2 }}>
+                                                                                {/* Image Preview for PNG files */}
+                                                                                {image.format === 'PNG' && (
+                                                                                    <Box sx={{ mb: 1, textAlign: 'center' }}>
+                                                                                        <img 
+                                                                                            src={`http://localhost:5000/experiments/results/${selectedExperiment.id}/images/${image.filename}`}
+                                                                                            alt={image.chart_type}
+                                                                                            style={{ 
+                                                                                                maxWidth: '100%', 
+                                                                                                maxHeight: '120px',
+                                                                                                objectFit: 'contain',
+                                                                                                border: '1px solid #ddd',
+                                                                                                borderRadius: '4px'
+                                                                                            }}
+                                                                                            onError={(e) => {
+                                                                                                e.target.style.display = 'none';
+                                                                                            }}
+                                                                                        />
+                                                                                    </Box>
+                                                                                )}
+                                                                                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                                                                                    {image.chart_type}
+                                                                                </Typography>
+                                                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+                                                                                    Format: {image.format} • {image.size_kb.toFixed(1)} KB
+                                                                                </Typography>
+                                                                                <Button
+                                                                                    variant="outlined"
+                                                                                    size="small"
+                                                                                    fullWidth
+                                                                                    onClick={() => {
+                                                                                        const url = `http://localhost:5000/experiments/results/${selectedExperiment.id}/images/${image.filename}`;
+                                                                                        window.open(url, '_blank');
+                                                                                        setSuccess(`Opened ${image.filename} in new tab`);
+                                                                                    }}
+                                                                                >
+                                                                                    🔗 Open
+                                                                                </Button>
+                                                                            </CardContent>
+                                                                        </Card>
+                                                                    </Grid>
+                                                                ))}
+                                                            </Grid>
+                                                        </Box>
+                                                    )}
+                                                </Box>
+                                            </Grid>
+                                        </Grid>
+                                    </CardContent>
+                                </Card>
+
+                                {/* Display results using the same format as experiment results with better separation */}
+                                {selectedExperiment.results && selectedExperiment.results.map((result, index) => {
+                                    const cardId = `archive-result-${selectedExperiment.id}-${index}`;
+                                    const collapsed = isCardCollapsed(cardId);
+                                    
+                                    return result.status === 'success' && (
+                                        <Card key={index} sx={{ 
+                                            mb: 4, 
+                                            border: '2px solid',
+                                            borderColor: 'primary.light',
+                                            borderRadius: 3,
+                                            overflow: 'hidden',
+                                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                                        }}>
+                                            <CardHeader 
+                                                title={
+                                                    <Typography variant="h5" sx={{ 
+                                                        fontWeight: 'bold',
+                                                        color: 'white',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: 1
+                                                    }}>
+                                                        🧮 Test: {result.test_metadata?.test_name || `Test ${index + 1}`}
+                                                    </Typography>
+                                                }
+                                                subheader={
+                                                    <Typography variant="subtitle1" sx={{ color: 'rgba(255,255,255,0.8)' }}>
+                                                        ID: {result.test_metadata?.test_id} | Duration: {formatDuration(result.test_metadata?.duration || 0)}
+                                                    </Typography>
+                                                }
+                                                action={
+                                                    <Tooltip title={collapsed ? "Expand card" : "Collapse card"}>
+                                                        <IconButton
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                toggleCardCollapse(cardId);
+                                                            }}
+                                                            sx={{
+                                                                color: 'white',
+                                                                '&:hover': {
+                                                                    backgroundColor: 'rgba(255,255,255,0.1)'
+                                                                }
+                                                            }}
+                                                        >
+                                                            {collapsed ? <ExpandMoreIcon /> : <ExpandLessIcon />}
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                }
+                                                onClick={() => toggleCardCollapse(cardId)}
+                                                sx={{
+                                                    backgroundColor: 'primary.main',
+                                                    color: 'white',
+                                                    py: 2,
+                                                    cursor: 'pointer',
+                                                    '&:hover': {
+                                                        backgroundColor: 'primary.dark'
+                                                    }
+                                                }}
+                                            />
+                                            <Collapse in={!collapsed} timeout="auto" unmountOnExit>
+                                                <CardContent sx={{ p: 3 }}>
+                                                    {/* Handle Mode 0 results (processed_clusters) */}
+                                                    {result.processed_clusters && result.processed_clusters.map((processedCluster, clusterIndex) => (
+                                                        processedCluster.processed_data && processedCluster.processed_data.site_similarity &&
+                                                        <div key={`similarity-${clusterIndex}`}>
+                                                            <Typography variant="h6" sx={{ mt: 2, mb: 1, fontWeight: 'bold' }}>
+                                                                🔍 Site Similarity Analysis - Level {processedCluster.level}
+                                                            </Typography>
+                                                            {renderSiteSimilarityResults(processedCluster.processed_data.site_similarity, processedCluster.level)}
+                                                        </div>
+                                                    ))}
+
+                                                    {/* Handle Mode 1 results (domain_results) */}
+                                                    {result.domain_results && result.domain_results.map((domainResult, domainIndex) => (
+                                                        domainResult.processed_clusters && domainResult.processed_clusters.map((processedCluster, clusterIndex) => (
+                                                            processedCluster.processed_data && processedCluster.processed_data.site_similarity &&
+                                                            <div key={`domain-${domainIndex}-similarity-${clusterIndex}`}>
+                                                                <Typography variant="h6" sx={{ mt: 2, mb: 1, fontWeight: 'bold' }}>
+                                                                    🔍 Site Similarity Analysis - {domainResult.domain} - Level {processedCluster.level}
+                                                                </Typography>
+                                                                {renderSiteSimilarityResults(processedCluster.processed_data.site_similarity, processedCluster.level)}
+                                                            </div>
+                                                        ))
+                                                    ))}
+
+                                                    {/* Clustering Results Summary for Mode 0 */}
+                                                    {result.clustering_results && result.clustering_results.map((clusterResult, clusterIndex) => (
+                                                        <Accordion 
+                                                            key={`cluster-${clusterIndex}`} 
+                                                            sx={{ 
+                                                                mb: theme.spacing(1),
+                                                                '&:before': { display: 'none' },
+                                                                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                                                                borderRadius: '4px !important'
+                                                            }}
+                                                        >
+                                                            <AccordionSummary 
+                                                                expandIcon={<ExpandMoreIcon />}
+                                                                sx={{
+                                                                    backgroundColor: clusterResult.status === 'error' ? 'error.light' : 'grey.100',
+                                                                    '&:hover': {
+                                                                        backgroundColor: clusterResult.status === 'error' ? 'error.main' : 'grey.200',
+                                                                    }
+                                                                }}
+                                                            >
+                                                                <Typography sx={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
+                                                                    🧮 Level {clusterResult.level} - {clusterResult.status === 'error' ? '❌' : '✅'} {clusterResult.message}
+                                                                </Typography>
+                                                            </AccordionSummary>
+                                                            <AccordionDetails sx={{ p: 2 }}>
+                                                                {clusterResult.status === 'error' ? (
+                                                                    <Typography variant="body2" color="error">
+                                                                        {clusterResult.message}
+                                                                    </Typography>
+                                                                ) : (
+                                                                    clusterResult.cluster_info && (
+                                                                        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 1 }}>
+                                                                            <Box>
+                                                                                <Typography variant="caption" color="text.secondary">Clusters</Typography>
+                                                                                <Typography variant="subtitle2">{clusterResult.cluster_info.num_clusters}</Typography>
+                                                                            </Box>
+                                                                            <Box>
+                                                                                <Typography variant="caption" color="text.secondary">DBCV Score</Typography>
+                                                                                <Typography variant="subtitle2">{clusterResult.cluster_info.dbcv_score?.toFixed(3)}</Typography>
+                                                                            </Box>
+                                                                            <Box>
+                                                                                <Typography variant="caption" color="text.secondary">Attributes</Typography>
+                                                                                <Typography variant="subtitle2">{clusterResult.cluster_info.useful_attributes?.length || 0}</Typography>
+                                                                            </Box>
+                                                                        </Box>
+                                                                    )
+                                                                )}
+                                                            </AccordionDetails>
+                                                        </Accordion>
+                                                    ))}
+
+                                                    {/* Clustering Results Summary for Mode 1 */}
+                                                    {result.domain_results && result.domain_results.map((domainResult, domainIndex) => (
+                                                        domainResult.clustering_results && domainResult.clustering_results.map((clusterResult, clusterIndex) => (
+                                                            <Accordion 
+                                                                key={`domain-${domainIndex}-cluster-${clusterIndex}`} 
+                                                                sx={{ 
+                                                                    mb: theme.spacing(1),
+                                                                    '&:before': { display: 'none' },
+                                                                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                                                                    borderRadius: '4px !important'
+                                                                }}
+                                                            >
+                                                                <AccordionSummary 
+                                                                    expandIcon={<ExpandMoreIcon />}
+                                                                    sx={{
+                                                                        backgroundColor: clusterResult.status === 'error' ? 'error.light' : 'grey.100',
+                                                                        '&:hover': {
+                                                                            backgroundColor: clusterResult.status === 'error' ? 'error.main' : 'grey.200',
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    <Typography sx={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
+                                                                        🧮 {domainResult.domain} - Level {clusterResult.level} - {clusterResult.status === 'error' ? '❌' : '✅'} {clusterResult.message}
+                                                                    </Typography>
+                                                                </AccordionSummary>
+                                                                <AccordionDetails sx={{ p: 2 }}>
+                                                                    {clusterResult.status === 'error' ? (
+                                                                        <Typography variant="body2" color="error">
+                                                                            {clusterResult.message}
+                                                                        </Typography>
+                                                                    ) : (
+                                                                        clusterResult.cluster_info && (
+                                                                            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 1 }}>
+                                                                                <Box>
+                                                                                    <Typography variant="caption" color="text.secondary">Clusters</Typography>
+                                                                                    <Typography variant="subtitle2">{clusterResult.cluster_info.num_clusters}</Typography>
+                                                                                </Box>
+                                                                                <Box>
+                                                                                    <Typography variant="caption" color="text.secondary">DBCV Score</Typography>
+                                                                                    <Typography variant="subtitle2">{clusterResult.cluster_info.dbcv_score?.toFixed(3)}</Typography>
+                                                                                </Box>
+                                                                                <Box>
+                                                                                    <Typography variant="caption" color="text.secondary">Attributes</Typography>
+                                                                                    <Typography variant="subtitle2">{clusterResult.cluster_info.useful_attributes?.length || 0}</Typography>
+                                                                                </Box>
+                                                                            </Box>
+                                                                        )
+                                                                    )}
+                                                                </AccordionDetails>
+                                                            </Accordion>
+                                                        ))
+                                                    ))}
+                                                </CardContent>
+                                            </Collapse>
+                                        </Card>
+                                    );
+                                })}
+                            </Box>
+                        )}
+
+                        {/* Loading State */}
+                        {archiveLoading && (
+                            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 4 }}>
+                                <CircularProgress />
+                                <Typography sx={{ ml: 2 }}>Loading experiment results...</Typography>
+                            </Box>
+                        )}
+
+                        {/* Empty State */}
+                        {!archiveLoading && archiveExperiments.length === 0 && (
+                            <Card sx={{ textAlign: 'center', py: 4 }}>
+                                <CardContent>
+                                    <Typography variant="h6" color="text.secondary" gutterBottom>
+                                        📭 No experiments found
+                                    </Typography>
+                                    <Typography variant="body2" color="text.secondary">
+                                        Run some experiments first to see results here.
+                                    </Typography>
+                                </CardContent>
+                            </Card>
+                        )}
+                    </Box>
+                );
+            case 'config':
+                return (
+                    <Box sx={{ width: '100%', maxWidth: '1200px', margin: '0 auto', p: 3 }}>
+                        <Typography variant="h4" gutterBottom sx={{ textAlign: 'center', mb: 4 }}>
+                            ⚙️ Custom Experiment Configuration Builder
+                        </Typography>
+
+                        {/* Configuration Form */}
+                        <Card sx={{ mb: 3 }}>
+                            <CardHeader title="🛠️ Build Your Custom Experiment" />
+                            <CardContent sx={{ p: 3 }}>
+                                <Grid container spacing={3}>
+                                    {/* Experiment Name */}
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            fullWidth
+                                            label="Experiment Name"
+                                            value={customConfig.experiment_name}
+                                            onChange={(e) => setCustomConfig(prev => ({ ...prev, experiment_name: e.target.value }))}
+                                            placeholder="e.g., My Custom Thesis Experiment"
+                                        />
+                                    </Grid>
+
+                                    {/* URLs Section */}
+                                    <Grid item xs={12}>
+                                        <Typography variant="h6" gutterBottom>🌐 URLs to Test</Typography>
+                                        <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+                                            <TextField
+                                                fullWidth
+                                                label="Add URL(s)"
+                                                value={configUrlInput}
+                                                onChange={(e) => setConfigUrlInput(e.target.value)}
+                                                onKeyDown={(e) => e.key === 'Enter' && addConfigUrl()}
+                                                onPaste={handleConfigUrlPaste}
+                                                placeholder="https://example.com (or paste multiple URLs)"
+                                                multiline
+                                                maxRows={4}
+                                                helperText="💡 Paste multiple URLs separated by newlines or spaces"
+                                            />
+                                            <Button variant="contained" onClick={addConfigUrl}>
+                                                Add
+                                            </Button>
+                                        </Box>
+                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                            {customConfig.available_urls.map((url, index) => (
+                                                <Chip
+                                                    key={index}
+                                                    label={url}
+                                                    onDelete={() => removeConfigUrl(index)}
+                                                    color="primary"
+                                                />
+                                            ))}
+                                        </Box>
+                                        <Typography variant="caption" color="text.secondary">
+                                            Added {customConfig.available_urls.length} URLs
+                                        </Typography>
+                                    </Grid>
+
+                                    {/* Processing Modes */}
+                                    <Grid item xs={12} md={6}>
+                                        <Typography variant="h6" gutterBottom>🔄 Processing Modes</Typography>
+                                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                            <FormControlLabel
+                                                control={
+                                                    <Switch
+                                                        checked={customConfig.modes.includes(0)}
+                                                        onChange={(e) => {
+                                                            const newModes = e.target.checked 
+                                                                ? [...customConfig.modes, 0].filter((v, i, arr) => arr.indexOf(v) === i)
+                                                                : customConfig.modes.filter(m => m !== 0);
+                                                            setCustomConfig(prev => ({ ...prev, modes: newModes }));
+                                                        }}
+                                                    />
+                                                }
+                                                label="Mode 0: Process All URLs Together"
+                                            />
+                                            <FormControlLabel
+                                                control={
+                                                    <Switch
+                                                        checked={customConfig.modes.includes(1)}
+                                                        onChange={(e) => {
+                                                            const newModes = e.target.checked 
+                                                                ? [...customConfig.modes, 1].filter((v, i, arr) => arr.indexOf(v) === i)
+                                                                : customConfig.modes.filter(m => m !== 1);
+                                                            setCustomConfig(prev => ({ ...prev, modes: newModes }));
+                                                        }}
+                                                    />
+                                                }
+                                                label="Mode 1: Process by Domain"
+                                            />
+                                        </Box>
+                                    </Grid>
+
+                                    {/* DOM Levels */}
+                                    <Grid item xs={12} md={6}>
+                                        <Typography variant="h6" gutterBottom>📊 DOM Levels</Typography>
+                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                            {Array.from({ length: 10 }, (_, i) => i + 1).map(level => (
+                                                <Chip
+                                                    key={level}
+                                                    label={level}
+                                                    onClick={() => {
+                                                        const newLevels = customConfig.levels.includes(level)
+                                                            ? customConfig.levels.filter(l => l !== level)
+                                                            : [...customConfig.levels, level].sort((a, b) => a - b);
+                                                        setCustomConfig(prev => ({ ...prev, levels: newLevels }));
+                                                    }}
+                                                    color={customConfig.levels.includes(level) ? 'primary' : 'default'}
+                                                />
+                                            ))}
+                                        </Box>
+                                        <Typography variant="caption" color="text.secondary">
+                                            Selected levels: {customConfig.levels.join(', ')}
+                                        </Typography>
+                                    </Grid>
+
+                                    {/* URL Combinations */}
+                                    <Grid item xs={12} md={6}>
+                                        <Typography variant="h6" gutterBottom>🔢 URLs per Test</Typography>
+                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                            {Array.from({ length: Math.min(10, customConfig.available_urls.length) }, (_, i) => i + 2).map(count => (
+                                                <Chip
+                                                    key={count}
+                                                    label={count}
+                                                    onClick={() => {
+                                                        const newCombinations = customConfig.url_combinations.includes(count)
+                                                            ? customConfig.url_combinations.filter(c => c !== count)
+                                                            : [...customConfig.url_combinations, count].sort((a, b) => a - b);
+                                                        setCustomConfig(prev => ({ ...prev, url_combinations: newCombinations }));
+                                                    }}
+                                                    color={customConfig.url_combinations.includes(count) ? 'primary' : 'default'}
+                                                    disabled={count > customConfig.available_urls.length}
+                                                />
+                                            ))}
+                                        </Box>
+                                        <Typography variant="caption" color="text.secondary">
+                                            Test combinations: {customConfig.url_combinations.join(', ')} URLs per test
+                                        </Typography>
+                                    </Grid>
+
+                                    {/* Max Combinations */}
+                                    <Grid item xs={12} md={6}>
+                                        <Typography variant="h6" gutterBottom>⚡ Test Limits</Typography>
+                                        <TextField
+                                            type="number"
+                                            label="Max Test Combinations"
+                                            value={customConfig.max_combinations}
+                                            onChange={(e) => setCustomConfig(prev => ({ 
+                                                ...prev, 
+                                                max_combinations: Math.max(1, Math.min(100, parseInt(e.target.value) || 25))
+                                            }))}
+                                            inputProps={{ min: 1, max: 100 }}
+                                            fullWidth
+                                        />
+                                        <Typography variant="caption" color="text.secondary">
+                                            Will generate up to {customConfig.max_combinations} test combinations
+                                        </Typography>
+                                    </Grid>
+                                </Grid>
+
+                                {/* Estimated Tests Preview */}
+                                <Box sx={{ mt: 3, p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
+                                    <Typography variant="h6" gutterBottom>📋 Experiment Preview</Typography>
+                                    <Grid container spacing={2}>
+                                        <Grid item xs={6} sm={3}>
+                                            <Typography variant="subtitle2">URLs:</Typography>
+                                            <Typography variant="h6" color="primary">{customConfig.available_urls.length}</Typography>
+                                        </Grid>
+                                        <Grid item xs={6} sm={3}>
+                                            <Typography variant="subtitle2">Modes:</Typography>
+                                            <Typography variant="h6" color="primary">{customConfig.modes.length}</Typography>
+                                        </Grid>
+                                        <Grid item xs={6} sm={3}>
+                                            <Typography variant="subtitle2">Levels:</Typography>
+                                            <Typography variant="h6" color="primary">{customConfig.levels.length}</Typography>
+                                        </Grid>
+                                        <Grid item xs={6} sm={3}>
+                                            <Typography variant="subtitle2">Est. Tests:</Typography>
+                                            <Typography variant="h6" color="primary">
+                                                {Math.min(
+                                                    customConfig.max_combinations, 
+                                                    customConfig.modes.length * customConfig.url_combinations.length
+                                                )}
+                                            </Typography>
+                                        </Grid>
+                                    </Grid>
+                                </Box>
+
+                                {/* Run Button */}
+                                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        size="large"
+                                        onClick={runCustomExperiment}
+                                        disabled={
+                                            experimentLoading || 
+                                            customConfig.available_urls.length === 0 || 
+                                            customConfig.levels.length === 0 ||
+                                            customConfig.modes.length === 0 ||
+                                            customConfig.url_combinations.length === 0
+                                        }
+                                        sx={{ 
+                                            borderRadius: '20px',
+                                            px: 4,
+                                            py: 1.5,
+                                            fontSize: '1.1rem'
+                                        }}
+                                    >
+                                        {experimentLoading ? (
+                                            <>
+                                                <CircularProgress size={20} sx={{ mr: 2 }} />
+                                                Running Custom Experiment...
+                                            </>
+                                        ) : (
+                                            <>
+                                                🚀 Run Custom Experiment
+                                            </>
+                                        )}
+                                    </Button>
+                                </Box>
+                            </CardContent>
+                        </Card>
+                    </Box>
+                );
             case 'view3':
                 return <div>View 3 Content</div>;
             default:
                 return <div>Home</div>;
+        }
+    };
+
+    // Function to play notification sound
+    const playNotificationSound = (isSuccess = true) => {
+        try {
+            // Create audio context
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Create oscillator for beep sound
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            // Connect nodes
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            // Configure sound
+            if (isSuccess) {
+                // Success sound: two ascending beeps
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                
+                // Start and stop
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+                
+                // Add second beep
+                setTimeout(() => {
+                    const oscillator2 = audioContext.createOscillator();
+                    const gainNode2 = audioContext.createGain();
+                    oscillator2.connect(gainNode2);
+                    gainNode2.connect(audioContext.destination);
+                    
+                    oscillator2.frequency.setValueAtTime(1200, audioContext.currentTime);
+                    gainNode2.gain.setValueAtTime(0.1, audioContext.currentTime);
+                    gainNode2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                    
+                    oscillator2.start(audioContext.currentTime);
+                    oscillator2.stop(audioContext.currentTime + 0.2);
+                }, 150);
+            } else {
+                // Error sound: lower frequency descending beep
+                oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(200, audioContext.currentTime + 0.2);
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.4);
+            }
+        } catch (error) {
+            console.warn('Could not play notification sound:', error);
         }
     };
 
@@ -2390,6 +4079,9 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                 <Box sx={{ display: 'flex', gap: theme.spacing(2) }}>
                     <Button variant="contained" onClick={() => setCurrentView('home')}>🏠 Home</Button>
                     <Button variant="contained" onClick={() => setCurrentView('clusters')}>🎯 Clusters</Button>
+                    <Button variant="contained" onClick={() => setCurrentView('experiments')}>🧪 Experiments</Button>
+                    <Button variant="contained" onClick={() => setCurrentView('results')}>📊 Results Archive</Button>
+                    <Button variant="contained" onClick={() => setCurrentView('config')}>⚙️ Config Builder</Button>
                     <Button variant="contained" onClick={() => setCurrentView('view3')}>👁️ View 3</Button>
                 </Box>
             </Box>
@@ -2462,6 +4154,32 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                     {success}
                 </MuiAlert>
             </Snackbar>
+
+            {/* Scroll to Top Button */}
+            {showScrollTop && (
+                <Fab
+                    color="primary"
+                    size="small"
+                    onClick={handleScrollToTop}
+                    sx={{
+                        position: 'fixed',
+                        bottom: 16,
+                        right: 16,
+                        zIndex: 1000,
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                        '&:hover': {
+                            transform: 'translateY(-2px)',
+                            boxShadow: '0 6px 16px rgba(0,0,0,0.2)'
+                        },
+                        transition: 'all 0.3s ease-in-out'
+                    }}
+                    aria-label="scroll to top"
+                >
+                    <Tooltip title="Scroll to top">
+                        <KeyboardArrowUpIcon />
+                    </Tooltip>
+                </Fab>
+            )}
         </Grid>
     );
 };
