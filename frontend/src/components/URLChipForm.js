@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, TextField, Chip, FormControl, Button, useTheme, Snackbar, CircularProgress, Grid2 as Grid, TextareaAutosize, Accordion, AccordionSummary, AccordionDetails, Typography, IconButton, Tooltip, Card, CardContent, CardHeader, Switch, FormControlLabel, Fab, Collapse } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
-import DeleteIcon from '@mui/icons-material/Delete';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
@@ -37,10 +36,8 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
     const [selectedLevels, setSelectedLevels] = useState([]);
     const [currentView, setCurrentView] = useState('home'); // State for current view
     const [clusterInput, setClusterInput] = useState(""); // State for cluster input
-    const [showResults, setShowResults] = useState(false); // Add this new state
     const [isNewMode, setIsNewMode] = useState(false);
     const [abortController, setAbortController] = useState(null);
-    const similarityRef = useRef(null);
     
     // Experiments state
     const [experimentTestCases, setExperimentTestCases] = useState([]);
@@ -49,9 +46,6 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
     const [experimentLoading, setExperimentLoading] = useState(false);
     const [experimentResults, setExperimentResults] = useState(null);
     const [experimentName, setExperimentName] = useState('');
-    const [experimentFilters, setExperimentFilters] = useState({});
-    const [gnuplotGuide, setGnuplotGuide] = useState(null);
-    const [showGnuplotGuide, setShowGnuplotGuide] = useState(false);
     
     // Results Archive state
     const [archiveExperiments, setArchiveExperiments] = useState([]);
@@ -432,20 +426,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
         }
     };
 
-    const loadGnuplotGuide = async () => {
-        try {
-            const response = await fetch("http://localhost:5000/experiments/gnuplot-guide");
-            const data = await response.json();
-            if (data.status === "success") {
-                setGnuplotGuide(data.guide);
-                setShowGnuplotGuide(true);
-            } else {
-                setError({ message: data.message });
-            }
-        } catch (error) {
-            setError({ message: `Failed to load gnuplot guide: ${error.message}` });
-        }
-    };
+
 
     // Results Archive Functions
     const loadArchiveExperiments = async () => {
@@ -3069,13 +3050,6 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                         >
                                             📱 Small Tests (≤5 URLs)
                                         </Button>
-                                        <Button 
-                                            variant="outlined" 
-                                            onClick={loadGnuplotGuide}
-                                            sx={{ backgroundColor: 'info.light', color: 'info.contrastText' }}
-                                        >
-                                            📊 Gnuplot Guide
-                                        </Button>
                                     </Box>
                                 </Grid>
                             </Grid>
@@ -3213,34 +3187,147 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                 </Box>
                                             </Grid>
                                             <Grid item xs={12} md={6}>
-                                                <Typography variant="h6" gutterBottom>📊 Gnuplot Data Generated</Typography>
-                                                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                                                    Data files for thesis analysis have been created and are ready for gnuplot visualization.
-                                                    Check the experiment results folder for:
-                                                </Typography>
-                                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                                                    <Chip label="📊 processing_times.dat" size="small" />
-                                                    <Chip label="🎯 cluster_counts.dat" size="small" />
-                                                    <Chip label="📄 html_file_counts.dat" size="small" />
-                                                    <Chip label="📈 *.gnuplot scripts" size="small" />
-                                                </Box>
-                                                <Box sx={{ mt: 2 }}>
-                                                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
-                                                        To generate plots:
-                                                    </Typography>
-                                                    <Typography variant="caption" sx={{ 
-                                                        fontFamily: 'monospace',
-                                                        fontSize: '0.75rem',
-                                                        display: 'block',
-                                                        backgroundColor: 'grey.100',
-                                                        p: 1,
-                                                        borderRadius: 1
-                                                    }}>
-                                                        cd experiment_results/[timestamp]_[name]/gnuplot_data<br/>
-                                                        gnuplot processing_time_plot.gnuplot<br/>
-                                                        gnuplot cluster_count_plot.gnuplot
-                                                    </Typography>
-                                                </Box>
+                                                <Typography variant="h6" gutterBottom>📊 Generated Files & Analysis</Typography>
+                                                
+                                                {/* Check if experiment has gnuplot files and generated images */}
+                                                {experimentResults.gnuplot_files || experimentResults.generated_images ? (
+                                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                                                        {/* Gnuplot Data Files */}
+                                                        {experimentResults.gnuplot_files && experimentResults.gnuplot_files.length > 0 && (
+                                                            <Box>
+                                                                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                                                                    📊 Gnuplot Data Files ({experimentResults.gnuplot_files.length})
+                                                                </Typography>
+                                                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                                                    {experimentResults.gnuplot_files.map((file, index) => (
+                                                                        <Chip
+                                                                            key={index}
+                                                                            label={file.filename}
+                                                                            size="small"
+                                                                            onClick={(e) => {
+                                                                                if (e.ctrlKey || e.metaKey) {
+                                                                                    handleGnuplotFileClick(experimentResults.experiment_info.experiment_id, file.filename, 'preview');
+                                                                                } else {
+                                                                                    handleGnuplotFileClick(experimentResults.experiment_info.experiment_id, file.filename, 'download');
+                                                                                }
+                                                                            }}
+                                                                            sx={{ 
+                                                                                cursor: 'pointer',
+                                                                                '&:hover': {
+                                                                                    backgroundColor: 'primary.light',
+                                                                                    color: 'primary.contrastText'
+                                                                                }
+                                                                            }}
+                                                                            title="Left-click to download, Ctrl+click to copy content"
+                                                                        />
+                                                                    ))}
+                                                                </Box>
+                                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
+                                                                    💡 Left-click to download, Ctrl+click to copy content
+                                                                </Typography>
+                                                            </Box>
+                                                        )}
+
+                                                        {/* Generated Images */}
+                                                        {experimentResults.generated_images && experimentResults.generated_images.length > 0 && (
+                                                            <Box>
+                                                                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                                                                    🖼️ Generated Charts ({experimentResults.generated_images.length})
+                                                                </Typography>
+                                                                <Grid container spacing={1}>
+                                                                    {experimentResults.generated_images.map((image, index) => (
+                                                                        <Grid item xs={12} sm={6} md={4} key={index}>
+                                                                            <Card sx={{ 
+                                                                                cursor: 'pointer',
+                                                                                transition: 'all 0.2s',
+                                                                                '&:hover': {
+                                                                                    transform: 'translateY(-2px)',
+                                                                                    boxShadow: '0 4px 8px rgba(0,0,0,0.15)'
+                                                                                }
+                                                                            }}>
+                                                                                <CardContent sx={{ p: 1.5 }}>
+                                                                                    {/* Image Preview for PNG files */}
+                                                                                    {image.format === 'PNG' && (
+                                                                                        <Box sx={{ mb: 1, textAlign: 'center' }}>
+                                                                                            <img 
+                                                                                                src={`http://localhost:5000/experiments/results/${experimentResults.experiment_info.experiment_id}/images/${image.filename}`}
+                                                                                                alt={image.chart_type}
+                                                                                                style={{ 
+                                                                                                    maxWidth: '100%', 
+                                                                                                    maxHeight: '80px',
+                                                                                                    objectFit: 'contain',
+                                                                                                    border: '1px solid #ddd',
+                                                                                                    borderRadius: '4px'
+                                                                                                }}
+                                                                                                onError={(e) => {
+                                                                                                    e.target.style.display = 'none';
+                                                                                                }}
+                                                                                            />
+                                                                                        </Box>
+                                                                                    )}
+                                                                                    <Typography variant="caption" sx={{ 
+                                                                                        fontWeight: 'bold', 
+                                                                                        display: 'block',
+                                                                                        mb: 0.5
+                                                                                    }}>
+                                                                                        {image.chart_type}
+                                                                                    </Typography>
+                                                                                    <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
+                                                                                        {image.format} • {image.size_kb?.toFixed(1)} KB
+                                                                                    </Typography>
+                                                                                    <Button
+                                                                                        variant="text"
+                                                                                        size="small"
+                                                                                        fullWidth
+                                                                                        sx={{ mt: 0.5, fontSize: '0.7rem' }}
+                                                                                        onClick={() => {
+                                                                                            const url = `http://localhost:5000/experiments/results/${experimentResults.experiment_info.experiment_id}/images/${image.filename}`;
+                                                                                            window.open(url, '_blank');
+                                                                                            setSuccess(`Opened ${image.filename} in new tab`);
+                                                                                        }}
+                                                                                    >
+                                                                                        🔗 View
+                                                                                    </Button>
+                                                                                </CardContent>
+                                                                            </Card>
+                                                                        </Grid>
+                                                                    ))}
+                                                                </Grid>
+                                                            </Box>
+                                                        )}
+                                                    </Box>
+                                                ) : (
+                                                    /* Fallback display if no files are available yet */
+                                                    <Box>
+                                                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                                                            Data files for thesis analysis have been created and are ready for gnuplot visualization.
+                                                            Check the experiment results folder for:
+                                                        </Typography>
+                                                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                                            <Chip label="📊 processing_times.dat" size="small" />
+                                                            <Chip label="🎯 cluster_counts.dat" size="small" />
+                                                            <Chip label="📄 html_file_counts.dat" size="small" />
+                                                            <Chip label="📈 *.gnuplot scripts" size="small" />
+                                                        </Box>
+                                                        <Box sx={{ mt: 2 }}>
+                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                                                                To generate plots:
+                                                            </Typography>
+                                                            <Typography variant="caption" sx={{ 
+                                                                fontFamily: 'monospace',
+                                                                fontSize: '0.75rem',
+                                                                display: 'block',
+                                                                backgroundColor: 'grey.100',
+                                                                p: 1,
+                                                                borderRadius: 1
+                                                            }}>
+                                                                cd experiment_results/[timestamp]_[name]/gnuplot_data<br/>
+                                                                gnuplot processing_time_plot.gnuplot<br/>
+                                                                gnuplot cluster_count_plot.gnuplot
+                                                            </Typography>
+                                                        </Box>
+                                                    </Box>
+                                                )}
                                             </Grid>
                                         </Grid>
                                     </CardContent>
@@ -3427,7 +3514,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                     );
                                                 })()}
 
-                                                {/* Site Similarity Results */}
+                                                {/* Site Similarity Results for Mode 0 */}
                                                 {result.processed_clusters && result.processed_clusters.map((processedCluster, clusterIndex) => (
                                                     processedCluster.processed_data && processedCluster.processed_data.site_similarity &&
                                                     <div key={`similarity-${clusterIndex}`}>
@@ -3438,7 +3525,20 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                     </div>
                                                 ))}
 
-                                                {/* Clustering Results Summary */}
+                                                {/* Site Similarity Results for Mode 1 (Domain-based) */}
+                                                {result.domain_results && result.domain_results.map((domainResult, domainIndex) => (
+                                                    domainResult.processed_clusters && domainResult.processed_clusters.map((processedCluster, clusterIndex) => (
+                                                        processedCluster.processed_data && processedCluster.processed_data.site_similarity &&
+                                                        <div key={`domain-${domainIndex}-similarity-${clusterIndex}`}>
+                                                            <Typography variant="h6" sx={{ mt: 2, mb: 1, fontWeight: 'bold' }}>
+                                                                🔍 Site Similarity Analysis - {domainResult.domain} - Level {processedCluster.level}
+                                                            </Typography>
+                                                            {renderSiteSimilarityResults(processedCluster.processed_data.site_similarity, processedCluster.level)}
+                                                        </div>
+                                                    ))
+                                                ))}
+
+                                                {/* Clustering Results Summary for Mode 0 */}
                                                 {result.clustering_results && result.clustering_results.map((clusterResult, clusterIndex) => (
                                                     <Accordion 
                                                         key={`cluster-${clusterIndex}`} 
@@ -3487,6 +3587,78 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                             )}
                                                         </AccordionDetails>
                                                     </Accordion>
+                                                ))}
+
+                                                {/* Clustering Results Summary for Mode 1 (Domain-based) */}
+                                                {result.domain_results && result.domain_results.map((domainResult, domainIndex) => (
+                                                    <Box key={`domain-section-${domainIndex}`} sx={{ mt: 2 }}>
+                                                        <Typography variant="h6" sx={{ mt: 2, mb: 1, fontWeight: 'bold', color: 'secondary.main' }}>
+                                                            🌐 Domain: {domainResult.domain}
+                                                        </Typography>
+                                                        
+                                                        {/* Domain URLs */}
+                                                        <Box sx={{ mb: 2 }}>
+                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                                                                URLs in this domain:
+                                                            </Typography>
+                                                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                                                {domainResult.urls && domainResult.urls.map((url, urlIndex) => (
+                                                                    <Chip key={urlIndex} label={url} size="small" color="secondary" />
+                                                                ))}
+                                                            </Box>
+                                                        </Box>
+
+                                                        {/* Domain Clustering Results */}
+                                                        {domainResult.clustering_results && domainResult.clustering_results.map((clusterResult, clusterIndex) => (
+                                                            <Accordion 
+                                                                key={`domain-${domainIndex}-cluster-${clusterIndex}`} 
+                                                                sx={{ 
+                                                                    mb: theme.spacing(1),
+                                                                    '&:before': { display: 'none' },
+                                                                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                                                                    borderRadius: '4px !important'
+                                                                }}
+                                                            >
+                                                                <AccordionSummary 
+                                                                    expandIcon={<ExpandMoreIcon />}
+                                                                    sx={{
+                                                                        backgroundColor: clusterResult.status === 'error' ? 'error.light' : 'grey.100',
+                                                                        '&:hover': {
+                                                                            backgroundColor: clusterResult.status === 'error' ? 'error.main' : 'grey.200',
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    <Typography sx={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
+                                                                        🧮 {domainResult.domain} - Level {clusterResult.level} - {clusterResult.status === 'error' ? '❌' : '✅'} {clusterResult.message}
+                                                                    </Typography>
+                                                                </AccordionSummary>
+                                                                <AccordionDetails sx={{ p: 2 }}>
+                                                                    {clusterResult.status === 'error' ? (
+                                                                        <Typography variant="body2" color="error">
+                                                                            {clusterResult.message}
+                                                                        </Typography>
+                                                                    ) : (
+                                                                        clusterResult.cluster_info && (
+                                                                            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 1 }}>
+                                                                                <Box>
+                                                                                    <Typography variant="caption" color="text.secondary">Clusters</Typography>
+                                                                                    <Typography variant="subtitle2">{clusterResult.cluster_info.num_clusters}</Typography>
+                                                                                </Box>
+                                                                                <Box>
+                                                                                    <Typography variant="caption" color="text.secondary">DBCV Score</Typography>
+                                                                                    <Typography variant="subtitle2">{clusterResult.cluster_info.dbcv_score?.toFixed(3)}</Typography>
+                                                                                </Box>
+                                                                                <Box>
+                                                                                    <Typography variant="caption" color="text.secondary">Attributes</Typography>
+                                                                                    <Typography variant="subtitle2">{clusterResult.cluster_info.useful_attributes?.length || 0}</Typography>
+                                                                                </Box>
+                                                                            </Box>
+                                                                        )
+                                                                    )}
+                                                                </AccordionDetails>
+                                                            </Accordion>
+                                                        ))}
+                                                    </Box>
                                                 ))}
                                                 </CardContent>
                                             </Collapse>

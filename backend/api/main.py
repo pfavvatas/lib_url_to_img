@@ -770,6 +770,55 @@ def run_experiment_batch():
         # Run the experiment batch
         experiment_summary = experiment_manager.run_experiment_batch(test_cases, experiment_name)
         
+        # Extract gnuplot data for frontend compatibility
+        gnuplot_files = []
+        generated_images = []
+        experiment_id = None
+        
+        # Get experiment ID from the directory name
+        if hasattr(experiment_manager, 'current_experiment_dir') and experiment_manager.current_experiment_dir:
+            experiment_id = os.path.basename(experiment_manager.current_experiment_dir)
+            
+            # Check for gnuplot data files and generated images
+            gnuplot_dir = os.path.join(experiment_manager.current_experiment_dir, "gnuplot_data")
+            
+            if os.path.exists(gnuplot_dir):
+                # Scan for data and script files
+                for file in os.listdir(gnuplot_dir):
+                    if file.endswith(('.dat', '.gnuplot')):
+                        file_path = os.path.join(gnuplot_dir, file)
+                        file_size = os.path.getsize(file_path)
+                        gnuplot_files.append({
+                            'filename': file,
+                            'path': file_path,
+                            'size_bytes': file_size,
+                            'size_kb': file_size / 1024,
+                            'type': 'data' if file.endswith('.dat') else 'script'
+                        })
+                
+                # Scan for generated images
+                images_dir = os.path.join(gnuplot_dir, "generated_images")
+                if os.path.exists(images_dir):
+                    for file in os.listdir(images_dir):
+                        if file.endswith(('.png', '.ps', '.eps', '.svg', '.tex')):
+                            file_path = os.path.join(images_dir, file)
+                            file_size = os.path.getsize(file_path)
+                            generated_images.append({
+                                'filename': file,
+                                'path': file_path,
+                                'relative_path': f"gnuplot_data/generated_images/{file}",
+                                'size_bytes': file_size,
+                                'size_kb': file_size / 1024,
+                                'format': file.split('.')[-1].upper(),
+                                'chart_type': file.split('.')[0].replace('_', ' ').title()
+                            })
+        
+        # Add gnuplot data to experiment_summary for frontend compatibility
+        experiment_summary['gnuplot_files'] = gnuplot_files
+        experiment_summary['generated_images'] = generated_images
+        if experiment_id:
+            experiment_summary['experiment_info']['experiment_id'] = experiment_id
+        
         response = jsonify({
             "status": "success",
             "experiment_summary": experiment_summary

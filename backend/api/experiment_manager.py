@@ -150,7 +150,7 @@ class ExperimentManager:
             end_time = time.time()
             duration = end_time - start_time
             
-            # Add test metadata to result
+            # Add test metadata to result (preserve existing timing logs)
             result['test_metadata'] = {
                 'test_id': test_case['id'],
                 'test_name': test_case['name'],
@@ -162,6 +162,19 @@ class ExperimentManager:
                 'url_count': test_case['url_count'],
                 'urls': test_case['urls']
             }
+            
+            # Preserve detailed timing logs from the processing
+            if 'timing_logs' not in result:
+                result['timing_logs'] = {}
+            
+            # Add experiment-level timing to the existing timing logs
+            if 'experiment_timing' not in result['timing_logs']:
+                result['timing_logs']['experiment_timing'] = {
+                    'test_start_time': start_time,
+                    'test_end_time': end_time,
+                    'test_duration': duration,
+                    'test_id': test_case['id']
+                }
             
             # Save individual test result
             if self.current_experiment_dir:
@@ -277,12 +290,16 @@ class ExperimentManager:
         cluster_counts = []
         similarity_scores = []
         html_file_counts = []
+        timing_analysis = []
+        cache_efficiency = []
+        step_timing = []
         
         for result in results:
             if result.get('status') == 'success':
                 metadata = result.get('test_metadata', {})
+                timing_logs = result.get('timing_logs', {})
                 
-                # Processing time data
+                # Basic processing time data
                 processing_times.append({
                     'test_id': metadata.get('test_id', ''),
                     'mode': metadata.get('mode', 0),
@@ -290,6 +307,49 @@ class ExperimentManager:
                     'url_count': metadata.get('url_count', 0),
                     'duration': metadata.get('duration', 0)
                 })
+                
+                # Detailed timing analysis from timing logs
+                if timing_logs.get('performance_metrics'):
+                    perf = timing_logs['performance_metrics']
+                    timing_analysis.append({
+                        'test_id': metadata.get('test_id', ''),
+                        'mode': metadata.get('mode', 0),
+                        'url_count': metadata.get('url_count', 0),
+                        'total_time': perf.get('total_processing_time', 0),
+                        'avg_time_per_url': perf.get('average_time_per_url', 0),
+                        'avg_time_per_level': perf.get('average_time_per_level', 0),
+                        'urls_processed': perf.get('urls_processed', 0),
+                        'urls_from_cache': perf.get('urls_from_cache', 0),
+                        'cache_efficiency_percent': perf.get('cache_efficiency_percent', 0),
+                        'html_files_generated': perf.get('html_files_generated', 0),
+                        'clusters_generated': perf.get('clusters_generated', 0)
+                    })
+                
+                # Cache efficiency data
+                if timing_logs.get('performance_metrics'):
+                    perf = timing_logs['performance_metrics']
+                    cache_efficiency.append({
+                        'test_id': metadata.get('test_id', ''),
+                        'mode': metadata.get('mode', 0),
+                        'url_count': metadata.get('url_count', 0),
+                        'cache_efficiency': perf.get('cache_efficiency_percent', 0),
+                        'urls_from_cache': perf.get('urls_from_cache', 0),
+                        'urls_newly_processed': perf.get('urls_newly_processed', 0),
+                        'cache_savings': perf.get('cache_savings', 'N/A')
+                    })
+                
+                # Step-by-step timing data
+                if timing_logs.get('steps'):
+                    for step_name, step_data in timing_logs['steps'].items():
+                        step_timing.append({
+                            'test_id': metadata.get('test_id', ''),
+                            'mode': metadata.get('mode', 0),
+                            'step_name': step_name,
+                            'duration': step_data.get('duration', 0),
+                            'description': step_data.get('description', ''),
+                            'urls_processed': step_data.get('urls_processed', 0),
+                            'cache_type': step_data.get('cache_type', 'none')
+                        })
                 
                 # Cluster count data
                 clustering_results = result.get('clustering_results', [])
@@ -315,6 +375,9 @@ class ExperimentManager:
         self.save_gnuplot_data_file(processing_times, os.path.join(gnuplot_dir, "processing_times.dat"))
         self.save_gnuplot_data_file(cluster_counts, os.path.join(gnuplot_dir, "cluster_counts.dat"))
         self.save_gnuplot_data_file(html_file_counts, os.path.join(gnuplot_dir, "html_file_counts.dat"))
+        self.save_gnuplot_data_file(timing_analysis, os.path.join(gnuplot_dir, "timing_analysis.dat"))
+        self.save_gnuplot_data_file(cache_efficiency, os.path.join(gnuplot_dir, "cache_efficiency.dat"))
+        self.save_gnuplot_data_file(step_timing, os.path.join(gnuplot_dir, "step_timing.dat"))
         
         # Create gnuplot script template and execute them
         generated_images, execution_log = self.create_gnuplot_scripts(gnuplot_dir)
@@ -388,6 +451,84 @@ plot 'cluster_counts.dat' using 3:($2==0?$4:1/0) with linespoints title 'Mode 0'
             
             with open(os.path.join(gnuplot_dir, f"cluster_count_plot_{format_ext}.gnuplot"), 'w') as f:
                 f.write(cluster_script)
+            
+            # Cache efficiency analysis script
+            cache_script = f"""#!/usr/bin/gnuplot
+set terminal {terminal_cmd}
+set output 'generated_images/cache_efficiency_analysis.{format_ext}'
+set title 'Cache System Efficiency Analysis\\nData: Percentage of URLs served from cache vs processed'
+set xlabel 'URL Count'
+set ylabel 'Cache Efficiency (%)'
+set grid
+set key top right
+set yrange [0:100]
+
+plot 'cache_efficiency.dat' using 3:($2==0?$4:1/0) with linespoints title 'Mode 0 Cache Efficiency' pt 7 lc rgb 'green', \\
+     'cache_efficiency.dat' using 3:($2==1?$4:1/0) with linespoints title 'Mode 1 Cache Efficiency' pt 5 lc rgb 'orange'
+"""
+            
+            with open(os.path.join(gnuplot_dir, f"cache_efficiency_plot_{format_ext}.gnuplot"), 'w') as f:
+                f.write(cache_script)
+            
+            # Detailed timing analysis script
+            timing_script = f"""#!/usr/bin/gnuplot
+set terminal {terminal_cmd}
+set output 'generated_images/detailed_timing_analysis.{format_ext}'
+set title 'Detailed Processing Time Breakdown\\nData: Average time per URL and per DOM level'
+set xlabel 'URL Count'
+set ylabel 'Time (seconds)'
+set grid
+set key top left
+set logscale y
+
+plot 'timing_analysis.dat' using 3:($2==0?$5:1/0) with linespoints title 'Mode 0 - Avg per URL' pt 7 lc rgb 'blue', \\
+     'timing_analysis.dat' using 3:($2==1?$5:1/0) with linespoints title 'Mode 1 - Avg per URL' pt 5 lc rgb 'red', \\
+     'timing_analysis.dat' using 3:($2==0?$6:1/0) with linespoints title 'Mode 0 - Avg per Level' pt 9 lc rgb 'cyan', \\
+     'timing_analysis.dat' using 3:($2==1?$6:1/0) with linespoints title 'Mode 1 - Avg per Level' pt 11 lc rgb 'magenta'
+"""
+            
+            with open(os.path.join(gnuplot_dir, f"timing_analysis_plot_{format_ext}.gnuplot"), 'w') as f:
+                f.write(timing_script)
+            
+            # Performance comparison dashboard
+            dashboard_script = f"""#!/usr/bin/gnuplot
+set terminal {terminal_cmd}
+set output 'generated_images/performance_dashboard.{format_ext}'
+set multiplot layout 2,2 title 'Performance Analysis Dashboard - Thesis Data'
+
+# Chart 1: Processing Time Comparison
+set title 'Processing Time by Mode'
+set xlabel 'URL Count'
+set ylabel 'Time (seconds)'
+set grid
+plot 'processing_times.dat' using 4:($2==0?$5:1/0) with linespoints title 'Mode 0' pt 7 lc rgb 'blue', \\
+     'processing_times.dat' using 4:($2==1?$5:1/0) with linespoints title 'Mode 1' pt 5 lc rgb 'red'
+
+# Chart 2: Cache Efficiency
+set title 'Cache Efficiency'
+set xlabel 'URL Count'
+set ylabel 'Efficiency (%)'
+set yrange [0:100]
+plot 'cache_efficiency.dat' using 3:4 with linespoints title 'Cache Hit Rate' pt 9 lc rgb 'green'
+
+# Chart 3: Clustering Quality
+set title 'Clustering Results'
+set xlabel 'DOM Level'
+set ylabel 'Cluster Count'
+set yrange [0:*]
+plot 'cluster_counts.dat' using 3:4 with linespoints title 'Clusters Generated' pt 7 lc rgb 'purple'
+
+# Chart 4: HTML Output
+set title 'HTML Files Generated'
+set xlabel 'Test Case'
+set ylabel 'File Count'
+plot 'html_file_counts.dat' using 0:3 with impulses title 'HTML Files' lc rgb 'orange'
+
+unset multiplot
+"""
+            
+            with open(os.path.join(gnuplot_dir, f"performance_dashboard_{format_ext}.gnuplot"), 'w') as f:
+                f.write(dashboard_script)
         
         # Try to execute gnuplot and generate images automatically
         generated_images, execution_log = self.execute_gnuplot_scripts(gnuplot_dir)
@@ -412,27 +553,38 @@ plot 'cluster_counts.dat' using 3:($2==0?$4:1/0) with linespoints title 'Mode 0'
                 print("🔧 Gnuplot not found, attempting to install...")
                 execution_log.append("Gnuplot not found, attempting to install...")
                 
-                # Try to install gnuplot
+                # Try to install gnuplot (simplified approach)
                 try:
-                    install_result = subprocess.run(['sudo', 'apt', 'update', '&&', 'sudo', 'apt', 'install', '-y', 'gnuplot'], 
-                                                  shell=True,
-                                                  capture_output=True, 
-                                                  text=True, 
-                                                  timeout=300)
+                    # First update package list
+                    update_result = subprocess.run(['sudo', 'apt', 'update'], 
+                                                 capture_output=True, 
+                                                 text=True, 
+                                                 timeout=120)
                     
-                    if install_result.returncode == 0:
-                        print("✅ Gnuplot installed successfully!")
-                        execution_log.append("Gnuplot installed successfully!")
+                    if update_result.returncode == 0:
+                        # Then install gnuplot
+                        install_result = subprocess.run(['sudo', 'apt', 'install', '-y', 'gnuplot'], 
+                                                      capture_output=True, 
+                                                      text=True, 
+                                                      timeout=300)
+                        
+                        if install_result.returncode == 0:
+                            print("✅ Gnuplot installed successfully!")
+                            execution_log.append("Gnuplot installed successfully!")
+                        else:
+                            print("⚠️ Failed to install gnuplot automatically")
+                            execution_log.append(f"Failed to install gnuplot: {install_result.stderr}")
+                            print("📝 Manual installation: sudo apt install gnuplot")
+                            execution_log.append("Manual installation required: sudo apt install gnuplot")
+                            # Continue anyway - maybe it's available in a different location
                     else:
-                        print("⚠️ Failed to install gnuplot automatically")
-                        execution_log.append("Failed to install gnuplot automatically")
-                        print("📝 Manual installation: sudo apt install gnuplot")
-                        execution_log.append("Manual installation required: sudo apt install gnuplot")
-                        return generated_images, execution_log
+                        print("⚠️ Failed to update package list")
+                        execution_log.append(f"Failed to update package list: {update_result.stderr}")
+                        
                 except Exception as e:
                     print(f"⚠️ Error installing gnuplot: {e}")
                     execution_log.append(f"Error installing gnuplot: {e}")
-                    return generated_images, execution_log
+                    # Continue anyway - maybe gnuplot is available but not in PATH
             
             # Change to gnuplot directory
             original_dir = os.getcwd()
@@ -455,27 +607,23 @@ plot 'cluster_counts.dat' using 3:($2==0?$4:1/0) with linespoints title 'Mode 0'
                                           timeout=60)
                     
                     if result.returncode == 0:
-                        print(f"✅ Successfully generated images from {script}")
-                        execution_log.append(f"Successfully generated images from {script}")
+                        print(f"✅ Successfully executed {script}")
+                        execution_log.append(f"Successfully executed {script}")
                         
-                        # Check what images were generated
-                        images_dir = os.path.join(gnuplot_dir, "generated_images")
-                        if os.path.exists(images_dir):
-                            for image_file in os.listdir(images_dir):
-                                if image_file.endswith(('.png', '.ps', '.eps', '.svg', '.tex')):
-                                    file_size = os.path.getsize(os.path.join(images_dir, image_file))
-                                    generated_images.append({
-                                        'filename': image_file,
-                                        'script': script,
-                                        'path': os.path.join("generated_images", image_file),
-                                        'size_bytes': file_size,
-                                        'size_kb': file_size / 1024,
-                                        'format': image_file.split('.')[-1].upper()
-                                    })
+                        # List stdout/stderr for debugging
+                        if result.stdout:
+                            execution_log.append(f"Output: {result.stdout}")
+                        if result.stderr:
+                            execution_log.append(f"Warnings: {result.stderr}")
+                        
                     else:
-                        error_msg = f"Gnuplot script {script} failed: {result.stderr}"
+                        error_msg = f"Gnuplot script {script} failed (exit code {result.returncode}): {result.stderr}"
                         print(f"❌ {error_msg}")
                         execution_log.append(error_msg)
+                        
+                        # Show stdout too for debugging
+                        if result.stdout:
+                            execution_log.append(f"Stdout: {result.stdout}")
                         
                 except subprocess.TimeoutExpired:
                     timeout_msg = f"Gnuplot script {script} timed out"
@@ -490,6 +638,61 @@ plot 'cluster_counts.dat' using 3:($2==0?$4:1/0) with linespoints title 'Mode 0'
                     error_msg = f"Error executing {script}: {e}"
                     print(f"❌ {error_msg}")
                     execution_log.append(error_msg)
+            
+            # After all scripts are executed, collect all generated images
+            # The images_dir is relative to where we're executing (gnuplot_dir)
+            images_subdir = "generated_images"
+            images_full_path = os.path.join(gnuplot_dir, images_subdir)
+            
+            print(f"📊 Scanning for generated images...")
+            print(f"  Current working directory: {os.getcwd()}")
+            print(f"  Looking for images in: {images_full_path}")
+            execution_log.append(f"Scanning for generated images in {images_full_path}")
+            
+            if os.path.exists(images_subdir):
+                print(f"✅ Found images directory: {images_subdir}")
+                execution_log.append(f"Found images directory: {images_subdir}")
+                
+                for image_file in os.listdir(images_subdir):
+                    if image_file.endswith(('.png', '.ps', '.eps', '.svg', '.tex')):
+                        file_path = os.path.join(images_subdir, image_file)
+                        file_size = os.path.getsize(file_path)
+                        generated_images.append({
+                            'filename': image_file,
+                            'path': os.path.join("generated_images", image_file),
+                            'size_bytes': file_size,
+                            'size_kb': file_size / 1024,
+                            'format': image_file.split('.')[-1].upper(),
+                            'chart_type': image_file.split('.')[0].replace('_', ' ').title()
+                        })
+                        print(f"  📈 Found: {image_file} ({file_size} bytes)")
+                        execution_log.append(f"Found image: {image_file} ({file_size} bytes)")
+            else:
+                print(f"⚠️ Images directory not found in current directory")
+                print(f"  Trying absolute path: {images_full_path}")
+                execution_log.append(f"Images directory not found in current directory")
+                
+                if os.path.exists(images_full_path):
+                    print(f"✅ Found images directory at absolute path")
+                    execution_log.append(f"Found images directory at absolute path")
+                    
+                    for image_file in os.listdir(images_full_path):
+                        if image_file.endswith(('.png', '.ps', '.eps', '.svg', '.tex')):
+                            file_path = os.path.join(images_full_path, image_file)
+                            file_size = os.path.getsize(file_path)
+                            generated_images.append({
+                                'filename': image_file,
+                                'path': os.path.join("generated_images", image_file),
+                                'size_bytes': file_size,
+                                'size_kb': file_size / 1024,
+                                'format': image_file.split('.')[-1].upper(),
+                                'chart_type': image_file.split('.')[0].replace('_', ' ').title()
+                            })
+                            print(f"  📈 Found: {image_file} ({file_size} bytes)")
+                            execution_log.append(f"Found image: {image_file} ({file_size} bytes)")
+                else:
+                    print(f"❌ Images directory not found anywhere!")
+                    execution_log.append(f"Images directory not found anywhere!")
             
             total_images = len(generated_images)
             print(f"🎉 Successfully generated {total_images} image files!")
