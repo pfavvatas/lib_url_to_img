@@ -3,10 +3,30 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \contentsline {figure}{\numberline {3.1}{\ignorespaces {\textsc {WebSRC}} System Architecture}}{8}{figure.caption.3}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Main Interface with Navigation Tabs and Theme Toggle}}{10}{figure.caption.4}%
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Home Tab: URL Input and Configuration}}{11}{figure.caption.5}%
+\contentsline {figure}{\numberline {3.4}{\ignorespaces DOM Level Selection Interface with Interactive Chips}}{12}{figure.caption.6}%
+\contentsline {figure}{\numberline {3.5}{\ignorespaces Domain-based URL Grouping with Expandable Cards}}{13}{figure.caption.7}%
+\contentsline {figure}{\numberline {3.6}{\ignorespaces Clusters Tab: Color-coded Clustering Results}}{14}{figure.caption.8}%
+\contentsline {figure}{\numberline {3.7}{\ignorespaces Individual Cluster Visualization with Color Coding}}{15}{figure.caption.9}%
+\contentsline {figure}{\numberline {3.8}{\ignorespaces Experiments Tab: Test Case Management and Execution}}{16}{figure.caption.10}%
+\contentsline {figure}{\numberline {3.9}{\ignorespaces Experiment Results with Performance Metrics}}{17}{figure.caption.11}%
+\contentsline {figure}{\numberline {3.10}{\ignorespaces Results Archive with Timing Logs and Cache Statistics}}{18}{figure.caption.12}%
+\contentsline {figure}{\numberline {3.11}{\ignorespaces Configuration Tab: Custom Experiment Parameters}}{19}{figure.caption.13}%
+\contentsline {figure}{\numberline {3.12}{\ignorespaces Dark Mode Interface with Theme Toggle}}{20}{figure.caption.14}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {4.1}{\ignorespaces Dual-Layer Caching Architecture}}{15}{figure.caption.4}%
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Dual-Layer Caching Architecture}}{24}{figure.caption.15}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {5.1}{\ignorespaces Scalability Analysis: Processing Time vs Dataset Size}}{21}{figure.caption.7}%
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Scalability Analysis: Processing Time vs Dataset Size}}{30}{figure.caption.18}%
 \addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {A.1}{\ignorespaces Initial System Startup Screen}}{38}{figure.caption.20}%
+\contentsline {figure}{\numberline {A.2}{\ignorespaces Step 1: URL Entry and Domain Grouping}}{39}{figure.caption.21}%
+\contentsline {figure}{\numberline {A.3}{\ignorespaces Step 2: Level Selection and Mode Configuration}}{40}{figure.caption.22}%
+\contentsline {figure}{\numberline {A.4}{\ignorespaces Step 3: Analysis Execution with Progress Indicators}}{41}{figure.caption.23}%
+\contentsline {figure}{\numberline {A.5}{\ignorespaces Step 4: Viewing Color-coded Clustering Results}}{42}{figure.caption.24}%
+\contentsline {figure}{\numberline {A.6}{\ignorespaces Advanced Experiments Interface for Batch Processing}}{43}{figure.caption.25}%
+\contentsline {figure}{\numberline {A.7}{\ignorespaces Historical Results Archive with Performance Metrics}}{44}{figure.caption.26}%
+\contentsline {figure}{\numberline {A.8}{\ignorespaces Custom Configuration for Advanced Users}}{45}{figure.caption.27}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }

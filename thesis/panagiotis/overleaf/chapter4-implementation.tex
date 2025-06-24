@@ -206,9 +206,11 @@ All API endpoints implement comprehensive input validation:
 \section{Frontend Implementation}
 \label{sec:frontend_implementation}
 
+The frontend implementation realizes the user interface design described in Section~\ref{sec:user_interface}, providing a comprehensive web-based interface for all system functionality.
+
 \subsection{React Component Architecture}
 
-The frontend follows a modular component structure:
+The frontend follows a modular component structure with the main URLChipForm component implementing the tabbed interface shown in Figure~\ref{fig:ui_main_interface}:
 
 \begin{lstlisting}[language=JavaScript]
 const URLChipForm = ({ darkMode, onThemeChange }) => {

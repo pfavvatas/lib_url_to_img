@@ -1,3 +1,125 @@
+\chapter{User Guide}
+\label{appendix:user-guide}
+
+This appendix provides a step-by-step guide for using the {\name} system through its web interface.
+
+\section{Getting Started}
+\label{app:getting_started}
+
+\subsection{Accessing the System}
+
+After installation and startup (see Appendix~\ref{appendix:tech-specs}), access the {\name} system by navigating to \texttt{http://localhost:3000} in your web browser.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{ui_startup_screen.png}
+\caption{Initial System Startup Screen}
+\label{fig:ui_startup_screen}
+\end{figure}
+
+\section{Basic Workflow}
+\label{app:basic_workflow}
+
+\subsection{Step 1: Enter URLs}
+
+\begin{enumerate}
+\item Navigate to the Home tab (🏠 Home)
+\item Enter URLs in the text area, one per line or paste multiple URLs
+\item URLs will automatically be grouped by domain if Mode 1 is selected
+\end{enumerate}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{ui_workflow_step1.png}
+\caption{Step 1: URL Entry and Domain Grouping}
+\label{fig:ui_workflow_step1}
+\end{figure}
+
+\subsection{Step 2: Configure Analysis}
+
+\begin{enumerate}
+\item Select DOM analysis levels using the numbered chips (1-10)
+\item Choose processing mode:
+\begin{itemize}
+\item Mode 0: All Together - processes all URLs as a single batch
+\item Mode 1: Domain-based - groups URLs by domain for analysis
+\end{itemize}
+\end{enumerate}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{ui_workflow_step2.png}
+\caption{Step 2: Level Selection and Mode Configuration}
+\label{fig:ui_workflow_step2}
+\end{figure}
+
+\subsection{Step 3: Execute Analysis}
+
+\begin{enumerate}
+\item Click the "Run" button to start processing
+\item Monitor progress through the loading indicators
+\item Processing time varies based on number of URLs and selected levels
+\end{enumerate}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{ui_workflow_step3.png}
+\caption{Step 3: Analysis Execution with Progress Indicators}
+\label{fig:ui_workflow_step3}
+\end{figure}
+
+\subsection{Step 4: View Results}
+
+\begin{enumerate}
+\item Navigate to the Clusters tab (🎯 Clusters) to view results
+\item Results are organized by DOM level
+\item Each cluster is color-coded for easy identification
+\item Click on sections to expand detailed views
+\end{enumerate}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{ui_workflow_step4.png}
+\caption{Step 4: Viewing Color-coded Clustering Results}
+\label{fig:ui_workflow_step4}
+\end{figure}
+
+\section{Advanced Features}
+\label{app:advanced_features}
+
+\subsection{Batch Experiments}
+
+For research purposes, use the Experiments tab (🧪 Experiments):
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{ui_advanced_experiments.png}
+\caption{Advanced Experiments Interface for Batch Processing}
+\label{fig:ui_advanced_experiments}
+\end{figure}
+
+\subsection{Historical Results}
+
+Access previous analyses through the Results tab (📊 Results):
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{ui_advanced_results.png}
+\caption{Historical Results Archive with Performance Metrics}
+\label{fig:ui_advanced_results}
+\end{figure}
+
+\subsection{Custom Configuration}
+
+Fine-tune analysis parameters in the Config tab (⚙️ Config):
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{ui_advanced_config.png}
+\caption{Custom Configuration for Advanced Users}
+\label{fig:ui_advanced_config}
+\end{figure}
+
 \chapter{Technical Specifications}
 \label{appendix:tech-specs}
 

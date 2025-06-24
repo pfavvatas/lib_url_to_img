@@ -55,6 +55,132 @@ The frontend layer, implemented using React 18+ and Material-UI, provides the us
 
 The interface supports both dark and light themes, includes a fixed navigation bar, GitHub integration link, and provides detailed error handling with user-friendly notifications.
 
+\section{User Interface Design}
+\label{sec:user_interface}
+
+The {\name} system provides an intuitive web-based interface that guides users through the complete web structure analysis workflow. The interface design emphasizes usability while providing access to advanced features for researchers and practitioners.
+
+\subsection{Main Interface Overview}
+
+The primary interface features a tabbed navigation system that organizes functionality into logical sections:
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{ui_main_interface.png}
+\caption{Main Interface with Navigation Tabs and Theme Toggle}
+\label{fig:ui_main_interface}
+\end{figure}
+
+\subsection{Home Tab - URL Processing Configuration}
+
+The Home tab provides the primary interface for configuring and executing web structure analysis:
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{ui_home_tab.png}
+\caption{Home Tab: URL Input and Configuration}
+\label{fig:ui_home_tab}
+\end{figure}
+
+Key features include:
+\begin{itemize}
+\item \textbf{URL Input Field}: Multi-line text area supporting bulk URL entry with automatic parsing
+\item \textbf{Level Selection}: Interactive chips for selecting DOM analysis depths (1-10 levels)
+\item \textbf{Processing Mode}: Toggle between Mode 0 (All Together) and Mode 1 (Domain-based)
+\item \textbf{Domain Grouping}: Automatic organization of URLs by domain in expandable cards
+\end{itemize}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{ui_level_selection.png}
+\caption{DOM Level Selection Interface with Interactive Chips}
+\label{fig:ui_level_selection}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{ui_domain_grouping.png}
+\caption{Domain-based URL Grouping with Expandable Cards}
+\label{fig:ui_domain_grouping}
+\end{figure}
+
+\subsection{Clusters Tab - Results Visualization}
+
+The Clusters tab displays clustering results with interactive visualizations:
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{ui_clusters_tab.png}
+\caption{Clusters Tab: Color-coded Clustering Results}
+\label{fig:ui_clusters_tab}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{ui_cluster_visualization.png}
+\caption{Individual Cluster Visualization with Color Coding}
+\label{fig:ui_cluster_visualization}
+\end{figure}
+
+Features include:
+\begin{itemize}
+\item \textbf{Level-based Organization}: Results grouped by DOM analysis level
+\item \textbf{Color-coded Elements}: Visual representation of cluster assignments
+\item \textbf{Collapsible Sections}: Expandable views for detailed examination
+\item \textbf{PDF Export}: One-click export functionality using html2pdf.js
+\end{itemize}
+
+\subsection{Experiments Tab - Batch Processing}
+
+The Experiments tab provides advanced functionality for research and batch analysis:
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{ui_experiments_tab.png}
+\caption{Experiments Tab: Test Case Management and Execution}
+\label{fig:ui_experiments_tab}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{ui_experiment_results.png}
+\caption{Experiment Results with Performance Metrics}
+\label{fig:ui_experiment_results}
+\end{figure}
+
+\subsection{Results Tab - Historical Data}
+
+The Results tab provides access to archived experiment data:
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{ui_results_archive.png}
+\caption{Results Archive with Timing Logs and Cache Statistics}
+\label{fig:ui_results_archive}
+\end{figure}
+
+\subsection{Configuration Tab - Advanced Settings}
+
+The Config tab allows fine-tuning of experimental parameters:
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{ui_config_tab.png}
+\caption{Configuration Tab: Custom Experiment Parameters}
+\label{fig:ui_config_tab}
+\end{figure}
+
+\subsection{Dark Mode Interface}
+
+The system supports both light and dark themes for improved user experience:
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{ui_dark_mode.png}
+\caption{Dark Mode Interface with Theme Toggle}
+\label{fig:ui_dark_mode}
+\end{figure}
+
 \subsection{API Layer}
 
 The Flask-based API layer serves as the communication bridge between the frontend and core processing components. Primary endpoints include:

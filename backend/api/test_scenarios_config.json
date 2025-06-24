@@ -36,7 +36,7 @@
     "description": "Rules for generating all possible test combinations",
     "combination_strategy": "all_combinations",
     "filters": {
-      "max_combinations_per_run": 50,
+      "max_combinations_per_run": 200,
       "skip_identical_url_sets": true,
       "prioritize_diverse_domains": true
     },

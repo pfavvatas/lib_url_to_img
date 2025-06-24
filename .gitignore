@@ -35,3 +35,11 @@ backend/api/cache/*
 output_html_files/*
 notes.txt
 backend/api/experiment_results/*
+websrc-thesis.tex
+websrc_thesis.tex
+WebSRC_Summary_for_Thesis.md
+WebSRC_Project_Analysis.md
+WebSRC_Project_Analysis_for_Thesis.md
+WebSRC_LaTeX_Content.tex
+thesis.tex
+

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, TextField, Chip, FormControl, Button, useTheme, Snackbar, CircularProgress, Grid2 as Grid, TextareaAutosize, Accordion, AccordionSummary, AccordionDetails, Typography, IconButton, Tooltip, Card, CardContent, CardHeader, Switch, FormControlLabel, Fab, Collapse } from '@mui/material';
+import { Box, TextField, Chip, FormControl, Button, useTheme, Snackbar, CircularProgress, Grid2 as Grid, TextareaAutosize, Accordion, AccordionSummary, AccordionDetails, Typography, IconButton, Tooltip, Card, CardContent, CardHeader, Switch, FormControlLabel, Fab, Collapse, Modal } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -8,6 +8,7 @@ import Brightness7Icon from '@mui/icons-material/Brightness7';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import CloseIcon from '@mui/icons-material/Close';
 import html2pdf from 'html2pdf.js';
 
 /*
@@ -39,13 +40,9 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
     const [isNewMode, setIsNewMode] = useState(false);
     const [abortController, setAbortController] = useState(null);
     
-    // Experiments state
-    const [experimentTestCases, setExperimentTestCases] = useState([]);
-    const [selectedTestCases, setSelectedTestCases] = useState([]);
-    const [experimentConfig, setExperimentConfig] = useState(null);
-    const [experimentLoading, setExperimentLoading] = useState(false);
+    // Custom experiments state
     const [experimentResults, setExperimentResults] = useState(null);
-    const [experimentName, setExperimentName] = useState('');
+    const [experimentLoading, setExperimentLoading] = useState(false);
     
     // Results Archive state
     const [archiveExperiments, setArchiveExperiments] = useState([]);
@@ -62,6 +59,10 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
         max_combinations: 25
     });
     const [configUrlInput, setConfigUrlInput] = useState('');
+    
+    // Image Modal state
+    const [imageModalOpen, setImageModalOpen] = useState(false);
+    const [selectedImage, setSelectedImage] = useState(null);
     
     // Scroll to top and card collapse state
     const [showScrollTop, setShowScrollTop] = useState(false);
@@ -309,122 +310,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
         setSuccess('Copied to clipboard!');
     };
 
-    // Experiment Management Functions
-    const loadExperimentConfig = async () => {
-        try {
-            const response = await fetch("http://localhost:5000/experiments/config");
-            const data = await response.json();
-            if (data.status === "success") {
-                setExperimentConfig(data.config);
-            } else {
-                setError({ message: data.message });
-            }
-        } catch (error) {
-            setError({ message: `Failed to load experiment config: ${error.message}` });
-        }
-    };
 
-    const loadTestCases = async () => {
-        setExperimentLoading(true);
-        try {
-            const response = await fetch("http://localhost:5000/experiments/test-cases");
-            const data = await response.json();
-            if (data.status === "success") {
-                setExperimentTestCases(data.test_cases);
-                setSuccess(`Loaded ${data.total_count} test cases`);
-            } else {
-                setError({ message: data.message });
-            }
-        } catch (error) {
-            setError({ message: `Failed to load test cases: ${error.message}` });
-        } finally {
-            setExperimentLoading(false);
-        }
-    };
-
-    const filterTestCases = async (filters) => {
-        setExperimentLoading(true);
-        try {
-            const response = await fetch("http://localhost:5000/experiments/filter-test-cases", {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ filters })
-            });
-            const data = await response.json();
-            if (data.status === "success") {
-                setExperimentTestCases(data.test_cases);
-                setSuccess(`Filtered to ${data.total_count} test cases (from ${data.original_count})`);
-            } else {
-                setError({ message: data.message });
-            }
-        } catch (error) {
-            setError({ message: `Failed to filter test cases: ${error.message}` });
-        } finally {
-            setExperimentLoading(false);
-        }
-    };
-
-    const runExperimentBatch = async () => {
-        if (selectedTestCases.length === 0) {
-            setWarning("Please select at least one test case to run");
-            return;
-        }
-
-        setExperimentLoading(true);
-        setError(null);
-
-        try {
-            const response = await fetch("http://localhost:5000/experiments/run-batch", {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    experiment_name: experimentName || 'Thesis Experiment',
-                    selected_test_cases: selectedTestCases
-                })
-            });
-            const data = await response.json();
-
-            if (data.status === "success") {
-                setExperimentResults(data.experiment_summary);
-                setSuccess(`Experiment completed! ${data.experiment_summary.experiment_info.successful_tests} successful tests`);
-                // Play success notification sound
-                playNotificationSound(true);
-            } else {
-                setError({ message: data.message, stack: data?.traceback });
-                // Play error notification sound
-                playNotificationSound(false);
-            }
-        } catch (error) {
-            console.error("Error:", error);
-            setError({ message: error.message, stack: error.stack });
-            // Play error notification sound
-            playNotificationSound(false);
-        } finally {
-            setExperimentLoading(false);
-        }
-    };
-
-    const handleTestCaseSelection = (testCase, isSelected) => {
-        if (isSelected) {
-            setSelectedTestCases([...selectedTestCases, testCase]);
-        } else {
-            setSelectedTestCases(selectedTestCases.filter(tc => tc.id !== testCase.id));
-        }
-    };
-
-    const handleSelectAllTestCases = (selectAll) => {
-        if (selectAll) {
-            setSelectedTestCases([...experimentTestCases]);
-        } else {
-            setSelectedTestCases([]);
-        }
-    };
 
 
 
@@ -447,14 +333,86 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
         }
     };
 
+    // Function to load large data files for experiment results
+    const loadLargeDataHtmlFiles = async (experimentId, testId) => {
+        try {
+            setLoading(true);
+            const response = await fetch(`http://localhost:5000/experiments/results/${experimentId}/large-data`);
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                console.log('📁 Large data files:', data.files);
+                setSuccess(`Found ${data.files.length} large data files (${data.total_size_mb.toFixed(1)} MB total)`);
+                
+                // Find HTML files data
+                const htmlFilesData = data.files.find(f => f.type === 'html_files');
+                if (htmlFilesData) {
+                    const htmlResponse = await fetch(`http://localhost:5000/experiments/results/${experimentId}/large-data/${htmlFilesData.filename}`);
+                    const htmlData = await htmlResponse.json();
+                    
+                    if (htmlData.status === 'success') {
+                        console.log('📄 HTML files from large data:', htmlData.data);
+                        setSuccess(`Loaded ${htmlData.data.length} HTML files from large data`);
+                        return htmlData.data;
+                    }
+                }
+            } else {
+                setError({ message: data.message });
+            }
+        } catch (error) {
+            console.error('❌ Error loading large data HTML files:', error);
+            setError({ message: `Error loading large data: ${error.message}` });
+        } finally {
+            setLoading(false);
+        }
+        return [];
+    };
+
+    const loadLargeDataClusteringResults = async (experimentId, testId) => {
+        try {
+            setLoading(true);
+            const response = await fetch(`http://localhost:5000/experiments/results/${experimentId}/large-data`);
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                console.log('📁 Large data files:', data.files);
+                
+                // Find clustering results data
+                const clusteringData = data.files.find(f => f.type === 'clustering_results');
+                if (clusteringData) {
+                    const clusteringResponse = await fetch(`http://localhost:5000/experiments/results/${experimentId}/large-data/${clusteringData.filename}`);
+                    const clusteringResult = await clusteringResponse.json();
+                    
+                    if (clusteringResult.status === 'success') {
+                        console.log('🎯 Clustering results from large data:', clusteringResult.data);
+                        setSuccess(`Loaded clustering results from large data (${clusteringData.size_mb.toFixed(1)} MB)`);
+                        return clusteringResult.data;
+                    }
+                }
+            } else {
+                setError({ message: data.message });
+            }
+        } catch (error) {
+            console.error('❌ Error loading large data clustering results:', error);
+            setError({ message: `Error loading clustering data: ${error.message}` });
+        } finally {
+            setLoading(false);
+        }
+        return null;
+    };
+
+
+
     const loadExperimentDetails = async (experimentId) => {
         setArchiveLoading(true);
         try {
             const response = await fetch(`http://localhost:5000/experiments/results/${experimentId}`);
             const data = await response.json();
             if (data.status === "success") {
-                setSelectedExperiment(data.experiment_data);
-                setSuccess(`Loaded experiment: ${data.experiment_data.experiment_info.name}`);
+                // Handle the new response structure where data is in experiment_data
+                const experimentData = data.experiment_data;
+                setSelectedExperiment(experimentData);
+                setSuccess(`Loaded experiment: ${experimentData.experiment_info.name}`);
             } else {
                 setError({ message: data.message });
             }
@@ -570,25 +528,44 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
             const testCases = [];
             let testIndex = 1;
 
+            // For each mode, create combinations for each level set and URL count
             for (const mode of customConfig.modes) {
                 for (const urlCount of customConfig.url_combinations) {
                     if (urlCount <= customConfig.available_urls.length) {
-                        // Create a test case
-                        const selectedUrls = customConfig.available_urls.slice(0, urlCount);
-                        const testCase = {
-                            id: `custom_${testIndex.toString().padStart(3, '0')}_${mode}_L${customConfig.levels.join('_')}_U${urlCount}`,
-                            name: `Custom Mode ${mode} - Levels ${customConfig.levels.join(',')} - ${urlCount} URLs`,
-                            description: `Custom test using Mode ${mode}, levels ${customConfig.levels.join(',')}, ${urlCount} URLs`,
-                            mode: mode,
-                            levels: customConfig.levels,
-                            urls: selectedUrls,
-                            url_count: urlCount,
-                            estimated_duration: urlCount * customConfig.levels.length * 0.5,
-                            priority: 'custom'
-                        };
-                        testCases.push(testCase);
-                        testIndex++;
-
+                        // Create multiple URL combinations for this parameter set
+                        const totalPossible = Math.min(5, Math.floor(customConfig.available_urls.length / urlCount));
+                        const variationsLimit = Math.min(totalPossible, customConfig.max_combinations - testCases.length);
+                        
+                        for (let variation = 0; variation < variationsLimit; variation++) {
+                            if (testCases.length >= customConfig.max_combinations) {
+                                break;
+                            }
+                            
+                            // Create different URL combinations by rotating the starting point
+                            const startIndex = (variation * urlCount) % customConfig.available_urls.length;
+                            const selectedUrls = [];
+                            
+                            for (let i = 0; i < urlCount; i++) {
+                                const index = (startIndex + i) % customConfig.available_urls.length;
+                                selectedUrls.push(customConfig.available_urls[index]);
+                            }
+                            
+                            const testCase = {
+                                id: `custom_${testIndex.toString().padStart(3, '0')}_${mode}_L${customConfig.levels.join('_')}_U${urlCount}_V${variation + 1}`,
+                                name: `Custom Mode ${mode} - Levels ${customConfig.levels.join(',')} - ${urlCount} URLs (Var ${variation + 1})`,
+                                description: `Custom test using Mode ${mode}, levels ${customConfig.levels.join(',')}, ${urlCount} URLs (variation ${variation + 1})`,
+                                mode: mode,
+                                levels: customConfig.levels,
+                                urls: selectedUrls,
+                                url_count: urlCount,
+                                variation: variation + 1,
+                                estimated_duration: urlCount * customConfig.levels.length * 0.5,
+                                priority: 'custom'
+                            };
+                            testCases.push(testCase);
+                            testIndex++;
+                        }
+                        
                         if (testCases.length >= customConfig.max_combinations) {
                             break;
                         }
@@ -619,8 +596,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                 // Play success notification sound
                 playNotificationSound(true);
                 
-                // Switch to experiments view to see results
-                setCurrentView('experiments');
+                // Results will be displayed in the config view below the form
             } else {
                 setError({ message: data.message, stack: data?.traceback });
                 // Play error notification sound
@@ -636,12 +612,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
         }
     };
 
-    // Load experiment config on component mount
-    useEffect(() => {
-        if (currentView === 'experiments' && !experimentConfig) {
-            loadExperimentConfig();
-        }
-    }, [currentView, experimentConfig]);
+
 
     // Load archive experiments when switching to results view
     useEffect(() => {
@@ -717,9 +688,20 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
         setCollapsedCards(newCollapsedCards);
     };
 
-    const isCardCollapsed = (cardId) => {
+    const isCardCollapsed = (cardId) => {  
         // Default to collapsed (true) if not in the set, expanded (false) if in the set
         return !collapsedCards.has(cardId);
+    };
+
+    // Image Modal Functions
+    const handleImageClick = (image) => {
+        setSelectedImage(image);
+        setImageModalOpen(true);
+    };
+
+    const handleCloseImageModal = () => {
+        setImageModalOpen(false);
+        setSelectedImage(null);
     };
 
     // Function to generate PDF from similarity results
@@ -950,8 +932,8 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
         });
     };
 
-    // Function to render site similarity results
-    const renderSiteSimilarityResults = (siteSimilarity, level = null) => {
+    // Function to render site similarity results with comprehensive information
+    const renderSiteSimilarityResults = (siteSimilarity, level = null, processedClusterData = null, titlePrefix = '') => {
         if (!siteSimilarity || siteSimilarity.status !== 'success' || !siteSimilarity.data) return null;
 
         const { data } = siteSimilarity;
@@ -988,7 +970,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                         fontWeight: 'bold',
                         color: darkMode ? '#ffffff' : 'inherit'
                     }}>
-                        📊 Cosine Similarity Matrix ({summary.total_sites} sites)
+                        📊 Site Similarity Analysis {titlePrefix ? `${titlePrefix} ` : ''}Level {level} ({summary.total_sites} sites)
                     </Typography>
                 </AccordionSummary>
                 <AccordionDetails sx={{ 
@@ -1038,6 +1020,135 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                             </Box>
                         </Box>
                     </Box>
+
+                    {/* Associated HTML Files */}
+                    {processedClusterData && processedClusterData.html_files && processedClusterData.html_files.length > 0 && (
+                        <Box sx={{ 
+                            mb: theme.spacing(3),
+                            p: 2,
+                            backgroundColor: darkMode ? '#333' : 'grey.100',
+                            borderRadius: 2,
+                            border: '1px solid',
+                            borderColor: darkMode ? '#555' : 'divider'
+                        }}>
+                            <Typography variant="h6" gutterBottom sx={{
+                                color: darkMode ? '#ffffff' : 'inherit'
+                            }}>📁 Associated HTML Files ({processedClusterData.html_files.length})</Typography>
+                            <Grid container spacing={1}>
+                                {processedClusterData.html_files.map((file, index) => (
+                                    <Grid item xs={12} sm={6} md={4} key={index}>
+                                        <Card sx={{ 
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s ease-in-out',
+                                            backgroundColor: darkMode ? '#444' : 'background.paper',
+                                            '&:hover': {
+                                                transform: 'translateY(-1px)',
+                                                boxShadow: darkMode 
+                                                    ? '0 4px 8px rgba(0,0,0,0.4)' 
+                                                    : '0 2px 4px rgba(0,0,0,0.1)'
+                                            }
+                                        }}
+                                        onClick={() => {
+                                            const fileUrl = `http://localhost:5000/output_html_files/${file.path}`;
+                                            setSuccess(`Opening: ${file.title || file.filename}`);
+                                            window.open(fileUrl, '_blank');
+                                        }}
+                                        >
+                                            <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
+                                                <Typography 
+                                                    variant="caption" 
+                                                    sx={{ 
+                                                        fontWeight: 'bold',
+                                                        display: 'block',
+                                                        mb: 0.5,
+                                                        overflow: 'hidden',
+                                                        textOverflow: 'ellipsis',
+                                                        whiteSpace: 'nowrap',
+                                                        color: darkMode ? '#ffffff' : 'inherit'
+                                                    }}
+                                                    title={file.title || file.filename}
+                                                >
+                                                    📄 {file.title || file.filename}
+                                                </Typography>
+                                                <Typography variant="caption" sx={{ 
+                                                    color: darkMode ? '#aaa' : 'text.secondary',
+                                                    fontSize: '0.6rem'
+                                                }}>
+                                                    {file.file_size_kb ? `${file.file_size_kb.toFixed(1)} KB` : ''}
+                                                    {file.domain && ` • ${file.domain}`}
+                                                </Typography>
+                                            </CardContent>
+                                        </Card>
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        </Box>
+                    )}
+
+                    {/* Timing Information */}
+                    {processedClusterData && processedClusterData.timing_logs && (
+                        <Box sx={{ 
+                            mb: theme.spacing(3),
+                            p: 2,
+                            backgroundColor: darkMode ? '#333' : 'info.light',
+                            borderRadius: 2,
+                            border: '1px solid',
+                            borderColor: darkMode ? '#555' : 'divider'
+                        }}>
+                            <Typography variant="h6" gutterBottom sx={{
+                                color: darkMode ? '#ffffff' : 'inherit'
+                            }}>⏱️ Processing Performance</Typography>
+                            <Box sx={{ 
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                                gap: 2
+                            }}>
+                                <Box>
+                                    <Typography variant="subtitle2" sx={{
+                                        color: darkMode ? '#aaa' : 'text.secondary'
+                                    }}>Total Duration</Typography>
+                                    <Typography variant="h6" sx={{
+                                        color: darkMode ? '#ffffff' : 'inherit'
+                                    }}>{formatDuration(processedClusterData.timing_logs.total_duration)}</Typography>
+                                </Box>
+                                {processedClusterData.timing_logs.steps && processedClusterData.timing_logs.steps.site_similarity_analysis && (
+                                    <Box>
+                                        <Typography variant="subtitle2" sx={{
+                                            color: darkMode ? '#aaa' : 'text.secondary'
+                                        }}>Similarity Analysis</Typography>
+                                        <Typography variant="h6" sx={{
+                                            color: darkMode ? '#ffffff' : 'inherit'
+                                        }}>{formatDuration(processedClusterData.timing_logs.steps.site_similarity_analysis.duration)}</Typography>
+                                    </Box>
+                                )}
+                                {processedClusterData.timing_logs.steps && processedClusterData.timing_logs.steps.html_generation && (
+                                    <Box>
+                                        <Typography variant="subtitle2" sx={{
+                                            color: darkMode ? '#aaa' : 'text.secondary'
+                                        }}>HTML Generation</Typography>
+                                        <Typography variant="h6" sx={{
+                                            color: darkMode ? '#ffffff' : 'inherit'
+                                        }}>{formatDuration(processedClusterData.timing_logs.steps.html_generation.duration)}</Typography>
+                                    </Box>
+                                )}
+                                {processedClusterData.timing_logs.file_operations && (
+                                    <Box>
+                                        <Typography variant="subtitle2" sx={{
+                                            color: darkMode ? '#aaa' : 'text.secondary'
+                                        }}>Data Processing</Typography>
+                                        <Typography variant="h6" sx={{
+                                            color: darkMode ? '#ffffff' : 'inherit'
+                                        }}>
+                                            {processedClusterData.timing_logs.file_operations.guid_processing ? 
+                                                `${processedClusterData.timing_logs.file_operations.guid_processing.guids_processed} GUIDs` :
+                                                'Completed'
+                                            }
+                                        </Typography>
+                                    </Box>
+                                )}
+                            </Box>
+                        </Box>
+                    )}
 
                     {/* Similarity Matrix Table */}
                     <Box sx={{ mb: theme.spacing(2) }}>
@@ -1334,6 +1445,42 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
         );
     };
 
+    // Helper function to get cluster info from either structure
+    const getClusterInfo = (clusterResult) => {
+        // Handle lightweight structure (from experiment optimization)
+        if (clusterResult.cluster_summary) {
+            return {
+                num_clusters: clusterResult.cluster_summary.num_clusters,
+                dbcv_score: clusterResult.cluster_summary.dbcv_score,
+                min_cluster_size: clusterResult.cluster_summary.min_cluster_size,
+                useful_attributes: Array(clusterResult.cluster_summary.useful_attributes_count).fill('attribute'),
+                cluster_selection_epsilon: 0.1 // Default value for lightweight structure
+            };
+        }
+        // Handle original structure
+        else if (clusterResult.cluster_info) {
+            return clusterResult.cluster_info;
+        }
+        return null;
+    };
+
+    // Helper function to get clusters data
+    const getClustersData = (clusterResult) => {
+        // For lightweight structure, clusters are stored in separate files
+        if (clusterResult.clusters_file) {
+            return {
+                message: `Clusters data stored in separate file: ${clusterResult.clusters_file}`,
+                cluster_count: clusterResult.cluster_count || 0,
+                is_lightweight: true
+            };
+        }
+        // For original structure, return the clusters array
+        else if (clusterResult.clusters) {
+            return clusterResult.clusters;
+        }
+        return null;
+    };
+
     // Function to render timing logs
     const renderTimingLogs = (timingLogs) => {
         if (!timingLogs) return null;
@@ -1498,6 +1645,247 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                 <Typography variant="body2" component="span">✅ Yes</Typography>
                                             </Box>
                                         )}
+                                        {stepData.clusters_generated && (
+                                            <Box sx={{ mb: 1 }}>
+                                                <Typography variant="caption" color="text.secondary">Clusters Generated: </Typography>
+                                                <Typography variant="body2" component="span">{stepData.clusters_generated}</Typography>
+                                            </Box>
+                                        )}
+                                        {stepData.dbcv_score && (
+                                            <Box sx={{ mb: 1 }}>
+                                                <Typography variant="caption" color="text.secondary">DBCV Score: </Typography>
+                                                <Typography variant="body2" component="span">{stepData.dbcv_score.toFixed(3)}</Typography>
+                                            </Box>
+                                        )}
+                                        {stepData.file_size_bytes && (
+                                            <Box sx={{ mb: 1 }}>
+                                                <Typography variant="caption" color="text.secondary">File Size: </Typography>
+                                                <Typography variant="body2" component="span">
+                                                    {stepData.file_size_mb ? `${stepData.file_size_mb.toFixed(2)} MB` : `${(stepData.file_size_bytes / 1024 / 1024).toFixed(2)} MB`}
+                                                    {` (${stepData.file_size_bytes.toLocaleString()} bytes)`}
+                                                </Typography>
+                                            </Box>
+                                        )}
+                                        {stepData.computed_styles_file && (
+                                            <Box sx={{ mb: 1 }}>
+                                                <Typography variant="caption" color="text.secondary">Computed Styles File: </Typography>
+                                                <Typography variant="body2" component="span">{stepData.computed_styles_file}</Typography>
+                                            </Box>
+                                        )}
+                                        {stepData.useful_attributes_count && (
+                                            <Box sx={{ mb: 1 }}>
+                                                <Typography variant="caption" color="text.secondary">Useful Attributes Count: </Typography>
+                                                <Typography variant="body2" component="span">{stepData.useful_attributes_count}</Typography>
+                                            </Box>
+                                        )}
+
+                                        {/* Sub-steps */}
+                                        {stepData.sub_steps && (
+                                            <Box sx={{ mt: 2 }}>
+                                                <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold' }}>
+                                                    🔍 Sub-steps Details:
+                                                </Typography>
+                                                {Object.entries(stepData.sub_steps).map(([subStepName, subStepData]) => (
+                                                    <Accordion 
+                                                        key={subStepName}
+                                                        sx={{ 
+                                                            mb: 1,
+                                                            '&:before': { display: 'none' },
+                                                            boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                                                            borderRadius: '4px !important',
+                                                            bgcolor: 'background.default'
+                                                        }}
+                                                    >
+                                                        <AccordionSummary 
+                                                            expandIcon={<ExpandMoreIcon />}
+                                                            sx={{
+                                                                backgroundColor: 'grey.100',
+                                                                minHeight: '40px',
+                                                                '&:hover': { backgroundColor: 'grey.200' },
+                                                                '& .MuiAccordionSummary-content': {
+                                                                    margin: '8px 0'
+                                                                }
+                                                            }}
+                                                        >
+                                                            <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+                                                                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                                                                    {subStepData.description || subStepName}
+                                                                </Typography>
+                                                                <Typography variant="caption" color="primary" sx={{ fontWeight: 'bold' }}>
+                                                                    {formatDuration(subStepData.duration)}
+                                                                </Typography>
+                                                            </Box>
+                                                        </AccordionSummary>
+                                                        <AccordionDetails sx={{ p: 2, pt: 1 }}>
+                                                            <Box sx={{ 
+                                                                display: 'grid',
+                                                                gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
+                                                                gap: 1,
+                                                                mb: 1
+                                                            }}>
+                                                                <Box>
+                                                                    <Typography variant="caption" color="text.secondary">Duration</Typography>
+                                                                    <Typography variant="body2">{formatDuration(subStepData.duration)}</Typography>
+                                                                </Box>
+                                                                {subStepData.algorithm && (
+                                                                    <Box>
+                                                                        <Typography variant="caption" color="text.secondary">Algorithm</Typography>
+                                                                        <Typography variant="body2">{subStepData.algorithm}</Typography>
+                                                                    </Box>
+                                                                )}
+                                                                {subStepData.html_files_created && (
+                                                                    <Box>
+                                                                        <Typography variant="caption" color="text.secondary">HTML Files</Typography>
+                                                                        <Typography variant="body2">{subStepData.html_files_created}</Typography>
+                                                                    </Box>
+                                                                )}
+                                                                {subStepData.file_size_bytes && (
+                                                                    <Box>
+                                                                        <Typography variant="caption" color="text.secondary">File Size</Typography>
+                                                                        <Typography variant="body2">
+                                                                            {subStepData.file_size_mb ? `${subStepData.file_size_mb.toFixed(2)} MB` : `${(subStepData.file_size_bytes / 1024 / 1024).toFixed(2)} MB`}
+                                                                        </Typography>
+                                                                    </Box>
+                                                                )}
+                                                            </Box>
+                                                            {subStepData.message && (
+                                                                <Box sx={{ mt: 1 }}>
+                                                                    <Typography variant="caption" color="text.secondary">Message: </Typography>
+                                                                    <Typography variant="body2" component="span" 
+                                                                        color={subStepData.success ? 'success.main' : 'text.primary'}>
+                                                                        {subStepData.success ? '✅ ' : ''}{subStepData.message}
+                                                                    </Typography>
+                                                                </Box>
+                                                            )}
+                                                        </AccordionDetails>
+                                                    </Accordion>
+                                                ))}
+                                            </Box>
+                                        )}
+
+                                        {/* Detailed timing information */}
+                                        {stepData.detailed_timing && (
+                                            <Box sx={{ mt: 2 }}>
+                                                <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold' }}>
+                                                    📊 Detailed Timing Breakdown:
+                                                </Typography>
+                                                {Object.entries(stepData.detailed_timing).map(([timingKey, timingData]) => (
+                                                    <Box key={timingKey} sx={{ ml: 2, mb: 1 }}>
+                                                        <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                                                            {timingData.description || timingKey}:
+                                                        </Typography>
+                                                        <Box sx={{ ml: 1, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 1 }}>
+                                                            <Box>
+                                                                <Typography variant="caption" color="text.secondary">Duration: </Typography>
+                                                                <Typography variant="body2" component="span">{formatDuration(timingData.duration)}</Typography>
+                                                            </Box>
+                                                            {timingData.distinct_attributes && (
+                                                                <Box>
+                                                                    <Typography variant="caption" color="text.secondary">Attributes: </Typography>
+                                                                    <Typography variant="body2" component="span">{timingData.distinct_attributes}</Typography>
+                                                                </Box>
+                                                            )}
+                                                            {timingData.file_size_mb && (
+                                                                <Box>
+                                                                    <Typography variant="caption" color="text.secondary">Size: </Typography>
+                                                                    <Typography variant="body2" component="span">{timingData.file_size_mb.toFixed(2)} MB</Typography>
+                                                                </Box>
+                                                            )}
+                                                        </Box>
+                                                    </Box>
+                                                ))}
+                                            </Box>
+                                        )}
+
+                                        {/* File operations details */}
+                                        {stepData.file_operations && Object.keys(stepData.file_operations).length > 0 && (
+                                            <Box sx={{ mt: 2 }}>
+                                                <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold' }}>
+                                                    📁 File Operations:
+                                                </Typography>
+                                                {Object.entries(stepData.file_operations).map(([opName, opData]) => (
+                                                    <Box key={opName} sx={{ ml: 2, mb: 1 }}>
+                                                        <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                                                            {opName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}:
+                                                        </Typography>
+                                                        <Box sx={{ ml: 1, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))', gap: 1 }}>
+                                                            <Box>
+                                                                <Typography variant="caption" color="text.secondary">Duration: </Typography>
+                                                                <Typography variant="body2" component="span">{formatDuration(opData.duration)}</Typography>
+                                                            </Box>
+                                                            {opData.file_name && (
+                                                                <Box>
+                                                                    <Typography variant="caption" color="text.secondary">File: </Typography>
+                                                                    <Typography variant="body2" component="span">{opData.file_name}</Typography>
+                                                                </Box>
+                                                            )}
+                                                            {opData.file_size_mb && (
+                                                                <Box>
+                                                                    <Typography variant="caption" color="text.secondary">Size: </Typography>
+                                                                    <Typography variant="body2" component="span">{opData.file_size_mb.toFixed(2)} MB</Typography>
+                                                                </Box>
+                                                            )}
+                                                            {opData.processing_rate && (
+                                                                <Box>
+                                                                    <Typography variant="caption" color="text.secondary">Rate: </Typography>
+                                                                    <Typography variant="body2" component="span">{opData.processing_rate.toFixed(0)}/sec</Typography>
+                                                                </Box>
+                                                            )}
+                                                        </Box>
+                                                    </Box>
+                                                ))}
+                                            </Box>
+                                        )}
+
+                                        {/* URL timing logs */}
+                                        {stepData.url_timing_logs && Object.keys(stepData.url_timing_logs).length > 0 && (
+                                            <Box sx={{ mt: 2 }}>
+                                                <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold' }}>
+                                                    🌐 Per-URL Timing Details:
+                                                </Typography>
+                                                {Object.entries(stepData.url_timing_logs).map(([urlId, urlData]) => (
+                                                    <Accordion 
+                                                        key={urlId}
+                                                        sx={{ 
+                                                            mb: 1,
+                                                            '&:before': { display: 'none' },
+                                                            boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                                                            borderRadius: '4px !important'
+                                                        }}
+                                                    >
+                                                        <AccordionSummary 
+                                                            expandIcon={<ExpandMoreIcon />}
+                                                            sx={{
+                                                                backgroundColor: 'grey.100',
+                                                                minHeight: '40px',
+                                                                '&:hover': { backgroundColor: 'grey.200' }
+                                                            }}
+                                                        >
+                                                            <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+                                                                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                                                                    🔗 URL: {urlData.url ? urlData.url.substring(0, 50) + '...' : urlId}
+                                                                </Typography>
+                                                                <Typography variant="caption" color="primary" sx={{ fontWeight: 'bold' }}>
+                                                                    {formatDuration(urlData.total_duration)}
+                                                                </Typography>
+                                                            </Box>
+                                                        </AccordionSummary>
+                                                        <AccordionDetails sx={{ p: 2, pt: 1 }}>
+                                                            {urlData.steps && Object.entries(urlData.steps).map(([stepName, stepDetail]) => (
+                                                                <Box key={stepName} sx={{ mb: 1, ml: 1 }}>
+                                                                    <Typography variant="caption" color="text.secondary">
+                                                                        {stepDetail.description || stepName}:
+                                                                    </Typography>
+                                                                    <Typography variant="body2" component="span" sx={{ ml: 1 }}>
+                                                                        {formatDuration(stepDetail.duration)}
+                                                                    </Typography>
+                                                                </Box>
+                                                            ))}
+                                                        </AccordionDetails>
+                                                    </Accordion>
+                                                ))}
+                                            </Box>
+                                        )}
                                     </AccordionDetails>
                                 </Accordion>
                             ))}
@@ -1599,437 +1987,125 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
     }, [success]);
 
     const renderResults = () => {
-        console.log("Current result state:", result);
         if (!result) return null;
 
-        // Helper function to collect all HTML files from any result structure
-        const collectAllHtmlFiles = (resultData) => {
-            let allFiles = [];
-            
-            console.log("🔍 DEBUG: collectAllHtmlFiles input:", resultData);
-            
-            if (resultData.html_files) {
-                console.log("📁 Found top-level html_files:", resultData.html_files.length);
-                allFiles = allFiles.concat(resultData.html_files);
-            }
-            
-            if (resultData.domain_results) {
-                console.log("🌐 Found domain_results:", resultData.domain_results.length);
-                resultData.domain_results.forEach((domainResult, index) => {
-                    console.log(`📊 Domain ${index + 1} (${domainResult.domain}):`, domainResult.html_files?.length || 0, "files");
-                    if (domainResult.html_files) {
-                        domainResult.html_files.forEach(file => {
-                            console.log(`  - File domain: ${file.domain}, clean_domain: ${file.clean_domain}, filename: ${file.filename}`);
-                        });
-                        allFiles = allFiles.concat(domainResult.html_files);
-                    }
-                });
-            }
-            
-            // Remove duplicates based on filename (backend bug workaround)
-            const uniqueFiles = allFiles.filter((file, index, self) => 
-                index === self.findIndex(f => f.filename === file.filename)
-            );
-            
-            console.log("📁 Total collected files:", allFiles.length);
-            console.log("📁 After deduplication:", uniqueFiles.length);
-            console.log("📊 Files by domain:", uniqueFiles.reduce((acc, file) => {
-                const domain = file.domain || file.clean_domain || 'unknown';
-                acc[domain] = (acc[domain] || 0) + 1;
-                return acc;
-            }, {}));
-            
-            // Show warning if we detected duplicates (backend bug)
-            if (allFiles.length > uniqueFiles.length) {
-                console.warn("🚨 BACKEND BUG DETECTED: Duplicate files found and removed", {
-                    total: allFiles.length,
-                    unique: uniqueFiles.length,
-                    duplicates: allFiles.length - uniqueFiles.length
-                });
-                setWarning(`⚠️ Backend issue detected: ${allFiles.length - uniqueFiles.length} duplicate files removed. Domain processing may have incorrect metadata.`);
-            }
-            
-            return uniqueFiles;
-        };
 
-        // Render unified HTML files section
+
+
+
         const renderUnifiedHtmlFilesSection = (resultData) => {
-            const allHtmlFiles = collectAllHtmlFiles(resultData);
-            
-            if (allHtmlFiles.length === 0) return null;
-
-            // Group files by level
-            const filesByLevel = allHtmlFiles.reduce((acc, file) => {
-                const level = file.level || 'unknown';
-                if (!acc[level]) acc[level] = [];
-                acc[level].push(file);
-                return acc;
-            }, {});
-
-            // Sort levels numerically
-            const sortedLevels = Object.keys(filesByLevel).sort((a, b) => {
-                if (a === 'unknown') return 1;
-                if (b === 'unknown') return -1;
-                return parseInt(a) - parseInt(b);
-            });
-
-            return (
-                <Accordion 
-                    defaultExpanded={true}
-                    sx={{ 
-                        mb: theme.spacing(3),
-                        '&:before': {
-                            display: 'none',
-                        },
-                        boxShadow: '0 4px 8px rgba(0,0,0,0.15)',
-                        borderRadius: '12px !important',
-                        overflow: 'hidden'
-                    }}
-                >
-                    <AccordionSummary 
-                        expandIcon={<ExpandMoreIcon />}
-                        sx={{
-                            backgroundColor: 'primary.light',
-                            '&:hover': {
-                                backgroundColor: 'primary.main',
-                                color: 'white',
-                            },
-                            '& .MuiAccordionSummary-expandIconWrapper': {
-                                color: 'inherit'
-                            }
-                        }}
-                    >
-                        <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-                            📁 Generated Files ({allHtmlFiles.length} files)
-                        </Typography>
-                    </AccordionSummary>
-                    <AccordionDetails sx={{ p: 3 }}>
-                        {sortedLevels.map(level => (
-                            <Accordion 
-                                key={level}
-                                sx={{ 
-                                    mb: 2,
-                                    '&:before': { display: 'none' },
-                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                                    borderRadius: '8px !important',
-                                    overflow: 'hidden'
-                                }}
-                            >
-                                <AccordionSummary 
-                                    expandIcon={<ExpandMoreIcon />}
-                                    sx={{
-                                        backgroundColor: 'grey.200',
-                                        '&:hover': {
-                                            backgroundColor: 'grey.300',
-                                            color: 'text.primary',
-                                        },
-                                        '& .MuiAccordionSummary-expandIconWrapper': {
-                                            color: 'inherit'
-                                        }
-                                    }}
-                                >
-                                    <Typography sx={{ fontWeight: 'bold' }}>
-                                        📊 Level {level} ({filesByLevel[level].length} files)
-                                    </Typography>
-                                </AccordionSummary>
-                                <AccordionDetails sx={{ p: 3 }}>
-                                    {(() => {
-                                        // Group files by domain within each level
-                                        // FIXED: Use the correct domain from API structure to handle backend bug
-                                        const filesByDomain = {};
-                                        
-                                        filesByLevel[level].forEach(file => {
-                                            // Try to get the correct domain from the file's metadata
-                                            let correctDomain = file.domain || file.clean_domain || 'unknown';
-                                            
-                                            // If we have domain_results, try to find the correct domain by matching HTML files
-                                            if (result.domain_results) {
-                                                for (const domainResult of result.domain_results) {
-                                                    if (domainResult.html_files && domainResult.html_files.some(f => f.filename === file.filename)) {
-                                                        correctDomain = domainResult.domain.replace('www.', '');
-                                                        break;
-                                                    }
-                                                }
-                                            }
-                                            
-                                            if (!filesByDomain[correctDomain]) filesByDomain[correctDomain] = [];
-                                            filesByDomain[correctDomain].push({...file, corrected_domain: correctDomain});
-                                        });
-
-                                        return Object.entries(filesByDomain).map(([domain, domainFiles]) => (
-                                            <Box key={domain} sx={{ mb: 3 }}>
-                                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 2, color: 'primary.main' }}>
-                                                    🌐 {domain} ({domainFiles.length} files)
-                                                </Typography>
-                                                <Grid container spacing={2}>
-                                                    {domainFiles.map((file, index) => (
-                                                        <Grid item xs={12} sm={6} md={4} key={index}>
-                                                            <Card 
-                                                                sx={{ 
-                                                                    cursor: 'pointer',
-                                                                    transition: 'all 0.2s ease-in-out',
-                                                                    '&:hover': {
-                                                                        transform: 'translateY(-2px)',
-                                                                        boxShadow: '0 4px 8px rgba(0,0,0,0.15)'
-                                                                    }
-                                                                }}
-                                                                onClick={() => window.open(`http://localhost:5000/${file.path}`, '_blank')}
-                                                            >
-                                                                <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-                                                                    <Typography 
-                                                                        variant="subtitle2" 
-                                                                        sx={{ 
-                                                                            fontWeight: 'bold',
-                                                                            mb: 1,
-                                                                            overflow: 'hidden',
-                                                                            textOverflow: 'ellipsis',
-                                                                            whiteSpace: 'nowrap'
-                                                                        }}
-                                                                        title={file.title || file.filename}
-                                                                    >
-                                                                        {file.title || file.filename}
-                                                                    </Typography>
-                                                                    <Typography 
-                                                                        variant="caption" 
-                                                                        color="text.secondary"
-                                                                        sx={{ 
-                                                                            display: 'block',
-                                                                            mb: 1,
-                                                                            overflow: 'hidden',
-                                                                            textOverflow: 'ellipsis',
-                                                                            whiteSpace: 'nowrap'
-                                                                        }}
-                                                                        title={file.url}
-                                                                    >
-                                                                        {file.url}
-                                                                    </Typography>
-                                                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                                        <Typography variant="caption" color="text.secondary">
-                                                                            📄 {file.url_identifier || file.short_id}
-                                                                        </Typography>
-                                                                        <Typography variant="caption" color="text.secondary">
-                                                                            {file.file_size_kb ? `💾 ${file.file_size_kb.toFixed(1)} KB` : ''}
-                                                                        </Typography>
-                                                                    </Box>
-                                                                </CardContent>
-                                                            </Card>
-                                                        </Grid>
-                                                    ))}
-                                                </Grid>
-                                            </Box>
-                                        ));
-                                    })()}
-                                </AccordionDetails>
-                            </Accordion>
-                        ))}
-                    </AccordionDetails>
-                </Accordion>
-            );
+            // Remove this section since we'll use only the "📁 Associated HTML Files" section
+            return null;
         };
 
-        // Handle domain-based results (mode 1)
+        // Handle Mode 1 results (domain-based processing)
         if (result.domain_results) {
             return (
                 <Box sx={{ width: '100%', mt: theme.spacing(4), maxWidth: '1600px', mx: 'auto', px: 2 }}>
                     <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
-                        🌐 Domain-Based Processing Results (Mode 1)
+                        🌐 Domain-Based Processing Results
                     </Typography>
-                    
 
                     
-                    {/* Unified HTML Files Section */}
-                    {renderUnifiedHtmlFilesSection(result)}
-                    
-                    {/* Combined Site Similarity Results for All Domains */}
-                    {result.domain_results && result.domain_results.some(dr => dr.processed_clusters && dr.processed_clusters.some(pc => pc.processed_data && pc.processed_data.site_similarity)) && (
-                        <Accordion 
-                            sx={{ 
-                                mb: theme.spacing(2),
-                                '&:before': {
-                                    display: 'none',
-                                },
-                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                                borderRadius: '8px !important',
-                                overflow: 'hidden'
+                    {/* Site Similarity Results */}
+                    <Accordion 
+                        sx={{ 
+                            mb: theme.spacing(2),
+                            '&:before': { display: 'none' },
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                            borderRadius: '8px !important',
+                            backgroundColor: darkMode ? '#2a2a2a' : 'background.paper'
+                        }}
+                    >
+                        <AccordionSummary 
+                            expandIcon={<ExpandMoreIcon />}
+                            sx={{
+                                backgroundColor: darkMode ? '#333' : 'primary.light',
+                                color: darkMode ? '#ffffff' : 'inherit',
+                                '&:hover': {
+                                    backgroundColor: darkMode ? '#404040' : 'primary.main',
+                                    color: darkMode ? '#ffffff' : 'white',
+                                }
                             }}
                         >
-                            <AccordionSummary 
-                                expandIcon={<ExpandMoreIcon />}
-                                sx={{
-                                    backgroundColor: 'primary.light',
-                                    '&:hover': {
-                                        backgroundColor: 'primary.main',
-                                        color: 'white',
-                                    },
-                                    '& .MuiAccordionSummary-expandIconWrapper': {
-                                        color: 'inherit'
-                                    }
-                                }}
-                            >
-                                <Typography sx={{ fontWeight: 'bold' }}>
-                                    🔍 Site Similarity Analysis by Domain
-                                </Typography>
-                            </AccordionSummary>
-                            <AccordionDetails sx={{ p: 3 }}>
-                                {result.domain_results.map((domainResult, domainIndex) => (
-                                    domainResult.processed_clusters && domainResult.processed_clusters.map((processedCluster, clusterIndex) => (
-                                        processedCluster.processed_data && processedCluster.processed_data.site_similarity &&
-                                        <div key={`domain-${domainIndex}-similarity-${clusterIndex}`} style={{ marginBottom: '24px' }}>
-                                            <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: 'primary.main' }}>
-                                                📊 {domainResult.domain} - Level {processedCluster.level}
-                                            </Typography>
-                                            {renderSiteSimilarityResults(processedCluster.processed_data.site_similarity, processedCluster.level)}
-                                        </div>
-                                    ))
-                                ))}
-                            </AccordionDetails>
-                        </Accordion>
-                    )}
-                    
+                            <Typography sx={{ fontWeight: 'bold' }}>
+                                🔍 Site Similarity Analysis
+                            </Typography>
+                        </AccordionSummary>
+                        
+                        <AccordionDetails sx={{ p: 3 }}>
+                            {result.domain_results.map((domainResult, domainIndex) => (
+                                domainResult.processed_clusters && domainResult.processed_clusters.map((processedCluster, clusterIndex) => (
+                                    processedCluster.processed_data && processedCluster.processed_data.site_similarity &&
+                                    <div key={`domain-${domainIndex}-similarity-${clusterIndex}`} style={{ marginBottom: '24px' }}>
+                                        <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: 'primary.main' }}>
+                                            📊 {domainResult.domain} - Level {processedCluster.level}
+                                        </Typography>
+                                        {renderSiteSimilarityResults(
+                                            processedCluster.processed_data.site_similarity, 
+                                            processedCluster.level, 
+                                            processedCluster.processed_data
+                                        )}
+                                    </div>
+                                ))
+                            ))}
+                        </AccordionDetails>
+                    </Accordion>
+
+                    {/* Domain Results */}
                     {result.domain_results.map((domainResult, domainIndex) => (
                         <Accordion 
-                            key={`domain-result-${domainIndex}`} 
+                            key={`domain-${domainIndex}`} 
                             sx={{ 
                                 mb: theme.spacing(2),
-                                '&:before': {
-                                    display: 'none',
-                                },
+                                '&:before': { display: 'none' },
                                 boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                                 borderRadius: '8px !important',
-                                overflow: 'hidden',
                                 backgroundColor: darkMode ? '#2a2a2a' : 'background.paper'
                             }}
                         >
                             <AccordionSummary 
                                 expandIcon={<ExpandMoreIcon />}
                                 sx={{
-                                    backgroundColor: domainResult.status === 'success' 
-                                        ? (darkMode ? '#333' : 'grey.200') 
-                                        : 'error.light',
+                                    backgroundColor: domainResult.status === 'error' 
+                                        ? 'error.light' 
+                                        : (darkMode ? '#333' : 'primary.light'),
                                     color: darkMode ? '#ffffff' : 'inherit',
                                     '&:hover': {
-                                        backgroundColor: domainResult.status === 'success' 
-                                            ? (darkMode ? '#404040' : 'grey.300') 
-                                            : 'error.main',
-                                        color: domainResult.status === 'success' 
-                                            ? (darkMode ? '#ffffff' : 'text.primary') 
-                                            : 'white',
-                                    },
-                                    '& .MuiAccordionSummary-expandIconWrapper': {
-                                        color: 'inherit'
+                                        backgroundColor: domainResult.status === 'error' 
+                                            ? 'error.main' 
+                                            : (darkMode ? '#404040' : 'primary.main'),
+                                        color: darkMode ? '#ffffff' : 'white',
                                     }
                                 }}
                             >
-                                <Typography sx={{ 
-                                    fontWeight: 'bold',
-                                    color: darkMode ? '#ffffff' : 'inherit'
-                                }}>
-                                    Domain: {domainResult.domain} - {domainResult.status}
+                                <Typography sx={{ fontWeight: 'bold' }}>
+                                    🌐 {domainResult.domain} ({domainResult.urls.length} URLs)
                                 </Typography>
                             </AccordionSummary>
-                            <AccordionDetails sx={{ 
-                                p: 3,
-                                backgroundColor: darkMode ? '#2a2a2a' : 'background.paper',
-                                color: darkMode ? '#ffffff' : 'inherit'
-                            }}>
-                                {/* HTML Files Section */}
-                                {domainResult.html_files && domainResult.html_files.length > 0 && (
-                                    <Box sx={{ mb: theme.spacing(2) }}>
-                                        <Typography variant="h6" gutterBottom sx={{
-                                            color: darkMode ? '#ffffff' : 'inherit'
-                                        }}>Generated HTML Files</Typography>
-                                        <Grid container spacing={2}>
-                                            {domainResult.html_files.map((file, index) => (
-                                                <Grid item xs={12} sm={6} md={4} key={index}>
-                                                    <Card 
-                                                        sx={{ 
-                                                            cursor: 'pointer',
-                                                            transition: 'all 0.2s ease-in-out',
-                                                            '&:hover': {
-                                                                transform: 'translateY(-2px)',
-                                                                boxShadow: '0 4px 8px rgba(0,0,0,0.15)'
-                                                            }
-                                                        }}
-                                                        onClick={() => window.open(`http://localhost:5000/${file.path}`, '_blank')}
-                                                    >
-                                                        <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-                                                            <Typography 
-                                                                variant="subtitle2" 
-                                                                sx={{ 
-                                                                    fontWeight: 'bold',
-                                                                    mb: 1,
-                                                                    overflow: 'hidden',
-                                                                    textOverflow: 'ellipsis',
-                                                                    whiteSpace: 'nowrap'
-                                                                }}
-                                                                title={file.title || file.filename}
-                                                            >
-                                                                {file.title || file.filename}
-                                                            </Typography>
-                                                            <Typography 
-                                                                variant="caption" 
-                                                                color="text.secondary"
-                                                                sx={{ 
-                                                                    display: 'block',
-                                                                    mb: 1,
-                                                                    overflow: 'hidden',
-                                                                    textOverflow: 'ellipsis',
-                                                                    whiteSpace: 'nowrap'
-                                                                }}
-                                                                title={file.url}
-                                                            >
-                                                                {file.url}
-                                                            </Typography>
-                                                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                                <Typography variant="caption" color="text.secondary">
-                                                                    📄 {file.url_identifier || file.short_id}
-                                                                </Typography>
-                                                                <Typography variant="caption" color="text.secondary">
-                                                                    {file.file_size_kb ? `💾 ${file.file_size_kb.toFixed(1)} KB` : ''}
-                                                                </Typography>
-                                                            </Box>
-                                                        </CardContent>
-                                                    </Card>
-                                                </Grid>
-                                            ))}
-                                        </Grid>
-                                    </Box>
-                                )}
-
-                                {/* Rest of the domain result content */}
-                                <Box sx={{ mb: theme.spacing(2) }}>
-                                    <Typography variant="h6" gutterBottom sx={{
-                                        color: darkMode ? '#ffffff' : 'inherit'
-                                    }}>URLs in Domain</Typography>
-                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                                        {domainResult.urls.map((url, index) => (
-                                            <Chip
-                                                key={index}
-                                                label={url}
-                                                color="primary"
-                                                size="small"
-                                            />
-                                        ))}
-                                    </Box>
-                                </Box>
-
-                                {domainResult.status === 'success' && (
+                            
+                            <AccordionDetails sx={{ p: 3 }}>
+                                {domainResult.status === 'error' ? (
+                                    <Typography variant="body1" color="error">
+                                        ❌ {domainResult.message}
+                                    </Typography>
+                                ) : (
                                     <>
                                         {/* Clustering Results Section */}
                                         {domainResult.clustering_results && domainResult.clustering_results.map((clusterResult, index) => (
-                                                                        <Accordion 
-                                key={`cluster-result-${domainIndex}-${index}`} 
-                                sx={{ 
-                                    mb: theme.spacing(2),
-                                    '&:before': {
-                                        display: 'none',
-                                    },
-                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                                    borderRadius: '8px !important',
-                                    overflow: 'hidden',
-                                    backgroundColor: darkMode ? '#2a2a2a' : 'background.paper'
-                                }}
-                            >
+                                            <Accordion 
+                                                key={`cluster-result-${domainIndex}-${index}`} 
+                                                sx={{ 
+                                                    mb: theme.spacing(2),
+                                                    '&:before': {
+                                                        display: 'none',
+                                                    },
+                                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                                    borderRadius: '8px !important',
+                                                    overflow: 'hidden',
+                                                    backgroundColor: darkMode ? '#2a2a2a' : 'background.paper'
+                                                }}
+                                            >
                                                 <AccordionSummary 
                                                     expandIcon={<ExpandMoreIcon />}
                                                     sx={{
@@ -2048,142 +2124,216 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                         }
                                                     }}
                                                 >
-                                                    <Typography sx={{ 
-                                                        fontWeight: 'bold',
-                                                        color: darkMode ? '#ffffff' : 'inherit'
-                                                    }}>
-                                                        Level {clusterResult.level} - {clusterResult.message}
+                                                    <Typography sx={{ fontWeight: 'bold' }}>
+                                                        🎯 Level {clusterResult.level} Clustering
+                                                        {clusterResult.status === 'error' && ' (Error)'}
                                                     </Typography>
                                                 </AccordionSummary>
-                                                <AccordionDetails sx={{ 
-                                                    p: 3,
-                                                    backgroundColor: darkMode ? '#2a2a2a' : 'background.paper',
-                                                    color: darkMode ? '#ffffff' : 'inherit'
-                                                }}>
-                                                    {/* Show error message if status is error */}
-                                                    {clusterResult.status === 'error' && (
-                                                        <Box sx={{ mb: theme.spacing(2) }}>
-                                                            <Typography variant="h6" gutterBottom color="error">
-                                                                Error in Level {clusterResult.level}
-                                                            </Typography>
-                                                            <Box sx={{ 
-                                                                p: 3, 
-                                                                bgcolor: 'error.light', 
-                                                                borderRadius: 2,
-                                                                border: '1px solid',
-                                                                borderColor: 'error.main',
-                                                                color: 'error.contrastText'
-                                                            }}>
-                                                                <Typography variant="body1">
-                                                                    {clusterResult.message}
-                                                                </Typography>
-                                                                {clusterResult.stack_trace && (
-                                                                    <Box sx={{ mt: 2, p: 2, bgcolor: 'rgba(0,0,0,0.1)', borderRadius: 1 }}>
-                                                                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
-                                                                            Stack Trace:
-                                                                        </Typography>
-                                                                        <pre style={{ 
-                                                                            fontSize: '0.8rem', 
-                                                                            overflow: 'auto', 
-                                                                            maxHeight: '200px',
-                                                                            margin: 0,
-                                                                            whiteSpace: 'pre-wrap'
+                                                
+                                                <AccordionDetails sx={{ p: 3 }}>
+                                                    {clusterResult.status === 'error' ? (
+                                                        <Typography variant="body1" color="error">
+                                                            ❌ {clusterResult.message}
+                                                        </Typography>
+                                                    ) : (
+                                                        <>
+                                                            {/* Cluster Info Section */}
+                                                            {(() => {
+                                                                const clusterInfo = getClusterInfo(clusterResult);
+                                                                if (!clusterInfo) return null;
+                                                                
+                                                                return (
+                                                                    <Box sx={{ mb: theme.spacing(2) }}>
+                                                                        <Typography variant="h6" gutterBottom sx={{
+                                                                            color: darkMode ? '#ffffff' : 'inherit'
                                                                         }}>
-                                                                            {clusterResult.stack_trace}
-                                                                        </pre>
+                                                                            📊 Cluster Information
+                                                                        </Typography>
+                                                                        <Box sx={{ 
+                                                                            p: 3, 
+                                                                            bgcolor: 'background.paper', 
+                                                                            borderRadius: 2,
+                                                                            border: '1px solid',
+                                                                            borderColor: 'divider',
+                                                                            display: 'flex',
+                                                                            flexDirection: 'column',
+                                                                            gap: 2
+                                                                        }}>
+                                                                            <Box sx={{ 
+                                                                                display: 'grid',
+                                                                                gridTemplateColumns: '200px 1fr',
+                                                                                gap: 2,
+                                                                                alignItems: 'center'
+                                                                            }}>
+                                                                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                                                    Number of Clusters:
+                                                                                </Typography>
+                                                                                <Typography variant="subtitle1">
+                                                                                    {clusterInfo.num_clusters}
+                                                                                </Typography>
+
+                                                                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                                                    DBCV Score:
+                                                                                </Typography>
+                                                                                <Typography variant="subtitle1">
+                                                                                    {clusterInfo.dbcv_score?.toFixed(3) || 'N/A'}
+                                                                                </Typography>
+
+                                                                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                                                    Min Cluster Size:
+                                                                                </Typography>
+                                                                                <Typography variant="subtitle1">
+                                                                                    {clusterInfo.min_cluster_size}
+                                                                                </Typography>
+
+                                                                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                                                    Epsilon:
+                                                                                </Typography>
+                                                                                <Typography variant="subtitle1">
+                                                                                    {clusterInfo.cluster_selection_epsilon}
+                                                                                </Typography>
+
+                                                                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                                                    Useful Attributes:
+                                                                                </Typography>
+                                                                                <Typography variant="subtitle1">
+                                                                                    {clusterInfo.useful_attributes?.length || 0}
+                                                                                </Typography>
+                                                                            </Box>
+                                                                        </Box>
                                                                     </Box>
-                                                                )}
-                                                            </Box>
-                                                        </Box>
-                                                    )}
+                                                                );
+                                                            })()}
 
-                                                    {/* Show cluster info only if it exists and status is not error */}
-                                                    {clusterResult.cluster_info && clusterResult.status !== 'error' && (
-                                                        <Box sx={{ mb: theme.spacing(2) }}>
-                                                            <Typography variant="h6" gutterBottom sx={{
-                                                                color: darkMode ? '#ffffff' : 'inherit'
-                                                            }}>Cluster Info</Typography>
-                                                            <Box sx={{ 
-                                                                p: 3, 
-                                                                bgcolor: 'background.paper', 
-                                                                borderRadius: 2,
-                                                                border: '1px solid',
-                                                                borderColor: 'divider',
-                                                                display: 'flex',
-                                                                flexDirection: 'column',
-                                                                gap: 2
-                                                            }}>
-                                                                <Box sx={{ 
-                                                                    display: 'grid',
-                                                                    gridTemplateColumns: '200px 1fr',
-                                                                    gap: 2,
-                                                                    alignItems: 'center'
-                                                                }}>
-                                                                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                                                                        Number of Clusters:
-                                                                    </Typography>
-                                                                    <Typography variant="subtitle1">
-                                                                        {clusterResult.cluster_info.num_clusters}
-                                                                    </Typography>
-
-                                                                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                                                                        DBCV Score:
-                                                                    </Typography>
-                                                                    <Typography variant="subtitle1">
-                                                                        {clusterResult.cluster_info.dbcv_score.toFixed(3)}
-                                                                    </Typography>
-
-                                                                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                                                                        Min Cluster Size:
-                                                                    </Typography>
-                                                                    <Typography variant="subtitle1">
-                                                                        {clusterResult.cluster_info.min_cluster_size}
-                                                                    </Typography>
-
-                                                                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                                                                        Epsilon:
-                                                                    </Typography>
-                                                                    <Typography variant="subtitle1">
-                                                                        {clusterResult.cluster_info.cluster_selection_epsilon}
-                                                                    </Typography>
-                                                                </Box>
-
-                                                                <Box sx={{ 
-                                                                    display: 'flex',
-                                                                    flexDirection: 'column',
-                                                                    gap: 1,
-                                                                    mt: 1
-                                                                }}>
-                                                                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                                                                        Useful Attributes:
-                                                                    </Typography>
-                                                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                                                                        {clusterResult.cluster_info.useful_attributes.map((attr, i) => (
-                                                                            <Chip 
-                                                                                key={i} 
-                                                                                label={attr} 
-                                                                                size="small"
-                                                                                sx={{ 
-                                                                                    bgcolor: 'primary.light',
-                                                                                    color: 'primary.contrastText',
-                                                                                    '&:hover': {
-                                                                                        bgcolor: 'primary.main'
-                                                                                    }
+                                                            {/* Clusters Data Section */}
+                                                            {(() => {
+                                                                const clustersData = getClustersData(clusterResult);
+                                                                if (!clustersData) return null;
+                                                                
+                                                                return (
+                                                                    <Box sx={{ mb: theme.spacing(2) }}>
+                                                                        <Typography variant="h6" gutterBottom sx={{
+                                                                            color: darkMode ? '#ffffff' : 'inherit'
+                                                                        }}>
+                                                                            🎯 Clusters
+                                                                        </Typography>
+                                                                        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                                                            <TextareaAutosize
+                                                                                minRows={2}
+                                                                                maxRows={4}
+                                                                                style={{ 
+                                                                                    width: '60%', 
+                                                                                    padding: '10px',
+                                                                                    fontFamily: 'monospace',
+                                                                                    borderRadius: '4px',
+                                                                                    border: '1px solid #ccc',
+                                                                                    resize: 'vertical',
+                                                                                    overflow: 'auto'
                                                                                 }}
+                                                                                value={clustersData.is_lightweight ? 
+                                                                                    clustersData.message : 
+                                                                                    JSON.stringify(clustersData, null, 1)
+                                                                                }
+                                                                                readOnly
                                                                             />
-                                                                        ))}
+                                                                        </Box>
+                                                                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1, gap: 1 }}>
+                                                                            <Tooltip title="Copy to clipboard">
+                                                                                <IconButton 
+                                                                                    size="small" 
+                                                                                    onClick={() => handleCopyToClipboard(
+                                                                                        clustersData.is_lightweight ? 
+                                                                                        clustersData.message : 
+                                                                                        JSON.stringify(clustersData, null, 1)
+                                                                                    )}
+                                                                                >
+                                                                                    <ContentCopyIcon />
+                                                                                </IconButton>
+                                                                            </Tooltip>
+                                                                            {clustersData.is_lightweight && (
+                                                                                <Tooltip title="Load full clustering data from separate file">
+                                                                                    <Button
+                                                                                        variant="outlined"
+                                                                                        size="small"
+                                                                                        onClick={async () => {
+                                                                                            const testId = result.test_metadata?.test_id;
+                                                                                            if (testId && selectedExperiment?.id) {
+                                                                                                const fullData = await loadLargeDataClusteringResults(selectedExperiment.id, testId);
+                                                                                                if (fullData) {
+                                                                                                    // Find the specific cluster result and update it
+                                                                                                    const clusterIndex = result.clustering_results.findIndex(cr => cr.level === clusterResult.level);
+                                                                                                    if (clusterIndex !== -1) {
+                                                                                                        // Update the result with full data
+                                                                                                        const updatedResult = { ...result };
+                                                                                                        updatedResult.clustering_results[clusterIndex] = fullData[clusterIndex];
+                                                                                                        setResult(updatedResult);
+                                                                                                        setSuccess('Full clustering data loaded successfully!');
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }}
+                                                                                        sx={{
+                                                                                            fontSize: '0.75rem',
+                                                                                            ...(darkMode && {
+                                                                                                borderColor: '#555',
+                                                                                                color: '#fff',
+                                                                                                '&:hover': {
+                                                                                                    borderColor: '#777',
+                                                                                                    backgroundColor: 'rgba(255,255,255,0.1)'
+                                                                                                }
+                                                                                            })
+                                                                                        }}
+                                                                                    >
+                                                                                        📥 Load Full Data
+                                                                                    </Button>
+                                                                                </Tooltip>
+                                                                            )}
+                                                                        </Box>
                                                                     </Box>
-                                                                </Box>
-                                                            </Box>
-                                                        </Box>
+                                                                );
+                                                            })()}
+                                                        </>
                                                     )}
+                                                </AccordionDetails>
+                                            </Accordion>
+                                        ))}
 
-                                                    {/* Show clusters only if they exist and status is not error */}
-                                                    {clusterResult.clusters && clusterResult.status !== 'error' && (
+                                        {/* Processed Clusters Section */}
+                                        {domainResult.processed_clusters && domainResult.processed_clusters.map((processedCluster, index) => (
+                                            <Accordion 
+                                                key={`processed-cluster-${domainIndex}-${index}`} 
+                                                sx={{ 
+                                                    mb: theme.spacing(2),
+                                                    '&:before': { display: 'none' },
+                                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                                    borderRadius: '8px !important',
+                                                    backgroundColor: darkMode ? '#2a2a2a' : 'background.paper'
+                                                }}
+                                            >
+                                                <AccordionSummary 
+                                                    expandIcon={<ExpandMoreIcon />}
+                                                    sx={{
+                                                        backgroundColor: darkMode ? '#333' : 'grey.200',
+                                                        color: darkMode ? '#ffffff' : 'inherit',
+                                                        '&:hover': {
+                                                            backgroundColor: darkMode ? '#404040' : 'grey.300',
+                                                            color: darkMode ? '#ffffff' : 'text.primary',
+                                                        }
+                                                    }}
+                                                >
+                                                    <Typography sx={{ fontWeight: 'bold' }}>
+                                                        ⚙️ Processed Cluster Level {processedCluster.level}
+                                                    </Typography>
+                                                </AccordionSummary>
+                                                
+                                                <AccordionDetails sx={{ p: 3 }}>
+                                                    {processedCluster.processed_data && processedCluster.processed_data.sites && (
                                                         <Box sx={{ mb: theme.spacing(2) }}>
                                                             <Typography variant="h6" gutterBottom sx={{
                                                                 color: darkMode ? '#ffffff' : 'inherit'
-                                                            }}>Clusters</Typography>
+                                                            }}>
+                                                                📊 Sites Data
+                                                            </Typography>
                                                             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                                                                 <TextareaAutosize
                                                                     minRows={2}
@@ -2197,7 +2347,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                                         resize: 'vertical',
                                                                         overflow: 'auto'
                                                                     }}
-                                                                    value={JSON.stringify(clusterResult.clusters, null, 1)}
+                                                                    value={formatSitesData(processedCluster.processed_data.sites)}
                                                                     readOnly
                                                                 />
                                                             </Box>
@@ -2205,7 +2355,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                                 <Tooltip title="Copy to clipboard">
                                                                     <IconButton 
                                                                         size="small" 
-                                                                        onClick={() => handleCopyToClipboard(JSON.stringify(clusterResult.clusters, null, 1))}
+                                                                        onClick={() => handleCopyToClipboard(formatSitesData(processedCluster.processed_data.sites))}
                                                                     >
                                                                         <ContentCopyIcon />
                                                                     </IconButton>
@@ -2213,116 +2363,6 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                             </Box>
                                                         </Box>
                                                     )}
-                                                </AccordionDetails>
-                                            </Accordion>
-                                        ))}
-
-                                        {/* Processed Clusters Section */}
-                                        {domainResult.processed_clusters && domainResult.processed_clusters.map((processedCluster, index) => (
-                                            <Accordion 
-                                                key={`processed-cluster-${domainIndex}-${index}`} 
-                                                sx={{ 
-                                                    mb: theme.spacing(2),
-                                                    '&:before': {
-                                                        display: 'none',
-                                                    },
-                                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                                                    borderRadius: '8px !important',
-                                                    overflow: 'hidden',
-                                                    backgroundColor: darkMode ? '#2a2a2a' : 'background.paper'
-                                                }}
-                                            >
-                                                <AccordionSummary 
-                                                    expandIcon={<ExpandMoreIcon />}
-                                                    sx={{
-                                                        backgroundColor: darkMode ? '#333' : 'grey.200',
-                                                        color: darkMode ? '#ffffff' : 'inherit',
-                                                        '&:hover': {
-                                                            backgroundColor: darkMode ? '#404040' : 'grey.300',
-                                                            color: darkMode ? '#ffffff' : 'text.primary',
-                                                        },
-                                                        '& .MuiAccordionSummary-expandIconWrapper': {
-                                                            color: 'inherit'
-                                                        }
-                                                    }}
-                                                >
-                                                    <Typography sx={{ 
-                                                        fontWeight: 'bold',
-                                                        color: darkMode ? '#ffffff' : 'inherit'
-                                                    }}>
-                                                        Processed Cluster Level {processedCluster.level}
-                                                    </Typography>
-                                                </AccordionSummary>
-                                                <AccordionDetails sx={{ 
-                                                    p: 3,
-                                                    backgroundColor: darkMode ? '#2a2a2a' : 'background.paper',
-                                                    color: darkMode ? '#ffffff' : 'inherit'
-                                                }}>
-                                                    <Box sx={{ mb: theme.spacing(2) }}>
-                                                        <Typography variant="h6" gutterBottom sx={{
-                                                            color: darkMode ? '#ffffff' : 'inherit'
-                                                        }}>Processed Data</Typography>
-                                                        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                                                            <TextareaAutosize
-                                                                minRows={2}
-                                                                maxRows={4}
-                                                                style={{ 
-                                                                    width: '60%', 
-                                                                    padding: '10px',
-                                                                    fontFamily: 'monospace',
-                                                                    borderRadius: '4px',
-                                                                    border: '1px solid #ccc',
-                                                                    resize: 'vertical',
-                                                                    overflow: 'auto'
-                                                                }}
-                                                                value={processedCluster.processed_data.data}
-                                                                readOnly
-                                                            />
-                                                        </Box>
-                                                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1 }}>
-                                                            <Tooltip title="Copy to clipboard">
-                                                                <IconButton 
-                                                                    size="small" 
-                                                                    onClick={() => handleCopyToClipboard(processedCluster.processed_data.data)}
-                                                                >
-                                                                    <ContentCopyIcon />
-                                                                </IconButton>
-                                                            </Tooltip>
-                                                        </Box>
-                                                    </Box>
-
-                                                    <Box sx={{ mb: theme.spacing(2) }}>
-                                                        <Typography variant="h6" gutterBottom sx={{
-                                                            color: darkMode ? '#ffffff' : 'inherit'
-                                                        }}>Sites</Typography>
-                                                        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                                                            <TextareaAutosize
-                                                                minRows={2}
-                                                                maxRows={4}
-                                                                style={{ 
-                                                                    width: '60%', 
-                                                                    padding: '10px',
-                                                                    fontFamily: 'monospace',
-                                                                    borderRadius: '4px',
-                                                                    border: '1px solid #ccc',
-                                                                    resize: 'vertical',
-                                                                    overflow: 'auto'
-                                                                }}
-                                                                value={formatSitesData(processedCluster.processed_data.sites)}
-                                                                readOnly
-                                                            />
-                                                        </Box>
-                                                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1 }}>
-                                                            <Tooltip title="Copy to clipboard">
-                                                                <IconButton 
-                                                                    size="small" 
-                                                                    onClick={() => handleCopyToClipboard(formatSitesData(processedCluster.processed_data.sites))}
-                                                                >
-                                                                    <ContentCopyIcon />
-                                                                </IconButton>
-                                                            </Tooltip>
-                                                        </Box>
-                                                    </Box>
 
                                                     {/* Timing Logs Section for Processed Clusters */}
                                                     {processedCluster.timing_logs && renderTimingLogs(processedCluster.timing_logs)}
@@ -2334,8 +2374,8 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                             </AccordionDetails>
                         </Accordion>
                     ))}
-                    
-                    {/* Timing Logs Section for Domain Results */}
+
+                    {/* Timing Logs Section for Regular Results */}
                     {result.timing_logs && renderTimingLogs(result.timing_logs)}
                 </Box>
             );
@@ -2347,40 +2387,20 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                 <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
                     🧮 Clustering Results
                 </Typography>
-                
-                {/* Unified HTML Files Section */}
-                {renderUnifiedHtmlFilesSection(result)}
+
                 
                 {/* Site Similarity Results by Level */}
                 {result.processed_clusters && result.processed_clusters.map((processedCluster, clusterIndex) => (
                     processedCluster.processed_data && processedCluster.processed_data.site_similarity &&
                     <div key={`similarity-${clusterIndex}`}>
-                        <Typography variant="h6" sx={{ mt: 2, mb: 1, fontWeight: 'bold' }}>
-                            🔍 Site Similarity Analysis - Level {processedCluster.level}
-                        </Typography>
-                        {renderSiteSimilarityResults(processedCluster.processed_data.site_similarity, processedCluster.level)}
+                        {renderSiteSimilarityResults(
+                            processedCluster.processed_data.site_similarity, 
+                            processedCluster.level, 
+                            processedCluster.processed_data
+                        )}
                     </div>
                 ))}
-                
-                {/* Original HTML Files Section - keeping for backup */}
-                {false && result.html_files && result.html_files.length > 0 && (
-                    <Box sx={{ mb: theme.spacing(2) }}>
-                        <Typography variant="h6" gutterBottom>Generated HTML Files</Typography>
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                            {result.html_files.map((file, index) => (
-                                <Button
-                                    key={index}
-                                    variant="contained"
-                                    color="primary"
-                                    onClick={() => window.open(`http://localhost:5000/${file.path}`, '_blank')}
-                                    sx={{ mb: 1 }}
-                                >
-                                    Open {file.filename}
-                                </Button>
-                            ))}
-                        </Box>
-                    </Box>
-                )}
+
                 
                 {/* Clustering Results Section */}
                 {result.clustering_results && result.clustering_results.map((clusterResult, index) => (
@@ -2415,174 +2435,175 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                 }
                             }}
                         >
-                            <Typography sx={{ 
-                                fontWeight: 'bold',
-                                color: darkMode ? '#ffffff' : 'inherit'
-                            }}>
-                                🧮 Level {clusterResult.level} - {clusterResult.status === 'error' ? '❌' : '✅'} {clusterResult.message}
+                            <Typography sx={{ fontWeight: 'bold' }}>
+                                🎯 Level {clusterResult.level} Clustering
+                                {clusterResult.status === 'error' && ' (Error)'}
                             </Typography>
                         </AccordionSummary>
-                        <AccordionDetails sx={{ 
-                            p: 3,
-                            backgroundColor: darkMode ? '#2a2a2a' : 'background.paper',
-                            color: darkMode ? '#ffffff' : 'inherit'
-                        }}>
-                            {/* Show error message if status is error */}
-                            {clusterResult.status === 'error' && (
-                                <Box sx={{ mb: theme.spacing(2) }}>
-                                    <Typography variant="h6" gutterBottom color="error">
-                                        ❌ Error in Level {clusterResult.level}
-                                    </Typography>
-                                    <Box sx={{ 
-                                        p: 3, 
-                                        bgcolor: 'error.light', 
-                                        borderRadius: 2,
-                                        border: '1px solid',
-                                        borderColor: 'error.main',
-                                        color: 'error.contrastText'
-                                    }}>
-                                        <Typography variant="body1">
-                                            {clusterResult.message}
-                                        </Typography>
-                                        {clusterResult.stack_trace && (
-                                            <Box sx={{ mt: 2, p: 2, bgcolor: 'rgba(0,0,0,0.1)', borderRadius: 1 }}>
-                                                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
-                                                    Stack Trace:
-                                                </Typography>
-                                                <pre style={{ 
-                                                    fontSize: '0.8rem', 
-                                                    overflow: 'auto', 
-                                                    maxHeight: '200px',
-                                                    margin: 0,
-                                                    whiteSpace: 'pre-wrap'
+                        
+                        <AccordionDetails sx={{ p: 3 }}>
+                            {clusterResult.status === 'error' ? (
+                                <Typography variant="body1" color="error">
+                                    ❌ {clusterResult.message}
+                                </Typography>
+                            ) : (
+                                <>
+                                    {/* Cluster Info Section */}
+                                    {(() => {
+                                        const clusterInfo = getClusterInfo(clusterResult);
+                                        if (!clusterInfo) return null;
+                                        
+                                        return (
+                                            <Box sx={{ mb: theme.spacing(2) }}>
+                                                <Typography variant="h6" gutterBottom sx={{
+                                                    color: darkMode ? '#ffffff' : 'inherit'
                                                 }}>
-                                                    {clusterResult.stack_trace}
-                                                </pre>
+                                                    📊 Cluster Information
+                                                </Typography>
+                                                <Box sx={{ 
+                                                    p: 3, 
+                                                    bgcolor: 'background.paper', 
+                                                    borderRadius: 2,
+                                                    border: '1px solid',
+                                                    borderColor: 'divider',
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    gap: 2
+                                                }}>
+                                                    <Box sx={{ 
+                                                        display: 'grid',
+                                                        gridTemplateColumns: '200px 1fr',
+                                                        gap: 2,
+                                                        alignItems: 'center'
+                                                    }}>
+                                                        <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                            Number of Clusters:
+                                                        </Typography>
+                                                        <Typography variant="subtitle1">
+                                                            {clusterInfo.num_clusters}
+                                                        </Typography>
+
+                                                        <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                            DBCV Score:
+                                                        </Typography>
+                                                        <Typography variant="subtitle1">
+                                                            {clusterInfo.dbcv_score?.toFixed(3) || 'N/A'}
+                                                        </Typography>
+
+                                                        <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                            Min Cluster Size:
+                                                        </Typography>
+                                                        <Typography variant="subtitle1">
+                                                            {clusterInfo.min_cluster_size}
+                                                        </Typography>
+
+                                                        <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                            Epsilon:
+                                                        </Typography>
+                                                        <Typography variant="subtitle1">
+                                                            {clusterInfo.cluster_selection_epsilon}
+                                                        </Typography>
+
+                                                        <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                            Useful Attributes:
+                                                        </Typography>
+                                                        <Typography variant="subtitle1">
+                                                            {clusterInfo.useful_attributes?.length || 0}
+                                                        </Typography>
+                                                    </Box>
+                                                </Box>
                                             </Box>
-                                        )}
-                                    </Box>
-                                </Box>
-                            )}
+                                        );
+                                    })()}
 
-                            {/* Show cluster info only if it exists and status is not error */}
-                            {clusterResult.cluster_info && clusterResult.status !== 'error' && (
-                                <Box sx={{ mb: theme.spacing(2) }}>
-                                    <Typography variant="h6" gutterBottom sx={{
-                                        color: darkMode ? '#ffffff' : 'inherit'
-                                    }}>
-                                        Cluster Info
-                                    </Typography>
-                                    <Box sx={{ 
-                                        p: 3, 
-                                        bgcolor: 'background.paper', 
-                                        borderRadius: 2,
-                                        border: '1px solid',
-                                        borderColor: 'divider',
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        gap: 2
-                                    }}>
-                                        <Box sx={{ 
-                                            display: 'grid',
-                                            gridTemplateColumns: '200px 1fr',
-                                            gap: 2,
-                                            alignItems: 'center'
-                                        }}>
-                                            <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                                                Number of Clusters:
-                                            </Typography>
-                                            <Typography variant="subtitle1">
-                                                {clusterResult.cluster_info.num_clusters}
-                                            </Typography>
-
-                                            <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                                                DBCV Score:
-                                            </Typography>
-                                            <Typography variant="subtitle1">
-                                                {clusterResult.cluster_info.dbcv_score.toFixed(3)}
-                                            </Typography>
-
-                                            <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                                                Min Cluster Size:
-                                            </Typography>
-                                            <Typography variant="subtitle1">
-                                                {clusterResult.cluster_info.min_cluster_size}
-                                            </Typography>
-
-                                            <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                                                Epsilon:
-                                            </Typography>
-                                            <Typography variant="subtitle1">
-                                                {clusterResult.cluster_info.cluster_selection_epsilon}
-                                            </Typography>
-                                        </Box>
-
-                                        <Box sx={{ 
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            gap: 1,
-                                            mt: 1
-                                        }}>
-                                            <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                                                Useful Attributes:
-                                            </Typography>
-                                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                                                {clusterResult.cluster_info.useful_attributes.map((attr, i) => (
-                                                    <Chip 
-                                                        key={i} 
-                                                        label={attr} 
-                                                        size="small"
-                                                        sx={{ 
-                                                            bgcolor: 'primary.light',
-                                                            color: 'primary.contrastText',
-                                                            '&:hover': {
-                                                                bgcolor: 'primary.main'
-                                                            }
+                                    {/* Clusters Data Section */}
+                                    {(() => {
+                                        const clustersData = getClustersData(clusterResult);
+                                        if (!clustersData) return null;
+                                        
+                                        return (
+                                            <Box sx={{ mb: theme.spacing(2) }}>
+                                                <Typography variant="h6" gutterBottom sx={{
+                                                    color: darkMode ? '#ffffff' : 'inherit'
+                                                }}>
+                                                    🎯 Clusters
+                                                </Typography>
+                                                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                                    <TextareaAutosize
+                                                        minRows={2}
+                                                        maxRows={4}
+                                                        style={{ 
+                                                            width: '60%', 
+                                                            padding: '10px',
+                                                            fontFamily: 'monospace',
+                                                            borderRadius: '4px',
+                                                            border: '1px solid #ccc',
+                                                            resize: 'vertical',
+                                                            overflow: 'auto'
                                                         }}
+                                                        value={clustersData.is_lightweight ? 
+                                                            clustersData.message : 
+                                                            JSON.stringify(clustersData, null, 1)
+                                                        }
+                                                        readOnly
                                                     />
-                                                ))}
+                                                </Box>
+                                                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1, gap: 1 }}>
+                                                    <Tooltip title="Copy to clipboard">
+                                                        <IconButton 
+                                                            size="small" 
+                                                            onClick={() => handleCopyToClipboard(
+                                                                clustersData.is_lightweight ? 
+                                                                clustersData.message : 
+                                                                JSON.stringify(clustersData, null, 1)
+                                                            )}
+                                                        >
+                                                            <ContentCopyIcon />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                    {clustersData.is_lightweight && (
+                                                        <Tooltip title="Load full clustering data from separate file">
+                                                            <Button
+                                                                variant="outlined"
+                                                                size="small"
+                                                                onClick={async () => {
+                                                                    const testId = result.test_metadata?.test_id;
+                                                                    if (testId && selectedExperiment?.id) {
+                                                                        const fullData = await loadLargeDataClusteringResults(selectedExperiment.id, testId);
+                                                                        if (fullData) {
+                                                                            // Find the specific cluster result and update it
+                                                                            const clusterIndex = result.clustering_results.findIndex(cr => cr.level === clusterResult.level);
+                                                                            if (clusterIndex !== -1) {
+                                                                                // Update the result with full data
+                                                                                const updatedResult = { ...result };
+                                                                                updatedResult.clustering_results[clusterIndex] = fullData[clusterIndex];
+                                                                                setResult(updatedResult);
+                                                                                setSuccess('Full clustering data loaded successfully!');
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }}
+                                                                sx={{
+                                                                    fontSize: '0.75rem',
+                                                                    ...(darkMode && {
+                                                                        borderColor: '#555',
+                                                                        color: '#fff',
+                                                                        '&:hover': {
+                                                                            borderColor: '#777',
+                                                                            backgroundColor: 'rgba(255,255,255,0.1)'
+                                                                        }
+                                                                    })
+                                                                }}
+                                                            >
+                                                                📥 Load Full Data
+                                                            </Button>
+                                                        </Tooltip>
+                                                    )}
+                                                </Box>
                                             </Box>
-                                        </Box>
-                                    </Box>
-                                </Box>
-                            )}
-
-                            {/* Show clusters only if they exist and status is not error */}
-                            {clusterResult.clusters && clusterResult.status !== 'error' && (
-                                <Box sx={{ mb: theme.spacing(2) }}>
-                                    <Typography variant="h6" gutterBottom sx={{
-                                        color: darkMode ? '#ffffff' : 'inherit'
-                                    }}>
-                                        🎯 Clusters
-                                    </Typography>
-                                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                                        <TextareaAutosize
-                                            minRows={2}
-                                            maxRows={4}
-                                            style={{ 
-                                                width: '60%', 
-                                                padding: '10px',
-                                                fontFamily: 'monospace',
-                                                borderRadius: '4px',
-                                                border: '1px solid #ccc',
-                                                resize: 'vertical',
-                                                overflow: 'auto'
-                                            }}
-                                            value={JSON.stringify(clusterResult.clusters, null, 1)}
-                                            readOnly
-                                        />
-                                    </Box>
-                                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1 }}>
-                                        <Tooltip title="Copy to clipboard">
-                                            <IconButton 
-                                                size="small" 
-                                                onClick={() => handleCopyToClipboard(JSON.stringify(clusterResult.clusters, null, 1))}
-                                            >
-                                                <ContentCopyIcon />
-                                            </IconButton>
-                                        </Tooltip>
-                                    </Box>
-                                </Box>
+                                        );
+                                    })()}
+                                </>
                             )}
                         </AccordionDetails>
                     </Accordion>
@@ -2594,12 +2615,9 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                         key={`processed-cluster-${index}`} 
                         sx={{ 
                             mb: theme.spacing(2),
-                            '&:before': {
-                                display: 'none',
-                            },
+                            '&:before': { display: 'none', },
                             boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                             borderRadius: '8px !important',
-                            overflow: 'hidden',
                             backgroundColor: darkMode ? '#2a2a2a' : 'background.paper'
                         }}
                     >
@@ -2617,83 +2635,48 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                 }
                             }}
                         >
-                            <Typography sx={{ 
-                                fontWeight: 'bold',
-                                color: darkMode ? '#ffffff' : 'inherit'
-                            }}>
+                            <Typography sx={{ fontWeight: 'bold' }}>
                                 ⚙️ Processed Cluster Level {processedCluster.level}
                             </Typography>
                         </AccordionSummary>
-                        <AccordionDetails sx={{ 
-                            p: 3,
-                            backgroundColor: darkMode ? '#2a2a2a' : 'background.paper',
-                            color: darkMode ? '#ffffff' : 'inherit'
-                        }}>
-                            <Box sx={{ mb: theme.spacing(2) }}>
-                                <Typography variant="h6" gutterBottom sx={{
-                                    color: darkMode ? '#ffffff' : 'inherit'
-                                }}>Processed Data</Typography>
-                                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                                    <TextareaAutosize
-                                        minRows={2}
-                                        maxRows={4}
-                                        style={{ 
-                                            width: '60%', 
-                                            padding: '10px',
-                                            fontFamily: 'monospace',
-                                            borderRadius: '4px',
-                                            border: '1px solid #ccc',
-                                            resize: 'vertical',
-                                            overflow: 'auto'
-                                        }}
-                                        value={processedCluster.processed_data.data}
-                                        readOnly
-                                    />
+                        
+                        <AccordionDetails sx={{ p: 3 }}>
+                            {processedCluster.processed_data && processedCluster.processed_data.sites && (
+                                <Box sx={{ mb: theme.spacing(2) }}>
+                                    <Typography variant="h6" gutterBottom sx={{
+                                        color: darkMode ? '#ffffff' : 'inherit'
+                                    }}>
+                                        📊 Sites Data
+                                    </Typography>
+                                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                        <TextareaAutosize
+                                            minRows={2}
+                                            maxRows={4}
+                                            style={{ 
+                                                width: '60%', 
+                                                padding: '10px',
+                                                fontFamily: 'monospace',
+                                                borderRadius: '4px',
+                                                border: '1px solid #ccc',
+                                                resize: 'vertical',
+                                                overflow: 'auto'
+                                            }}
+                                            value={formatSitesData(processedCluster.processed_data.sites)}
+                                            readOnly
+                                        />
+                                    </Box>
+                                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1 }}>
+                                        <Tooltip title="Copy to clipboard">
+                                            <IconButton 
+                                                size="small" 
+                                                onClick={() => handleCopyToClipboard(formatSitesData(processedCluster.processed_data.sites))}
+                                            >
+                                                <ContentCopyIcon />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </Box>
                                 </Box>
-                                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1 }}>
-                                    <Tooltip title="Copy to clipboard">
-                                        <IconButton 
-                                            size="small" 
-                                            onClick={() => handleCopyToClipboard(processedCluster.processed_data.data)}
-                                        >
-                                            <ContentCopyIcon />
-                                        </IconButton>
-                                    </Tooltip>
-                                </Box>
-                            </Box>
-
-                            <Box sx={{ mb: theme.spacing(2) }}>
-                                <Typography variant="h6" gutterBottom sx={{
-                                    color: darkMode ? '#ffffff' : 'inherit'
-                                }}>Sites</Typography>
-                                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                                    <TextareaAutosize
-                                        minRows={2}
-                                        maxRows={4}
-                                        style={{ 
-                                            width: '60%', 
-                                            padding: '10px',
-                                            fontFamily: 'monospace',
-                                            borderRadius: '4px',
-                                            border: '1px solid #ccc',
-                                            resize: 'vertical',
-                                            overflow: 'auto'
-                                        }}
-                                        value={formatSitesData(processedCluster.processed_data.sites)}
-                                        readOnly
-                                    />
-                                </Box>
-                                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1 }}>
-                                    <Tooltip title="Copy to clipboard">
-                                        <IconButton 
-                                            size="small" 
-                                            onClick={() => handleCopyToClipboard(formatSitesData(processedCluster.processed_data.sites))}
-                                        >
-                                            <ContentCopyIcon />
-                                        </IconButton>
-                                    </Tooltip>
-                                </Box>
-                            </Box>
+                            )}
 
                             {/* Timing Logs Section for Processed Clusters */}
                             {processedCluster.timing_logs && renderTimingLogs(processedCluster.timing_logs)}
@@ -2927,15 +2910,63 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                     >
                                         ▶️ Run
                                     </Button>
-                                    <Button
-                                        variant="contained"
-                                        color="secondary"
-                                        onClick={handleClear}
-                                        sx={{ borderRadius: '20px' }}
-                                        disabled={urls.length === 0}
-                                    >
-                                        🗑️ Clear
-                                    </Button>
+                                                            <Button
+                            variant="contained"
+                            color="secondary"
+                            onClick={handleClear}
+                            sx={{ borderRadius: '20px' }}
+                            disabled={urls.length === 0}
+                        >
+                            🗑️ Clear
+                        </Button>
+                        <Button 
+                            variant="outlined" 
+                            onClick={async () => {
+                                try {
+                                    setSuccess("Checking HTML files...");
+                                    const response = await fetch("http://localhost:5000/debug/html-files");
+                                    const data = await response.json();
+                                    console.log("🔍 Debug HTML Files:", data);
+                                    
+                                    if (data.status === "success") {
+                                        setSuccess(`Found ${data.total_files} HTML files in ${data.directories_found.length} directories`);
+                                        console.log("📁 Directories found:", data.directories_found);
+                                        console.log("📄 Sample files:", data.files.slice(0, 5));
+                                        
+                                        // Test opening one file if available
+                                        if (data.files.length > 0) {
+                                            const testFile = data.files[0];
+                                            console.log("🧪 Testing file:", testFile);
+                                            
+                                            setTimeout(() => {
+                                                const testUrl = `http://localhost:5000${testFile.url}`;
+                                                console.log("🌐 Test URL:", testUrl);
+                                                window.open(testUrl, '_blank');
+                                                setSuccess(`Opened test file: ${testFile.filename}`);
+                                            }, 1000);
+                                        }
+                                    } else {
+                                        setError({ message: data.message });
+                                    }
+                                } catch (error) {
+                                    console.error("❌ Debug HTML files error:", error);
+                                    setError({ message: `Debug failed: ${error.message}` });
+                                }
+                            }}
+                            sx={{ 
+                                borderRadius: '20px',
+                                ...(darkMode && {
+                                    borderColor: '#555',
+                                    color: '#fff',
+                                    '&:hover': {
+                                        borderColor: '#777',
+                                        backgroundColor: 'rgba(255,255,255,0.1)'
+                                    }
+                                })
+                            }}
+                        >
+                            🐛 Debug HTML
+                        </Button>
                                 </>
                             )}
                         </Box>
@@ -2980,172 +3011,244 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                         </Box>
                     </Box>
                 );
-            case 'experiments':
+            case 'config':
                 return (
                     <Box sx={{ width: '100%', maxWidth: '1600px', mx: 'auto', px: 3, py: 2 }}>
                         <Typography variant="h4" gutterBottom sx={{ textAlign: 'center', mb: 4 }}>
-                            🧪 Experiment Management - Thesis Data Collection
+                            ⚙️ Custom Experiment Configuration Builder
                         </Typography>
 
-                        {/* Experiment Configuration Display */}
-                        {experimentConfig && (
-                            <Accordion sx={{ mb: 3 }}>
-                                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                                    <Typography variant="h6">📋 Experiment Configuration</Typography>
-                                </AccordionSummary>
-                                <AccordionDetails>
-                                    <Grid container spacing={2}>
-                                        <Grid item xs={12} md={6}>
-                                            <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>Available URLs:</Typography>
-                                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
-                                                {experimentConfig.test_configuration.available_urls.map((url, index) => (
-                                                    <Chip key={index} label={url} size="small" color="primary" />
-                                                ))}
-                                            </Box>
-                                        </Grid>
-                                        <Grid item xs={12} md={6}>
-                                            <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>Test Parameters:</Typography>
-                                            <Typography variant="body2">Modes: {experimentConfig.test_configuration.test_parameters.modes.join(', ')}</Typography>
-                                            <Typography variant="body2">Max URLs per test: {experimentConfig.test_configuration.max_urls_per_test}</Typography>
-                                            <Typography variant="body2">URL Set Sizes: {Object.values(experimentConfig.test_configuration.url_combinations).flat().join(', ')}</Typography>
-                                        </Grid>
+                        {/* Configuration Form */}
+                        <Card sx={{ mb: 3 }}>
+                            <CardHeader title="🛠️ Build Your Custom Experiment" />
+                            <CardContent sx={{ p: 3 }}>
+                                <Grid container spacing={3}>
+                                    {/* Experiment Name */}
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            fullWidth
+                                            label="Experiment Name"
+                                            value={customConfig.experiment_name}
+                                            onChange={(e) => setCustomConfig(prev => ({ ...prev, experiment_name: e.target.value }))}
+                                            placeholder="e.g., My Custom Thesis Experiment"
+                                        />
                                     </Grid>
-                                </AccordionDetails>
-                            </Accordion>
-                        )}
 
-                        {/* Experiment Controls */}
-                        <Card sx={{ mb: 3, p: 3 }}>
-                            <Typography variant="h6" gutterBottom>🚀 Experiment Controls</Typography>
-                            <Grid container spacing={3} alignItems="center">
-                                <Grid item xs={12} md={4}>
-                                    <TextField
-                                        fullWidth
-                                        label="Experiment Name"
-                                        value={experimentName}
-                                        onChange={(e) => setExperimentName(e.target.value)}
-                                        placeholder="e.g., Thesis_Mode_Comparison_2024"
-                                    />
-                                </Grid>
-                                <Grid item xs={12} md={8}>
-                                    <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-                                        <Button 
-                                            variant="outlined" 
-                                            onClick={loadTestCases}
-                                            disabled={experimentLoading}
-                                        >
-                                            📊 Load All Test Cases
-                                        </Button>
-                                        <Button 
-                                            variant="outlined" 
-                                            onClick={() => filterTestCases({ priority: ['high', 'medium'] })}
-                                            disabled={experimentLoading}
-                                        >
-                                            🔍 Filter High/Medium Priority
-                                        </Button>
-                                        <Button 
-                                            variant="outlined" 
-                                            onClick={() => filterTestCases({ max_url_count: 5 })}
-                                            disabled={experimentLoading}
-                                        >
-                                            📱 Small Tests (≤5 URLs)
-                                        </Button>
-                                    </Box>
-                                </Grid>
-                            </Grid>
-                        </Card>
+                                    {/* URLs Section */}
+                                    <Grid item xs={12}>
+                                        <Typography variant="h6" gutterBottom>🌐 URLs to Test</Typography>
+                                        <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+                                            <TextField
+                                                fullWidth
+                                                label="Add URL(s)"
+                                                value={configUrlInput}
+                                                onChange={(e) => setConfigUrlInput(e.target.value)}
+                                                onKeyDown={(e) => e.key === 'Enter' && addConfigUrl()}
+                                                onPaste={handleConfigUrlPaste}
+                                                placeholder="https://example.com (or paste multiple URLs)"
+                                                multiline
+                                                maxRows={4}
+                                                helperText="💡 Paste multiple URLs separated by newlines or spaces"
+                                            />
+                                            <Button variant="contained" onClick={addConfigUrl}>
+                                                Add
+                                            </Button>
+                                        </Box>
+                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                            {customConfig.available_urls.map((url, index) => (
+                                                <Chip
+                                                    key={index}
+                                                    label={url}
+                                                    onDelete={() => removeConfigUrl(index)}
+                                                    color="primary"
+                                                />
+                                            ))}
+                                        </Box>
+                                        <Typography variant="caption" color="text.secondary">
+                                            Added {customConfig.available_urls.length} URLs
+                                        </Typography>
+                                    </Grid>
 
-                        {/* Test Cases Selection */}
-                        {experimentTestCases.length > 0 && (
-                            <Card sx={{ mb: 3 }}>
-                                <CardHeader 
-                                    title={`📝 Test Cases (${experimentTestCases.length} available)`}
-                                    action={
-                                        <Box>
+                                    {/* Processing Modes */}
+                                    <Grid item xs={12} md={6}>
+                                        <Typography variant="h6" gutterBottom>🔄 Processing Modes</Typography>
+                                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                                             <FormControlLabel
                                                 control={
                                                     <Switch
-                                                        checked={selectedTestCases.length === experimentTestCases.length}
-                                                        onChange={(e) => handleSelectAllTestCases(e.target.checked)}
+                                                        checked={customConfig.modes.includes(0)}
+                                                        onChange={(e) => {
+                                                            const newModes = e.target.checked 
+                                                                ? [...customConfig.modes, 0].filter((v, i, arr) => arr.indexOf(v) === i)
+                                                                : customConfig.modes.filter(m => m !== 0);
+                                                            setCustomConfig(prev => ({ ...prev, modes: newModes }));
+                                                        }}
                                                     />
                                                 }
-                                                label="Select All"
+                                                label="Mode 0: Process All URLs Together"
                                             />
-                                            <Typography variant="caption" sx={{ ml: 2 }}>
-                                                Selected: {selectedTestCases.length}
-                                            </Typography>
+                                            <FormControlLabel
+                                                control={
+                                                    <Switch
+                                                        checked={customConfig.modes.includes(1)}
+                                                        onChange={(e) => {
+                                                            const newModes = e.target.checked 
+                                                                ? [...customConfig.modes, 1].filter((v, i, arr) => arr.indexOf(v) === i)
+                                                                : customConfig.modes.filter(m => m !== 1);
+                                                            setCustomConfig(prev => ({ ...prev, modes: newModes }));
+                                                        }}
+                                                    />
+                                                }
+                                                label="Mode 1: Process by Domain"
+                                            />
                                         </Box>
-                                    }
-                                />
-                                <CardContent sx={{ maxHeight: '400px', overflow: 'auto' }}>
-                                    <Grid container spacing={2}>
-                                        {experimentTestCases.map((testCase, index) => (
-                                            <Grid item xs={12} sm={6} md={4} key={testCase.id}>
-                                                <Card 
-                                                    sx={{ 
-                                                        border: selectedTestCases.some(tc => tc.id === testCase.id) ? '2px solid' : '1px solid',
-                                                        borderColor: selectedTestCases.some(tc => tc.id === testCase.id) ? 'primary.main' : 'divider',
-                                                        cursor: 'pointer',
-                                                        transition: 'all 0.2s'
-                                                    }}
-                                                    onClick={() => handleTestCaseSelection(testCase, !selectedTestCases.some(tc => tc.id === testCase.id))}
-                                                >
-                                                    <CardContent sx={{ p: 2 }}>
-                                                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
-                                                            {testCase.name}
-                                                        </Typography>
-                                                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
-                                                            {testCase.id}
-                                                        </Typography>
-                                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 1 }}>
-                                                            <Chip label={`Mode ${testCase.mode}`} size="small" color={testCase.mode === 0 ? 'primary' : 'secondary'} />
-                                                            <Chip label={`${testCase.url_count} URLs`} size="small" />
-                                                            <Chip label={testCase.priority} size="small" color={testCase.priority === 'high' ? 'error' : testCase.priority === 'medium' ? 'warning' : 'default'} />
-                                                        </Box>
-                                                        <Typography variant="caption" color="text.secondary">
-                                                            Est. {testCase.estimated_duration.toFixed(1)} min
-                                                        </Typography>
-                                                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
-                                                            Levels: {Array.isArray(testCase.levels) ? testCase.levels.join(', ') : testCase.levels}
-                                                        </Typography>
-                                                    </CardContent>
-                                                </Card>
-                                            </Grid>
-                                        ))}
                                     </Grid>
-                                </CardContent>
-                            </Card>
-                        )}
 
-                        {/* Run Experiment Button */}
-                        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                size="large"
-                                onClick={runExperimentBatch}
-                                disabled={experimentLoading || selectedTestCases.length === 0}
-                                sx={{ 
-                                    borderRadius: '20px',
-                                    px: 4,
-                                    py: 1.5,
-                                    fontSize: '1.1rem'
-                                }}
-                            >
-                                {experimentLoading ? (
-                                    <>
-                                        <CircularProgress size={20} sx={{ mr: 2 }} />
-                                        Running Experiments...
-                                    </>
-                                ) : (
-                                    <>
-                                        🚀 Run {selectedTestCases.length} Selected Tests
-                                    </>
-                                )}
-                            </Button>
-                        </Box>
+                                    {/* DOM Levels */}
+                                    <Grid item xs={12} md={6}>
+                                        <Typography variant="h6" gutterBottom>📊 DOM Levels</Typography>
+                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                            {Array.from({ length: 10 }, (_, i) => i + 1).map(level => (
+                                                <Chip
+                                                    key={level}
+                                                    label={level}
+                                                    onClick={() => {
+                                                        const newLevels = customConfig.levels.includes(level)
+                                                            ? customConfig.levels.filter(l => l !== level)
+                                                            : [...customConfig.levels, level].sort((a, b) => a - b);
+                                                        setCustomConfig(prev => ({ ...prev, levels: newLevels }));
+                                                    }}
+                                                    color={customConfig.levels.includes(level) ? 'primary' : 'default'}
+                                                />
+                                            ))}
+                                        </Box>
+                                        <Typography variant="caption" color="text.secondary">
+                                            Selected levels: {customConfig.levels.join(', ')}
+                                        </Typography>
+                                    </Grid>
 
-                        {/* Experiment Results */}
+                                    {/* URL Combinations */}
+                                    <Grid item xs={12} md={6}>
+                                        <Typography variant="h6" gutterBottom>🔢 URLs per Test</Typography>
+                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                            {Array.from({ length: Math.min(10, customConfig.available_urls.length) }, (_, i) => i + 2).map(count => (
+                                                <Chip
+                                                    key={count}
+                                                    label={count}
+                                                    onClick={() => {
+                                                        const newCombinations = customConfig.url_combinations.includes(count)
+                                                            ? customConfig.url_combinations.filter(c => c !== count)
+                                                            : [...customConfig.url_combinations, count].sort((a, b) => a - b);
+                                                        setCustomConfig(prev => ({ ...prev, url_combinations: newCombinations }));
+                                                    }}
+                                                    color={customConfig.url_combinations.includes(count) ? 'primary' : 'default'}
+                                                    disabled={count > customConfig.available_urls.length}
+                                                />
+                                            ))}
+                                        </Box>
+                                        <Typography variant="caption" color="text.secondary">
+                                            Test combinations: {customConfig.url_combinations.join(', ')} URLs per test
+                                        </Typography>
+                                    </Grid>
+
+                                    {/* Max Combinations */}
+                                    <Grid item xs={12} md={6}>
+                                        <Typography variant="h6" gutterBottom>⚡ Test Limits</Typography>
+                                        <TextField
+                                            type="number"
+                                            label="Max Test Combinations"
+                                            value={customConfig.max_combinations}
+                                            onChange={(e) => setCustomConfig(prev => ({ 
+                                                ...prev, 
+                                                max_combinations: Math.max(1, parseInt(e.target.value) || 25)
+                                            }))}
+                                            inputProps={{ min: 1, max: 10000 }}
+                                            fullWidth
+                                        />
+                                        <Typography variant="caption" color="text.secondary">
+                                            Will generate up to {customConfig.max_combinations} test combinations (max: 10,000)
+                                        </Typography>
+                                    </Grid>
+                                </Grid>
+
+                                {/* Estimated Tests Preview */}
+                                <Box sx={{ mt: 3, p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
+                                    <Typography variant="h6" gutterBottom>📋 Experiment Preview</Typography>
+                                    <Grid container spacing={2}>
+                                        <Grid item xs={6} sm={3}>
+                                            <Typography variant="subtitle2">URLs:</Typography>
+                                            <Typography variant="h6" color="primary">{customConfig.available_urls.length}</Typography>
+                                        </Grid>
+                                        <Grid item xs={6} sm={3}>
+                                            <Typography variant="subtitle2">Modes:</Typography>
+                                            <Typography variant="h6" color="primary">{customConfig.modes.length}</Typography>
+                                        </Grid>
+                                        <Grid item xs={6} sm={3}>
+                                            <Typography variant="subtitle2">Levels:</Typography>
+                                            <Typography variant="h6" color="primary">{customConfig.levels.length}</Typography>
+                                        </Grid>
+                                        <Grid item xs={6} sm={3}>
+                                            <Typography variant="subtitle2">Est. Tests:</Typography>
+                                            <Typography variant="h6" color="primary">
+                                                {(() => {
+                                                    // Calculate estimated test cases more accurately
+                                                    let totalTests = 0;
+                                                    for (const mode of customConfig.modes) {
+                                                        for (const urlCount of customConfig.url_combinations) {
+                                                            if (urlCount <= customConfig.available_urls.length) {
+                                                                const totalPossible = Math.min(5, Math.floor(customConfig.available_urls.length / urlCount));
+                                                                const variationsLimit = Math.min(totalPossible, customConfig.max_combinations - totalTests);
+                                                                totalTests += variationsLimit;
+                                                                if (totalTests >= customConfig.max_combinations) {
+                                                                    return customConfig.max_combinations;
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                    return Math.min(totalTests, customConfig.max_combinations);
+                                                })()}
+                                            </Typography>
+                                        </Grid>
+                                    </Grid>
+                                </Box>
+
+                                {/* Run Button */}
+                                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        size="large"
+                                        onClick={runCustomExperiment}
+                                        disabled={
+                                            experimentLoading || 
+                                            customConfig.available_urls.length === 0 || 
+                                            customConfig.levels.length === 0 ||
+                                            customConfig.modes.length === 0 ||
+                                            customConfig.url_combinations.length === 0
+                                        }
+                                        sx={{ 
+                                            borderRadius: '20px',
+                                            px: 4,
+                                            py: 1.5,
+                                            fontSize: '1.1rem'
+                                        }}
+                                    >
+                                        {experimentLoading ? (
+                                            <>
+                                                <CircularProgress size={20} sx={{ mr: 2 }} />
+                                                Running Custom Experiment...
+                                            </>
+                                        ) : (
+                                            <>
+                                                🚀 Run Custom Experiment
+                                            </>
+                                        )}
+                                    </Button>
+                                </Box>
+                            </CardContent>
+                        </Card>
+
+                        {/* Experiment Results Display */}
                         {experimentResults && (
                             <Box sx={{ width: '100%', mt: theme.spacing(4), maxWidth: '1600px', mx: 'auto', px: 2 }}>
                                 {/* Experiment Summary */}
@@ -3188,154 +3291,25 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                             </Grid>
                                             <Grid item xs={12} md={6}>
                                                 <Typography variant="h6" gutterBottom>📊 Generated Files & Analysis</Typography>
-                                                
-                                                {/* Check if experiment has gnuplot files and generated images */}
-                                                {experimentResults.gnuplot_files || experimentResults.generated_images ? (
-                                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                                                        {/* Gnuplot Data Files */}
-                                                        {experimentResults.gnuplot_files && experimentResults.gnuplot_files.length > 0 && (
-                                                            <Box>
-                                                                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
-                                                                    📊 Gnuplot Data Files ({experimentResults.gnuplot_files.length})
-                                                                </Typography>
-                                                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                                                                    {experimentResults.gnuplot_files.map((file, index) => (
-                                                                        <Chip
-                                                                            key={index}
-                                                                            label={file.filename}
-                                                                            size="small"
-                                                                            onClick={(e) => {
-                                                                                if (e.ctrlKey || e.metaKey) {
-                                                                                    handleGnuplotFileClick(experimentResults.experiment_info.experiment_id, file.filename, 'preview');
-                                                                                } else {
-                                                                                    handleGnuplotFileClick(experimentResults.experiment_info.experiment_id, file.filename, 'download');
-                                                                                }
-                                                                            }}
-                                                                            sx={{ 
-                                                                                cursor: 'pointer',
-                                                                                '&:hover': {
-                                                                                    backgroundColor: 'primary.light',
-                                                                                    color: 'primary.contrastText'
-                                                                                }
-                                                                            }}
-                                                                            title="Left-click to download, Ctrl+click to copy content"
-                                                                        />
-                                                                    ))}
-                                                                </Box>
-                                                                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
-                                                                    💡 Left-click to download, Ctrl+click to copy content
-                                                                </Typography>
-                                                            </Box>
-                                                        )}
-
-                                                        {/* Generated Images */}
-                                                        {experimentResults.generated_images && experimentResults.generated_images.length > 0 && (
-                                                            <Box>
-                                                                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
-                                                                    🖼️ Generated Charts ({experimentResults.generated_images.length})
-                                                                </Typography>
-                                                                <Grid container spacing={1}>
-                                                                    {experimentResults.generated_images.map((image, index) => (
-                                                                        <Grid item xs={12} sm={6} md={4} key={index}>
-                                                                            <Card sx={{ 
-                                                                                cursor: 'pointer',
-                                                                                transition: 'all 0.2s',
-                                                                                '&:hover': {
-                                                                                    transform: 'translateY(-2px)',
-                                                                                    boxShadow: '0 4px 8px rgba(0,0,0,0.15)'
-                                                                                }
-                                                                            }}>
-                                                                                <CardContent sx={{ p: 1.5 }}>
-                                                                                    {/* Image Preview for PNG files */}
-                                                                                    {image.format === 'PNG' && (
-                                                                                        <Box sx={{ mb: 1, textAlign: 'center' }}>
-                                                                                            <img 
-                                                                                                src={`http://localhost:5000/experiments/results/${experimentResults.experiment_info.experiment_id}/images/${image.filename}`}
-                                                                                                alt={image.chart_type}
-                                                                                                style={{ 
-                                                                                                    maxWidth: '100%', 
-                                                                                                    maxHeight: '80px',
-                                                                                                    objectFit: 'contain',
-                                                                                                    border: '1px solid #ddd',
-                                                                                                    borderRadius: '4px'
-                                                                                                }}
-                                                                                                onError={(e) => {
-                                                                                                    e.target.style.display = 'none';
-                                                                                                }}
-                                                                                            />
-                                                                                        </Box>
-                                                                                    )}
-                                                                                    <Typography variant="caption" sx={{ 
-                                                                                        fontWeight: 'bold', 
-                                                                                        display: 'block',
-                                                                                        mb: 0.5
-                                                                                    }}>
-                                                                                        {image.chart_type}
-                                                                                    </Typography>
-                                                                                    <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
-                                                                                        {image.format} • {image.size_kb?.toFixed(1)} KB
-                                                                                    </Typography>
-                                                                                    <Button
-                                                                                        variant="text"
-                                                                                        size="small"
-                                                                                        fullWidth
-                                                                                        sx={{ mt: 0.5, fontSize: '0.7rem' }}
-                                                                                        onClick={() => {
-                                                                                            const url = `http://localhost:5000/experiments/results/${experimentResults.experiment_info.experiment_id}/images/${image.filename}`;
-                                                                                            window.open(url, '_blank');
-                                                                                            setSuccess(`Opened ${image.filename} in new tab`);
-                                                                                        }}
-                                                                                    >
-                                                                                        🔗 View
-                                                                                    </Button>
-                                                                                </CardContent>
-                                                                            </Card>
-                                                                        </Grid>
-                                                                    ))}
-                                                                </Grid>
-                                                            </Box>
-                                                        )}
+                                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                                    <Typography variant="body2" color="text.secondary">
+                                                        Data files for thesis analysis have been created and are ready for gnuplot visualization.
+                                                    </Typography>
+                                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                                        <Chip label="📊 processing_times.dat" size="small" />
+                                                        <Chip label="🎯 cluster_counts.dat" size="small" />
+                                                        <Chip label="📄 html_file_counts.dat" size="small" />
+                                                        <Chip label="📈 *.gnuplot scripts" size="small" />
                                                     </Box>
-                                                ) : (
-                                                    /* Fallback display if no files are available yet */
-                                                    <Box>
-                                                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                                                            Data files for thesis analysis have been created and are ready for gnuplot visualization.
-                                                            Check the experiment results folder for:
-                                                        </Typography>
-                                                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                                                            <Chip label="📊 processing_times.dat" size="small" />
-                                                            <Chip label="🎯 cluster_counts.dat" size="small" />
-                                                            <Chip label="📄 html_file_counts.dat" size="small" />
-                                                            <Chip label="📈 *.gnuplot scripts" size="small" />
-                                                        </Box>
-                                                        <Box sx={{ mt: 2 }}>
-                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
-                                                                To generate plots:
-                                                            </Typography>
-                                                            <Typography variant="caption" sx={{ 
-                                                                fontFamily: 'monospace',
-                                                                fontSize: '0.75rem',
-                                                                display: 'block',
-                                                                backgroundColor: 'grey.100',
-                                                                p: 1,
-                                                                borderRadius: 1
-                                                            }}>
-                                                                cd experiment_results/[timestamp]_[name]/gnuplot_data<br/>
-                                                                gnuplot processing_time_plot.gnuplot<br/>
-                                                                gnuplot cluster_count_plot.gnuplot
-                                                            </Typography>
-                                                        </Box>
-                                                    </Box>
-                                                )}
+                                                </Box>
                                             </Grid>
                                         </Grid>
                                     </CardContent>
                                 </Card>
 
-                                {/* Process each result with better visual separation */}
+                                {/* Process each result */}
                                 {experimentResults.results && experimentResults.results.map((result, index) => {
-                                    const cardId = `experiment-result-${index}`;
+                                    const cardId = `config-result-${index}`;
                                     const collapsed = isCardCollapsed(cardId);
                                     
                                     return result.status === 'success' && (
@@ -3395,32 +3369,222 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                 }}
                                             />
                                             <Collapse in={!collapsed} timeout="auto" unmountOnExit>
-                                                <CardContent sx={{ 
-                                                    p: 3,
-                                                    backgroundColor: darkMode ? '#2a2a2a' : 'background.paper',
-                                                    color: darkMode ? '#ffffff' : 'inherit'
-                                                }}>
+                                                                                            <CardContent sx={{ 
+                                                p: 3,
+                                                backgroundColor: darkMode ? '#2a2a2a' : 'background.paper',
+                                                color: darkMode ? '#ffffff' : 'inherit'
+                                            }}>
 
-                                                {/* Use the same renderUnifiedHtmlFilesSection function */}
+                                            {/* Performance Metrics Summary */}
+                                            {result.timing_logs && result.timing_logs.performance_metrics && (
+                                                <Accordion 
+                                                    sx={{ 
+                                                        mb: theme.spacing(2),
+                                                        '&:before': { display: 'none' },
+                                                        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                                        borderRadius: '8px !important',
+                                                        overflow: 'hidden',
+                                                        backgroundColor: darkMode ? '#333' : 'info.light'
+                                                    }}
+                                                >
+                                                    <AccordionSummary 
+                                                        expandIcon={<ExpandMoreIcon />}
+                                                        sx={{
+                                                            backgroundColor: darkMode ? '#404040' : 'info.main',
+                                                            color: 'white',
+                                                            '&:hover': { backgroundColor: darkMode ? '#505050' : 'info.dark' }
+                                                        }}
+                                                    >
+                                                        <Typography sx={{ fontWeight: 'bold' }}>
+                                                            ⚡ Performance Metrics & Cache Efficiency
+                                                        </Typography>
+                                                    </AccordionSummary>
+                                                    <AccordionDetails sx={{ p: 2, backgroundColor: darkMode ? '#2a2a2a' : 'background.paper' }}>
+                                                        <Grid container spacing={2}>
+                                                            <Grid item xs={6} sm={4} md={3}>
+                                                                <Typography variant="caption" sx={{ color: darkMode ? '#aaa' : 'text.secondary' }}>Total Time</Typography>
+                                                                <Typography variant="h6" color="primary" sx={{ color: darkMode ? '#64B5F6' : 'primary.main' }}>
+                                                                    {formatDuration(result.timing_logs.performance_metrics.total_processing_time)}
+                                                                </Typography>
+                                                            </Grid>
+                                                            <Grid item xs={6} sm={4} md={3}>
+                                                                <Typography variant="caption" sx={{ color: darkMode ? '#aaa' : 'text.secondary' }}>Cache Efficiency</Typography>
+                                                                <Typography variant="h6" color="success.main">
+                                                                    {result.timing_logs.performance_metrics.cache_efficiency_percent?.toFixed(1)}%
+                                                                </Typography>
+                                                            </Grid>
+                                                            <Grid item xs={6} sm={4} md={3}>
+                                                                <Typography variant="caption" sx={{ color: darkMode ? '#aaa' : 'text.secondary' }}>URLs Processed</Typography>
+                                                                <Typography variant="h6" sx={{ color: darkMode ? '#ffffff' : 'inherit' }}>
+                                                                    {result.timing_logs.performance_metrics.urls_processed}
+                                                                </Typography>
+                                                            </Grid>
+                                                            <Grid item xs={6} sm={4} md={3}>
+                                                                <Typography variant="caption" sx={{ color: darkMode ? '#aaa' : 'text.secondary' }}>From Cache</Typography>
+                                                                <Typography variant="h6" color="success.main">
+                                                                    {result.timing_logs.performance_metrics.urls_from_cache}
+                                                                </Typography>
+                                                            </Grid>
+                                                            <Grid item xs={6} sm={4} md={3}>
+                                                                <Typography variant="caption" sx={{ color: darkMode ? '#aaa' : 'text.secondary' }}>HTML Files</Typography>
+                                                                <Typography variant="h6" sx={{ color: darkMode ? '#ffffff' : 'inherit' }}>
+                                                                    {result.timing_logs.performance_metrics.html_files_generated}
+                                                                </Typography>
+                                                            </Grid>
+                                                            <Grid item xs={6} sm={4} md={3}>
+                                                                <Typography variant="caption" sx={{ color: darkMode ? '#aaa' : 'text.secondary' }}>Clusters</Typography>
+                                                                <Typography variant="h6" sx={{ color: darkMode ? '#ffffff' : 'inherit' }}>
+                                                                    {result.timing_logs.performance_metrics.clusters_generated}
+                                                                </Typography>
+                                                            </Grid>
+                                                            <Grid item xs={6} sm={4} md={3}>
+                                                                <Typography variant="caption" sx={{ color: darkMode ? '#aaa' : 'text.secondary' }}>Avg Time/URL</Typography>
+                                                                <Typography variant="h6" sx={{ color: darkMode ? '#ffffff' : 'inherit' }}>
+                                                                    {formatDuration(result.timing_logs.performance_metrics.average_time_per_url)}
+                                                                </Typography>
+                                                            </Grid>
+                                                            <Grid item xs={6} sm={4} md={3}>
+                                                                <Typography variant="caption" sx={{ color: darkMode ? '#aaa' : 'text.secondary' }}>Avg Time/Level</Typography>
+                                                                <Typography variant="h6" sx={{ color: darkMode ? '#ffffff' : 'inherit' }}>
+                                                                    {formatDuration(result.timing_logs.performance_metrics.average_time_per_level)}
+                                                                </Typography>
+                                                            </Grid>
+                                                        </Grid>
+                                                        {result.timing_logs.performance_metrics.cache_savings && (
+                                                            <Box sx={{ mt: 2, p: 1.5, backgroundColor: darkMode ? '#1e4620' : 'success.light', borderRadius: 1 }}>
+                                                                <Typography variant="body2" sx={{ color: darkMode ? '#81C784' : 'success.dark', fontWeight: 'bold' }}>
+                                                                    💾 {result.timing_logs.performance_metrics.cache_savings}
+                                                                </Typography>
+                                                            </Box>
+                                                        )}
+                                                    </AccordionDetails>
+                                                </Accordion>
+                                            )}
+
+                                            {/* Test Case Details */}
+                                            <Accordion 
+                                                sx={{ 
+                                                    mb: theme.spacing(2),
+                                                    '&:before': { display: 'none' },
+                                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                                    borderRadius: '8px !important',
+                                                    overflow: 'hidden'
+                                                }}
+                                            >
+                                                <AccordionSummary 
+                                                    expandIcon={<ExpandMoreIcon />}
+                                                    sx={{
+                                                        backgroundColor: 'grey.100',
+                                                        '&:hover': {
+                                                            backgroundColor: 'grey.200',
+                                                        },
+                                                    }}
+                                                >
+                                                    <Typography sx={{ fontWeight: 'bold' }}>
+                                                        📋 Test Case Details - Mode {result.test_metadata?.mode} ({result.test_metadata?.url_count} URLs)
+                                                    </Typography>
+                                                </AccordionSummary>
+                                                <AccordionDetails sx={{ p: 2 }}>
+                                                    <Grid container spacing={2}>
+                                                        <Grid item xs={12} md={6}>
+                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                                                                Test Configuration:
+                                                            </Typography>
+                                                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                                                <Typography variant="body2">
+                                                                    <strong>Mode:</strong> {result.test_metadata?.mode === 0 ? '0 (Process All Together)' : '1 (Process by Domain)'}
+                                                                </Typography>
+                                                                <Typography variant="body2">
+                                                                    <strong>Levels:</strong> {result.test_metadata?.levels?.join(', ')}
+                                                                </Typography>
+                                                                <Typography variant="body2">
+                                                                    <strong>URL Count:</strong> {result.test_metadata?.url_count}
+                                                                </Typography>
+                                                            </Box>
+                                                        </Grid>
+                                                        <Grid item xs={12} md={6}>
+                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                                                                URLs Tested:
+                                                            </Typography>
+                                                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, maxHeight: '150px', overflowY: 'auto' }}>
+                                                                {result.test_metadata?.urls?.map((url, urlIndex) => (
+                                                                    <Typography key={urlIndex} variant="caption" sx={{ 
+                                                                        wordBreak: 'break-all',
+                                                                        fontSize: '0.75rem',
+                                                                        p: 0.5,
+                                                                        bgcolor: 'grey.50',
+                                                                        borderRadius: 0.5
+                                                                    }}>
+                                                                        {urlIndex + 1}. {url}
+                                                                    </Typography>
+                                                                ))}
+                                                            </Box>
+                                                        </Grid>
+                                                    </Grid>
+                                                </AccordionDetails>
+                                            </Accordion>
+
+                                            {/* Use the same renderUnifiedHtmlFilesSection function */}
                                                 {(() => {
                                                     const collectAllHtmlFiles = (resultData) => {
                                                         let allFiles = [];
                                                         
+                                                        console.log("🔍 DEBUG: collectAllHtmlFiles input for experiment result:", resultData);
+                                                        
+                                                        // Check for direct HTML files (kept for small lists)
                                                         if (resultData.html_files) {
+                                                            console.log("📁 Found html_files in experiment result:", resultData.html_files.length);
                                                             allFiles = allFiles.concat(resultData.html_files);
                                                         }
                                                         
+                                                        // Check for HTML files summary (when files were moved to large data)
+                                                        if (resultData.html_files_summary && !resultData.html_files) {
+                                                            console.log("📊 Found html_files_summary (files moved to large data):", resultData.html_files_summary);
+                                                            // For now, show placeholder info - we'll need to fetch the actual files
+                                                            // from the large data API when user expands
+                                                            const summary = resultData.html_files_summary;
+                                                            console.log(`📋 HTML Files moved to large data: ${summary.count} files, ${summary.total_size_kb?.toFixed(1)} KB total`);
+                                                            
+                                                            // Create placeholder entries for summary display
+                                                            summary.levels?.forEach(level => {
+                                                                summary.domains?.forEach(domain => {
+                                                                    allFiles.push({
+                                                                        filename: `${summary.count} files available`,
+                                                                        path: `#large-data-${resultData.test_metadata?.test_id}`,
+                                                                        level: level,
+                                                                        domain: domain,
+                                                                        title: `${summary.count} HTML files (${summary.total_size_kb?.toFixed(1)} KB)`,
+                                                                        file_size_kb: summary.total_size_kb / summary.count,
+                                                                        url: `Large data: ${summary.count} files`,
+                                                                        is_large_data_placeholder: true,
+                                                                        large_data_file: summary.full_list_file,
+                                                                        test_id: resultData.test_metadata?.test_id
+                                                                    });
+                                                                });
+                                                            });
+                                                        }
+                                                        
+                                                        // Check for domain results HTML files
                                                         if (resultData.domain_results) {
-                                                            resultData.domain_results.forEach((domainResult) => {
+                                                            console.log("🌐 Found domain_results in experiment:", resultData.domain_results.length);
+                                                            resultData.domain_results.forEach((domainResult, index) => {
+                                                                console.log(`📊 Domain ${index + 1} (${domainResult.domain}):`, domainResult.html_files?.length || 0, "files");
                                                                 if (domainResult.html_files) {
+                                                                    domainResult.html_files.forEach(file => {
+                                                                        console.log(`  - File domain: ${file.domain}, clean_domain: ${file.clean_domain}, filename: ${file.filename}`);
+                                                                    });
                                                                     allFiles = allFiles.concat(domainResult.html_files);
                                                                 }
                                                             });
                                                         }
                                                         
+                                                        // Remove duplicates based on filename (backend bug workaround)
                                                         const uniqueFiles = allFiles.filter((file, index, self) => 
                                                             index === self.findIndex(f => f.filename === file.filename)
                                                         );
+                                                        
+                                                        console.log("📁 Total collected files for experiment:", allFiles.length);
+                                                        console.log("📁 After deduplication:", uniqueFiles.length);
                                                         
                                                         return uniqueFiles;
                                                     };
@@ -3473,17 +3637,64 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                                         <Grid container spacing={1}>
                                                                             {filesByLevel[level].map((file, fileIndex) => (
                                                                                 <Grid item xs={12} sm={6} md={4} key={fileIndex}>
-                                                                                    <Card 
-                                                                                        sx={{ 
-                                                                                            cursor: 'pointer',
-                                                                                            transition: 'all 0.2s ease-in-out',
-                                                                                            '&:hover': {
-                                                                                                transform: 'translateY(-1px)',
-                                                                                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                                                                                                                                                                <Card 
+                                                                                sx={{ 
+                                                                                    cursor: 'pointer',
+                                                                                    transition: 'all 0.2s ease-in-out',
+                                                                                    backgroundColor: file.is_large_data_placeholder ? 'warning.light' : 'background.paper',
+                                                                                    border: file.is_large_data_placeholder ? '2px solid' : '1px solid',
+                                                                                    borderColor: file.is_large_data_placeholder ? 'warning.main' : 'divider',
+                                                                                    '&:hover': {
+                                                                                        transform: 'translateY(-1px)',
+                                                                                        boxShadow: file.is_large_data_placeholder 
+                                                                                            ? '0 4px 8px rgba(255,152,0,0.3)' 
+                                                                                            : '0 2px 4px rgba(0,0,0,0.1)'
+                                                                                    }
+                                                                                }}
+                                                                                onClick={async () => {
+                                                                                    console.log("🖱️ Clicked HTML file:", file);
+                                                                                    console.log("📁 File path:", file.path);
+                                                                                    console.log("🔗 Full URL:", `http://localhost:5000/${file.path}`);
+                                                                                    
+                                                                                    if (file.is_large_data_placeholder) {
+                                                                                        // Handle large data placeholder click
+                                                                                        const experimentId = experimentResults?.experiment_info?.experiment_id;
+                                                                                        if (experimentId && file.test_id) {
+                                                                                            console.log("🔍 Loading large HTML files for test:", file.test_id);
+                                                                                            setSuccess("Loading HTML files from large data...");
+                                                                                            const htmlFiles = await loadLargeDataHtmlFiles(experimentId, file.test_id);
+                                                                                            if (htmlFiles && htmlFiles.length > 0) {
+                                                                                                // Show modal or accordion with all files
+                                                                                                console.log("📁 Loaded HTML files:", htmlFiles.length);
+                                                                                                // For now, open the first few files
+                                                                                                htmlFiles.slice(0, 5).forEach((htmlFile, index) => {
+                                                                                                    setTimeout(() => {
+                                                                                                        const url = `http://localhost:5000/${htmlFile.path}`;
+                                                                                                        console.log(`🌐 Opening URL ${index + 1}:`, url);
+                                                                                                        window.open(url, '_blank');
+                                                                                                    }, index * 200); // Stagger the opens
+                                                                                                });
+                                                                                                if (htmlFiles.length > 5) {
+                                                                                                    setSuccess(`Opened first 5 of ${htmlFiles.length} HTML files. Check browser tabs.`);
+                                                                                                }
                                                                                             }
-                                                                                        }}
-                                                                                        onClick={() => window.open(`http://localhost:5000/${file.path}`, '_blank')}
-                                                                                    >
+                                                                                        }
+                                                                                    } else {
+                                                                                        // Normal file click - construct URL properly
+                                                                                        const fileUrl = `http://localhost:5000/output_html_files/${file.path}`;
+                                                                                        
+                                                                                        console.log("🌐 Opening HTML file URL:", fileUrl);
+                                                                                        setSuccess(`Opening: ${file.title || file.filename}`);
+                                                                                        
+                                                                                        try {
+                                                                                            window.open(fileUrl, '_blank');
+                                                                                        } catch (error) {
+                                                                                            console.error("❌ Error opening file:", error);
+                                                                                            setError({ message: `Failed to open file: ${error.message}` });
+                                                                                        }
+                                                                                    }
+                                                                                }}
+                                                                            >
                                                                                         <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
                                                                                             <Typography 
                                                                                                 variant="caption" 
@@ -3493,14 +3704,18 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                                                                     mb: 0.5,
                                                                                                     overflow: 'hidden',
                                                                                                     textOverflow: 'ellipsis',
-                                                                                                    whiteSpace: 'nowrap'
+                                                                                                    whiteSpace: 'nowrap',
+                                                                                                    color: file.is_large_data_placeholder ? 'warning.dark' : 'inherit'
                                                                                                 }}
                                                                                                 title={file.title || file.filename}
                                                                                             >
-                                                                                                {file.title || file.filename}
+                                                                                                {file.is_large_data_placeholder ? '📦 ' : ''}{file.title || file.filename}
                                                                                             </Typography>
                                                                                             <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.6rem' }}>
-                                                                                                {file.file_size_kb ? `${file.file_size_kb.toFixed(1)} KB` : ''}
+                                                                                                {file.is_large_data_placeholder 
+                                                                                                    ? 'Click to load files from large data'
+                                                                                                    : (file.file_size_kb ? `${file.file_size_kb.toFixed(1)} KB` : '')
+                                                                                                }
                                                                                             </Typography>
                                                                                         </CardContent>
                                                                                     </Card>
@@ -3514,31 +3729,33 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                     );
                                                 })()}
 
-                                                {/* Site Similarity Results for Mode 0 */}
-                                                {result.processed_clusters && result.processed_clusters.map((processedCluster, clusterIndex) => (
-                                                    processedCluster.processed_data && processedCluster.processed_data.site_similarity &&
-                                                    <div key={`similarity-${clusterIndex}`}>
-                                                        <Typography variant="h6" sx={{ mt: 2, mb: 1, fontWeight: 'bold' }}>
-                                                            🔍 Site Similarity Analysis - Level {processedCluster.level}
-                                                        </Typography>
-                                                        {renderSiteSimilarityResults(processedCluster.processed_data.site_similarity, processedCluster.level)}
-                                                    </div>
-                                                ))}
+                                                                                {/* Site Similarity Results for Mode 0 */}
+                                {result.processed_clusters && result.processed_clusters.map((processedCluster, clusterIndex) => (
+                                    processedCluster.processed_data && processedCluster.processed_data.site_similarity &&
+                                    <div key={`similarity-${clusterIndex}`}>
+                                        {renderSiteSimilarityResults(
+                                            processedCluster.processed_data.site_similarity, 
+                                            processedCluster.level, 
+                                            processedCluster.processed_data
+                                        )}
+                                    </div>
+                                ))}
 
-                                                {/* Site Similarity Results for Mode 1 (Domain-based) */}
-                                                {result.domain_results && result.domain_results.map((domainResult, domainIndex) => (
-                                                    domainResult.processed_clusters && domainResult.processed_clusters.map((processedCluster, clusterIndex) => (
-                                                        processedCluster.processed_data && processedCluster.processed_data.site_similarity &&
-                                                        <div key={`domain-${domainIndex}-similarity-${clusterIndex}`}>
-                                                            <Typography variant="h6" sx={{ mt: 2, mb: 1, fontWeight: 'bold' }}>
-                                                                🔍 Site Similarity Analysis - {domainResult.domain} - Level {processedCluster.level}
-                                                            </Typography>
-                                                            {renderSiteSimilarityResults(processedCluster.processed_data.site_similarity, processedCluster.level)}
-                                                        </div>
-                                                    ))
-                                                ))}
+                                {/* Site Similarity Results for Mode 1 (Domain-based) */}
+                                {result.domain_results && result.domain_results.map((domainResult, domainIndex) => (
+                                    domainResult.processed_clusters && domainResult.processed_clusters.map((processedCluster, clusterIndex) => (
+                                        processedCluster.processed_data && processedCluster.processed_data.site_similarity &&
+                                        <div key={`domain-${domainIndex}-similarity-${clusterIndex}`}>
+                                            {renderSiteSimilarityResults(
+                                                processedCluster.processed_data.site_similarity, 
+                                                processedCluster.level, 
+                                                processedCluster.processed_data
+                                            )}
+                                        </div>
+                                    ))
+                                ))}
 
-                                                {/* Clustering Results Summary for Mode 0 */}
+                                {/* Clustering Results Summary for Mode 0 */}
                                                 {result.clustering_results && result.clustering_results.map((clusterResult, clusterIndex) => (
                                                     <Accordion 
                                                         key={`cluster-${clusterIndex}`} 
@@ -3546,44 +3763,74 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                             mb: theme.spacing(1),
                                                             '&:before': { display: 'none' },
                                                             boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                                                            borderRadius: '4px !important'
+                                                            borderRadius: '4px !important',
+                                                            backgroundColor: darkMode ? '#333' : 'background.paper'
                                                         }}
                                                     >
                                                         <AccordionSummary 
                                                             expandIcon={<ExpandMoreIcon />}
                                                             sx={{
-                                                                backgroundColor: clusterResult.status === 'error' ? 'error.light' : 'grey.100',
+                                                                backgroundColor: clusterResult.status === 'error' 
+                                                                    ? 'error.light' 
+                                                                    : (darkMode ? '#404040' : 'grey.100'),
+                                                                color: darkMode ? '#ffffff' : 'inherit',
                                                                 '&:hover': {
-                                                                    backgroundColor: clusterResult.status === 'error' ? 'error.main' : 'grey.200',
+                                                                    backgroundColor: clusterResult.status === 'error' 
+                                                                        ? 'error.main' 
+                                                                        : (darkMode ? '#505050' : 'grey.200'),
                                                                 }
                                                             }}
                                                         >
-                                                            <Typography sx={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
+                                                            <Typography sx={{ 
+                                                                fontWeight: 'bold', 
+                                                                fontSize: '0.9rem',
+                                                                color: darkMode ? '#ffffff' : 'inherit'
+                                                            }}>
                                                                 🧮 Level {clusterResult.level} - {clusterResult.status === 'error' ? '❌' : '✅'} {clusterResult.message}
                                                             </Typography>
                                                         </AccordionSummary>
-                                                        <AccordionDetails sx={{ p: 2 }}>
+                                                        <AccordionDetails sx={{ 
+                                                            p: 2,
+                                                            backgroundColor: darkMode ? '#2a2a2a' : 'background.paper'
+                                                        }}>
                                                             {clusterResult.status === 'error' ? (
                                                                 <Typography variant="body2" color="error">
                                                                     {clusterResult.message}
                                                                 </Typography>
                                                             ) : (
-                                                                clusterResult.cluster_info && (
-                                                                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 1 }}>
-                                                                        <Box>
-                                                                            <Typography variant="caption" color="text.secondary">Clusters</Typography>
-                                                                            <Typography variant="subtitle2">{clusterResult.cluster_info.num_clusters}</Typography>
+                                                                (() => {
+                                                                    const clusterInfo = getClusterInfo(clusterResult);
+                                                                    if (!clusterInfo) return null;
+                                                                    
+                                                                    return (
+                                                                        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 1 }}>
+                                                                            <Box>
+                                                                                <Typography variant="caption" sx={{
+                                                                                    color: darkMode ? '#aaa' : 'text.secondary'
+                                                                                }}>Clusters</Typography>
+                                                                                <Typography variant="subtitle2" sx={{
+                                                                                    color: darkMode ? '#ffffff' : 'inherit'
+                                                                                }}>{clusterInfo.num_clusters}</Typography>
+                                                                            </Box>
+                                                                            <Box>
+                                                                                <Typography variant="caption" sx={{
+                                                                                    color: darkMode ? '#aaa' : 'text.secondary'
+                                                                                }}>DBCV Score</Typography>
+                                                                                <Typography variant="subtitle2" sx={{
+                                                                                    color: darkMode ? '#ffffff' : 'inherit'
+                                                                                }}>{clusterInfo.dbcv_score?.toFixed(3)}</Typography>
+                                                                            </Box>
+                                                                            <Box>
+                                                                                <Typography variant="caption" sx={{
+                                                                                    color: darkMode ? '#aaa' : 'text.secondary'
+                                                                                }}>Attributes</Typography>
+                                                                                <Typography variant="subtitle2" sx={{
+                                                                                    color: darkMode ? '#ffffff' : 'inherit'
+                                                                                }}>{clusterInfo.useful_attributes?.length || 0}</Typography>
+                                                                            </Box>
                                                                         </Box>
-                                                                        <Box>
-                                                                            <Typography variant="caption" color="text.secondary">DBCV Score</Typography>
-                                                                            <Typography variant="subtitle2">{clusterResult.cluster_info.dbcv_score?.toFixed(3)}</Typography>
-                                                                        </Box>
-                                                                        <Box>
-                                                                            <Typography variant="caption" color="text.secondary">Attributes</Typography>
-                                                                            <Typography variant="subtitle2">{clusterResult.cluster_info.useful_attributes?.length || 0}</Typography>
-                                                                        </Box>
-                                                                    </Box>
-                                                                )
+                                                                    );
+                                                                })()
                                                             )}
                                                         </AccordionDetails>
                                                     </Accordion>
@@ -3638,22 +3885,33 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                                             {clusterResult.message}
                                                                         </Typography>
                                                                     ) : (
-                                                                        clusterResult.cluster_info && (
-                                                                            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 1 }}>
-                                                                                <Box>
-                                                                                    <Typography variant="caption" color="text.secondary">Clusters</Typography>
-                                                                                    <Typography variant="subtitle2">{clusterResult.cluster_info.num_clusters}</Typography>
+                                                                        (() => {
+                                                                            const clusterInfo = getClusterInfo(clusterResult);
+                                                                            if (!clusterInfo) return null;
+                                                                            
+                                                                            return (
+                                                                                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 1 }}>
+                                                                                    <Box>
+                                                                                        <Typography variant="caption" color="text.secondary">Clusters</Typography>
+                                                                                        <Typography variant="subtitle2" sx={{
+                                                                                            color: darkMode ? '#ffffff' : 'inherit'
+                                                                                        }}>{clusterInfo.num_clusters}</Typography>
+                                                                                    </Box>
+                                                                                    <Box>
+                                                                                        <Typography variant="caption" color="text.secondary">DBCV Score</Typography>
+                                                                                        <Typography variant="subtitle2" sx={{
+                                                                                            color: darkMode ? '#ffffff' : 'inherit'
+                                                                                        }}>{clusterInfo.dbcv_score?.toFixed(3)}</Typography>
+                                                                                    </Box>
+                                                                                    <Box>
+                                                                                        <Typography variant="caption" color="text.secondary">Attributes</Typography>
+                                                                                        <Typography variant="subtitle2" sx={{
+                                                                                            color: darkMode ? '#ffffff' : 'inherit'
+                                                                                        }}>{clusterInfo.useful_attributes?.length || 0}</Typography>
+                                                                                    </Box>
                                                                                 </Box>
-                                                                                <Box>
-                                                                                    <Typography variant="caption" color="text.secondary">DBCV Score</Typography>
-                                                                                    <Typography variant="subtitle2">{clusterResult.cluster_info.dbcv_score?.toFixed(3)}</Typography>
-                                                                                </Box>
-                                                                                <Box>
-                                                                                    <Typography variant="caption" color="text.secondary">Attributes</Typography>
-                                                                                    <Typography variant="subtitle2">{clusterResult.cluster_info.useful_attributes?.length || 0}</Typography>
-                                                                                </Box>
-                                                                            </Box>
-                                                                        )
+                                                                            );
+                                                                        })()
                                                                     )}
                                                                 </AccordionDetails>
                                                             </Accordion>
@@ -3691,31 +3949,79 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                             />
                             <CardContent sx={{ p: 3 }}>
                                 <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
-                                    <Button 
-                                        variant="outlined" 
-                                        onClick={loadArchiveExperiments}
-                                        disabled={archiveLoading}
-                                        sx={{ 
-                                            borderRadius: '20px',
-                                            ...(darkMode && {
-                                                borderColor: '#555',
-                                                color: '#fff',
-                                                '&:hover': {
-                                                    borderColor: '#777',
-                                                    backgroundColor: 'rgba(255,255,255,0.1)'
+                                                                            <Button 
+                                            variant="outlined" 
+                                            onClick={loadArchiveExperiments}
+                                            disabled={archiveLoading}
+                                            sx={{ 
+                                                borderRadius: '20px',
+                                                ...(darkMode && {
+                                                    borderColor: '#555',
+                                                    color: '#fff',
+                                                    '&:hover': {
+                                                        borderColor: '#777',
+                                                        backgroundColor: 'rgba(255,255,255,0.1)'
+                                                    }
+                                                })
+                                            }}
+                                        >
+                                            {archiveLoading ? (
+                                                <>
+                                                    <CircularProgress size={16} sx={{ mr: 1 }} />
+                                                    Loading...
+                                                </>
+                                            ) : (
+                                                '🔄 Refresh Archive'
+                                            )}
+                                        </Button>
+                                        <Button 
+                                            variant="outlined" 
+                                            onClick={async () => {
+                                                try {
+                                                    setSuccess("Checking HTML files...");
+                                                    const response = await fetch("http://localhost:5000/debug/html-files");
+                                                    const data = await response.json();
+                                                    console.log("🔍 Debug HTML Files:", data);
+                                                    
+                                                    if (data.status === "success") {
+                                                        setSuccess(`Found ${data.total_files} HTML files in ${data.directories_found.length} directories`);
+                                                        console.log("📁 Directories found:", data.directories_found);
+                                                        console.log("📄 Sample files:", data.files.slice(0, 5));
+                                                        
+                                                        // Test opening one file if available
+                                                        if (data.files.length > 0) {
+                                                            const testFile = data.files[0];
+                                                            console.log("🧪 Testing file:", testFile);
+                                                            
+                                                            setTimeout(() => {
+                                                                const testUrl = `http://localhost:5000${testFile.url}`;
+                                                                console.log("🌐 Test URL:", testUrl);
+                                                                window.open(testUrl, '_blank');
+                                                                setSuccess(`Opened test file: ${testFile.filename}`);
+                                                            }, 1000);
+                                                        }
+                                                    } else {
+                                                        setError({ message: data.message });
+                                                    }
+                                                } catch (error) {
+                                                    console.error("❌ Debug HTML files error:", error);
+                                                    setError({ message: `Debug failed: ${error.message}` });
                                                 }
-                                            })
-                                        }}
-                                    >
-                                        {archiveLoading ? (
-                                            <>
-                                                <CircularProgress size={16} sx={{ mr: 1 }} />
-                                                Loading...
-                                            </>
-                                        ) : (
-                                            '🔄 Refresh Archive'
-                                        )}
-                                    </Button>
+                                            }}
+                                            sx={{ 
+                                                borderRadius: '20px',
+                                                ...(darkMode && {
+                                                    borderColor: '#555',
+                                                    color: '#fff',
+                                                    '&:hover': {
+                                                        borderColor: '#777',
+                                                        backgroundColor: 'rgba(255,255,255,0.1)'
+                                                    }
+                                                })
+                                            }}
+                                        >
+                                            🐛 Debug HTML Files
+                                        </Button>
                                     {selectedExperiment && (
                                         <Button 
                                             variant="outlined" 
@@ -3892,12 +4198,58 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                             {formatDuration(selectedExperiment.experiment_info.duration)}
                                                         </Typography>
                                                     </Box>
+                                                    
+                                                    {/* Data Optimization Info */}
+                                                    {selectedExperiment.experiment_info.data_optimization && (
+                                                        <Box sx={{ gridColumn: '1 / -1', mt: 1 }}>
+                                                            <Typography variant="caption" sx={{
+                                                                color: darkMode ? '#aaa' : 'text.secondary'
+                                                            }}>Data Optimization</Typography>
+                                                            <Typography variant="body2" sx={{
+                                                                color: darkMode ? '#81C784' : 'success.main',
+                                                                fontWeight: 'bold'
+                                                            }}>
+                                                                💾 {selectedExperiment.experiment_info.data_optimization.size_reduction_percent.toFixed(1)}% reduction 
+                                                                ({selectedExperiment.experiment_info.data_optimization.original_size_kb.toFixed(1)}KB → {selectedExperiment.experiment_info.data_optimization.optimized_size_kb.toFixed(1)}KB)
+                                                            </Typography>
+                                                        </Box>
+                                                    )}
                                                 </Box>
                                             </Grid>
                                             <Grid item xs={12} md={6}>
                                                 <Typography variant="h6" gutterBottom sx={{
                                                     color: darkMode ? '#ffffff' : 'inherit'
-                                                }}>📁 Generated Files</Typography>
+                                                }}>📁 Generated Files & Analysis</Typography>
+                                                
+                                                {/* Test Cases Info */}
+                                                {selectedExperiment.test_cases && (
+                                                    <Box sx={{ mb: 2 }}>
+                                                        <Typography variant="subtitle2" sx={{ 
+                                                            fontWeight: 'bold', 
+                                                            mb: 1,
+                                                            color: darkMode ? '#ffffff' : 'inherit'
+                                                        }}>
+                                                            🧪 Test Cases ({selectedExperiment.test_cases.length})
+                                                        </Typography>
+                                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                                            {selectedExperiment.test_cases.map((testCase, index) => (
+                                                                <Chip
+                                                                    key={index}
+                                                                    label={`Mode ${testCase.mode} - ${testCase.url_count} URLs`}
+                                                                    size="small"
+                                                                    color={testCase.mode === 0 ? 'primary' : 'secondary'}
+                                                                    sx={{
+                                                                        ...(darkMode && {
+                                                                            backgroundColor: testCase.mode === 0 ? '#1976d2' : '#9c27b0',
+                                                                            color: '#fff'
+                                                                        })
+                                                                    }}
+                                                                />
+                                                            ))}
+                                                        </Box>
+                                                    </Box>
+                                                )}
+
                                                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                                                     {/* Gnuplot Files */}
                                                     {selectedExperiment.gnuplot_files && selectedExperiment.gnuplot_files.length > 0 && (
@@ -3910,7 +4262,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                                 📊 Gnuplot Data Files ({selectedExperiment.gnuplot_files.length})
                                                             </Typography>
                                                             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                                                                {selectedExperiment.gnuplot_files.map((file, index) => (
+                                                                {selectedExperiment.gnuplot_files.slice(0, 8).map((file, index) => (
                                                                     <Chip
                                                                         key={index}
                                                                         label={file.filename}
@@ -3934,6 +4286,15 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                                         title="Left-click to download, Ctrl+click to copy content"
                                                                     />
                                                                 ))}
+                                                                {selectedExperiment.gnuplot_files.length > 8 && (
+                                                                    <Typography variant="caption" sx={{ 
+                                                                        display: 'flex', 
+                                                                        alignItems: 'center',
+                                                                        color: darkMode ? '#aaa' : 'text.secondary'
+                                                                    }}>
+                                                                        ... and {selectedExperiment.gnuplot_files.length - 8} more
+                                                                    </Typography>
+                                                                )}
                                                             </Box>
                                                             <Typography variant="caption" sx={{ 
                                                                 display: 'block', 
@@ -3953,10 +4314,10 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                                 mb: 1,
                                                                 color: darkMode ? '#ffffff' : 'inherit'
                                                             }}>
-                                                                🖼️ Generated Images ({selectedExperiment.generated_images.length})
+                                                                🖼️ Generated Charts ({selectedExperiment.generated_images.filter(img => img.size_kb > 0).length})
                                                             </Typography>
-                                                            <Grid container spacing={2}>
-                                                                {selectedExperiment.generated_images.map((image, index) => (
+                                                            <Grid container spacing={1}>
+                                                                {selectedExperiment.generated_images.filter(img => img.size_kb > 0 && img.format === 'PNG').map((image, index) => (
                                                                     <Grid item xs={12} sm={6} md={4} key={index}>
                                                                         <Card sx={{ 
                                                                             cursor: 'pointer',
@@ -3971,61 +4332,60 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                                                 backgroundColor: darkMode ? '#404040' : undefined
                                                                             }
                                                                         }}>
-                                                                            <CardContent sx={{ p: 2 }}>
+                                                                            <CardContent sx={{ p: 1.5 }}>
                                                                                 {/* Image Preview for PNG files */}
-                                                                                {image.format === 'PNG' && (
-                                                                                    <Box sx={{ mb: 1, textAlign: 'center' }}>
-                                                                                        <img 
-                                                                                            src={`http://localhost:5000/experiments/results/${selectedExperiment.id}/images/${image.filename}`}
-                                                                                            alt={image.chart_type}
-                                                                                            style={{ 
-                                                                                                maxWidth: '100%', 
-                                                                                                maxHeight: '120px',
-                                                                                                objectFit: 'contain',
-                                                                                                border: darkMode ? '1px solid #555' : '1px solid #ddd',
-                                                                                                borderRadius: '4px'
-                                                                                            }}
-                                                                                            onError={(e) => {
-                                                                                                e.target.style.display = 'none';
-                                                                                            }}
-                                                                                        />
-                                                                                    </Box>
-                                                                                )}
-                                                                                <Typography variant="subtitle2" sx={{ 
+                                                                                <Box sx={{ mb: 1, textAlign: 'center' }}>
+                                                                                    <img 
+                                                                                        src={`http://localhost:5000/experiments/results/${selectedExperiment.id}/images/${image.filename}`}
+                                                                                        alt={image.chart_type}
+                                                                                        style={{ 
+                                                                                            maxWidth: '100%', 
+                                                                                            maxHeight: '80px',
+                                                                                            objectFit: 'contain',
+                                                                                            border: darkMode ? '1px solid #555' : '1px solid #ddd',
+                                                                                            borderRadius: '4px',
+                                                                                            cursor: 'pointer'
+                                                                                        }}
+                                                                                        onClick={() => {
+                                                                                            const imageWithUrl = {
+                                                                                                ...image,
+                                                                                                url: `http://localhost:5000/experiments/results/${selectedExperiment.id}/images/${image.filename}`
+                                                                                            };
+                                                                                            handleImageClick(imageWithUrl);
+                                                                                        }}
+                                                                                        onError={(e) => {
+                                                                                            e.target.style.display = 'none';
+                                                                                        }}
+                                                                                    />
+                                                                                </Box>
+                                                                                <Typography variant="caption" sx={{ 
                                                                                     fontWeight: 'bold', 
-                                                                                    mb: 1,
+                                                                                    display: 'block',
+                                                                                    mb: 0.5,
                                                                                     color: darkMode ? '#ffffff' : 'inherit'
                                                                                 }}>
                                                                                     {image.chart_type}
                                                                                 </Typography>
                                                                                 <Typography variant="caption" sx={{ 
-                                                                                    display: 'block', 
-                                                                                    mb: 1,
-                                                                                    color: darkMode ? '#aaa' : 'text.secondary'
+                                                                                    color: darkMode ? '#aaa' : 'text.secondary',
+                                                                                    fontSize: '0.7rem'
                                                                                 }}>
-                                                                                    Format: {image.format} • {image.size_kb.toFixed(1)} KB
+                                                                                    {image.format} • {image.size_kb.toFixed(1)} KB
                                                                                 </Typography>
                                                                                 <Button
-                                                                                    variant="outlined"
+                                                                                    variant="text"
                                                                                     size="small"
                                                                                     fullWidth
+                                                                                    sx={{ mt: 0.5, fontSize: '0.7rem' }}
                                                                                     onClick={() => {
-                                                                                        const url = `http://localhost:5000/experiments/results/${selectedExperiment.id}/images/${image.filename}`;
-                                                                                        window.open(url, '_blank');
-                                                                                        setSuccess(`Opened ${image.filename} in new tab`);
-                                                                                    }}
-                                                                                    sx={{
-                                                                                        ...(darkMode && {
-                                                                                            borderColor: '#555',
-                                                                                            color: '#fff',
-                                                                                            '&:hover': {
-                                                                                                borderColor: '#777',
-                                                                                                backgroundColor: 'rgba(255,255,255,0.1)'
-                                                                                            }
-                                                                                        })
+                                                                                        const imageWithUrl = {
+                                                                                            ...image,
+                                                                                            url: `http://localhost:5000/experiments/results/${selectedExperiment.id}/images/${image.filename}`
+                                                                                        };
+                                                                                        handleImageClick(imageWithUrl);
                                                                                     }}
                                                                                 >
-                                                                                    🔗 Open
+                                                                                    🔍 View
                                                                                 </Button>
                                                                             </CardContent>
                                                                         </Card>
@@ -4045,11 +4405,13 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                     const cardId = `archive-result-${selectedExperiment.id}-${index}`;
                                     const collapsed = isCardCollapsed(cardId);
                                     
+
+                                    
                                     return result.status === 'success' && (
                                         <Card key={index} sx={{ 
                                             mb: 4, 
                                             border: '2px solid',
-                                            borderColor: 'primary.light',
+                                            borderColor: result.test_metadata?.mode === 0 ? 'primary.light' : 'secondary.light',
                                             borderRadius: 3,
                                             overflow: 'hidden',
                                             boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
@@ -4064,12 +4426,12 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                         alignItems: 'center',
                                                         gap: 1
                                                     }}>
-                                                        🧮 Test: {result.test_metadata?.test_name || `Test ${index + 1}`}
+                                                        {result.test_metadata?.mode === 0 ? '🧮' : '🌐'} Test: {result.test_metadata?.test_name || `Test ${index + 1}`}
                                                     </Typography>
                                                 }
                                                 subheader={
                                                     <Typography variant="subtitle1" sx={{ color: 'rgba(255,255,255,0.8)' }}>
-                                                        ID: {result.test_metadata?.test_id} | Duration: {formatDuration(result.test_metadata?.duration || 0)}
+                                                        ID: {result.test_metadata?.test_id} | Mode: {result.test_metadata?.mode === 0 ? '0 (All Together)' : '1 (Domain-based)'} | Duration: {formatDuration(result.test_metadata?.duration || 0)}
                                                     </Typography>
                                                 }
                                                 action={
@@ -4092,12 +4454,12 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                 }
                                                 onClick={() => toggleCardCollapse(cardId)}
                                                 sx={{
-                                                    backgroundColor: 'primary.main',
+                                                    backgroundColor: result.test_metadata?.mode === 0 ? 'primary.main' : 'secondary.main',
                                                     color: 'white',
                                                     py: 2,
                                                     cursor: 'pointer',
                                                     '&:hover': {
-                                                        backgroundColor: 'primary.dark'
+                                                        backgroundColor: result.test_metadata?.mode === 0 ? 'primary.dark' : 'secondary.dark'
                                                     }
                                                 }}
                                             />
@@ -4107,32 +4469,156 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                     backgroundColor: darkMode ? '#2a2a2a' : 'background.paper',
                                                     color: darkMode ? '#ffffff' : 'inherit'
                                                 }}>
-                                                    {/* Handle Mode 0 results (processed_clusters) */}
-                                                    {result.processed_clusters && result.processed_clusters.map((processedCluster, clusterIndex) => (
+                                                    {/* Performance Metrics Summary for Archive Results */}
+                                                    {result.timing_logs && result.timing_logs.performance_metrics && (
+                                                        <Accordion 
+                                                            sx={{ 
+                                                                mb: theme.spacing(2),
+                                                                '&:before': { display: 'none' },
+                                                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                                                borderRadius: '8px !important',
+                                                                overflow: 'hidden',
+                                                                backgroundColor: darkMode ? '#333' : 'info.light'
+                                                            }}
+                                                        >
+                                                            <AccordionSummary 
+                                                                expandIcon={<ExpandMoreIcon />}
+                                                                sx={{
+                                                                    backgroundColor: darkMode ? '#404040' : 'info.main',
+                                                                    color: 'white',
+                                                                    '&:hover': { backgroundColor: darkMode ? '#505050' : 'info.dark' }
+                                                                }}
+                                                            >
+                                                                <Typography sx={{ fontWeight: 'bold' }}>
+                                                                    ⚡ Performance Metrics & Cache Efficiency
+                                                                </Typography>
+                                                            </AccordionSummary>
+                                                            <AccordionDetails sx={{ p: 2, backgroundColor: darkMode ? '#2a2a2a' : 'background.paper' }}>
+                                                                <Grid container spacing={2}>
+                                                                    <Grid item xs={6} sm={4} md={3}>
+                                                                        <Typography variant="caption" sx={{ color: darkMode ? '#aaa' : 'text.secondary' }}>Total Time</Typography>
+                                                                        <Typography variant="h6" color="primary" sx={{ color: darkMode ? '#64B5F6' : 'primary.main' }}>
+                                                                            {formatDuration(result.timing_logs.performance_metrics.total_processing_time)}
+                                                                        </Typography>
+                                                                    </Grid>
+                                                                    <Grid item xs={6} sm={4} md={3}>
+                                                                        <Typography variant="caption" sx={{ color: darkMode ? '#aaa' : 'text.secondary' }}>Cache Efficiency</Typography>
+                                                                        <Typography variant="h6" color="success.main">
+                                                                            {result.timing_logs.performance_metrics.cache_efficiency_percent?.toFixed(1)}%
+                                                                        </Typography>
+                                                                    </Grid>
+                                                                    <Grid item xs={6} sm={4} md={3}>
+                                                                        <Typography variant="caption" sx={{ color: darkMode ? '#aaa' : 'text.secondary' }}>URLs Processed</Typography>
+                                                                        <Typography variant="h6" sx={{ color: darkMode ? '#ffffff' : 'inherit' }}>
+                                                                            {result.timing_logs.performance_metrics.urls_processed}
+                                                                        </Typography>
+                                                                    </Grid>
+                                                                    <Grid item xs={6} sm={4} md={3}>
+                                                                        <Typography variant="caption" sx={{ color: darkMode ? '#aaa' : 'text.secondary' }}>From Cache</Typography>
+                                                                        <Typography variant="h6" color="success.main">
+                                                                            {result.timing_logs.performance_metrics.urls_from_cache}
+                                                                        </Typography>
+                                                                    </Grid>
+                                                                    <Grid item xs={6} sm={4} md={3}>
+                                                                        <Typography variant="caption" sx={{ color: darkMode ? '#aaa' : 'text.secondary' }}>HTML Files</Typography>
+                                                                        <Typography variant="h6" sx={{ color: darkMode ? '#ffffff' : 'inherit' }}>
+                                                                            {result.timing_logs.performance_metrics.html_files_generated}
+                                                                        </Typography>
+                                                                    </Grid>
+                                                                    <Grid item xs={6} sm={4} md={3}>
+                                                                        <Typography variant="caption" sx={{ color: darkMode ? '#aaa' : 'text.secondary' }}>Clusters</Typography>
+                                                                        <Typography variant="h6" sx={{ color: darkMode ? '#ffffff' : 'inherit' }}>
+                                                                            {result.timing_logs.performance_metrics.clusters_generated}
+                                                                        </Typography>
+                                                                    </Grid>
+                                                                    <Grid item xs={6} sm={4} md={3}>
+                                                                        <Typography variant="caption" sx={{ color: darkMode ? '#aaa' : 'text.secondary' }}>Avg Time/URL</Typography>
+                                                                        <Typography variant="h6" sx={{ color: darkMode ? '#ffffff' : 'inherit' }}>
+                                                                            {formatDuration(result.timing_logs.performance_metrics.average_time_per_url)}
+                                                                        </Typography>
+                                                                    </Grid>
+                                                                    <Grid item xs={6} sm={4} md={3}>
+                                                                        <Typography variant="caption" sx={{ color: darkMode ? '#aaa' : 'text.secondary' }}>Avg Time/Level</Typography>
+                                                                        <Typography variant="h6" sx={{ color: darkMode ? '#ffffff' : 'inherit' }}>
+                                                                            {formatDuration(result.timing_logs.performance_metrics.average_time_per_level)}
+                                                                        </Typography>
+                                                                    </Grid>
+                                                                </Grid>
+                                                                {result.timing_logs.performance_metrics.cache_savings && (
+                                                                    <Box sx={{ mt: 2, p: 1.5, backgroundColor: darkMode ? '#1e4620' : 'success.light', borderRadius: 1 }}>
+                                                                        <Typography variant="body2" sx={{ color: darkMode ? '#81C784' : 'success.dark', fontWeight: 'bold' }}>
+                                                                            💾 {result.timing_logs.performance_metrics.cache_savings}
+                                                                        </Typography>
+                                                                    </Box>
+                                                                )}
+                                                            </AccordionDetails>
+                                                        </Accordion>
+                                                    )}
+
+                                                    {/* Complete Timing Logs for Archive Results */}
+                                                    {result.timing_logs && renderTimingLogs(result.timing_logs)}
+                                                    
+                                                    {/* Domain-specific Timing Logs for Mode 1 */}
+                                                    {result.domain_results && result.domain_results.map((domainResult, domainIndex) => (
+                                                        domainResult.timing_logs && (
+                                                            <Box key={`domain-timing-${domainIndex}`} sx={{ mt: 2 }}>
+                                                                <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+                                                                    🌐 {domainResult.domain} - Detailed Timing Logs
+                                                                </Typography>
+                                                                {renderTimingLogs(domainResult.timing_logs)}
+                                                            </Box>
+                                                        )
+                                                    ))}
+
+                                                    {/* Mode 0: Show standard clustering results */}
+                                                    {result.test_metadata?.mode === 0 && result.processed_clusters && result.processed_clusters.map((processedCluster, clusterIndex) => (
                                                         processedCluster.processed_data && processedCluster.processed_data.site_similarity &&
                                                         <div key={`similarity-${clusterIndex}`}>
-                                                            <Typography variant="h6" sx={{ mt: 2, mb: 1, fontWeight: 'bold' }}>
-                                                                🔍 Site Similarity Analysis - Level {processedCluster.level}
-                                                            </Typography>
-                                                            {renderSiteSimilarityResults(processedCluster.processed_data.site_similarity, processedCluster.level)}
+                                                            {renderSiteSimilarityResults(
+                                                                processedCluster.processed_data.site_similarity, 
+                                                                processedCluster.level, 
+                                                                processedCluster.processed_data
+                                                            )}
                                                         </div>
                                                     ))}
 
-                                                    {/* Handle Mode 1 results (domain_results) */}
-                                                    {result.domain_results && result.domain_results.map((domainResult, domainIndex) => (
-                                                        domainResult.processed_clusters && domainResult.processed_clusters.map((processedCluster, clusterIndex) => (
-                                                            processedCluster.processed_data && processedCluster.processed_data.site_similarity &&
-                                                            <div key={`domain-${domainIndex}-similarity-${clusterIndex}`}>
-                                                                <Typography variant="h6" sx={{ mt: 2, mb: 1, fontWeight: 'bold' }}>
-                                                                    🔍 Site Similarity Analysis - {domainResult.domain} - Level {processedCluster.level}
+                                                    {/* Mode 1: Show domain-based results */}
+                                                    {result.test_metadata?.mode === 1 && result.domain_results && result.domain_results.map((domainResult, domainIndex) => (
+                                                        <div key={`domain-${domainIndex}`}>
+                                                            {/* Domain header */}
+                                                            <Typography variant="h6" sx={{ mt: 3, mb: 2, fontWeight: 'bold', color: 'secondary.main' }}>
+                                                                🌐 Domain: {domainResult.domain}
+                                                            </Typography>
+                                                            
+                                                            {/* Domain URLs */}
+                                                            <Box sx={{ mb: 2 }}>
+                                                                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                                                                    URLs in this domain:
                                                                 </Typography>
-                                                                {renderSiteSimilarityResults(processedCluster.processed_data.site_similarity, processedCluster.level)}
-                                                            </div>
-                                                        ))
+                                                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                                                    {domainResult.urls && domainResult.urls.map((url, urlIndex) => (
+                                                                        <Chip key={urlIndex} label={url} size="small" color="secondary" />
+                                                                    ))}
+                                                                </Box>
+                                                            </Box>
+
+                                                            {/* Show similarity results directly if available */}
+                                                            {domainResult.processed_clusters && domainResult.processed_clusters.map((processedCluster, clusterIndex) => (
+                                                                processedCluster.processed_data && processedCluster.processed_data.site_similarity &&
+                                                                <div key={`domain-${domainIndex}-similarity-${clusterIndex}`}>
+                                                                                                                                {renderSiteSimilarityResults(
+                                                                processedCluster.processed_data.site_similarity, 
+                                                                processedCluster.level, 
+                                                                processedCluster.processed_data,
+                                                                `${domainResult.domain} -`
+                                                            )}
+                                                                </div>
+                                                            ))}
+                                                        </div>
                                                     ))}
 
-                                                    {/* Clustering Results Summary for Mode 0 */}
-                                                    {result.clustering_results && result.clustering_results.map((clusterResult, clusterIndex) => (
+                                                    {/* Clustering Results Summary - Mode 0 only */}
+                                                    {result.test_metadata?.mode === 0 && result.clustering_results && result.clustering_results.map((clusterResult, clusterIndex) => (
                                                         <Accordion 
                                                             key={`cluster-${clusterIndex}`} 
                                                             sx={{ 
@@ -4174,41 +4660,46 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                                         {clusterResult.message}
                                                                     </Typography>
                                                                 ) : (
-                                                                    clusterResult.cluster_info && (
-                                                                        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 1 }}>
-                                                                            <Box>
-                                                                                <Typography variant="caption" sx={{
-                                                                                    color: darkMode ? '#aaa' : 'text.secondary'
-                                                                                }}>Clusters</Typography>
-                                                                                <Typography variant="subtitle2" sx={{
-                                                                                    color: darkMode ? '#ffffff' : 'inherit'
-                                                                                }}>{clusterResult.cluster_info.num_clusters}</Typography>
+                                                                    (() => {
+                                                                        const clusterInfo = getClusterInfo(clusterResult);
+                                                                        if (!clusterInfo) return null;
+                                                                        
+                                                                        return (
+                                                                            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 1 }}>
+                                                                                <Box>
+                                                                                    <Typography variant="caption" sx={{
+                                                                                        color: darkMode ? '#aaa' : 'text.secondary'
+                                                                                    }}>Clusters</Typography>
+                                                                                    <Typography variant="subtitle2" sx={{
+                                                                                        color: darkMode ? '#ffffff' : 'inherit'
+                                                                                    }}>{clusterInfo.num_clusters}</Typography>
+                                                                                </Box>
+                                                                                <Box>
+                                                                                    <Typography variant="caption" sx={{
+                                                                                        color: darkMode ? '#aaa' : 'text.secondary'
+                                                                                    }}>DBCV Score</Typography>
+                                                                                    <Typography variant="subtitle2" sx={{
+                                                                                        color: darkMode ? '#ffffff' : 'inherit'
+                                                                                    }}>{clusterInfo.dbcv_score?.toFixed(3)}</Typography>
+                                                                                </Box>
+                                                                                <Box>
+                                                                                    <Typography variant="caption" sx={{
+                                                                                        color: darkMode ? '#aaa' : 'text.secondary'
+                                                                                    }}>Attributes</Typography>
+                                                                                    <Typography variant="subtitle2" sx={{
+                                                                                        color: darkMode ? '#ffffff' : 'inherit'
+                                                                                    }}>{clusterInfo.useful_attributes?.length || 0}</Typography>
+                                                                                </Box>
                                                                             </Box>
-                                                                            <Box>
-                                                                                <Typography variant="caption" sx={{
-                                                                                    color: darkMode ? '#aaa' : 'text.secondary'
-                                                                                }}>DBCV Score</Typography>
-                                                                                <Typography variant="subtitle2" sx={{
-                                                                                    color: darkMode ? '#ffffff' : 'inherit'
-                                                                                }}>{clusterResult.cluster_info.dbcv_score?.toFixed(3)}</Typography>
-                                                                            </Box>
-                                                                            <Box>
-                                                                                <Typography variant="caption" sx={{
-                                                                                    color: darkMode ? '#aaa' : 'text.secondary'
-                                                                                }}>Attributes</Typography>
-                                                                                <Typography variant="subtitle2" sx={{
-                                                                                    color: darkMode ? '#ffffff' : 'inherit'
-                                                                                }}>{clusterResult.cluster_info.useful_attributes?.length || 0}</Typography>
-                                                                            </Box>
-                                                                        </Box>
-                                                                    )
+                                                                        );
+                                                                    })()
                                                                 )}
                                                             </AccordionDetails>
                                                         </Accordion>
                                                     ))}
 
-                                                    {/* Clustering Results Summary for Mode 1 */}
-                                                    {result.domain_results && result.domain_results.map((domainResult, domainIndex) => (
+                                                    {/* Clustering Results Summary - Mode 1 only */}
+                                                    {result.test_metadata?.mode === 1 && result.domain_results && result.domain_results.map((domainResult, domainIndex) => (
                                                         domainResult.clustering_results && domainResult.clustering_results.map((clusterResult, clusterIndex) => (
                                                             <Accordion 
                                                                 key={`domain-${domainIndex}-cluster-${clusterIndex}`} 
@@ -4230,7 +4721,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                                         '&:hover': {
                                                                             backgroundColor: clusterResult.status === 'error' 
                                                                                 ? 'error.main' 
-                                                                                : (darkMode ? '#505050' : 'grey.200'),
+                                                                                : (darkMode ? '#505050' : 'grey.200')
                                                                         }
                                                                     }}
                                                                 >
@@ -4251,34 +4742,33 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                                             {clusterResult.message}
                                                                         </Typography>
                                                                     ) : (
-                                                                        clusterResult.cluster_info && (
-                                                                            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 1 }}>
-                                                                                <Box>
-                                                                                    <Typography variant="caption" sx={{
-                                                                                        color: darkMode ? '#aaa' : 'text.secondary'
-                                                                                    }}>Clusters</Typography>
-                                                                                    <Typography variant="subtitle2" sx={{
-                                                                                        color: darkMode ? '#ffffff' : 'inherit'
-                                                                                    }}>{clusterResult.cluster_info.num_clusters}</Typography>
+                                                                        (() => {
+                                                                            const clusterInfo = getClusterInfo(clusterResult);
+                                                                            if (!clusterInfo) return null;
+                                                                            
+                                                                            return (
+                                                                                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 1 }}>
+                                                                                    <Box>
+                                                                                        <Typography variant="caption" color="text.secondary">Clusters</Typography>
+                                                                                        <Typography variant="subtitle2" sx={{
+                                                                                            color: darkMode ? '#ffffff' : 'inherit'
+                                                                                        }}>{clusterInfo.num_clusters}</Typography>
+                                                                                    </Box>
+                                                                                    <Box>
+                                                                                        <Typography variant="caption" color="text.secondary">DBCV Score</Typography>
+                                                                                        <Typography variant="subtitle2" sx={{
+                                                                                            color: darkMode ? '#ffffff' : 'inherit'
+                                                                                        }}>{clusterInfo.dbcv_score?.toFixed(3)}</Typography>
+                                                                                    </Box>
+                                                                                    <Box>
+                                                                                        <Typography variant="caption" color="text.secondary">Attributes</Typography>
+                                                                                        <Typography variant="subtitle2" sx={{
+                                                                                            color: darkMode ? '#ffffff' : 'inherit'
+                                                                                        }}>{clusterInfo.useful_attributes?.length || 0}</Typography>
+                                                                                    </Box>
                                                                                 </Box>
-                                                                                <Box>
-                                                                                    <Typography variant="caption" sx={{
-                                                                                        color: darkMode ? '#aaa' : 'text.secondary'
-                                                                                    }}>DBCV Score</Typography>
-                                                                                    <Typography variant="subtitle2" sx={{
-                                                                                        color: darkMode ? '#ffffff' : 'inherit'
-                                                                                    }}>{clusterResult.cluster_info.dbcv_score?.toFixed(3)}</Typography>
-                                                                                </Box>
-                                                                                <Box>
-                                                                                    <Typography variant="caption" sx={{
-                                                                                        color: darkMode ? '#aaa' : 'text.secondary'
-                                                                                    }}>Attributes</Typography>
-                                                                                    <Typography variant="subtitle2" sx={{
-                                                                                        color: darkMode ? '#ffffff' : 'inherit'
-                                                                                    }}>{clusterResult.cluster_info.useful_attributes?.length || 0}</Typography>
-                                                                                </Box>
-                                                                            </Box>
-                                                                        )
+                                                                            );
+                                                                        })()
                                                                     )}
                                                                 </AccordionDetails>
                                                             </Accordion>
@@ -4473,13 +4963,13 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                             value={customConfig.max_combinations}
                                             onChange={(e) => setCustomConfig(prev => ({ 
                                                 ...prev, 
-                                                max_combinations: Math.max(1, Math.min(100, parseInt(e.target.value) || 25))
+                                                max_combinations: Math.max(1, parseInt(e.target.value) || 25)
                                             }))}
-                                            inputProps={{ min: 1, max: 100 }}
+                                            inputProps={{ min: 1, max: 10000 }}
                                             fullWidth
                                         />
                                         <Typography variant="caption" color="text.secondary">
-                                            Will generate up to {customConfig.max_combinations} test combinations
+                                            Will generate up to {customConfig.max_combinations} test combinations (max: 10,000)
                                         </Typography>
                                     </Grid>
                                 </Grid>
@@ -4503,10 +4993,23 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                         <Grid item xs={6} sm={3}>
                                             <Typography variant="subtitle2">Est. Tests:</Typography>
                                             <Typography variant="h6" color="primary">
-                                                {Math.min(
-                                                    customConfig.max_combinations, 
-                                                    customConfig.modes.length * customConfig.url_combinations.length
-                                                )}
+                                                {(() => {
+                                                    // Calculate estimated test cases more accurately
+                                                    let totalTests = 0;
+                                                    for (const mode of customConfig.modes) {
+                                                        for (const urlCount of customConfig.url_combinations) {
+                                                            if (urlCount <= customConfig.available_urls.length) {
+                                                                const totalPossible = Math.min(5, Math.floor(customConfig.available_urls.length / urlCount));
+                                                                const variationsLimit = Math.min(totalPossible, customConfig.max_combinations - totalTests);
+                                                                totalTests += variationsLimit;
+                                                                if (totalTests >= customConfig.max_combinations) {
+                                                                    return customConfig.max_combinations;
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                    return Math.min(totalTests, customConfig.max_combinations);
+                                                })()}
                                             </Typography>
                                         </Grid>
                                     </Grid>
@@ -4547,10 +5050,151 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                 </Box>
                             </CardContent>
                         </Card>
+
+                        {/* Experiment Results Display */}
+                        {experimentResults && (
+                            <Box sx={{ width: '100%', mt: theme.spacing(4), maxWidth: '1600px', mx: 'auto', px: 2 }}>
+                                {/* Experiment Summary */}
+                                <Card sx={{ mb: 3 }}>
+                                    <CardHeader title="📊 Experiment Summary" />
+                                    <CardContent>
+                                        <Grid container spacing={3}>
+                                            <Grid item xs={12} md={6}>
+                                                <Typography variant="h6" gutterBottom>📈 Performance Overview</Typography>
+                                                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+                                                    <Box>
+                                                        <Typography variant="caption" color="text.secondary">Total Tests</Typography>
+                                                        <Typography variant="h6">{experimentResults.experiment_info.total_tests}</Typography>
+                                                    </Box>
+                                                    <Box>
+                                                        <Typography variant="caption" color="text.secondary">Success Rate</Typography>
+                                                        <Typography variant="h6" color="success.main">
+                                                            {experimentResults.experiment_info.success_rate.toFixed(1)}%
+                                                        </Typography>
+                                                    </Box>
+                                                    <Box>
+                                                        <Typography variant="caption" color="text.secondary">Successful</Typography>
+                                                        <Typography variant="h6" color="success.main">
+                                                            {experimentResults.experiment_info.successful_tests}
+                                                        </Typography>
+                                                    </Box>
+                                                    <Box>
+                                                        <Typography variant="caption" color="text.secondary">Failed</Typography>
+                                                        <Typography variant="h6" color="error.main">
+                                                            {experimentResults.experiment_info.failed_tests}
+                                                        </Typography>
+                                                    </Box>
+                                                    <Box>
+                                                        <Typography variant="caption" color="text.secondary">Duration</Typography>
+                                                        <Typography variant="h6">
+                                                            {formatDuration(experimentResults.experiment_info.duration)}
+                                                        </Typography>
+                                                    </Box>
+                                                </Box>
+                                            </Grid>
+                                            <Grid item xs={12} md={6}>
+                                                <Typography variant="h6" gutterBottom>📊 Generated Files & Analysis</Typography>
+                                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                                    <Typography variant="body2" color="text.secondary">
+                                                        Data files for thesis analysis have been created and are ready for gnuplot visualization.
+                                                    </Typography>
+                                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                                        <Chip label="📊 processing_times.dat" size="small" />
+                                                        <Chip label="🎯 cluster_counts.dat" size="small" />
+                                                        <Chip label="📄 html_file_counts.dat" size="small" />
+                                                        <Chip label="📈 *.gnuplot scripts" size="small" />
+                                                    </Box>
+                                                </Box>
+                                            </Grid>
+                                        </Grid>
+                                    </CardContent>
+                                </Card>
+
+                                {/* Process each result */}
+                                {experimentResults.results && experimentResults.results.map((result, index) => {
+                                    const cardId = `config-result-${index}`;
+                                    const collapsed = isCardCollapsed(cardId);
+                                    
+                                    return result.status === 'success' && (
+                                        <Card key={index} sx={{ 
+                                            mb: 4, 
+                                            border: '2px solid',
+                                            borderColor: 'success.light',
+                                            borderRadius: 3,
+                                            overflow: 'hidden',
+                                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                                            backgroundColor: darkMode ? '#2a2a2a' : 'background.paper'
+                                        }}>
+                                            <CardHeader 
+                                                title={
+                                                    <Typography variant="h5" sx={{ 
+                                                        fontWeight: 'bold',
+                                                        color: 'white',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: 1
+                                                    }}>
+                                                        🧮 Test: {result.test_metadata?.test_name || `Test ${index + 1}`}
+                                                    </Typography>
+                                                }
+                                                subheader={
+                                                    <Typography variant="subtitle1" sx={{ color: 'rgba(255,255,255,0.8)' }}>
+                                                        ID: {result.test_metadata?.test_id} | Duration: {formatDuration(result.test_metadata?.duration || 0)}
+                                                    </Typography>
+                                                }
+                                                action={
+                                                    <Tooltip title={collapsed ? "Expand card" : "Collapse card"}>
+                                                        <IconButton
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                toggleCardCollapse(cardId);
+                                                            }}
+                                                            sx={{
+                                                                color: 'white',
+                                                                '&:hover': {
+                                                                    backgroundColor: 'rgba(255,255,255,0.1)'
+                                                                }
+                                                            }}
+                                                        >
+                                                            {collapsed ? <ExpandMoreIcon /> : <ExpandLessIcon />}
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                }
+                                                onClick={() => toggleCardCollapse(cardId)}
+                                                sx={{
+                                                    backgroundColor: 'success.main',
+                                                    color: 'white',
+                                                    py: 2,
+                                                    cursor: 'pointer',
+                                                    '&:hover': {
+                                                        backgroundColor: 'success.dark'
+                                                    }
+                                                }}
+                                            />
+                                            <Collapse in={!collapsed} timeout="auto" unmountOnExit>
+                                                <CardContent sx={{ 
+                                                    p: 3,
+                                                    backgroundColor: darkMode ? '#2a2a2a' : 'background.paper',
+                                                    color: darkMode ? '#ffffff' : 'inherit'
+                                                }}>
+                                                    {/* Use the existing renderResults function for consistent display */}
+                                                    {result && setResult && (() => {
+                                                        const currentResult = result;
+                                                        setResult(currentResult);
+                                                        const renderedResults = renderResults();
+                                                        setResult(null); // Reset to avoid conflicts
+                                                        return renderedResults;
+                                                    })()}
+                                                </CardContent>
+                                            </Collapse>
+                                        </Card>
+                                    );
+                                })}
+                            </Box>
+                        )}
                     </Box>
                 );
-            case 'view3':
-                return <div>View 3 Content</div>;
+
             default:
                 return <div>Home</div>;
         }
@@ -4656,6 +5300,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                     <Box sx={{ display: 'flex', alignItems: 'center', minWidth: '200px' }}>
                         <Typography 
                             variant="h5" 
+                            onClick={() => setCurrentView('home')}
                             sx={{ 
                                 fontWeight: 'bold',
                                 background: darkMode 
@@ -4664,10 +5309,16 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                 backgroundClip: 'text',
                                 WebkitBackgroundClip: 'text',
                                 WebkitTextFillColor: 'transparent',
-                                fontSize: { xs: '1.2rem', sm: '1.5rem' }
+                                fontSize: { xs: '1.2rem', sm: '1.5rem' },
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease-in-out',
+                                '&:hover': {
+                                    transform: 'scale(1.05)',
+                                    opacity: 0.8
+                                }
                             }}
                         >
-                            🌐 URL to Image
+                            🌐 WebSRC
                         </Typography>
                     </Box>
                     
@@ -4712,48 +5363,10 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                             🎯 Clusters
                         </Button>
                         <Button 
-                            variant={currentView === 'experiments' ? 'contained' : 'outlined'} 
-                            onClick={() => setCurrentView('experiments')}
-                            sx={{ 
-                                minWidth: '120px', 
-                                fontSize: '0.875rem',
-                                ...(darkMode && currentView !== 'experiments' && {
-                                    borderColor: '#555',
-                                    color: '#fff',
-                                    '&:hover': {
-                                        borderColor: '#777',
-                                        backgroundColor: 'rgba(255,255,255,0.1)'
-                                    }
-                                })
-                            }}
-                            size="small"
-                        >
-                            🧪 Experiments
-                        </Button>
-                        <Button 
-                            variant={currentView === 'results' ? 'contained' : 'outlined'} 
-                            onClick={() => setCurrentView('results')}
-                            sx={{ 
-                                minWidth: '130px', 
-                                fontSize: '0.875rem',
-                                ...(darkMode && currentView !== 'results' && {
-                                    borderColor: '#555',
-                                    color: '#fff',
-                                    '&:hover': {
-                                        borderColor: '#777',
-                                        backgroundColor: 'rgba(255,255,255,0.1)'
-                                    }
-                                })
-                            }}
-                            size="small"
-                        >
-                            📊 Results
-                        </Button>
-                        <Button 
                             variant={currentView === 'config' ? 'contained' : 'outlined'} 
                             onClick={() => setCurrentView('config')}
                             sx={{ 
-                                minWidth: '120px', 
+                                minWidth: '170px', 
                                 fontSize: '0.875rem',
                                 ...(darkMode && currentView !== 'config' && {
                                     borderColor: '#555',
@@ -4766,15 +5379,15 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                             }}
                             size="small"
                         >
-                            ⚙️ Config
+                            ⚙️ Custom Experiments
                         </Button>
                         <Button 
-                            variant={currentView === 'view3' ? 'contained' : 'outlined'} 
-                            onClick={() => setCurrentView('view3')}
+                            variant={currentView === 'results' ? 'contained' : 'outlined'} 
+                            onClick={() => setCurrentView('results')}
                             sx={{ 
-                                minWidth: '100px', 
+                                minWidth: '150px', 
                                 fontSize: '0.875rem',
-                                ...(darkMode && currentView !== 'view3' && {
+                                ...(darkMode && currentView !== 'results' && {
                                     borderColor: '#555',
                                     color: '#fff',
                                     '&:hover': {
@@ -4785,7 +5398,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                             }}
                             size="small"
                         >
-                            👁️ View 3
+                            📊 Results Archive
                         </Button>
                     </Box>
                     
@@ -4928,6 +5541,146 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                     </Tooltip>
                 </Fab>
             )}
+
+            {/* Image Modal */}
+            <Modal
+                open={imageModalOpen}
+                onClose={handleCloseImageModal}
+                aria-labelledby="image-modal-title"
+                aria-describedby="image-modal-description"
+                sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    p: 2
+                }}
+            >
+                <Box sx={{
+                    position: 'relative',
+                    maxWidth: '90vw',
+                    maxHeight: '90vh',
+                    bgcolor: darkMode ? '#1a1a1a' : 'background.paper',
+                    borderRadius: 2,
+                    boxShadow: 24,
+                    overflow: 'hidden',
+                    display: 'flex',
+                    flexDirection: 'column'
+                }}>
+                    {/* Modal Header */}
+                    <Box sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        p: 2,
+                        borderBottom: '1px solid',
+                        borderColor: darkMode ? '#333' : 'divider',
+                        backgroundColor: darkMode ? '#2a2a2a' : 'grey.50'
+                    }}>
+                        <Typography 
+                            id="image-modal-title" 
+                            variant="h6" 
+                            component="h2"
+                            sx={{ 
+                                fontWeight: 'bold',
+                                color: darkMode ? '#ffffff' : 'inherit',
+                                flex: 1,
+                                mr: 2
+                            }}
+                        >
+                            📊 {selectedImage?.chart_type || 'Generated Chart'}
+                        </Typography>
+                        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                            <Typography variant="caption" sx={{
+                                color: darkMode ? '#aaa' : 'text.secondary',
+                                fontSize: '0.75rem'
+                            }}>
+                                {selectedImage?.format} • {selectedImage?.size_kb?.toFixed(1)} KB
+                            </Typography>
+                            <IconButton
+                                onClick={handleCloseImageModal}
+                                sx={{
+                                    color: darkMode ? '#fff' : 'text.primary',
+                                    '&:hover': {
+                                        backgroundColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.04)'
+                                    }
+                                }}
+                            >
+                                <CloseIcon />
+                            </IconButton>
+                        </Box>
+                    </Box>
+
+                    {/* Modal Content - Image */}
+                    <Box sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        p: 2,
+                        backgroundColor: darkMode ? '#1a1a1a' : 'background.paper',
+                        maxHeight: 'calc(90vh - 100px)',
+                        overflow: 'auto'
+                    }}>
+                        {selectedImage && (
+                            <img
+                                src={selectedImage.url}
+                                alt={selectedImage.chart_type}
+                                style={{
+                                    maxWidth: '100%',
+                                    maxHeight: '100%',
+                                    objectFit: 'contain',
+                                    borderRadius: '4px',
+                                    boxShadow: darkMode 
+                                        ? '0 8px 32px rgba(0,0,0,0.5)' 
+                                        : '0 8px 32px rgba(0,0,0,0.1)'
+                                }}
+                                onError={(e) => {
+                                    console.error('Image failed to load:', selectedImage.url);
+                                    e.target.style.display = 'none';
+                                }}
+                            />
+                        )}
+                    </Box>
+
+                    {/* Modal Footer */}
+                    <Box sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        gap: 2,
+                        p: 2,
+                        borderTop: '1px solid',
+                        borderColor: darkMode ? '#333' : 'divider',
+                        backgroundColor: darkMode ? '#2a2a2a' : 'grey.50'
+                    }}>
+                        <Button
+                            variant="outlined"
+                            startIcon={<PictureAsPdfIcon />}
+                            onClick={() => {
+                                if (selectedImage?.url) {
+                                    window.open(selectedImage.url, '_blank');
+                                }
+                            }}
+                            sx={{
+                                ...(darkMode && {
+                                    borderColor: '#555',
+                                    color: '#fff',
+                                    '&:hover': {
+                                        borderColor: '#777',
+                                        backgroundColor: 'rgba(255,255,255,0.1)'
+                                    }
+                                })
+                            }}
+                        >
+                            Open in New Tab
+                        </Button>
+                        <Button
+                            variant="contained"
+                            onClick={handleCloseImageModal}
+                        >
+                            Close
+                        </Button>
+                    </Box>
+                </Box>
+            </Modal>
         </Grid>
     );
 };

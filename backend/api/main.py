@@ -4,11 +4,12 @@ from flask import Flask, request, jsonify, send_from_directory, render_template_
 from flask_cors import CORS
 from flasgger import Swagger
 import sys
+import json
 
 # Add the lib directory to the system path
 sys.path.append(os.path.join(os.path.dirname(__file__), '../lib'))
 from lib import process_urls_from_api, process_clusters_from_api
-from utils.cache_manager import CacheManager
+
 
 # Import experiment manager with error handling
 try:
@@ -35,7 +36,12 @@ enable_swagger = os.getenv('ENABLE_SWAGGER', 'true').lower() in ['true', '1', 'y
 swagger = Swagger(app) if enable_swagger else None  # Initialize Swagger if enabled
 
 # Get absolute path to output_html_files directory
-OUTPUT_HTML_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), 'output_html_files'))
+# HTML files are created relative to the project root, not the API directory
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+OUTPUT_HTML_DIR = os.path.join(PROJECT_ROOT, "output_html_files")
+print(f"📁 PROJECT_ROOT: {PROJECT_ROOT}")
+print(f"📁 OUTPUT_HTML_DIR: {OUTPUT_HTML_DIR}")
+print(f"📁 OUTPUT_HTML_DIR exists: {os.path.exists(OUTPUT_HTML_DIR)}")
 
 # HTML template for file not found error
 FILE_NOT_FOUND_TEMPLATE = """
@@ -115,19 +121,102 @@ def serve_html(filename):
         
         # Handle level-based directory structure (e.g., level_1/filename.html)
         file_path = os.path.join(OUTPUT_HTML_DIR, filename)
+        print(f"🔍 Attempting to serve file: {file_path}")
+        print(f"📁 Full path: {os.path.abspath(file_path)}")
+        print(f"✅ File exists: {os.path.exists(file_path)}")
+        
         if not os.path.exists(file_path):
-            print(f"File not found: {file_path}")
-            # Return HTML error page instead of JSON
+            print(f"❌ File not found: {file_path}")
+            # List available files in the directory for debugging
+            try:
+                dir_to_check = os.path.dirname(file_path) if os.path.dirname(file_path) else OUTPUT_HTML_DIR
+                if os.path.exists(dir_to_check):
+                    available_files = os.listdir(dir_to_check)
+                    print(f"📋 Available files in {dir_to_check}: {available_files[:10]}")  # Show first 10 files
+                else:
+                    print(f"📁 Directory doesn't exist: {dir_to_check}")
+            except Exception as debug_e:
+                print(f"🐛 Debug error: {debug_e}")
+            
             return render_template_string(FILE_NOT_FOUND_TEMPLATE, filename=filename), 404
             
-        print(f"Serving file: {file_path}")
-        # Use the directory containing the file for send_from_directory
-        directory = os.path.dirname(file_path)
-        basename = os.path.basename(file_path)
+        print(f"✅ Serving file: {file_path}")
+        
+        # Fix the directory path issue - use absolute paths
+        abs_file_path = os.path.abspath(file_path)
+        directory = os.path.dirname(abs_file_path)
+        basename = os.path.basename(abs_file_path)
+        
+        print(f"📂 Serving from directory: {directory}")
+        print(f"📄 File basename: {basename}")
+        
         return send_from_directory(directory, basename)
     except Exception as e:
-        print(f"Error serving file: {str(e)}")
+        print(f"❌ Error serving file: {str(e)}")
+        import traceback
+        print(f"🐛 Stack trace: {traceback.format_exc()}")
         return render_template_string(FILE_NOT_FOUND_TEMPLATE, filename=filename), 500
+
+@app.route('/debug/html-files', methods=['GET'])
+def debug_html_files():
+    """
+    Debug endpoint to list available HTML files
+    """
+    try:
+        result = {
+            "status": "success",
+            "output_html_dir": OUTPUT_HTML_DIR,
+            "dir_exists": os.path.exists(OUTPUT_HTML_DIR),
+            "files": []
+        }
+        
+        if os.path.exists(OUTPUT_HTML_DIR):
+            # List all HTML files recursively
+            for root, dirs, files in os.walk(OUTPUT_HTML_DIR):
+                for file in files:
+                    if file.endswith('.html'):
+                        full_path = os.path.join(root, file)
+                        relative_path = os.path.relpath(full_path, OUTPUT_HTML_DIR)
+                        file_size = os.path.getsize(full_path)
+                        
+                        result["files"].append({
+                            "filename": file,
+                            "relative_path": relative_path,
+                            "full_path": full_path,
+                            "size_bytes": file_size,
+                            "size_kb": file_size / 1024,
+                            "url": f"/output_html_files/{relative_path}",
+                            "directory": os.path.dirname(relative_path) if os.path.dirname(relative_path) else "root"
+                        })
+            
+            # Group by directory for easier debugging
+            dirs_found = set()
+            for file_info in result["files"]:
+                dirs_found.add(file_info["directory"])
+            
+            result["directories_found"] = list(dirs_found)
+            result["total_files"] = len(result["files"])
+            result["total_size_mb"] = sum(f["size_kb"] for f in result["files"]) / 1024
+        
+        response = jsonify(result)
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
+        
+    except Exception as e:
+        import traceback
+        return jsonify({
+            "status": "error",
+            "message": str(e),
+            "traceback": traceback.format_exc()
+                 }), 500
+
+@app.route('/debug/html-files', methods=['OPTIONS'])
+def debug_html_files_options():
+    response = jsonify({})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,OPTIONS')
+    return response
 
 @app.route('/site-similarity', methods=['POST'])
 def site_similarity():
@@ -298,10 +387,6 @@ def process_clusters_options():
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
     return response
 
-# Initialize cache manager and experiment manager
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-cache_manager = CacheManager(cache_dir=os.path.join(PROJECT_ROOT, "backend", "api", "cache"))
-
 # Initialize experiment manager if available
 experiment_manager = None
 if experiment_manager_available and ExperimentManager:
@@ -312,395 +397,9 @@ if experiment_manager_available and ExperimentManager:
         print(f"❌ Failed to initialize ExperimentManager: {e}")
         experiment_manager_available = False
 
-@app.route('/cache/stats', methods=['GET'])
-def get_cache_stats():
-    """
-    Get cache statistics
-    ---
-    tags:
-      - Cache Management
-    responses:
-      200:
-        description: Cache statistics
-        schema:
-          type: object
-          properties:
-            status:
-              type: string
-            data:
-              type: object
-    """
-    try:
-        stats = cache_manager.get_cache_stats()
-        
-        response = jsonify({
-            "status": "success",
-            "data": stats
-        })
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-        return response
-        
-    except Exception as e:
-        import traceback
-        return jsonify({
-            "status": "error",
-            "message": f"Error getting cache stats: {str(e)}",
-            "traceback": traceback.format_exc()
-        }), 500
-
-@app.route('/cache/entries', methods=['GET'])
-def list_cache_entries():
-    """
-    List all cache entries
-    ---
-    tags:
-      - Cache Management
-    responses:
-      200:
-        description: List of cache entries
-        schema:
-          type: object
-          properties:
-            status:
-              type: string
-            data:
-              type: array
-    """
-    try:
-        entries = cache_manager.list_cache_entries()
-        
-        response = jsonify({
-            "status": "success",
-            "data": entries
-        })
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-        return response
-        
-    except Exception as e:
-        import traceback
-        return jsonify({
-            "status": "error",
-            "message": f"Error listing cache entries: {str(e)}",
-            "traceback": traceback.format_exc()
-        }), 500
-
-@app.route('/cache/cleanup', methods=['POST'])
-def cleanup_cache():
-    """
-    Clean up expired cache entries
-    ---
-    tags:
-      - Cache Management
-    parameters:
-      - name: ttl_hours
-        in: body
-        required: false
-        schema:
-          type: object
-          properties:
-            ttl_hours:
-              type: integer
-              description: TTL in hours (optional, uses default if not provided)
-    responses:
-      200:
-        description: Cleanup results
-        schema:
-          type: object
-          properties:
-            status:
-              type: string
-            message:
-              type: string
-            removed_count:
-              type: integer
-    """
-    try:
-        data = request.json or {}
-        ttl_hours = data.get('ttl_hours')
-        
-        removed_count = cache_manager.cleanup_expired(ttl_hours)
-        
-        response = jsonify({
-            "status": "success",
-            "message": f"Cleanup completed",
-            "removed_count": removed_count
-        })
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-        return response
-        
-    except Exception as e:
-        import traceback
-        return jsonify({
-            "status": "error",
-            "message": f"Error during cache cleanup: {str(e)}",
-            "traceback": traceback.format_exc()
-        }), 500
-
-@app.route('/cache/clear', methods=['POST'])
-def clear_cache():
-    """
-    Clear all cache entries
-    ---
-    tags:
-      - Cache Management
-    responses:
-      200:
-        description: Clear cache results
-        schema:
-          type: object
-          properties:
-            status:
-              type: string
-            message:
-              type: string
-            removed_count:
-              type: integer
-    """
-    try:
-        removed_count = cache_manager.clear_all_cache()
-        
-        response = jsonify({
-            "status": "success",
-            "message": f"All cache cleared",
-            "removed_count": removed_count
-        })
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-        return response
-        
-    except Exception as e:
-        import traceback
-        return jsonify({
-            "status": "error",
-            "message": f"Error clearing cache: {str(e)}",
-            "traceback": traceback.format_exc()
-        }), 500
-
-@app.route('/cache/check', methods=['POST'])
-def check_cache():
-    """
-    Check if cache exists for specific URLs and levels
-    ---
-    tags:
-      - Cache Management
-    parameters:
-      - name: request_data
-        in: body
-        required: true
-        schema:
-          type: object
-          properties:
-            urls:
-              type: array
-              items:
-                type: string
-            levels:
-              type: array
-              items:
-                type: integer
-            ttl_hours:
-              type: integer
-              description: Custom TTL in hours (optional)
-    responses:
-      200:
-        description: Cache check results
-        schema:
-          type: object
-          properties:
-            status:
-              type: string
-            has_cache:
-              type: boolean
-            cache_key:
-              type: string
-    """
-    try:
-        data = request.json
-        urls = data.get('urls', [])
-        levels = data.get('levels', [])
-        ttl_hours = data.get('ttl_hours')
-        
-        has_cache, cache_key = cache_manager.has_valid_cache(urls, levels, ttl_hours)
-        
-        response = jsonify({
-            "status": "success",
-            "has_cache": has_cache,
-            "cache_key": cache_key[:8] + "..." if cache_key else None
-        })
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-        return response
-        
-    except Exception as e:
-        import traceback
-        return jsonify({
-            "status": "error",
-            "message": f"Error checking cache: {str(e)}",
-            "traceback": traceback.format_exc()
-        }), 500
-
-# OPTIONS endpoints for cache management
-@app.route('/cache/<path:endpoint>', methods=['OPTIONS'])
-def cache_options(endpoint):
-    response = jsonify({})
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-    return response
-
 # EXPERIMENT MANAGEMENT ENDPOINTS
 
-@app.route('/experiments/test', methods=['GET'])
-def test_experiments():
-    """
-    Test experiment endpoints
-    ---
-    tags:
-      - Experiment Management
-    responses:
-      200:
-        description: Test response
-    """
-    response = jsonify({
-        "status": "success",
-        "message": "Experiment endpoints are working",
-        "experiment_manager_available": experiment_manager_available,
-        "experiment_manager_initialized": experiment_manager is not None
-    })
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-    return response
 
-@app.route('/experiments/test-cases', methods=['GET'])
-def get_test_cases():
-    """
-    Get all available test case combinations
-    ---
-    tags:
-      - Experiment Management
-    responses:
-      200:
-        description: List of available test cases
-        schema:
-          type: object
-          properties:
-            status:
-              type: string
-            test_cases:
-              type: array
-            total_count:
-              type: integer
-    """
-    if not experiment_manager_available or not experiment_manager:
-        return jsonify({
-            "status": "error",
-            "message": "Experiment manager is not available. Check server logs for import errors."
-        }), 500
-        
-    try:
-        test_cases = experiment_manager.get_available_test_cases()
-        
-        response = jsonify({
-            "status": "success",
-            "test_cases": test_cases,
-            "total_count": len(test_cases)
-        })
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-        return response
-        
-    except Exception as e:
-        import traceback
-        return jsonify({
-            "status": "error",
-            "message": f"Error getting test cases: {str(e)}",
-            "traceback": traceback.format_exc()
-        }), 500
-
-@app.route('/experiments/filter-test-cases', methods=['POST'])
-def filter_test_cases():
-    """
-    Filter test cases based on criteria
-    ---
-    tags:
-      - Experiment Management
-    parameters:
-      - name: filters
-        in: body
-        required: true
-        schema:
-          type: object
-          properties:
-            priority:
-              type: array
-              items:
-                type: string
-              example: ["high", "medium"]
-            max_duration:
-              type: number
-              example: 10.0
-            modes:
-              type: array
-              items:
-                type: integer
-              example: [0, 1]
-            max_url_count:
-              type: integer
-              example: 5
-    responses:
-      200:
-        description: Filtered test cases
-        schema:
-          type: object
-          properties:
-            status:
-              type: string
-            test_cases:
-              type: array
-            total_count:
-              type: integer
-    """
-    if not experiment_manager_available or not experiment_manager:
-        return jsonify({
-            "status": "error",
-            "message": "Experiment manager is not available. Check server logs for import errors."
-        }), 500
-        
-    try:
-        data = request.json
-        filters = data.get('filters', {})
-        
-        all_test_cases = experiment_manager.get_available_test_cases()
-        filtered_test_cases = experiment_manager.filter_test_cases(all_test_cases, filters)
-        
-        response = jsonify({
-            "status": "success",
-            "test_cases": filtered_test_cases,
-            "total_count": len(filtered_test_cases),
-            "original_count": len(all_test_cases)
-        })
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-        return response
-        
-    except Exception as e:
-        import traceback
-        return jsonify({
-            "status": "error",
-            "message": f"Error filtering test cases: {str(e)}",
-            "traceback": traceback.format_exc()
-        }), 500
 
 @app.route('/experiments/run-batch', methods=['POST'])
 def run_experiment_batch():
@@ -836,49 +535,7 @@ def run_experiment_batch():
             "traceback": traceback.format_exc()
         }), 500
 
-@app.route('/experiments/config', methods=['GET'])
-def get_experiment_config():
-    """
-    Get the experiment configuration
-    ---
-    tags:
-      - Experiment Management
-    responses:
-      200:
-        description: Experiment configuration
-        schema:
-          type: object
-          properties:
-            status:
-              type: string
-            config:
-              type: object
-    """
-    if not experiment_manager_available or not experiment_manager:
-        return jsonify({
-            "status": "error",
-            "message": "Experiment manager is not available. Check server logs for import errors."
-        }), 500
-        
-    try:
-        config = experiment_manager.config
-        
-        response = jsonify({
-            "status": "success",
-            "config": config
-        })
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-        return response
-        
-    except Exception as e:
-        import traceback
-        return jsonify({
-            "status": "error",
-            "message": f"Error getting experiment config: {str(e)}",
-            "traceback": traceback.format_exc()
-        }), 500
+
 
 @app.route('/experiments/results/list', methods=['GET'])
 def list_experiment_results():
@@ -1283,202 +940,7 @@ def serve_experiment_image(experiment_id, filename):
             "traceback": traceback.format_exc()
         }), 500
 
-@app.route('/experiments/gnuplot-guide', methods=['GET'])
-def get_gnuplot_guide():
-    """
-    Get gnuplot visualization guide and sample scripts
-    ---
-    tags:
-      - Experiment Management
-    responses:
-      200:
-        description: Gnuplot guide and sample scripts
-        schema:
-          type: object
-          properties:
-            status:
-              type: string
-            guide:
-              type: object
-    """
-    guide = {
-        "setup": {
-            "installation": {
-                "ubuntu": "sudo apt-get install gnuplot",
-                "windows": "Download from http://www.gnuplot.info/download.html",
-                "mac": "brew install gnuplot"
-            },
-            "basic_usage": "gnuplot script.gnuplot",
-            "interactive_mode": "gnuplot -persist -e \"plot 'data.dat' with lines\""
-        },
-        "data_files_structure": {
-            "processing_times.dat": {
-                "columns": ["test_id", "mode", "levels", "url_count", "duration"],
-                "description": "Processing time data for each test case",
-                "sample_data": "test_001\t0\t[1,2]\t3\t12.45"
-            },
-            "cluster_counts.dat": {
-                "columns": ["test_id", "mode", "level", "cluster_count", "dbcv_score"],
-                "description": "Number of clusters generated per level",
-                "sample_data": "test_001\t0\t1\t5\t0.567"
-            },
-            "html_file_counts.dat": {
-                "columns": ["test_id", "mode", "html_count"],
-                "description": "Number of HTML files generated per test",
-                "sample_data": "test_001\t0\t15"
-            }
-        },
-        "sample_scripts": {
-            "processing_time_comparison": """#!/usr/bin/gnuplot
-set terminal png size 1200,800 font 'Arial,12'
-set output 'processing_time_comparison.png'
-set title 'Web Scraping Processing Time: Mode 0 vs Mode 1\\nData: Total processing time (seconds) for URL clustering analysis'
-set xlabel 'Number of URLs Processed'
-set ylabel 'Processing Time (seconds)'
-set grid
-set key top left
-set style data points
-set pointsize 1.5
 
-# Filter data by mode and plot
-plot 'processing_times.dat' using 4:($2==0?$5:1/0) with linespoints title 'Mode 0 (All Together)' pt 7 lc rgb 'blue', \\
-     'processing_times.dat' using 4:($2==1?$5:1/0) with linespoints title 'Mode 1 (Domain-based)' pt 5 lc rgb 'red'
-""",
-            "clustering_quality_by_level": """#!/usr/bin/gnuplot
-set terminal png size 1200,800 font 'Arial,12'
-set output 'clustering_quality_by_level.png'
-set title 'HDBSCAN Clustering Quality (DBCV Score) by DOM Level\\nData: Density-Based Clustering Validation scores (-1 to 1 scale)'
-set xlabel 'DOM Tree Level'
-set ylabel 'DBCV Score (Clustering Quality)'
-set grid
-set key top right
-set xrange [0.5:5.5]
-set yrange [-0.5:1]
-
-plot 'cluster_counts.dat' using 3:($2==0?$5:1/0) with linespoints title 'Mode 0' pt 7 lc rgb 'blue', \\
-     'cluster_counts.dat' using 3:($2==1?$5:1/0) with linespoints title 'Mode 1' pt 5 lc rgb 'red'
-""",
-            "clusters_vs_urls": """#!/usr/bin/gnuplot
-set terminal png size 1200,800 font 'Arial,12'
-set output 'clusters_vs_urls.png'
-set title 'Number of Clusters Generated vs URL Count\\nData: Cluster formation patterns across different input sizes'
-set xlabel 'Number of URLs in Test'
-set ylabel 'Average Number of Clusters Generated'
-set grid
-set key top left
-
-# Create temporary aggregated data
-set table 'temp_mode0.dat'
-plot 'processing_times.dat' using 4:($2==0?1:0) smooth frequency
-unset table
-
-set table 'temp_mode1.dat'
-plot 'processing_times.dat' using 4:($2==1?1:0) smooth frequency
-unset table
-
-plot 'temp_mode0.dat' using 1:2 with linespoints title 'Mode 0' pt 7 lc rgb 'blue', \\
-     'temp_mode1.dat' using 1:2 with linespoints title 'Mode 1' pt 5 lc rgb 'red'
-
-# Clean up temporary files
-system("rm -f temp_mode0.dat temp_mode1.dat")
-""",
-            "performance_heatmap": """#!/usr/bin/gnuplot
-set terminal png size 1000,800 font 'Arial,12'
-set output 'performance_heatmap.png'
-set title 'Performance Heatmap: Processing Time by Mode and URL Count'
-set xlabel 'Number of URLs'
-set ylabel 'Processing Mode'
-set zlabel 'Processing Time (seconds)'
-set pm3d map
-set palette rgb 33,13,10
-set cbrange [0:*]
-
-# Convert processing times to grid format
-splot 'processing_times.dat' using 4:2:5 with pm3d
-"""
-        },
-        "thesis_analysis_tips": {
-            "comparative_analysis": [
-                "Compare Mode 0 vs Mode 1 processing times across different URL counts",
-                "Analyze clustering quality (DBCV scores) between modes",
-                "Study the relationship between DOM levels and clustering effectiveness",
-                "Examine scalability patterns as input size increases"
-            ],
-            "statistical_analysis": [
-                "Calculate mean, median, and standard deviation for processing times",
-                "Perform t-tests to compare mode performance statistically",
-                "Analyze correlation between URL count and processing time",
-                "Study clustering consistency across multiple runs"
-            ],
-            "visualization_recommendations": [
-                "Use box plots to show processing time distributions",
-                "Create scatter plots with trend lines for scalability analysis",
-                "Generate heatmaps for multi-dimensional comparisons",
-                "Include error bars to show variance in measurements"
-            ]
-        },
-        "advanced_scripts": {
-            "box_plot_comparison": """#!/usr/bin/gnuplot
-set terminal png size 1200,600 font 'Arial,12'
-set output 'processing_time_boxplot.png'
-set title 'Processing Time Distribution Comparison\\nData: Statistical distribution of processing times by mode'
-set ylabel 'Processing Time (seconds)'
-set xlabel 'Processing Mode'
-set grid ytics
-set style boxplot outliers pointtype 7
-set style data boxplot
-set style fill solid 0.5 border -1
-set xtics ('Mode 0' 0, 'Mode 1' 1)
-
-plot 'processing_times.dat' using (($2==0)?0:1/0):5 title 'Mode 0', \\
-     'processing_times.dat' using (($2==1)?1:1/0):5 title 'Mode 1'
-""",
-            "multi_chart_dashboard": """#!/usr/bin/gnuplot
-set terminal png size 1600,1200 font 'Arial,10'
-set output 'thesis_dashboard.png'
-set multiplot layout 2,2 title 'Thesis Analysis Dashboard - Web Scraping Performance Study'
-
-# Chart 1: Processing Time
-set title 'Processing Time Comparison'
-set xlabel 'URL Count'
-set ylabel 'Time (seconds)'
-plot 'processing_times.dat' using 4:($2==0?$5:1/0) with lines title 'Mode 0', \\
-     'processing_times.dat' using 4:($2==1?$5:1/0) with lines title 'Mode 1'
-
-# Chart 2: Clustering Quality
-set title 'Clustering Quality (DBCV Score)'
-set xlabel 'DOM Level'
-set ylabel 'DBCV Score'
-plot 'cluster_counts.dat' using 3:($2==0?$5:1/0) with points title 'Mode 0', \\
-     'cluster_counts.dat' using 3:($2==1?$5:1/0) with points title 'Mode 1'
-
-# Chart 3: Cluster Count
-set title 'Number of Clusters Generated'
-set xlabel 'DOM Level'
-set ylabel 'Cluster Count'
-plot 'cluster_counts.dat' using 3:($2==0?$4:1/0) with lines title 'Mode 0', \\
-     'cluster_counts.dat' using 3:($2==1?$4:1/0) with lines title 'Mode 1'
-
-# Chart 4: HTML Output
-set title 'HTML Files Generated'
-set xlabel 'Test Case'
-set ylabel 'File Count'
-plot 'html_file_counts.dat' using 0:($2==0?$3:1/0) with impulses title 'Mode 0', \\
-     'html_file_counts.dat' using 0:($2==1?$3:1/0) with impulses title 'Mode 1'
-
-unset multiplot
-"""
-        }
-    }
-    
-    response = jsonify({
-        "status": "success",
-        "guide": guide
-    })
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-    return response
 
 # OPTIONS endpoints for experiment management
 @app.route('/experiments/<path:endpoint>', methods=['OPTIONS'])
@@ -1488,6 +950,163 @@ def experiments_options(endpoint):
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
     return response
+
+@app.route('/experiments/results/<experiment_id>/large-data/<filename>', methods=['GET'])
+def get_experiment_large_data(experiment_id, filename):
+    """
+    Get large data files for a specific experiment (clustering results, processed data, etc.)
+    ---
+    tags:
+      - Experiment Management
+    parameters:
+      - name: experiment_id
+        in: path
+        type: string
+        required: true
+        description: The experiment directory name
+      - name: filename
+        in: path
+        type: string
+        required: true
+        description: The large data filename to retrieve
+    responses:
+      200:
+        description: Large data file content
+        schema:
+          type: object
+      404:
+        description: File not found
+    """
+    try:
+        import os
+        
+        # Construct the path to the large data file
+        exp_dir = os.path.join("experiment_results", experiment_id)
+        large_data_dir = os.path.join(exp_dir, "large_data")
+        file_path = os.path.join(large_data_dir, filename)
+        
+        # Security check
+        if not os.path.abspath(file_path).startswith(os.path.abspath(large_data_dir)):
+            return jsonify({
+                "status": "error",
+                "message": "Invalid file path"
+            }), 400
+        
+        if not os.path.exists(file_path):
+            return jsonify({
+                "status": "error",
+                "message": f"Large data file {filename} not found"
+            }), 404
+        
+        # Load and return the large data file
+        with open(file_path, 'r') as f:
+            large_data = json.load(f)
+        
+        file_size = os.path.getsize(file_path)
+        
+        response = jsonify({
+            "status": "success",
+            "filename": filename,
+            "file_size_bytes": file_size,
+            "file_size_kb": file_size / 1024,
+            "data": large_data
+        })
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        return response
+        
+    except Exception as e:
+        import traceback
+        return jsonify({
+            "status": "error",
+            "message": f"Error loading large data file: {str(e)}",
+            "traceback": traceback.format_exc()
+        }), 500
+
+@app.route('/experiments/results/<experiment_id>/large-data', methods=['GET'])
+def list_experiment_large_data_files(experiment_id):
+    """
+    List all large data files for a specific experiment
+    ---
+    tags:
+      - Experiment Management
+    parameters:
+      - name: experiment_id
+        in: path
+        type: string
+        required: true
+        description: The experiment directory name
+    responses:
+      200:
+        description: List of large data files
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+            files:
+              type: array
+    """
+    try:
+        import os
+        
+        # Construct the path to the large data directory
+        exp_dir = os.path.join("experiment_results", experiment_id)
+        large_data_dir = os.path.join(exp_dir, "large_data")
+        
+        if not os.path.exists(large_data_dir):
+            return jsonify({
+                "status": "success",
+                "files": [],
+                "message": "No large data directory found - experiment uses standard storage"
+            })
+        
+        # List all JSON files in the large data directory
+        large_data_files = []
+        for filename in os.listdir(large_data_dir):
+            if filename.endswith('.json'):
+                file_path = os.path.join(large_data_dir, filename)
+                file_size = os.path.getsize(file_path)
+                file_info = {
+                    'filename': filename,
+                    'size_bytes': file_size,
+                    'size_kb': file_size / 1024,
+                    'size_mb': file_size / (1024 * 1024),
+                    'type': 'clustering_results' if 'clustering' in filename else 
+                           'processed_clusters' if 'processed' in filename else
+                           'domain_results' if 'domain' in filename else 
+                           'html_files' if 'html' in filename else 'unknown'
+                }
+                large_data_files.append(file_info)
+        
+        # Sort files by size (largest first)
+        large_data_files.sort(key=lambda x: x['size_bytes'], reverse=True)
+        
+        total_size = sum(f['size_bytes'] for f in large_data_files)
+        
+        response = jsonify({
+            "status": "success",
+            "files": large_data_files,
+            "total_files": len(large_data_files),
+            "total_size_bytes": total_size,
+            "total_size_mb": total_size / (1024 * 1024),
+            "large_data_directory": f"experiment_results/{experiment_id}/large_data/"
+        })
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        return response
+        
+    except Exception as e:
+        import traceback
+        return jsonify({
+            "status": "error",
+            "message": f"Error listing large data files: {str(e)}",
+            "traceback": traceback.format_exc()
+        }), 500
+
+
 
 def run_price_processes(urls):
     # Dummy implementation, replace with your existing processing logic
