@@ -2910,63 +2910,15 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                     >
                                         ▶️ Run
                                     </Button>
-                                                            <Button
-                            variant="contained"
-                            color="secondary"
-                            onClick={handleClear}
-                            sx={{ borderRadius: '20px' }}
-                            disabled={urls.length === 0}
-                        >
-                            🗑️ Clear
-                        </Button>
-                        <Button 
-                            variant="outlined" 
-                            onClick={async () => {
-                                try {
-                                    setSuccess("Checking HTML files...");
-                                    const response = await fetch("http://localhost:5000/debug/html-files");
-                                    const data = await response.json();
-                                    console.log("🔍 Debug HTML Files:", data);
-                                    
-                                    if (data.status === "success") {
-                                        setSuccess(`Found ${data.total_files} HTML files in ${data.directories_found.length} directories`);
-                                        console.log("📁 Directories found:", data.directories_found);
-                                        console.log("📄 Sample files:", data.files.slice(0, 5));
-                                        
-                                        // Test opening one file if available
-                                        if (data.files.length > 0) {
-                                            const testFile = data.files[0];
-                                            console.log("🧪 Testing file:", testFile);
-                                            
-                                            setTimeout(() => {
-                                                const testUrl = `http://localhost:5000${testFile.url}`;
-                                                console.log("🌐 Test URL:", testUrl);
-                                                window.open(testUrl, '_blank');
-                                                setSuccess(`Opened test file: ${testFile.filename}`);
-                                            }, 1000);
-                                        }
-                                    } else {
-                                        setError({ message: data.message });
-                                    }
-                                } catch (error) {
-                                    console.error("❌ Debug HTML files error:", error);
-                                    setError({ message: `Debug failed: ${error.message}` });
-                                }
-                            }}
-                            sx={{ 
-                                borderRadius: '20px',
-                                ...(darkMode && {
-                                    borderColor: '#555',
-                                    color: '#fff',
-                                    '&:hover': {
-                                        borderColor: '#777',
-                                        backgroundColor: 'rgba(255,255,255,0.1)'
-                                    }
-                                })
-                            }}
-                        >
-                            🐛 Debug HTML
-                        </Button>
+                                    <Button
+                                        variant="contained"
+                                        color="secondary"
+                                        onClick={handleClear}
+                                        sx={{ borderRadius: '20px' }}
+                                        disabled={urls.length === 0}
+                                    >
+                                        🗑️ Clear
+                                    </Button>
                                 </>
                             )}
                         </Box>
@@ -3974,54 +3926,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                 '🔄 Refresh Archive'
                                             )}
                                         </Button>
-                                        <Button 
-                                            variant="outlined" 
-                                            onClick={async () => {
-                                                try {
-                                                    setSuccess("Checking HTML files...");
-                                                    const response = await fetch("http://localhost:5000/debug/html-files");
-                                                    const data = await response.json();
-                                                    console.log("🔍 Debug HTML Files:", data);
-                                                    
-                                                    if (data.status === "success") {
-                                                        setSuccess(`Found ${data.total_files} HTML files in ${data.directories_found.length} directories`);
-                                                        console.log("📁 Directories found:", data.directories_found);
-                                                        console.log("📄 Sample files:", data.files.slice(0, 5));
-                                                        
-                                                        // Test opening one file if available
-                                                        if (data.files.length > 0) {
-                                                            const testFile = data.files[0];
-                                                            console.log("🧪 Testing file:", testFile);
-                                                            
-                                                            setTimeout(() => {
-                                                                const testUrl = `http://localhost:5000${testFile.url}`;
-                                                                console.log("🌐 Test URL:", testUrl);
-                                                                window.open(testUrl, '_blank');
-                                                                setSuccess(`Opened test file: ${testFile.filename}`);
-                                                            }, 1000);
-                                                        }
-                                                    } else {
-                                                        setError({ message: data.message });
-                                                    }
-                                                } catch (error) {
-                                                    console.error("❌ Debug HTML files error:", error);
-                                                    setError({ message: `Debug failed: ${error.message}` });
-                                                }
-                                            }}
-                                            sx={{ 
-                                                borderRadius: '20px',
-                                                ...(darkMode && {
-                                                    borderColor: '#555',
-                                                    color: '#fff',
-                                                    '&:hover': {
-                                                        borderColor: '#777',
-                                                        backgroundColor: 'rgba(255,255,255,0.1)'
-                                                    }
-                                                })
-                                            }}
-                                        >
-                                            🐛 Debug HTML Files
-                                        </Button>
+
                                     {selectedExperiment && (
                                         <Button 
                                             variant="outlined" 
