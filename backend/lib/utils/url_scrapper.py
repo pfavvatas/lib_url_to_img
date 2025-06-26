@@ -43,7 +43,22 @@ class HTMLTag:
             self.children = []
 
     def get_text_excluding_children(self, webelement, driver):
-        script = "return arguments[0].firstChild ? arguments[0].firstChild.textContent : '';"
+        # script = "return arguments[0].firstChild ? arguments[0].firstChild.textContent : '';"
+        script = """
+    let label = arguments[0];
+    let textContent = '';
+    for (let node of label.childNodes) {
+        if (node.nodeType === Node.TEXT_NODE) {
+            textContent += node.textContent;
+        }
+    }
+    return textContent.trim();
+"""
+        #write me to a file line by line all the webelement results
+        with open('webelement_results.txt', 'a') as f:
+            f.write(f"Webelement: {webelement}\n")
+            f.write(f"Text: {driver.execute_script(script, webelement).strip()}\n")
+            f.write("-"*100 + "\n")
         return driver.execute_script(script, webelement).strip()
     
     def get_all_attributes(self, webelement, driver):
@@ -84,8 +99,9 @@ class HTMLTag:
         }
 
     def clean_text(self, text):
-        # Remove non-printable ASCII characters
-        return re.sub(r'[^\x20-\x7E]', ' ', text)
+				# Remove non-printable ASCII characters (but keep Greek and others)
+       return re.sub(r'[^\x20-\x7E\u0370-\u03FF\u1F00-\u1FFF]', ' ', text)
+      #  return text
     
     def remove_special_chars(self, text):
         # Define a regular expression pattern to match special characters
