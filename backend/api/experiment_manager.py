@@ -56,7 +56,8 @@ class ExperimentManager:
         
         # Remove the artificial limit - generate all valid combinations
         # max_per_mode = rules['filters']['max_combinations_per_run'] // len(modes)
-        max_total_combinations = rules['filters']['max_combinations_per_run']
+        # max_total_combinations = rules['filters']['max_combinations_per_run']  # DISABLED: No test limits
+        max_total_combinations = float('inf')  # No limit on test combinations
         
         for mode in modes:
             for levels in level_combinations:
@@ -179,7 +180,7 @@ class ExperimentManager:
         start_time = time.time()
         
         try:
-            # Run the URL processing
+            # Run the URL processing with the flat URL array
             result = process_urls_from_api(
                 urls=test_case['urls'],
                 levels=test_case['levels'],

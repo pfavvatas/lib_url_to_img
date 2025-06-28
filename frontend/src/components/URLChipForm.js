@@ -10,6 +10,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import CloseIcon from '@mui/icons-material/Close';
 import html2pdf from 'html2pdf.js';
+import { interpolateViridis } from 'd3-scale-chromatic';
 
 /*
 🎨 CONSISTENT COLOR SCHEME:
@@ -53,10 +54,9 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
     const [customConfig, setCustomConfig] = useState({
         experiment_name: '',
         available_urls: [],
-        modes: [0, 1],
+        modes: [0], // Fixed to mode 0 - process all URLs together
         levels: [1],
-        url_combinations: [2, 3],
-        max_combinations: 25
+        url_combinations: [] // URLs per domain - no pre-selection, user must choose
     });
     const [configUrlInput, setConfigUrlInput] = useState('');
     
@@ -310,6 +310,252 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
         setSuccess('Copied to clipboard!');
     };
 
+    // Function to copy all levels' similarity matrices and clustering summaries in formatted text
+    const handleCopyAllLevelsSummary = (resultData = null) => {
+        const dataToProcess = resultData || result;
+        if (!dataToProcess) {
+            setWarning('No results available to copy');
+            return;
+        }
+
+        let formattedOutput = '';
+        const processedLevels = new Set();
+
+        // Helper function to extract domain name from URL
+        const extractDomainKey = (url) => {
+            try {
+                const urlObj = new URL(url);
+                let domain = urlObj.hostname.replace('www.', '');
+                // Further simplify domain names (remove common suffixes for cleaner keys)
+                domain = domain.replace(/\.(com|org|net|gov|edu)$/, '');
+                return domain;
+            } catch {
+                // If not a valid URL, use the string as-is but clean it up
+                return url.replace(/[^a-zA-Z0-9-]/g, '').toLowerCase();
+            }
+        };
+
+        // Process Mode 0 results (all together)
+        if (dataToProcess.processed_clusters) {
+            dataToProcess.processed_clusters.forEach((processedCluster) => {
+                if (processedCluster.processed_data?.site_similarity?.status === 'success') {
+                    const level = processedCluster.level;
+                    if (processedLevels.has(level)) return;
+                    processedLevels.add(level);
+
+                    const { matrix, sites } = processedCluster.processed_data.site_similarity.data;
+                    
+                    formattedOutput += `Level ${level}:\n`;
+                    
+                    // Create similarity matrix with domain keys
+                    const domainMatrix = {};
+                    sites.forEach((rowSite, rowIndex) => {
+                        const rowKey = extractDomainKey(rowSite);
+                        domainMatrix[rowKey] = {};
+                        sites.forEach((colSite, colIndex) => {
+                            const colKey = extractDomainKey(colSite);
+                            domainMatrix[rowKey][colKey] = matrix[rowSite][colSite];
+                        });
+                    });
+
+                    formattedOutput += JSON.stringify(domainMatrix, null, 1) + '\n\n';
+
+                    // Find corresponding clustering result
+                    const clusterResult = dataToProcess.clustering_results?.find(cr => cr.level === level);
+                    if (clusterResult) {
+                        const clusterInfo = getClusterInfo(clusterResult);
+                        if (clusterInfo) {
+                            const clusteringSummary = {
+                                level: level,
+                                message: clusterResult.message,
+                                summary: {
+                                    num_clusters: clusterInfo.num_clusters,
+                                    dbcv_score: clusterInfo.dbcv_score,
+                                    min_cluster_size: clusterInfo.min_cluster_size,
+                                    cluster_selection_epsilon: clusterInfo.cluster_selection_epsilon,
+                                    useful_attributes_count: clusterInfo.useful_attributes?.length || 0
+                                },
+                                archived_test_id: dataToProcess.test_metadata?.test_id,
+                                timestamp: new Date().toISOString()
+                            };
+                            formattedOutput += JSON.stringify(clusteringSummary, null, 1) + '\n\n';
+                        }
+                    }
+                }
+            });
+        }
+
+        // Process Mode 1 results (domain-based)
+        if (dataToProcess.domain_results) {
+            dataToProcess.domain_results.forEach((domainResult) => {
+                if (domainResult.processed_clusters) {
+                    domainResult.processed_clusters.forEach((processedCluster) => {
+                        if (processedCluster.processed_data?.site_similarity?.status === 'success') {
+                            const level = processedCluster.level;
+                            const levelDomainKey = `${domainResult.domain}-${level}`;
+                            if (processedLevels.has(levelDomainKey)) return;
+                            processedLevels.add(levelDomainKey);
+
+                            const { matrix, sites } = processedCluster.processed_data.site_similarity.data;
+                            
+                            formattedOutput += `Level ${level} (${domainResult.domain}):\n`;
+                            
+                            // Create similarity matrix with domain keys
+                            const domainMatrix = {};
+                            sites.forEach((rowSite, rowIndex) => {
+                                const rowKey = extractDomainKey(rowSite);
+                                domainMatrix[rowKey] = {};
+                                sites.forEach((colSite, colIndex) => {
+                                    const colKey = extractDomainKey(colSite);
+                                    domainMatrix[rowKey][colKey] = matrix[rowSite][colSite];
+                                });
+                            });
+
+                            formattedOutput += JSON.stringify(domainMatrix, null, 1) + '\n\n';
+
+                            // Find corresponding clustering result
+                            const clusterResult = domainResult.clustering_results?.find(cr => cr.level === level);
+                            if (clusterResult) {
+                                const clusterInfo = getClusterInfo(clusterResult);
+                                if (clusterInfo) {
+                                    const clusteringSummary = {
+                                        domain: domainResult.domain,
+                                        level: level,
+                                        message: clusterResult.message,
+                                        summary: {
+                                            num_clusters: clusterInfo.num_clusters,
+                                            dbcv_score: clusterInfo.dbcv_score,
+                                            min_cluster_size: clusterInfo.min_cluster_size,
+                                            cluster_selection_epsilon: clusterInfo.cluster_selection_epsilon,
+                                            useful_attributes_count: clusterInfo.useful_attributes?.length || 0
+                                        },
+                                        archived_test_id: dataToProcess.test_metadata?.test_id,
+                                        timestamp: new Date().toISOString()
+                                    };
+                                    formattedOutput += JSON.stringify(clusteringSummary, null, 1) + '\n\n';
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        if (formattedOutput.trim()) {
+            navigator.clipboard.writeText(formattedOutput.trim());
+            const levelCount = processedLevels.size;
+            setSuccess(`📋 All levels summary copied! (${levelCount} levels with similarity & clustering data)`);
+        } else {
+            setWarning('No similarity and clustering data found to copy');
+        }
+    };
+
+    // Function to copy comprehensive results including similarity matrix and clustering analysis
+    const handleCopyComprehensiveResults = (resultData = null) => {
+        const dataToProcess = resultData || result;
+        if (!dataToProcess) {
+            setWarning('No results available to copy');
+            return;
+        }
+
+        const comprehensiveData = {
+            experiment_metadata: {
+                timestamp: new Date().toISOString(),
+                test_mode: dataToProcess.test_metadata?.mode || 'unknown',
+                levels_processed: dataToProcess.test_metadata?.levels || [],
+                urls_count: dataToProcess.test_metadata?.url_count || 0,
+                urls: dataToProcess.test_metadata?.urls || [],
+                duration: dataToProcess.test_metadata?.duration || 0
+            },
+            similarity_analysis: {},
+            clustering_analysis: {},
+            performance_metrics: dataToProcess.timing_logs?.performance_metrics || null
+        };
+
+        // Collect similarity matrices from all levels
+        if (dataToProcess.processed_clusters) {
+            dataToProcess.processed_clusters.forEach((processedCluster) => {
+                if (processedCluster.processed_data?.site_similarity?.status === 'success') {
+                    const levelKey = `level_${processedCluster.level}`;
+                    comprehensiveData.similarity_analysis[levelKey] = {
+                        level: processedCluster.level,
+                        matrix: processedCluster.processed_data.site_similarity.data.matrix,
+                        sites: processedCluster.processed_data.site_similarity.data.sites,
+                        summary: processedCluster.processed_data.site_similarity.data.summary
+                    };
+                }
+            });
+        }
+
+        // Collect similarity matrices from domain results (Mode 1)
+        if (dataToProcess.domain_results) {
+            dataToProcess.domain_results.forEach((domainResult) => {
+                if (domainResult.processed_clusters) {
+                    domainResult.processed_clusters.forEach((processedCluster) => {
+                        if (processedCluster.processed_data?.site_similarity?.status === 'success') {
+                            const levelKey = `${domainResult.domain}_level_${processedCluster.level}`;
+                            comprehensiveData.similarity_analysis[levelKey] = {
+                                domain: domainResult.domain,
+                                level: processedCluster.level,
+                                matrix: processedCluster.processed_data.site_similarity.data.matrix,
+                                sites: processedCluster.processed_data.site_similarity.data.sites,
+                                summary: processedCluster.processed_data.site_similarity.data.summary
+                            };
+                        }
+                    });
+                }
+            });
+        }
+
+        // Collect clustering results
+        if (dataToProcess.clustering_results) {
+            dataToProcess.clustering_results.forEach((clusterResult) => {
+                const levelKey = `level_${clusterResult.level}`;
+                const clusterInfo = getClusterInfo(clusterResult);
+                const clustersData = getClustersData(clusterResult);
+                
+                comprehensiveData.clustering_analysis[levelKey] = {
+                    level: clusterResult.level,
+                    status: clusterResult.status,
+                    message: clusterResult.message,
+                    cluster_info: clusterInfo,
+                    clusters_data: clustersData,
+                    is_lightweight: clustersData?.is_lightweight || false
+                };
+            });
+        }
+
+        // Collect clustering results from domain results (Mode 1)
+        if (dataToProcess.domain_results) {
+            dataToProcess.domain_results.forEach((domainResult) => {
+                if (domainResult.clustering_results) {
+                    domainResult.clustering_results.forEach((clusterResult) => {
+                        const levelKey = `${domainResult.domain}_level_${clusterResult.level}`;
+                        const clusterInfo = getClusterInfo(clusterResult);
+                        const clustersData = getClustersData(clusterResult);
+                        
+                        comprehensiveData.clustering_analysis[levelKey] = {
+                            domain: domainResult.domain,
+                            level: clusterResult.level,
+                            status: clusterResult.status,
+                            message: clusterResult.message,
+                            cluster_info: clusterInfo,
+                            clusters_data: clustersData,
+                            is_lightweight: clustersData?.is_lightweight || false
+                        };
+                    });
+                }
+            });
+        }
+
+        // Copy to clipboard
+        const formattedData = JSON.stringify(comprehensiveData, null, 2);
+        navigator.clipboard.writeText(formattedData);
+        
+        const totalLevels = Object.keys(comprehensiveData.similarity_analysis).length + Object.keys(comprehensiveData.clustering_analysis).length;
+        setSuccess(`📋 Comprehensive results copied! (${totalLevels} analysis sets)`);
+    };
+
 
 
 
@@ -524,55 +770,74 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
         setError(null);
 
         try {
-            // Generate test cases based on custom config
+            // Generate test cases based on custom config with URLs per Domain logic
             const testCases = [];
             let testIndex = 1;
 
-            // For each mode, create combinations for each level set and URL count
+            // Group URLs by domain first
+            const domainGroups = customConfig.available_urls.reduce((acc, url) => {
+                try {
+                    const domain = new URL(url).hostname;
+                    if (!acc[domain]) acc[domain] = [];
+                    acc[domain].push(url);
+                    return acc;
+                } catch {
+                    if (!acc['invalid']) acc['invalid'] = [];
+                    acc['invalid'].push(url);
+                    return acc;
+                }
+            }, {});
+
+            const domains = Object.keys(domainGroups);
+            const minUrlsPerDomain = Math.min(...Object.values(domainGroups).map(urls => urls.length));
+
+            // For each mode, create combinations for each level set and URLs per domain count
             for (const mode of customConfig.modes) {
-                for (const urlCount of customConfig.url_combinations) {
-                    if (urlCount <= customConfig.available_urls.length) {
-                        // Create multiple URL combinations for this parameter set
-                        const totalPossible = Math.min(5, Math.floor(customConfig.available_urls.length / urlCount));
-                        const variationsLimit = Math.min(totalPossible, customConfig.max_combinations - testCases.length);
+                for (const urlsPerDomain of customConfig.url_combinations) {
+                    // Check if we can get the requested URLs per domain from all domains
+                    if (urlsPerDomain <= minUrlsPerDomain) {
+                        // Calculate total URLs per test (urlsPerDomain × number of domains)
+                        const totalUrlsPerTest = urlsPerDomain * domains.length;
                         
-                        for (let variation = 0; variation < variationsLimit; variation++) {
-                            if (testCases.length >= customConfig.max_combinations) {
-                                break;
-                            }
+                        // Create multiple variations for this parameter set
+                        const maxVariations = Math.min(5, minUrlsPerDomain - urlsPerDomain + 1);
+                        
+                        for (let variation = 0; variation < maxVariations; variation++) {
                             
-                            // Create different URL combinations by rotating the starting point
-                            const startIndex = (variation * urlCount) % customConfig.available_urls.length;
+                            // Select URLs from each domain for Mode 0 processing
                             const selectedUrls = [];
                             
-                            for (let i = 0; i < urlCount; i++) {
-                                const index = (startIndex + i) % customConfig.available_urls.length;
-                                selectedUrls.push(customConfig.available_urls[index]);
-                            }
+                            domains.forEach(domain => {
+                                const domainUrls = domainGroups[domain];
+                                // Use variation to select different sets of URLs from each domain
+                                const startIndex = variation % (domainUrls.length - urlsPerDomain + 1);
+                                
+                                for (let i = 0; i < urlsPerDomain; i++) {
+                                    const index = (startIndex + i) % domainUrls.length;
+                                    selectedUrls.push(domainUrls[index]);
+                                }
+                            });
                             
+                            // Create test case with flat URL array for Mode 0 processing
                             const testCase = {
-                                id: `custom_${testIndex.toString().padStart(3, '0')}_${mode}_L${customConfig.levels.join('_')}_U${urlCount}_V${variation + 1}`,
-                                name: `Custom Mode ${mode} - Levels ${customConfig.levels.join(',')} - ${urlCount} URLs (Var ${variation + 1})`,
-                                description: `Custom test using Mode ${mode}, levels ${customConfig.levels.join(',')}, ${urlCount} URLs (variation ${variation + 1})`,
+                                id: `exp_${testIndex.toString().padStart(3, '0')}_${mode}_L${customConfig.levels.join('_')}_D${domains.length}_U${urlsPerDomain}_V${variation + 1}`,
+                                name: `Mode ${mode} - Levels ${customConfig.levels.join(',')} - ${urlsPerDomain} URLs/domain × ${domains.length} domains (Var ${variation + 1})`,
+                                description: `Experiment using Mode ${mode}, levels ${customConfig.levels.join(',')}, ${urlsPerDomain} URLs per domain across ${domains.length} domains (${selectedUrls.length} total URLs, variation ${variation + 1})`,
                                 mode: mode,
                                 levels: customConfig.levels,
-                                urls: selectedUrls,
-                                url_count: urlCount,
+                                urls: selectedUrls, // Flat array of selected URLs (X URLs from each domain)
+                                url_count: selectedUrls.length,
+                                urls_per_domain: urlsPerDomain,
+                                domain_count: domains.length,
+                                domains: domains,
                                 variation: variation + 1,
-                                estimated_duration: urlCount * customConfig.levels.length * 0.5,
-                                priority: 'custom'
+                                estimated_duration: selectedUrls.length * customConfig.levels.length * 0.5,
+                                priority: 'experiment'
                             };
                             testCases.push(testCase);
                             testIndex++;
                         }
-                        
-                        if (testCases.length >= customConfig.max_combinations) {
-                            break;
                         }
-                    }
-                }
-                if (testCases.length >= customConfig.max_combinations) {
-                    break;
                 }
             }
 
@@ -584,7 +849,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    experiment_name: customConfig.experiment_name || 'Custom Experiment',
+                    experiment_name: customConfig.experiment_name || 'Experiment',
                     selected_test_cases: testCases
                 })
             });
@@ -592,7 +857,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
 
             if (data.status === "success") {
                 setExperimentResults(data.experiment_summary);
-                setSuccess(`Custom experiment completed! ${data.experiment_summary.experiment_info.successful_tests} successful tests`);
+                setSuccess(`Experiment completed! ${data.experiment_summary.experiment_info.successful_tests} successful tests`);
                 // Play success notification sound
                 playNotificationSound(true);
                 
@@ -791,6 +1056,19 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
         });
         pdfContent.appendChild(summaryGrid);
 
+        // Calculate actual min/max values from the similarity matrix (excluding diagonal)
+        const allSimilarityValues = [];
+        sites.forEach(rowSite => {
+            sites.forEach(colSite => {
+                if (rowSite !== colSite) { // Exclude diagonal (same site comparisons)
+                    allSimilarityValues.push(matrix[rowSite][colSite]);
+                }
+            });
+        });
+        
+        const actualMinSimilarity = Math.min(...allSimilarityValues);
+        const actualMaxSimilarity = Math.max(...allSimilarityValues);
+
         // Add similarity matrix
         const matrixTitle = document.createElement('h2');
         matrixTitle.innerHTML = 'Cosine Similarity Matrix (%)';
@@ -798,6 +1076,14 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
         matrixTitle.style.paddingBottom = '5px';
         matrixTitle.style.marginBottom = '15px';
         pdfContent.appendChild(matrixTitle);
+
+        // Add data range info
+        const dataRangeInfo = document.createElement('p');
+        dataRangeInfo.innerHTML = `<strong>Data Range:</strong> ${actualMinSimilarity.toFixed(2)}% - ${actualMaxSimilarity.toFixed(2)}%`;
+        dataRangeInfo.style.fontSize = '12px';
+        dataRangeInfo.style.marginBottom = '15px';
+        dataRangeInfo.style.color = '#666';
+        pdfContent.appendChild(dataRangeInfo);
 
         // Create table
         const table = document.createElement('table');
@@ -854,8 +1140,6 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
             sites.forEach((colSite, colIndex) => {
                 const td = document.createElement('td');
                 const similarity = matrix[rowSite][colSite];
-                const isHighSimilarity = similarity > 80;
-                const isMediumSimilarity = similarity > 50;
                 const isDiagonal = rowIndex === colIndex;
 
                 td.style.padding = '8px';
@@ -863,16 +1147,22 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                 td.style.textAlign = 'center';
                 td.style.fontSize = '9px';
                 
+                // Use viridis colormap with consistent range (min to max) for PDF
+                const bgColor = isDiagonal 
+                    ? getViridisColor(100, actualMinSimilarity, actualMaxSimilarity) // Diagonal uses full range
+                    : getViridisColor(similarity, actualMinSimilarity, actualMaxSimilarity);
+                const textColor = getContrastTextColor(bgColor);
+                
+                td.style.backgroundColor = bgColor;
+                td.style.color = textColor;
+                
                 if (isDiagonal) {
-                    td.style.backgroundColor = '#e3f2fd';
                     td.style.fontWeight = 'bold';
-                } else if (isHighSimilarity) {
-                    td.style.backgroundColor = '#e8f5e8';
-                } else if (isMediumSimilarity) {
-                    td.style.backgroundColor = '#fff3e0';
+                    td.innerHTML = similarity.toFixed(2) + ' ●';
+                } else {
+                    td.innerHTML = similarity.toFixed(2);
                 }
-
-                td.innerHTML = similarity.toFixed(2);
+                
                 tr.appendChild(td);
             });
             tbody.appendChild(tr);
@@ -880,38 +1170,76 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
         table.appendChild(tbody);
         pdfContent.appendChild(table);
 
-        // Add legend
+        // Add viridis colormap legend
         const legendTitle = document.createElement('h3');
-        legendTitle.innerHTML = 'Color Legend';
+        legendTitle.innerHTML = 'Viridis Colormap Legend';
         legendTitle.style.marginTop = '20px';
         legendTitle.style.marginBottom = '10px';
         pdfContent.appendChild(legendTitle);
 
-        const legend = document.createElement('div');
-        legend.style.display = 'flex';
-        legend.style.flexWrap = 'wrap';
-        legend.style.gap = '15px';
-        legend.style.fontSize = '10px';
-
-        const legendItems = [
-            { color: '#e3f2fd', label: 'Same Site (100%)' },
-            { color: '#e8f5e8', label: 'High Similarity (>80%)' },
-            { color: '#fff3e0', label: 'Medium Similarity (>50%)' },
-            { color: 'white', label: 'Low Similarity (≤50%)' }
-        ];
-
-        legendItems.forEach(item => {
-            const legendItem = document.createElement('div');
-            legendItem.style.display = 'flex';
-            legendItem.style.alignItems = 'center';
-            legendItem.style.gap = '5px';
-            legendItem.innerHTML = `
-                <div style="width: 15px; height: 15px; background-color: ${item.color}; border: 1px solid #ccc;"></div>
-                <span>${item.label}</span>
-            `;
-            legend.appendChild(legendItem);
+        // Create gradient bar for PDF using actual data range (min to max)
+        const dataRange = actualMaxSimilarity - actualMinSimilarity;
+        const gradientContainer = document.createElement('div');
+        gradientContainer.style.marginBottom = '15px';
+        
+        const gradientBar = document.createElement('div');
+        gradientBar.style.height = '30px';
+        gradientBar.style.width = '300px';
+        gradientBar.style.border = '1px solid #ccc';
+        gradientBar.style.borderRadius = '4px';
+        gradientBar.style.position = 'relative';
+        gradientBar.style.background = `linear-gradient(to right, 
+            ${getViridisColor(actualMinSimilarity, actualMinSimilarity, actualMaxSimilarity)}, 
+            ${getViridisColor(actualMinSimilarity + dataRange * 0.1, actualMinSimilarity, actualMaxSimilarity)}, 
+            ${getViridisColor(actualMinSimilarity + dataRange * 0.2, actualMinSimilarity, actualMaxSimilarity)}, 
+            ${getViridisColor(actualMinSimilarity + dataRange * 0.3, actualMinSimilarity, actualMaxSimilarity)}, 
+            ${getViridisColor(actualMinSimilarity + dataRange * 0.4, actualMinSimilarity, actualMaxSimilarity)}, 
+            ${getViridisColor(actualMinSimilarity + dataRange * 0.5, actualMinSimilarity, actualMaxSimilarity)}, 
+            ${getViridisColor(actualMinSimilarity + dataRange * 0.6, actualMinSimilarity, actualMaxSimilarity)}, 
+            ${getViridisColor(actualMinSimilarity + dataRange * 0.7, actualMinSimilarity, actualMaxSimilarity)}, 
+            ${getViridisColor(actualMinSimilarity + dataRange * 0.8, actualMinSimilarity, actualMaxSimilarity)}, 
+            ${getViridisColor(actualMinSimilarity + dataRange * 0.9, actualMinSimilarity, actualMaxSimilarity)}, 
+            ${getViridisColor(actualMaxSimilarity, actualMinSimilarity, actualMaxSimilarity)})`;
+        
+        // Add percentage labels based on actual data range (min to max)
+        const labelsContainer = document.createElement('div');
+        labelsContainer.style.display = 'flex';
+        labelsContainer.style.justifyContent = 'space-between';
+        labelsContainer.style.width = '300px';
+        labelsContainer.style.marginTop = '5px';
+        labelsContainer.style.fontSize = '10px';
+        
+        // Create labels for actual data range (min to max)
+        const labelValues = [];
+        for (let i = 0; i <= 4; i++) {
+            const value = actualMinSimilarity + (dataRange * i / 4);
+            labelValues.push(`${value.toFixed(1)}%`);
+        }
+        
+        labelValues.forEach(label => {
+            const labelSpan = document.createElement('span');
+            labelSpan.innerHTML = label;
+            labelSpan.style.fontSize = '10px';
+            labelsContainer.appendChild(labelSpan);
         });
-        pdfContent.appendChild(legend);
+        
+        gradientContainer.appendChild(gradientBar);
+        gradientContainer.appendChild(labelsContainer);
+        pdfContent.appendChild(gradientContainer);
+
+        // Add explanation
+        const explanation = document.createElement('div');
+        explanation.style.fontSize = '10px';
+        explanation.style.marginTop = '10px';
+        explanation.innerHTML = `
+            <div style="margin-bottom: 5px;"><strong>Similarity Scale:</strong> Colors represent cosine similarity percentages using the Viridis colormap</div>
+            <div style="margin-bottom: 5px;"><strong>Color Range:</strong> ${actualMinSimilarity.toFixed(2)}% - ${actualMaxSimilarity.toFixed(2)}% (colormap spans your actual data range)</div>
+            <div style="margin-bottom: 5px;">• Darker colors (purple/blue) = Lower similarity (closer to ${actualMinSimilarity.toFixed(1)}%)</div>
+            <div style="margin-bottom: 5px;">• Medium colors (teal/green) = Medium similarity</div>
+            <div style="margin-bottom: 5px;">• Brighter colors (yellow) = Higher similarity (closer to ${actualMaxSimilarity.toFixed(1)}%)</div>
+            <div>• ● symbol indicates same site comparison (100% similarity)</div>
+        `;
+        pdfContent.appendChild(explanation);
 
         // Generate PDF
         const opt = {
@@ -930,6 +1258,36 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
             console.error('PDF generation error:', error);
             setError({ message: 'Failed to generate PDF', stack: error.toString() });
         });
+    };
+
+    // Function to convert similarity percentage to viridis color using official D3 colormap
+    const getViridisColor = (value, minValue = 0, maxValue = 100) => {
+        // Special case: 100% values should be white
+        if (value === 100) {
+            return '#ffffff';
+        }
+        
+        // Normalize value based on actual data range
+        const range = maxValue - minValue;
+        const normalizedValue = range > 0 ? Math.max(0, Math.min(1, (value - minValue) / range)) : 0;
+        
+        // Use the official Viridis colormap from d3-scale-chromatic
+        return interpolateViridis(normalizedValue);
+    };
+
+    // Function to determine text color based on background brightness
+    const getContrastTextColor = (backgroundColor) => {
+        // Extract RGB values from rgb() string
+        const match = backgroundColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+        if (!match) return '#000000';
+        
+        const [, r, g, b] = match.map(Number);
+        
+        // Calculate relative luminance
+        const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        
+        // Return white text for dark backgrounds, black for light backgrounds
+        return luminance > 0.5 ? '#000000' : '#ffffff';
     };
 
     // Function to render site similarity results with comprehensive information
@@ -1138,11 +1496,11 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                         }}>Data Processing</Typography>
                                         <Typography variant="h6" sx={{
                                             color: darkMode ? '#ffffff' : 'inherit'
-                                        }}>
-                                            {processedClusterData.timing_logs.file_operations.guid_processing ? 
-                                                `${processedClusterData.timing_logs.file_operations.guid_processing.guids_processed} GUIDs` :
-                                                'Completed'
-                                            }
+                                                                                      }}>
+                                              {processedClusterData.timing_logs.file_operations.guid_processing ? 
+                                                 `${processedClusterData.timing_logs.file_operations.guids_processed} GUIDs` :
+                                                  'Completed'
+                                              }
                                         </Typography>
                                     </Box>
                                 )}
@@ -1151,263 +1509,349 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                     )}
 
                     {/* Similarity Matrix Table */}
-                    <Box sx={{ mb: theme.spacing(2) }}>
-                        <Typography variant="h6" gutterBottom sx={{
-                            color: darkMode ? '#ffffff' : 'inherit'
-                        }}>🔢 Cosine Similarity Matrix (%)</Typography>
-                        <Box sx={{ 
-                            overflowX: 'auto',
-                            maxHeight: '500px',
-                            border: '1px solid',
-                            borderColor: darkMode ? '#555' : 'divider',
-                            borderRadius: 1
-                        }}>
-                            <table style={{ 
-                                width: '100%', 
-                                borderCollapse: 'collapse',
-                                minWidth: 'auto',
-                                fontSize: '0.9rem'
-                            }}>
-                                <thead>
-                                    <tr style={{ 
-                                        backgroundColor: darkMode ? '#404040' : theme.palette.grey[100] 
+                    {(() => {
+                        // Calculate actual min/max values from the similarity matrix (excluding diagonal)
+                        const allSimilarityValues = [];
+                        sites.forEach(rowSite => {
+                            sites.forEach(colSite => {
+                                if (rowSite !== colSite) { // Exclude diagonal (same site comparisons)
+                                    allSimilarityValues.push(matrix[rowSite][colSite]);
+                                }
+                            });
+                        });
+                        
+                        const actualMinSimilarity = Math.min(...allSimilarityValues);
+                        const actualMaxSimilarity = Math.max(...allSimilarityValues);
+                        
+                        return (
+                            <Box sx={{ mb: theme.spacing(2) }}>
+                                <Typography variant="h6" gutterBottom sx={{
+                                    color: darkMode ? '#ffffff' : 'inherit'
+                                }}>🔢 Cosine Similarity Matrix (%)</Typography>
+                                <Typography variant="caption" sx={{ 
+                                    display: 'block',
+                                    mb: 1,
+                                    color: darkMode ? '#aaa' : 'text.secondary'
+                                }}>
+                                    Data range: {actualMinSimilarity.toFixed(2)}% - {actualMaxSimilarity.toFixed(2)}%
+                                </Typography>
+                                <Box sx={{ 
+                                    overflowX: 'auto',
+                                    maxHeight: '500px',
+                                    border: '1px solid',
+                                    borderColor: darkMode ? '#555' : 'divider',
+                                    borderRadius: 1
+                                }}>
+                                    <table style={{ 
+                                        width: '100%', 
+                                        borderCollapse: 'collapse',
+                                        minWidth: 'auto',
+                                        fontSize: '0.9rem'
                                     }}>
-                                        <th style={{ 
-                                            padding: '12px', 
-                                            border: darkMode ? '1px solid #555' : '1px solid #ddd',
-                                            textAlign: 'left',
-                                            fontWeight: 'bold',
-                                            position: 'sticky',
-                                            top: 0,
-                                            backgroundColor: darkMode ? '#404040' : theme.palette.grey[100],
-                                            color: darkMode ? '#ffffff' : 'inherit',
-                                            zIndex: 1
-                                        }}>
-                                            Site
-                                        </th>
-                                        {sites.map((site, index) => (
-                                            <th key={index} style={{ 
-                                                padding: '8px 12px', 
-                                                border: darkMode ? '1px solid #555' : '1px solid #ddd',
-                                                textAlign: 'center',
-                                                fontWeight: 'bold',
-                                                position: 'sticky',
-                                                top: 0,
-                                                backgroundColor: darkMode ? '#404040' : theme.palette.grey[100],
-                                                color: darkMode ? '#ffffff' : 'inherit',
-                                                zIndex: 1,
-                                                minWidth: '80px',
-                                                maxWidth: '100px',
-                                                fontSize: '0.9rem'
+                                        <thead>
+                                            <tr style={{ 
+                                                backgroundColor: darkMode ? '#404040' : theme.palette.grey[100] 
                                             }}>
-                                                <Tooltip title={site} arrow>
-                                                    <span style={{ 
-                                                        fontWeight: 'bold', 
-                                                        color: theme.palette.primary.main 
-                                                    }}>
-                                                        {createSiteLabel(index)}
-                                                    </span>
-                                                </Tooltip>
-                                            </th>
-                                        ))}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {sites.map((rowSite, rowIndex) => (
-                                        <tr key={rowIndex}>
-                                            <td style={{ 
-                                                padding: '8px 12px', 
-                                                border: darkMode ? '1px solid #555' : '1px solid #ddd',
-                                                fontWeight: 'bold',
-                                                backgroundColor: darkMode ? '#333' : theme.palette.grey[50],
-                                                color: darkMode ? '#ffffff' : 'inherit',
-                                                position: 'sticky',
-                                                left: 0,
-                                                zIndex: 1,
-                                                minWidth: '80px',
-                                                maxWidth: '100px',
-                                                fontSize: '0.9rem',
-                                                textAlign: 'center'
-                                            }}>
-                                                <Tooltip title={rowSite} arrow>
-                                                    <span style={{ 
-                                                        fontWeight: 'bold', 
-                                                        color: theme.palette.primary.main 
-                                                    }}>
-                                                        {createSiteLabel(rowIndex)}
-                                                    </span>
-                                                </Tooltip>
-                                            </td>
-                                            {sites.map((colSite, colIndex) => {
-                                                const similarity = matrix[rowSite][colSite];
-                                                const isHighSimilarity = similarity > 80;
-                                                const isMediumSimilarity = similarity > 50;
-                                                const isDiagonal = rowIndex === colIndex;
-                                                
-                                                // Define colors for dark and light modes
-                                                let bgColor, textColor;
-                                                if (isDiagonal) {
-                                                    bgColor = theme.palette.primary.light;
-                                                    textColor = theme.palette.primary.contrastText;
-                                                } else if (isHighSimilarity) {
-                                                    bgColor = darkMode ? '#2e7d32' : theme.palette.success.light;
-                                                    textColor = darkMode ? '#ffffff' : theme.palette.success.contrastText;
-                                                } else if (isMediumSimilarity) {
-                                                    bgColor = darkMode ? '#f57c00' : theme.palette.warning.light;
-                                                    textColor = darkMode ? '#ffffff' : theme.palette.warning.contrastText;
-                                                } else {
-                                                    bgColor = darkMode ? '#2a2a2a' : 'white';
-                                                    textColor = darkMode ? '#ffffff' : 'inherit';
-                                                }
+                                                <th style={{ 
+                                                    padding: '12px', 
+                                                    border: darkMode ? '1px solid #555' : '1px solid #ddd',
+                                                    textAlign: 'left',
+                                                    fontWeight: 'bold',
+                                                    position: 'sticky',
+                                                    top: 0,
+                                                    backgroundColor: darkMode ? '#404040' : theme.palette.grey[100],
+                                                    color: darkMode ? '#ffffff' : 'inherit',
+                                                    zIndex: 1
+                                                }}>
+                                                    Site
+                                                </th>
+                                                {sites.map((site, index) => {
+                                                    // Extract domain or truncate URL for display
+                                                    const displayName = (() => {
+                                                        try {
+                                                            const url = new URL(site);
+                                                            return url.hostname.replace('www.', '');
+                                                        } catch {
+                                                            return site.length > 15 ? site.substring(0, 15) + '...' : site;
+                                                        }
+                                                    })();
+                                                    
+                                                    return (
+                                                        <th key={index} style={{ 
+                                                            padding: '6px 8px', 
+                                                            border: darkMode ? '1px solid #555' : '1px solid #ddd',
+                                                            textAlign: 'center',
+                                                            fontWeight: 'bold',
+                                                            position: 'sticky',
+                                                            top: 0,
+                                                            backgroundColor: darkMode ? '#404040' : theme.palette.grey[100],
+                                                            color: darkMode ? '#ffffff' : 'inherit',
+                                                            zIndex: 1,
+                                                            minWidth: '120px',
+                                                            maxWidth: '150px',
+                                                            fontSize: '0.8rem',
+                                                            wordBreak: 'break-word',
+                                                            lineHeight: '1.2'
+                                                        }}>
+                                                            <Tooltip title={site} arrow>
+                                                                <span style={{ 
+                                                                    fontWeight: 'bold', 
+                                                                    color: theme.palette.primary.main,
+                                                                    cursor: 'help'
+                                                                }}>
+                                                                    {displayName}
+                                                                </span>
+                                                            </Tooltip>
+                                                        </th>
+                                                    );
+                                                })}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {sites.map((rowSite, rowIndex) => {
+                                                // Extract domain or truncate URL for display
+                                                const displayName = (() => {
+                                                    try {
+                                                        const url = new URL(rowSite);
+                                                        return url.hostname.replace('www.', '');
+                                                    } catch {
+                                                        return rowSite.length > 15 ? rowSite.substring(0, 15) + '...' : rowSite;
+                                                    }
+                                                })();
                                                 
                                                 return (
-                                                    <td key={colIndex} style={{ 
-                                                        padding: '8px', 
-                                                        border: darkMode ? '1px solid #555' : '1px solid #ddd',
-                                                        textAlign: 'center',
-                                                        fontSize: '0.85rem',
-                                                        minWidth: '60px',
-                                                        backgroundColor: bgColor,
-                                                        color: textColor,
-                                                        fontWeight: isDiagonal ? 'bold' : 'normal'
-                                                    }}>
-                                                        {similarity.toFixed(2)}
-                                                    </td>
+                                                    <tr key={rowIndex}>
+                                                        <td style={{ 
+                                                            padding: '6px 8px', 
+                                                            border: darkMode ? '1px solid #555' : '1px solid #ddd',
+                                                            fontWeight: 'bold',
+                                                            backgroundColor: darkMode ? '#333' : theme.palette.grey[50],
+                                                            color: darkMode ? '#ffffff' : 'inherit',
+                                                            position: 'sticky',
+                                                            left: 0,
+                                                            zIndex: 1,
+                                                            minWidth: '120px',
+                                                            maxWidth: '150px',
+                                                            fontSize: '0.8rem',
+                                                            textAlign: 'center',
+                                                            wordBreak: 'break-word',
+                                                            lineHeight: '1.2'
+                                                        }}>
+                                                            <Tooltip title={rowSite} arrow>
+                                                                <span style={{ 
+                                                                    fontWeight: 'bold', 
+                                                                    color: theme.palette.primary.main,
+                                                                    cursor: 'help'
+                                                                }}>
+                                                                    {displayName}
+                                                                </span>
+                                                            </Tooltip>
+                                                                                                                 </td>
+                                                         {sites.map((colSite, colIndex) => {
+                                                            const similarity = matrix[rowSite][colSite];
+                                                            const isDiagonal = rowIndex === colIndex;
+                                                            
+                                                                                                        // Use viridis colormap with consistent range (min to max)
+                                            const bgColor = isDiagonal 
+                                                ? getViridisColor(100, actualMinSimilarity, actualMaxSimilarity) // Diagonal uses full range
+                                                : getViridisColor(similarity, actualMinSimilarity, actualMaxSimilarity);
+                                                            const textColor = getContrastTextColor(bgColor);
+                                                            
+                                                            return (
+                                                                <td key={colIndex} style={{ 
+                                                                    padding: '8px', 
+                                                                    border: darkMode ? '1px solid #555' : '1px solid #ddd',
+                                                                    textAlign: 'center',
+                                                                    fontSize: '0.85rem',
+                                                                    minWidth: '60px',
+                                                                    backgroundColor: bgColor,
+                                                                    color: textColor,
+                                                                    fontWeight: isDiagonal ? 'bold' : 'normal',
+                                                                    position: 'relative'
+                                                                }}>
+                                                                    {similarity.toFixed(2)}
+                                                                    {isDiagonal && (
+                                                                        <span style={{
+                                                                            position: 'absolute',
+                                                                            top: '2px',
+                                                                            right: '2px',
+                                                                            fontSize: '0.6rem',
+                                                                            opacity: 0.7
+                                                                        }}>
+                                                                            ●
+                                                                        </span>
+                                                                    )}
+                                                                </td>
+                                                            );
+                                                        })}
+                                                    </tr>
                                                 );
                                             })}
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </Box>
-                    </Box>
-
-                    {/* Site Reference - Compact */}
-                    <Box sx={{ 
-                        mt: 2,
-                        p: 1.5,
-                        backgroundColor: darkMode ? '#2a2a2a' : 'grey.50',
-                        borderRadius: 1,
-                        border: '1px solid',
-                        borderColor: darkMode ? '#555' : 'grey.300'
-                    }}>
-                        <Typography variant="subtitle2" sx={{ 
-                            fontWeight: 'bold', 
-                            mb: 1,
-                            color: darkMode ? '#ffffff' : 'inherit'
-                        }}>
-                            Site Labels:
-                        </Typography>
-                        <Box sx={{ 
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: 0.5,
-                            maxHeight: '150px',
-                            overflowY: 'auto'
-                        }}>
-                            {sites.map((site, index) => (
-                                <Box key={index} sx={{ 
-                                    display: 'flex', 
-                                    alignItems: 'flex-start', 
-                                    gap: 1,
-                                    py: 0.5,
-                                    px: 0.5,
-                                    border: '1px solid',
-                                    borderColor: darkMode ? '#555' : 'grey.200',
-                                    borderRadius: 0.5,
-                                    backgroundColor: darkMode ? '#333' : 'white'
-                                }}>
-                                    <Typography variant="caption" sx={{ 
-                                        fontWeight: 'bold', 
-                                        color: 'primary.main',
-                                        minWidth: '50px',
-                                        mt: 0.25
-                                    }}>
-                                        {createSiteLabel(index)}:
-                                    </Typography>
-                                    <Tooltip title={site} arrow placement="top">
-                                        <Typography variant="caption" sx={{ 
-                                            color: darkMode ? '#aaa' : 'text.secondary',
-                                            flex: 1,
-                                            fontSize: '0.7rem',
-                                            lineHeight: 1.3,
-                                            wordBreak: 'break-all',
-                                            cursor: 'help'
-                                        }}>
-                                            {site}
-                                        </Typography>
-                                    </Tooltip>
+                                        </tbody>
+                                    </table>
                                 </Box>
-                            ))}
-                        </Box>
-                    </Box>
+                            </Box>
+                        );
+                    })()}
 
-                    {/* Color Legend */}
-                    <Box sx={{ 
-                        display: 'flex', 
-                        flexWrap: 'wrap', 
-                        gap: 2, 
-                        mt: 1,
-                        p: 1.5,
-                        backgroundColor: darkMode ? '#2a2a2a' : 'grey.50',
-                        borderRadius: 1,
-                        border: '1px solid',
-                        borderColor: darkMode ? '#555' : 'grey.300'
-                    }}>
-                        <Typography variant="subtitle2" sx={{ 
-                            fontWeight: 'bold', 
-                            mr: 1,
-                            color: darkMode ? '#ffffff' : 'inherit'
-                        }}>Colors:</Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+
+
+                    {/* Viridis Color Scale Legend */}
+                    {(() => {
+                        // Calculate actual min/max values from the similarity matrix (excluding diagonal)
+                        const allSimilarityValues = [];
+                        sites.forEach(rowSite => {
+                            sites.forEach(colSite => {
+                                if (rowSite !== colSite) { // Exclude diagonal (same site comparisons)
+                                    allSimilarityValues.push(matrix[rowSite][colSite]);
+                                }
+                            });
+                        });
+                        
+                        const actualMinSimilarity = Math.min(...allSimilarityValues);
+                        const actualMaxSimilarity = Math.max(...allSimilarityValues);
+                        const dataRange = actualMaxSimilarity - actualMinSimilarity;
+                        
+                        // Create tick marks based on actual data range
+                        const createDataTicks = () => {
+                            const ticks = [];
+                            for (let i = 0; i <= 4; i++) {
+                                const value = actualMinSimilarity + (dataRange * i / 4);
+                                ticks.push({
+                                    percentage: (i / 4) * 100,
+                                    value: value,
+                                    label: `${value.toFixed(1)}%`
+                                });
+                            }
+                            return ticks;
+                        };
+                        
+                        const dataTicks = createDataTicks();
+                        
+                        return (
                             <Box sx={{ 
-                                width: 16, 
-                                height: 16, 
-                                backgroundColor: theme.palette.primary.light,
-                                border: darkMode ? '1px solid #555' : '1px solid #ccc'
-                            }} />
-                            <Typography variant="caption" sx={{ 
-                                fontSize: '0.75rem',
-                                color: darkMode ? '#aaa' : 'inherit'
-                            }}>Same Site</Typography>
-                        </Box>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                            <Box sx={{ 
-                                width: 16, 
-                                height: 16, 
-                                backgroundColor: darkMode ? '#2e7d32' : theme.palette.success.light,
-                                border: darkMode ? '1px solid #555' : '1px solid #ccc'
-                            }} />
-                            <Typography variant="caption" sx={{ 
-                                fontSize: '0.75rem',
-                                color: darkMode ? '#aaa' : 'inherit'
-                            }}>High (&gt;80%)</Typography>
-                        </Box>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                            <Box sx={{ 
-                                width: 16, 
-                                height: 16, 
-                                backgroundColor: darkMode ? '#f57c00' : theme.palette.warning.light,
-                                border: darkMode ? '1px solid #555' : '1px solid #ccc'
-                            }} />
-                            <Typography variant="caption" sx={{ 
-                                fontSize: '0.75rem',
-                                color: darkMode ? '#aaa' : 'inherit'
-                            }}>Medium (&gt;50%)</Typography>
-                        </Box>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                            <Box sx={{ 
-                                width: 16, 
-                                height: 16, 
-                                backgroundColor: darkMode ? '#2a2a2a' : 'white',
-                                border: darkMode ? '1px solid #555' : '1px solid #ccc'
-                            }} />
-                            <Typography variant="caption" sx={{ 
-                                fontSize: '0.75rem',
-                                color: darkMode ? '#aaa' : 'inherit'
-                            }}>Low (≤50%)</Typography>
-                        </Box>
-                    </Box>
+                                mt: 1,
+                                p: 1.5,
+                                backgroundColor: darkMode ? '#2a2a2a' : 'grey.50',
+                                borderRadius: 1,
+                                border: '1px solid',
+                                borderColor: darkMode ? '#555' : 'grey.300'
+                            }}>
+                                <Typography variant="subtitle2" sx={{ 
+                                    fontWeight: 'bold', 
+                                    mb: 1,
+                                    color: darkMode ? '#ffffff' : 'inherit'
+                                }}>
+                                    Similarity Scale (Viridis Colormap):
+                                </Typography>
+                                
+                                {/* Data Range Scale (Min to Max) */}
+                                <Box sx={{ mb: 2 }}>
+                                    <Typography variant="caption" sx={{ 
+                                        fontSize: '0.7rem',
+                                        color: darkMode ? '#aaa' : 'text.secondary',
+                                        fontWeight: 'bold',
+                                        mb: 0.5,
+                                        display: 'block'
+                                    }}>
+                                        🌈 Viridis Scale for Your Data ({actualMinSimilarity.toFixed(1)}% - {actualMaxSimilarity.toFixed(1)}%):
+                                    </Typography>
+                                    <Box sx={{ 
+                                        display: 'flex', 
+                                        alignItems: 'center', 
+                                        gap: 1,
+                                        mb: 1 
+                                    }}>
+                                        <Typography variant="caption" sx={{ 
+                                            fontSize: '0.75rem',
+                                            color: darkMode ? '#aaa' : 'inherit',
+                                            minWidth: '40px'
+                                        }}>
+                                            {actualMinSimilarity.toFixed(1)}%
+                                        </Typography>
+                                        <Box sx={{ 
+                                            position: 'relative',
+                                            height: 20,
+                                            flex: 1,
+                                            borderRadius: 1,
+                                            border: darkMode ? '1px solid #555' : '1px solid #ccc',
+                                            background: `linear-gradient(to right, 
+                                                ${getViridisColor(actualMinSimilarity, actualMinSimilarity, actualMaxSimilarity)}, 
+                                                ${getViridisColor(actualMinSimilarity + dataRange * 0.1, actualMinSimilarity, actualMaxSimilarity)}, 
+                                                ${getViridisColor(actualMinSimilarity + dataRange * 0.2, actualMinSimilarity, actualMaxSimilarity)}, 
+                                                ${getViridisColor(actualMinSimilarity + dataRange * 0.3, actualMinSimilarity, actualMaxSimilarity)}, 
+                                                ${getViridisColor(actualMinSimilarity + dataRange * 0.4, actualMinSimilarity, actualMaxSimilarity)}, 
+                                                ${getViridisColor(actualMinSimilarity + dataRange * 0.5, actualMinSimilarity, actualMaxSimilarity)}, 
+                                                ${getViridisColor(actualMinSimilarity + dataRange * 0.6, actualMinSimilarity, actualMaxSimilarity)}, 
+                                                ${getViridisColor(actualMinSimilarity + dataRange * 0.7, actualMinSimilarity, actualMaxSimilarity)}, 
+                                                ${getViridisColor(actualMinSimilarity + dataRange * 0.8, actualMinSimilarity, actualMaxSimilarity)}, 
+                                                ${getViridisColor(actualMinSimilarity + dataRange * 0.9, actualMinSimilarity, actualMaxSimilarity)}, 
+                                                ${getViridisColor(actualMaxSimilarity, actualMinSimilarity, actualMaxSimilarity)})`
+                                        }}>
+                                            {/* Reference tick marks from min to max */}
+                                            {(() => {
+                                                const tickValues = [
+                                                    actualMinSimilarity,
+                                                    actualMinSimilarity + dataRange * 0.25,
+                                                    actualMinSimilarity + dataRange * 0.5,
+                                                    actualMinSimilarity + dataRange * 0.75,
+                                                    actualMaxSimilarity
+                                                ];
+                                                return tickValues.map((value, index) => (
+                                                    <Box
+                                                        key={index}
+                                                        sx={{
+                                                            position: 'absolute',
+                                                            left: `${(index / 4) * 100}%`,
+                                                            top: 0,
+                                                            bottom: 0,
+                                                            width: '1px',
+                                                            backgroundColor: 'rgba(0,0,0,0.4)',
+                                                            '&:before': {
+                                                                content: `"${value.toFixed(1)}%"`,
+                                                                position: 'absolute',
+                                                                bottom: '-18px',
+                                                                left: '50%',
+                                                                transform: 'translateX(-50%)',
+                                                                fontSize: '0.65rem',
+                                                                color: darkMode ? '#aaa' : 'text.secondary',
+                                                                whiteSpace: 'nowrap',
+                                                                fontWeight: value === actualMaxSimilarity ? 'bold' : 'normal'
+                                                            }
+                                                        }}
+                                                    />
+                                                ));
+                                            })()}
+                                        </Box>
+                                        <Box sx={{ 
+                                            display: 'flex', 
+                                            alignItems: 'center', 
+                                            gap: 0.5,
+                                            minWidth: '60px'
+                                        }}>
+                                            <Typography variant="caption" sx={{ 
+                                                fontSize: '0.75rem',
+                                                color: darkMode ? '#aaa' : 'inherit'
+                                            }}>
+                                                {actualMaxSimilarity.toFixed(1)}%
+                                            </Typography>
+                                            <Box sx={{ 
+                                                width: 16, 
+                                                height: 16, 
+                                                borderRadius: '50%',
+                                                backgroundColor: getViridisColor(actualMaxSimilarity, actualMinSimilarity, actualMaxSimilarity),
+                                                border: '2px solid',
+                                                borderColor: darkMode ? '#fff' : '#000',
+                                                boxShadow: '0 2px 4px rgba(0,0,0,0.3)'
+                                            }} />
+                                        </Box>
+                                    </Box>
+                                </Box>
+                                
+                                
+                            </Box>
+                        );
+                    })()}
 
                     {/* Action Buttons */}
                     <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 2 }}>
@@ -2011,7 +2455,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                     <Accordion 
                         sx={{ 
                             mb: theme.spacing(2),
-                            '&:before': { display: 'none' },
+                            '&:before': { display: 'none', },
                             boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                             borderRadius: '8px !important',
                             backgroundColor: darkMode ? '#2a2a2a' : 'background.paper'
@@ -2058,7 +2502,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                             key={`domain-${domainIndex}`} 
                             sx={{ 
                                 mb: theme.spacing(2),
-                                '&:before': { display: 'none' },
+                                '&:before': { display: 'none', },
                                 boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                                 borderRadius: '8px !important',
                                 backgroundColor: darkMode ? '#2a2a2a' : 'background.paper'
@@ -2238,7 +2682,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                                             />
                                                                         </Box>
                                                                         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1, gap: 1 }}>
-                                                                            <Tooltip title="Copy to clipboard">
+                                                                            <Tooltip title="Copy clusters data to clipboard">
                                                                                 <IconButton 
                                                                                     size="small" 
                                                                                     onClick={() => handleCopyToClipboard(
@@ -2246,9 +2690,50 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                                                         clustersData.message : 
                                                                                         JSON.stringify(clustersData, null, 1)
                                                                                     )}
+                                                                                    sx={{
+                                                                                        backgroundColor: darkMode ? '#404040' : 'grey.100',
+                                                                                        color: darkMode ? '#ffffff' : 'inherit',
+                                                                                        '&:hover': { 
+                                                                                            backgroundColor: darkMode ? '#505050' : 'grey.200'
+                                                                                        }
+                                                                                    }}
                                                                                 >
                                                                                     <ContentCopyIcon />
                                                                                 </IconButton>
+                                                                            </Tooltip>
+                                                                            <Tooltip title="Copy complete clustering analysis for this domain level">
+                                                                                <Button
+                                                                                    variant="outlined"
+                                                                                    size="small"
+                                                                                    onClick={() => {
+                                                                                        const clusterInfo = getClusterInfo(clusterResult);
+                                                                                        const completeAnalysis = {
+                                                                                            domain: domainResult.domain,
+                                                                                            level: clusterResult.level,
+                                                                                            status: clusterResult.status,
+                                                                                            message: clusterResult.message,
+                                                                                            cluster_info: clusterInfo,
+                                                                                            clusters_data: clustersData,
+                                                                                            is_lightweight: clustersData?.is_lightweight || false,
+                                                                                            timestamp: new Date().toISOString()
+                                                                                        };
+                                                                                        handleCopyToClipboard(JSON.stringify(completeAnalysis, null, 2));
+                                                                                        setSuccess(`📋 ${domainResult.domain} Level ${clusterResult.level} clustering analysis copied!`);
+                                                                                    }}
+                                                                                    sx={{
+                                                                                        fontSize: '0.75rem',
+                                                                                        ...(darkMode && {
+                                                                                            borderColor: '#555',
+                                                                                            color: '#fff',
+                                                                                            '&:hover': {
+                                                                                                borderColor: '#777',
+                                                                                                backgroundColor: 'rgba(255,255,255,0.1)'
+                                                                                            }
+                                                                                        })
+                                                                                    }}
+                                                                                >
+                                                                                    📊 Copy Domain Analysis
+                                                                                </Button>
                                                                             </Tooltip>
                                                                             {clustersData.is_lightweight && (
                                                                                 <Tooltip title="Load full clustering data from separate file">
@@ -2304,7 +2789,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                 key={`processed-cluster-${domainIndex}-${index}`} 
                                                 sx={{ 
                                                     mb: theme.spacing(2),
-                                                    '&:before': { display: 'none' },
+                                                    '&:before': { display: 'none', },
                                                     boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                                                     borderRadius: '8px !important',
                                                     backgroundColor: darkMode ? '#2a2a2a' : 'background.paper'
@@ -2377,6 +2862,8 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
 
                     {/* Timing Logs Section for Regular Results */}
                     {result.timing_logs && renderTimingLogs(result.timing_logs)}
+
+
                 </Box>
             );
         }
@@ -2549,7 +3036,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                     />
                                                 </Box>
                                                 <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1, gap: 1 }}>
-                                                    <Tooltip title="Copy to clipboard">
+                                                    <Tooltip title="Copy clusters data to clipboard">
                                                         <IconButton 
                                                             size="small" 
                                                             onClick={() => handleCopyToClipboard(
@@ -2557,9 +3044,49 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                                 clustersData.message : 
                                                                 JSON.stringify(clustersData, null, 1)
                                                             )}
+                                                            sx={{
+                                                                backgroundColor: darkMode ? '#404040' : 'grey.100',
+                                                                color: darkMode ? '#ffffff' : 'inherit',
+                                                                '&:hover': { 
+                                                                    backgroundColor: darkMode ? '#505050' : 'grey.200'
+                                                                }
+                                                            }}
                                                         >
                                                             <ContentCopyIcon />
                                                         </IconButton>
+                                                    </Tooltip>
+                                                    <Tooltip title="Copy complete clustering analysis for this level">
+                                                        <Button
+                                                            variant="outlined"
+                                                            size="small"
+                                                            onClick={() => {
+                                                                const clusterInfo = getClusterInfo(clusterResult);
+                                                                const completeAnalysis = {
+                                                                    level: clusterResult.level,
+                                                                    status: clusterResult.status,
+                                                                    message: clusterResult.message,
+                                                                    cluster_info: clusterInfo,
+                                                                    clusters_data: clustersData,
+                                                                    is_lightweight: clustersData?.is_lightweight || false,
+                                                                    timestamp: new Date().toISOString()
+                                                                };
+                                                                handleCopyToClipboard(JSON.stringify(completeAnalysis, null, 2));
+                                                                setSuccess(`📋 Level ${clusterResult.level} clustering analysis copied!`);
+                                                            }}
+                                                            sx={{
+                                                                fontSize: '0.75rem',
+                                                                ...(darkMode && {
+                                                                    borderColor: '#555',
+                                                                    color: '#fff',
+                                                                    '&:hover': {
+                                                                        borderColor: '#777',
+                                                                        backgroundColor: 'rgba(255,255,255,0.1)'
+                                                                    }
+                                                                })
+                                                            }}
+                                                        >
+                                                            📊 Copy Analysis
+                                                        </Button>
                                                     </Tooltip>
                                                     {clustersData.is_lightweight && (
                                                         <Tooltip title="Load full clustering data from separate file">
@@ -2686,6 +3213,8 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
 
                 {/* Timing Logs Section for Regular Results */}
                 {result.timing_logs && renderTimingLogs(result.timing_logs)}
+
+
             </Box>
         );
     };
@@ -2967,238 +3496,312 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                 return (
                     <Box sx={{ width: '100%', maxWidth: '1600px', mx: 'auto', px: 3, py: 2 }}>
                         <Typography variant="h4" gutterBottom sx={{ textAlign: 'center', mb: 4 }}>
-                            ⚙️ Custom Experiment Configuration Builder
+                            ⚙️ Experiment Configuration Builder
                         </Typography>
 
-                        {/* Configuration Form */}
-                        <Card sx={{ mb: 3 }}>
-                            <CardHeader title="🛠️ Build Your Custom Experiment" />
+
+
+                        {/* 1. Basic Configuration */}
+                        <Card sx={{ mb: 3, backgroundColor: darkMode ? '#2a2a2a' : 'background.paper' }}>
+                            <CardHeader 
+                                title="1️⃣ Basic Configuration"
+                                sx={{
+                                    backgroundColor: darkMode ? '#333' : 'primary.light',
+                                    color: darkMode ? '#ffffff' : 'white'
+                                }}
+                            />
                             <CardContent sx={{ p: 3 }}>
-                                <Grid container spacing={3}>
-                                    {/* Experiment Name */}
-                                    <Grid item xs={12}>
-                                        <TextField
-                                            fullWidth
-                                            label="Experiment Name"
-                                            value={customConfig.experiment_name}
-                                            onChange={(e) => setCustomConfig(prev => ({ ...prev, experiment_name: e.target.value }))}
-                                            placeholder="e.g., My Custom Thesis Experiment"
-                                        />
-                                    </Grid>
-
-                                    {/* URLs Section */}
-                                    <Grid item xs={12}>
-                                        <Typography variant="h6" gutterBottom>🌐 URLs to Test</Typography>
-                                        <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-                                            <TextField
-                                                fullWidth
-                                                label="Add URL(s)"
-                                                value={configUrlInput}
-                                                onChange={(e) => setConfigUrlInput(e.target.value)}
-                                                onKeyDown={(e) => e.key === 'Enter' && addConfigUrl()}
-                                                onPaste={handleConfigUrlPaste}
-                                                placeholder="https://example.com (or paste multiple URLs)"
-                                                multiline
-                                                maxRows={4}
-                                                helperText="💡 Paste multiple URLs separated by newlines or spaces"
-                                            />
-                                            <Button variant="contained" onClick={addConfigUrl}>
-                                                Add
-                                            </Button>
-                                        </Box>
-                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                                            {customConfig.available_urls.map((url, index) => (
-                                                <Chip
-                                                    key={index}
-                                                    label={url}
-                                                    onDelete={() => removeConfigUrl(index)}
-                                                    color="primary"
-                                                />
-                                            ))}
-                                        </Box>
-                                        <Typography variant="caption" color="text.secondary">
-                                            Added {customConfig.available_urls.length} URLs
-                                        </Typography>
-                                    </Grid>
-
-                                    {/* Processing Modes */}
-                                    <Grid item xs={12} md={6}>
-                                        <Typography variant="h6" gutterBottom>🔄 Processing Modes</Typography>
-                                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                                            <FormControlLabel
-                                                control={
-                                                    <Switch
-                                                        checked={customConfig.modes.includes(0)}
-                                                        onChange={(e) => {
-                                                            const newModes = e.target.checked 
-                                                                ? [...customConfig.modes, 0].filter((v, i, arr) => arr.indexOf(v) === i)
-                                                                : customConfig.modes.filter(m => m !== 0);
-                                                            setCustomConfig(prev => ({ ...prev, modes: newModes }));
-                                                        }}
-                                                    />
-                                                }
-                                                label="Mode 0: Process All URLs Together"
-                                            />
-                                            <FormControlLabel
-                                                control={
-                                                    <Switch
-                                                        checked={customConfig.modes.includes(1)}
-                                                        onChange={(e) => {
-                                                            const newModes = e.target.checked 
-                                                                ? [...customConfig.modes, 1].filter((v, i, arr) => arr.indexOf(v) === i)
-                                                                : customConfig.modes.filter(m => m !== 1);
-                                                            setCustomConfig(prev => ({ ...prev, modes: newModes }));
-                                                        }}
-                                                    />
-                                                }
-                                                label="Mode 1: Process by Domain"
-                                            />
-                                        </Box>
-                                    </Grid>
-
-                                    {/* DOM Levels */}
-                                    <Grid item xs={12} md={6}>
-                                        <Typography variant="h6" gutterBottom>📊 DOM Levels</Typography>
-                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                                            {Array.from({ length: 10 }, (_, i) => i + 1).map(level => (
-                                                <Chip
-                                                    key={level}
-                                                    label={level}
-                                                    onClick={() => {
-                                                        const newLevels = customConfig.levels.includes(level)
-                                                            ? customConfig.levels.filter(l => l !== level)
-                                                            : [...customConfig.levels, level].sort((a, b) => a - b);
-                                                        setCustomConfig(prev => ({ ...prev, levels: newLevels }));
-                                                    }}
-                                                    color={customConfig.levels.includes(level) ? 'primary' : 'default'}
-                                                />
-                                            ))}
-                                        </Box>
-                                        <Typography variant="caption" color="text.secondary">
-                                            Selected levels: {customConfig.levels.join(', ')}
-                                        </Typography>
-                                    </Grid>
-
-                                    {/* URL Combinations */}
-                                    <Grid item xs={12} md={6}>
-                                        <Typography variant="h6" gutterBottom>🔢 URLs per Test</Typography>
-                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                                            {Array.from({ length: Math.min(10, customConfig.available_urls.length) }, (_, i) => i + 2).map(count => (
-                                                <Chip
-                                                    key={count}
-                                                    label={count}
-                                                    onClick={() => {
-                                                        const newCombinations = customConfig.url_combinations.includes(count)
-                                                            ? customConfig.url_combinations.filter(c => c !== count)
-                                                            : [...customConfig.url_combinations, count].sort((a, b) => a - b);
-                                                        setCustomConfig(prev => ({ ...prev, url_combinations: newCombinations }));
-                                                    }}
-                                                    color={customConfig.url_combinations.includes(count) ? 'primary' : 'default'}
-                                                    disabled={count > customConfig.available_urls.length}
-                                                />
-                                            ))}
-                                        </Box>
-                                        <Typography variant="caption" color="text.secondary">
-                                            Test combinations: {customConfig.url_combinations.join(', ')} URLs per test
-                                        </Typography>
-                                    </Grid>
-
-                                    {/* Max Combinations */}
-                                    <Grid item xs={12} md={6}>
-                                        <Typography variant="h6" gutterBottom>⚡ Test Limits</Typography>
-                                        <TextField
-                                            type="number"
-                                            label="Max Test Combinations"
-                                            value={customConfig.max_combinations}
-                                            onChange={(e) => setCustomConfig(prev => ({ 
-                                                ...prev, 
-                                                max_combinations: Math.max(1, parseInt(e.target.value) || 25)
-                                            }))}
-                                            inputProps={{ min: 1, max: 10000 }}
-                                            fullWidth
-                                        />
-                                        <Typography variant="caption" color="text.secondary">
-                                            Will generate up to {customConfig.max_combinations} test combinations (max: 10,000)
-                                        </Typography>
-                                    </Grid>
-                                </Grid>
-
-                                {/* Estimated Tests Preview */}
-                                <Box sx={{ mt: 3, p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
-                                    <Typography variant="h6" gutterBottom>📋 Experiment Preview</Typography>
-                                    <Grid container spacing={2}>
-                                        <Grid item xs={6} sm={3}>
-                                            <Typography variant="subtitle2">URLs:</Typography>
-                                            <Typography variant="h6" color="primary">{customConfig.available_urls.length}</Typography>
-                                        </Grid>
-                                        <Grid item xs={6} sm={3}>
-                                            <Typography variant="subtitle2">Modes:</Typography>
-                                            <Typography variant="h6" color="primary">{customConfig.modes.length}</Typography>
-                                        </Grid>
-                                        <Grid item xs={6} sm={3}>
-                                            <Typography variant="subtitle2">Levels:</Typography>
-                                            <Typography variant="h6" color="primary">{customConfig.levels.length}</Typography>
-                                        </Grid>
-                                        <Grid item xs={6} sm={3}>
-                                            <Typography variant="subtitle2">Est. Tests:</Typography>
-                                            <Typography variant="h6" color="primary">
-                                                {(() => {
-                                                    // Calculate estimated test cases more accurately
-                                                    let totalTests = 0;
-                                                    for (const mode of customConfig.modes) {
-                                                        for (const urlCount of customConfig.url_combinations) {
-                                                            if (urlCount <= customConfig.available_urls.length) {
-                                                                const totalPossible = Math.min(5, Math.floor(customConfig.available_urls.length / urlCount));
-                                                                const variationsLimit = Math.min(totalPossible, customConfig.max_combinations - totalTests);
-                                                                totalTests += variationsLimit;
-                                                                if (totalTests >= customConfig.max_combinations) {
-                                                                    return customConfig.max_combinations;
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                    return Math.min(totalTests, customConfig.max_combinations);
-                                                })()}
-                                            </Typography>
-                                        </Grid>
-                                    </Grid>
-                                </Box>
-
-                                {/* Run Button */}
-                                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-                                    <Button
-                                        variant="contained"
-                                        color="primary"
-                                        size="large"
-                                        onClick={runCustomExperiment}
-                                        disabled={
-                                            experimentLoading || 
-                                            customConfig.available_urls.length === 0 || 
-                                            customConfig.levels.length === 0 ||
-                                            customConfig.modes.length === 0 ||
-                                            customConfig.url_combinations.length === 0
-                                        }
-                                        sx={{ 
-                                            borderRadius: '20px',
-                                            px: 4,
-                                            py: 1.5,
-                                            fontSize: '1.1rem'
-                                        }}
-                                    >
-                                        {experimentLoading ? (
-                                            <>
-                                                <CircularProgress size={20} sx={{ mr: 2 }} />
-                                                Running Custom Experiment...
-                                            </>
-                                        ) : (
-                                            <>
-                                                🚀 Run Custom Experiment
-                                            </>
-                                        )}
-                                    </Button>
-                                </Box>
+                                <TextField
+                                    fullWidth
+                                    label="Experiment Name"
+                                    value={customConfig.experiment_name}
+                                    onChange={(e) => setCustomConfig(prev => ({ ...prev, experiment_name: e.target.value }))}
+                                    placeholder="e.g., Website Similarity Analysis - Thesis 2024"
+                                    sx={{
+                                        mb: 2,
+                                        ...(darkMode && {
+                                            '& .MuiOutlinedInput-root': {
+                                                backgroundColor: '#333',
+                                                '& fieldset': { borderColor: '#555' },
+                                                '&:hover fieldset': { borderColor: '#777' },
+                                                '&.Mui-focused fieldset': { borderColor: '#1976d2' },
+                                            },
+                                            '& .MuiInputLabel-root': { color: '#ccc' },
+                                            '& .MuiOutlinedInput-input': { color: '#fff' }
+                                        })
+                                    }}
+                                />
                             </CardContent>
                         </Card>
+
+                        {/* 2. URL Management */}
+                        <Card sx={{ mb: 3, backgroundColor: darkMode ? '#2a2a2a' : 'background.paper' }}>
+                            <CardHeader 
+                                title="2️⃣ URL Management"
+                                subheader={`${customConfig.available_urls.length} URLs added across ${
+                                    customConfig.available_urls.length > 0 
+                                        ? [...new Set(customConfig.available_urls.map(url => {
+                                            try { return new URL(url).hostname; } catch { return 'invalid'; }
+                                        }))].length 
+                                        : 0
+                                } domains`}
+                                sx={{
+                                    backgroundColor: darkMode ? '#333' : 'secondary.light',
+                                    color: darkMode ? '#ffffff' : 'white',
+                                    '& .MuiCardHeader-subheader': {
+                                        color: darkMode ? '#aaa' : 'rgba(255,255,255,0.8)'
+                                    }
+                                }}
+                            />
+                            <CardContent sx={{ p: 3 }}>
+                                {/* URL Input */}
+                                <Box sx={{ mb: 3 }}>
+                                    <Typography variant="h6" gutterBottom sx={{ color: darkMode ? '#ffffff' : 'inherit' }}>
+                                        🌐 Add URLs
+                                    </Typography>
+                                    <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+                                        <TextField
+                                            fullWidth
+                                            label="Add URL(s)"
+                                            value={configUrlInput}
+                                            onChange={(e) => setConfigUrlInput(e.target.value)}
+                                            onKeyDown={(e) => e.key === 'Enter' && addConfigUrl()}
+                                            onPaste={handleConfigUrlPaste}
+                                            placeholder="https://example.com (or paste multiple URLs)"
+                                            multiline
+                                            maxRows={4}
+                                            helperText="💡 Paste multiple URLs separated by newlines or spaces"
+                                            sx={{
+                                                ...(darkMode && {
+                                                    '& .MuiOutlinedInput-root': {
+                                                        backgroundColor: '#333',
+                                                        '& fieldset': { borderColor: '#555' },
+                                                        '&:hover fieldset': { borderColor: '#777' },
+                                                        '&.Mui-focused fieldset': { borderColor: '#1976d2' },
+                                                    },
+                                                    '& .MuiInputLabel-root': { color: '#ccc' },
+                                                    '& .MuiFormHelperText-root': { color: '#aaa' },
+                                                    '& .MuiOutlinedInput-input': { color: '#fff' }
+                                                })
+                                            }}
+                                        />
+                                        <Button 
+                                            variant="contained" 
+                                            onClick={addConfigUrl}
+                                            sx={{ minWidth: '100px', height: 'fit-content', mt: 1 }}
+                                        >
+                                            Add
+                                        </Button>
+                                    </Box>
+                                </Box>
+
+                                {/* URL Display by Domain */}
+                                {customConfig.available_urls.length > 0 && (
+                                    <Box>
+                                        <Typography variant="h6" gutterBottom sx={{ color: darkMode ? '#ffffff' : 'inherit' }}>
+                                            📁 URLs by Domain
+                                        </Typography>
+                                        {(() => {
+                                            const domainGroups = customConfig.available_urls.reduce((acc, url, index) => {
+                                                try {
+                                                    const domain = new URL(url).hostname;
+                                                    if (!acc[domain]) acc[domain] = [];
+                                                    acc[domain].push({ url, index });
+                                                    return acc;
+                                                } catch {
+                                                    if (!acc['invalid']) acc['invalid'] = [];
+                                                    acc['invalid'].push({ url, index });
+                                                    return acc;
+                                                }
+                                            }, {});
+                                            
+                                            return Object.entries(domainGroups).map(([domain, urlsData]) => (
+                                                <Accordion key={domain} sx={{ mb: 1, backgroundColor: darkMode ? '#333' : 'grey.50' }}>
+                                                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                                        <Typography sx={{ fontWeight: 'bold', color: darkMode ? '#ffffff' : 'inherit' }}>
+                                                            🌐 {domain} ({urlsData.length} URLs)
+                                                        </Typography>
+                                                    </AccordionSummary>
+                                                    <AccordionDetails>
+                                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                                            {urlsData.map(({ url, index }) => (
+                                                                <Chip
+                                                                    key={index}
+                                                                    label={url}
+                                                                    onDelete={() => removeConfigUrl(index)}
+                                                                    color="primary"
+                                                                    sx={{ maxWidth: '300px' }}
+                                                                />
+                                                            ))}
+                                                        </Box>
+                                                    </AccordionDetails>
+                                                </Accordion>
+                                            ));
+                                        })()}
+                                    </Box>
+                                )}
+                            </CardContent>
+                        </Card>
+
+                        {/* 3. Experiment Configuration */}
+                        <Card sx={{ mb: 3, backgroundColor: darkMode ? '#2a2a2a' : 'background.paper' }}>
+                            <CardHeader 
+                                title="3️⃣ Experiment Parameters"
+                                sx={{
+                                    backgroundColor: darkMode ? '#333' : 'success.light',
+                                    color: darkMode ? '#ffffff' : 'white'
+                                }}
+                            />
+                            <CardContent sx={{ p: 3 }}>
+                                <Grid container spacing={4}>
+                                    {/* DOM Levels */}
+                                    <Grid item xs={12}>
+                                        <Typography variant="h6" gutterBottom sx={{ color: darkMode ? '#ffffff' : 'inherit' }}>
+                                            📊 DOM Levels
+                                        </Typography>
+                                        <Box sx={{ 
+                                            p: 2, 
+                                            border: '1px solid', 
+                                            borderColor: darkMode ? '#555' : 'divider', 
+                                            borderRadius: 2,
+                                            backgroundColor: darkMode ? '#333' : 'grey.50'
+                                        }}>
+                                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+                                                {Array.from({ length: 10 }, (_, i) => i + 1).map(level => (
+                                                    <Chip
+                                                        key={level}
+                                                        label={level}
+                                                        onClick={() => {
+                                                            const newLevels = customConfig.levels.includes(level)
+                                                                ? customConfig.levels.filter(l => l !== level)
+                                                                : [...customConfig.levels, level].sort((a, b) => a - b);
+                                                            setCustomConfig(prev => ({ ...prev, levels: newLevels }));
+                                                        }}
+                                                        color={customConfig.levels.includes(level) ? 'primary' : 'default'}
+                                                        sx={{ 
+                                                            minWidth: '40px',
+                                                            ...(darkMode && !customConfig.levels.includes(level) && {
+                                                                backgroundColor: '#555',
+                                                                color: '#ccc',
+                                                                '&:hover': {
+                                                                    backgroundColor: '#666'
+                                                                }
+                                                            })
+                                                        }}
+                                                    />
+                                                ))}
+                                            </Box>
+                                            <Typography variant="caption" sx={{ color: darkMode ? '#aaa' : 'text.secondary' }}>
+                                                Selected levels: {customConfig.levels.join(', ') || 'None'}
+                                            </Typography>
+                                        </Box>
+                                    </Grid>
+
+                                    {/* URLs per Domain */}
+                                    <Grid item xs={12}>
+                                        <Typography variant="h6" gutterBottom sx={{ color: darkMode ? '#ffffff' : 'inherit' }}>
+                                            🔢 URLs per Domain Configuration
+                                        </Typography>
+                                        
+                                        <Box sx={{ 
+                                            p: 2, 
+                                            border: '1px solid', 
+                                            borderColor: darkMode ? '#555' : 'divider', 
+                                            borderRadius: 2,
+                                            backgroundColor: darkMode ? '#333' : 'grey.50'
+                                        }}>
+                                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+                                                {Array.from({ length: 10 }, (_, i) => i + 1).map(count => {
+                                                    // Calculate minimum URLs per domain from available URLs
+                                                    const domainGroups = customConfig.available_urls.reduce((acc, url) => {
+                                                        try {
+                                                            const domain = new URL(url).hostname;
+                                                            if (!acc[domain]) acc[domain] = [];
+                                                            acc[domain].push(url);
+                                                            return acc;
+                                                        } catch {
+                                                            return acc;
+                                                        }
+                                                    }, {});
+                                                    
+                                                    const minUrlsPerDomain = Object.keys(domainGroups).length > 0 
+                                                        ? Math.min(...Object.values(domainGroups).map(urls => urls.length))
+                                                        : 0;
+                                                    
+                                                    return (
+                                                        <Chip
+                                                            key={count}
+                                                            label={count}
+                                                            onClick={() => {
+                                                                const newCombinations = customConfig.url_combinations.includes(count)
+                                                                    ? customConfig.url_combinations.filter(c => c !== count)
+                                                                    : [...customConfig.url_combinations, count].sort((a, b) => a - b);
+                                                                setCustomConfig(prev => ({ ...prev, url_combinations: newCombinations }));
+                                                            }}
+                                                            color={customConfig.url_combinations.includes(count) ? 'primary' : 'default'}
+                                                            disabled={count > minUrlsPerDomain}
+                                                            sx={{
+                                                                minWidth: '40px',
+                                                                ...(darkMode && !customConfig.url_combinations.includes(count) && !count > minUrlsPerDomain && {
+                                                                    backgroundColor: '#555',
+                                                                    color: '#ccc',
+                                                                    '&:hover': {
+                                                                        backgroundColor: '#666'
+                                                                    }
+                                                                })
+                                                            }}
+                                                        />
+                                                    );
+                                                })}
+                                            </Box>
+                                            <Typography variant="caption" sx={{ color: darkMode ? '#aaa' : 'text.secondary' }}>
+                                                Selected: {customConfig.url_combinations.join(', ') || 'None'} URLs per domain (from each domain)
+                                            </Typography>
+                                        </Box>
+                                    </Grid>
+                                </Grid>
+                            </CardContent>
+                        </Card>
+
+                        {/* Launch Experiment Button */}
+                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4, mb: 3 }}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                size="large"
+                                onClick={runCustomExperiment}
+                                disabled={
+                                    experimentLoading || 
+                                    customConfig.available_urls.length === 0 || 
+                                    customConfig.levels.length === 0 ||
+                                    customConfig.url_combinations.length === 0
+                                }
+                                sx={{ 
+                                    borderRadius: '25px',
+                                    px: 6,
+                                    py: 2,
+                                    fontSize: '1.2rem',
+                                    fontWeight: 'bold',
+                                    boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
+                                    '&:hover': {
+                                        transform: 'translateY(-2px)',
+                                        boxShadow: '0 6px 20px rgba(0,0,0,0.3)'
+                                    },
+                                    transition: 'all 0.3s ease-in-out'
+                                }}
+                            >
+                                {experimentLoading ? (
+                                    <>
+                                        <CircularProgress size={24} sx={{ mr: 2, color: 'white' }} />
+                                        Running Experiment...
+                                    </>
+                                ) : (
+                                    <>
+                                        🚀 Launch Experiment
+                                    </>
+                                )}
+                            </Button>
+                        </Box>
 
                         {/* Experiment Results Display */}
                         {experimentResults && (
@@ -3238,20 +3841,6 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                         <Typography variant="h6">
                                                             {formatDuration(experimentResults.experiment_info.duration)}
                                                         </Typography>
-                                                    </Box>
-                                                </Box>
-                                            </Grid>
-                                            <Grid item xs={12} md={6}>
-                                                <Typography variant="h6" gutterBottom>📊 Generated Files & Analysis</Typography>
-                                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                                                    <Typography variant="body2" color="text.secondary">
-                                                        Data files for thesis analysis have been created and are ready for gnuplot visualization.
-                                                    </Typography>
-                                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                                                        <Chip label="📊 processing_times.dat" size="small" />
-                                                        <Chip label="🎯 cluster_counts.dat" size="small" />
-                                                        <Chip label="📄 html_file_counts.dat" size="small" />
-                                                        <Chip label="📈 *.gnuplot scripts" size="small" />
                                                     </Box>
                                                 </Box>
                                             </Grid>
@@ -3326,550 +3915,65 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                 backgroundColor: darkMode ? '#2a2a2a' : 'background.paper',
                                                 color: darkMode ? '#ffffff' : 'inherit'
                                             }}>
+                                                                                                        {/* Render archived experiment results directly without using global result state */}
+                                                    {(() => {
+                                                        // Use the archived result data directly
+                                                        const archivedResult = result;
+                                                        
+                                                        // Render using the same logic as renderResults() but with archived data
+                                                        if (!archivedResult) return null;
 
-                                            {/* Performance Metrics Summary */}
-                                            {result.timing_logs && result.timing_logs.performance_metrics && (
-                                                <Accordion 
-                                                    sx={{ 
-                                                        mb: theme.spacing(2),
-                                                        '&:before': { display: 'none' },
-                                                        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                                                        borderRadius: '8px !important',
-                                                        overflow: 'hidden',
-                                                        backgroundColor: darkMode ? '#333' : 'info.light'
-                                                    }}
-                                                >
-                                                    <AccordionSummary 
-                                                        expandIcon={<ExpandMoreIcon />}
-                                                        sx={{
-                                                            backgroundColor: darkMode ? '#404040' : 'info.main',
-                                                            color: 'white',
-                                                            '&:hover': { backgroundColor: darkMode ? '#505050' : 'info.dark' }
-                                                        }}
-                                                    >
-                                                        <Typography sx={{ fontWeight: 'bold' }}>
-                                                            ⚡ Performance Metrics & Cache Efficiency
-                                                        </Typography>
-                                                    </AccordionSummary>
-                                                    <AccordionDetails sx={{ p: 2, backgroundColor: darkMode ? '#2a2a2a' : 'background.paper' }}>
-                                                        <Grid container spacing={2}>
-                                                            <Grid item xs={6} sm={4} md={3}>
-                                                                <Typography variant="caption" sx={{ color: darkMode ? '#aaa' : 'text.secondary' }}>Total Time</Typography>
-                                                                <Typography variant="h6" color="primary" sx={{ color: darkMode ? '#64B5F6' : 'primary.main' }}>
-                                                                    {formatDuration(result.timing_logs.performance_metrics.total_processing_time)}
-                                                                </Typography>
-                                                            </Grid>
-                                                            <Grid item xs={6} sm={4} md={3}>
-                                                                <Typography variant="caption" sx={{ color: darkMode ? '#aaa' : 'text.secondary' }}>Cache Efficiency</Typography>
-                                                                <Typography variant="h6" color="success.main">
-                                                                    {result.timing_logs.performance_metrics.cache_efficiency_percent?.toFixed(1)}%
-                                                                </Typography>
-                                                            </Grid>
-                                                            <Grid item xs={6} sm={4} md={3}>
-                                                                <Typography variant="caption" sx={{ color: darkMode ? '#aaa' : 'text.secondary' }}>URLs Processed</Typography>
-                                                                <Typography variant="h6" sx={{ color: darkMode ? '#ffffff' : 'inherit' }}>
-                                                                    {result.timing_logs.performance_metrics.urls_processed}
-                                                                </Typography>
-                                                            </Grid>
-                                                            <Grid item xs={6} sm={4} md={3}>
-                                                                <Typography variant="caption" sx={{ color: darkMode ? '#aaa' : 'text.secondary' }}>From Cache</Typography>
-                                                                <Typography variant="h6" color="success.main">
-                                                                    {result.timing_logs.performance_metrics.urls_from_cache}
-                                                                </Typography>
-                                                            </Grid>
-                                                            <Grid item xs={6} sm={4} md={3}>
-                                                                <Typography variant="caption" sx={{ color: darkMode ? '#aaa' : 'text.secondary' }}>HTML Files</Typography>
-                                                                <Typography variant="h6" sx={{ color: darkMode ? '#ffffff' : 'inherit' }}>
-                                                                    {result.timing_logs.performance_metrics.html_files_generated}
-                                                                </Typography>
-                                                            </Grid>
-                                                            <Grid item xs={6} sm={4} md={3}>
-                                                                <Typography variant="caption" sx={{ color: darkMode ? '#aaa' : 'text.secondary' }}>Clusters</Typography>
-                                                                <Typography variant="h6" sx={{ color: darkMode ? '#ffffff' : 'inherit' }}>
-                                                                    {result.timing_logs.performance_metrics.clusters_generated}
-                                                                </Typography>
-                                                            </Grid>
-                                                            <Grid item xs={6} sm={4} md={3}>
-                                                                <Typography variant="caption" sx={{ color: darkMode ? '#aaa' : 'text.secondary' }}>Avg Time/URL</Typography>
-                                                                <Typography variant="h6" sx={{ color: darkMode ? '#ffffff' : 'inherit' }}>
-                                                                    {formatDuration(result.timing_logs.performance_metrics.average_time_per_url)}
-                                                                </Typography>
-                                                            </Grid>
-                                                            <Grid item xs={6} sm={4} md={3}>
-                                                                <Typography variant="caption" sx={{ color: darkMode ? '#aaa' : 'text.secondary' }}>Avg Time/Level</Typography>
-                                                                <Typography variant="h6" sx={{ color: darkMode ? '#ffffff' : 'inherit' }}>
-                                                                    {formatDuration(result.timing_logs.performance_metrics.average_time_per_level)}
-                                                                </Typography>
-                                                            </Grid>
-                                                        </Grid>
-                                                        {result.timing_logs.performance_metrics.cache_savings && (
-                                                            <Box sx={{ mt: 2, p: 1.5, backgroundColor: darkMode ? '#1e4620' : 'success.light', borderRadius: 1 }}>
-                                                                <Typography variant="body2" sx={{ color: darkMode ? '#81C784' : 'success.dark', fontWeight: 'bold' }}>
-                                                                    💾 {result.timing_logs.performance_metrics.cache_savings}
-                                                                </Typography>
-                                                            </Box>
-                                                        )}
-                                                    </AccordionDetails>
-                                                </Accordion>
-                                            )}
-
-                                            {/* Test Case Details */}
-                                            <Accordion 
-                                                sx={{ 
-                                                    mb: theme.spacing(2),
-                                                    '&:before': { display: 'none' },
-                                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                                                    borderRadius: '8px !important',
-                                                    overflow: 'hidden'
-                                                }}
-                                            >
-                                                <AccordionSummary 
-                                                    expandIcon={<ExpandMoreIcon />}
-                                                    sx={{
-                                                        backgroundColor: 'grey.100',
-                                                        '&:hover': {
-                                                            backgroundColor: 'grey.200',
-                                                        },
-                                                    }}
-                                                >
-                                                    <Typography sx={{ fontWeight: 'bold' }}>
-                                                        📋 Test Case Details - Mode {result.test_metadata?.mode} ({result.test_metadata?.url_count} URLs)
-                                                    </Typography>
-                                                </AccordionSummary>
-                                                <AccordionDetails sx={{ p: 2 }}>
-                                                    <Grid container spacing={2}>
-                                                        <Grid item xs={12} md={6}>
-                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
-                                                                Test Configuration:
-                                                            </Typography>
-                                                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                                                                <Typography variant="body2">
-                                                                    <strong>Mode:</strong> {result.test_metadata?.mode === 0 ? '0 (Process All Together)' : '1 (Process by Domain)'}
-                                                                </Typography>
-                                                                <Typography variant="body2">
-                                                                    <strong>Levels:</strong> {result.test_metadata?.levels?.join(', ')}
-                                                                </Typography>
-                                                                <Typography variant="body2">
-                                                                    <strong>URL Count:</strong> {result.test_metadata?.url_count}
-                                                                </Typography>
-                                                            </Box>
-                                                        </Grid>
-                                                        <Grid item xs={12} md={6}>
-                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
-                                                                URLs Tested:
-                                                            </Typography>
-                                                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, maxHeight: '150px', overflowY: 'auto' }}>
-                                                                {result.test_metadata?.urls?.map((url, urlIndex) => (
-                                                                    <Typography key={urlIndex} variant="caption" sx={{ 
-                                                                        wordBreak: 'break-all',
-                                                                        fontSize: '0.75rem',
-                                                                        p: 0.5,
-                                                                        bgcolor: 'grey.50',
-                                                                        borderRadius: 0.5
-                                                                    }}>
-                                                                        {urlIndex + 1}. {url}
-                                                                    </Typography>
+                                                        return (
+                                                            <Box sx={{ width: '100%', mt: theme.spacing(2), maxWidth: '1600px', mx: 'auto', px: 2 }}>
+                                                                {/* Mode 0: Show standard clustering results */}
+                                                                {archivedResult.test_metadata?.mode === 0 && archivedResult.processed_clusters && archivedResult.processed_clusters.map((processedCluster, clusterIndex) => (
+                                                                    processedCluster.processed_data && processedCluster.processed_data.site_similarity &&
+                                                                    <div key={`similarity-${clusterIndex}`}>
+                                                                        {renderSiteSimilarityResults(
+                                                                            processedCluster.processed_data.site_similarity, 
+                                                                            processedCluster.level, 
+                                                                            processedCluster.processed_data
+                                                                        )}
+                                                                    </div>
                                                                 ))}
-                                                            </Box>
-                                                        </Grid>
-                                                    </Grid>
-                                                </AccordionDetails>
-                                            </Accordion>
 
-                                            {/* Use the same renderUnifiedHtmlFilesSection function */}
-                                                {(() => {
-                                                    const collectAllHtmlFiles = (resultData) => {
-                                                        let allFiles = [];
-                                                        
-                                                        console.log("🔍 DEBUG: collectAllHtmlFiles input for experiment result:", resultData);
-                                                        
-                                                        // Check for direct HTML files (kept for small lists)
-                                                        if (resultData.html_files) {
-                                                            console.log("📁 Found html_files in experiment result:", resultData.html_files.length);
-                                                            allFiles = allFiles.concat(resultData.html_files);
-                                                        }
-                                                        
-                                                        // Check for HTML files summary (when files were moved to large data)
-                                                        if (resultData.html_files_summary && !resultData.html_files) {
-                                                            console.log("📊 Found html_files_summary (files moved to large data):", resultData.html_files_summary);
-                                                            // For now, show placeholder info - we'll need to fetch the actual files
-                                                            // from the large data API when user expands
-                                                            const summary = resultData.html_files_summary;
-                                                            console.log(`📋 HTML Files moved to large data: ${summary.count} files, ${summary.total_size_kb?.toFixed(1)} KB total`);
-                                                            
-                                                            // Create placeholder entries for summary display
-                                                            summary.levels?.forEach(level => {
-                                                                summary.domains?.forEach(domain => {
-                                                                    allFiles.push({
-                                                                        filename: `${summary.count} files available`,
-                                                                        path: `#large-data-${resultData.test_metadata?.test_id}`,
-                                                                        level: level,
-                                                                        domain: domain,
-                                                                        title: `${summary.count} HTML files (${summary.total_size_kb?.toFixed(1)} KB)`,
-                                                                        file_size_kb: summary.total_size_kb / summary.count,
-                                                                        url: `Large data: ${summary.count} files`,
-                                                                        is_large_data_placeholder: true,
-                                                                        large_data_file: summary.full_list_file,
-                                                                        test_id: resultData.test_metadata?.test_id
-                                                                    });
-                                                                });
-                                                            });
-                                                        }
-                                                        
-                                                        // Check for domain results HTML files
-                                                        if (resultData.domain_results) {
-                                                            console.log("🌐 Found domain_results in experiment:", resultData.domain_results.length);
-                                                            resultData.domain_results.forEach((domainResult, index) => {
-                                                                console.log(`📊 Domain ${index + 1} (${domainResult.domain}):`, domainResult.html_files?.length || 0, "files");
-                                                                if (domainResult.html_files) {
-                                                                    domainResult.html_files.forEach(file => {
-                                                                        console.log(`  - File domain: ${file.domain}, clean_domain: ${file.clean_domain}, filename: ${file.filename}`);
-                                                                    });
-                                                                    allFiles = allFiles.concat(domainResult.html_files);
-                                                                }
-                                                            });
-                                                        }
-                                                        
-                                                        // Remove duplicates based on filename (backend bug workaround)
-                                                        const uniqueFiles = allFiles.filter((file, index, self) => 
-                                                            index === self.findIndex(f => f.filename === file.filename)
-                                                        );
-                                                        
-                                                        console.log("📁 Total collected files for experiment:", allFiles.length);
-                                                        console.log("📁 After deduplication:", uniqueFiles.length);
-                                                        
-                                                        return uniqueFiles;
-                                                    };
-
-                                                    const allHtmlFiles = collectAllHtmlFiles(result);
-                                                    if (allHtmlFiles.length === 0) return null;
-
-                                                    const filesByLevel = allHtmlFiles.reduce((acc, file) => {
-                                                        const level = file.level || 'unknown';
-                                                        if (!acc[level]) acc[level] = [];
-                                                        acc[level].push(file);
-                                                        return acc;
-                                                    }, {});
-
-                                                    const sortedLevels = Object.keys(filesByLevel).sort((a, b) => {
-                                                        if (a === 'unknown') return 1;
-                                                        if (b === 'unknown') return -1;
-                                                        return parseInt(a) - parseInt(b);
-                                                    });
-
-                                                    return (
-                                                        <Accordion 
-                                                            sx={{ 
-                                                                mb: theme.spacing(2),
-                                                                '&:before': { display: 'none' },
-                                                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                                                                borderRadius: '8px !important',
-                                                                overflow: 'hidden'
-                                                            }}
-                                                        >
-                                                            <AccordionSummary 
-                                                                expandIcon={<ExpandMoreIcon />}
-                                                                sx={{
-                                                                    backgroundColor: 'grey.200',
-                                                                    '&:hover': {
-                                                                        backgroundColor: 'grey.300',
-                                                                    },
-                                                                }}
-                                                            >
-                                                                <Typography sx={{ fontWeight: 'bold' }}>
-                                                                    📁 Generated Files ({allHtmlFiles.length} files)
-                                                                </Typography>
-                                                            </AccordionSummary>
-                                                            <AccordionDetails sx={{ p: 2 }}>
-                                                                {sortedLevels.map(level => (
-                                                                    <Box key={level} sx={{ mb: 2 }}>
-                                                                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1, color: 'primary.main' }}>
-                                                                            📊 Level {level} ({filesByLevel[level].length} files)
+                                                                {/* Mode 1: Show domain-based results */}
+                                                                {archivedResult.test_metadata?.mode === 1 && archivedResult.domain_results && archivedResult.domain_results.map((domainResult, domainIndex) => (
+                                                                    <div key={`domain-${domainIndex}`}>
+                                                                        {/* Domain header */}
+                                                                        <Typography variant="h6" sx={{ mt: 3, mb: 2, fontWeight: 'bold', color: 'secondary.main' }}>
+                                                                            🌐 Domain: {domainResult.domain}
                                                                         </Typography>
-                                                                        <Grid container spacing={1}>
-                                                                            {filesByLevel[level].map((file, fileIndex) => (
-                                                                                <Grid item xs={12} sm={6} md={4} key={fileIndex}>
-                                                                                                                                                                <Card 
-                                                                                sx={{ 
-                                                                                    cursor: 'pointer',
-                                                                                    transition: 'all 0.2s ease-in-out',
-                                                                                    backgroundColor: file.is_large_data_placeholder ? 'warning.light' : 'background.paper',
-                                                                                    border: file.is_large_data_placeholder ? '2px solid' : '1px solid',
-                                                                                    borderColor: file.is_large_data_placeholder ? 'warning.main' : 'divider',
-                                                                                    '&:hover': {
-                                                                                        transform: 'translateY(-1px)',
-                                                                                        boxShadow: file.is_large_data_placeholder 
-                                                                                            ? '0 4px 8px rgba(255,152,0,0.3)' 
-                                                                                            : '0 2px 4px rgba(0,0,0,0.1)'
-                                                                                    }
-                                                                                }}
-                                                                                onClick={async () => {
-                                                                                    console.log("🖱️ Clicked HTML file:", file);
-                                                                                    console.log("📁 File path:", file.path);
-                                                                                    console.log("🔗 Full URL:", `http://localhost:5000/${file.path}`);
-                                                                                    
-                                                                                    if (file.is_large_data_placeholder) {
-                                                                                        // Handle large data placeholder click
-                                                                                        const experimentId = experimentResults?.experiment_info?.experiment_id;
-                                                                                        if (experimentId && file.test_id) {
-                                                                                            console.log("🔍 Loading large HTML files for test:", file.test_id);
-                                                                                            setSuccess("Loading HTML files from large data...");
-                                                                                            const htmlFiles = await loadLargeDataHtmlFiles(experimentId, file.test_id);
-                                                                                            if (htmlFiles && htmlFiles.length > 0) {
-                                                                                                // Show modal or accordion with all files
-                                                                                                console.log("📁 Loaded HTML files:", htmlFiles.length);
-                                                                                                // For now, open the first few files
-                                                                                                htmlFiles.slice(0, 5).forEach((htmlFile, index) => {
-                                                                                                    setTimeout(() => {
-                                                                                                        const url = `http://localhost:5000/${htmlFile.path}`;
-                                                                                                        console.log(`🌐 Opening URL ${index + 1}:`, url);
-                                                                                                        window.open(url, '_blank');
-                                                                                                    }, index * 200); // Stagger the opens
-                                                                                                });
-                                                                                                if (htmlFiles.length > 5) {
-                                                                                                    setSuccess(`Opened first 5 of ${htmlFiles.length} HTML files. Check browser tabs.`);
-                                                                                                }
-                                                                                            }
-                                                                                        }
-                                                                                    } else {
-                                                                                        // Normal file click - construct URL properly
-                                                                                        const fileUrl = `http://localhost:5000/output_html_files/${file.path}`;
-                                                                                        
-                                                                                        console.log("🌐 Opening HTML file URL:", fileUrl);
-                                                                                        setSuccess(`Opening: ${file.title || file.filename}`);
-                                                                                        
-                                                                                        try {
-                                                                                            window.open(fileUrl, '_blank');
-                                                                                        } catch (error) {
-                                                                                            console.error("❌ Error opening file:", error);
-                                                                                            setError({ message: `Failed to open file: ${error.message}` });
-                                                                                        }
-                                                                                    }
-                                                                                }}
-                                                                            >
-                                                                                        <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
-                                                                                            <Typography 
-                                                                                                variant="caption" 
-                                                                                                sx={{ 
-                                                                                                    fontWeight: 'bold',
-                                                                                                    display: 'block',
-                                                                                                    mb: 0.5,
-                                                                                                    overflow: 'hidden',
-                                                                                                    textOverflow: 'ellipsis',
-                                                                                                    whiteSpace: 'nowrap',
-                                                                                                    color: file.is_large_data_placeholder ? 'warning.dark' : 'inherit'
-                                                                                                }}
-                                                                                                title={file.title || file.filename}
-                                                                                            >
-                                                                                                {file.is_large_data_placeholder ? '📦 ' : ''}{file.title || file.filename}
-                                                                                            </Typography>
-                                                                                            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.6rem' }}>
-                                                                                                {file.is_large_data_placeholder 
-                                                                                                    ? 'Click to load files from large data'
-                                                                                                    : (file.file_size_kb ? `${file.file_size_kb.toFixed(1)} KB` : '')
-                                                                                                }
-                                                                                            </Typography>
-                                                                                        </CardContent>
-                                                                                    </Card>
-                                                                                </Grid>
-                                                                            ))}
-                                                                        </Grid>
-                                                                    </Box>
-                                                                ))}
-                                                            </AccordionDetails>
-                                                        </Accordion>
-                                                    );
-                                                })()}
-
-                                                                                {/* Site Similarity Results for Mode 0 */}
-                                {result.processed_clusters && result.processed_clusters.map((processedCluster, clusterIndex) => (
-                                    processedCluster.processed_data && processedCluster.processed_data.site_similarity &&
-                                    <div key={`similarity-${clusterIndex}`}>
-                                        {renderSiteSimilarityResults(
-                                            processedCluster.processed_data.site_similarity, 
-                                            processedCluster.level, 
-                                            processedCluster.processed_data
-                                        )}
-                                    </div>
-                                ))}
-
-                                {/* Site Similarity Results for Mode 1 (Domain-based) */}
-                                {result.domain_results && result.domain_results.map((domainResult, domainIndex) => (
-                                    domainResult.processed_clusters && domainResult.processed_clusters.map((processedCluster, clusterIndex) => (
-                                        processedCluster.processed_data && processedCluster.processed_data.site_similarity &&
-                                        <div key={`domain-${domainIndex}-similarity-${clusterIndex}`}>
-                                            {renderSiteSimilarityResults(
-                                                processedCluster.processed_data.site_similarity, 
-                                                processedCluster.level, 
-                                                processedCluster.processed_data
-                                            )}
-                                        </div>
-                                    ))
-                                ))}
-
-                                {/* Clustering Results Summary for Mode 0 */}
-                                                {result.clustering_results && result.clustering_results.map((clusterResult, clusterIndex) => (
-                                                    <Accordion 
-                                                        key={`cluster-${clusterIndex}`} 
-                                                        sx={{ 
-                                                            mb: theme.spacing(1),
-                                                            '&:before': { display: 'none' },
-                                                            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                                                            borderRadius: '4px !important',
-                                                            backgroundColor: darkMode ? '#333' : 'background.paper'
-                                                        }}
-                                                    >
-                                                        <AccordionSummary 
-                                                            expandIcon={<ExpandMoreIcon />}
-                                                            sx={{
-                                                                backgroundColor: clusterResult.status === 'error' 
-                                                                    ? 'error.light' 
-                                                                    : (darkMode ? '#404040' : 'grey.100'),
-                                                                color: darkMode ? '#ffffff' : 'inherit',
-                                                                '&:hover': {
-                                                                    backgroundColor: clusterResult.status === 'error' 
-                                                                        ? 'error.main' 
-                                                                        : (darkMode ? '#505050' : 'grey.200'),
-                                                                }
-                                                            }}
-                                                        >
-                                                            <Typography sx={{ 
-                                                                fontWeight: 'bold', 
-                                                                fontSize: '0.9rem',
-                                                                color: darkMode ? '#ffffff' : 'inherit'
-                                                            }}>
-                                                                🧮 Level {clusterResult.level} - {clusterResult.status === 'error' ? '❌' : '✅'} {clusterResult.message}
-                                                            </Typography>
-                                                        </AccordionSummary>
-                                                        <AccordionDetails sx={{ 
-                                                            p: 2,
-                                                            backgroundColor: darkMode ? '#2a2a2a' : 'background.paper'
-                                                        }}>
-                                                            {clusterResult.status === 'error' ? (
-                                                                <Typography variant="body2" color="error">
-                                                                    {clusterResult.message}
-                                                                </Typography>
-                                                            ) : (
-                                                                (() => {
-                                                                    const clusterInfo = getClusterInfo(clusterResult);
-                                                                    if (!clusterInfo) return null;
-                                                                    
-                                                                    return (
-                                                                        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 1 }}>
-                                                                            <Box>
-                                                                                <Typography variant="caption" sx={{
-                                                                                    color: darkMode ? '#aaa' : 'text.secondary'
-                                                                                }}>Clusters</Typography>
-                                                                                <Typography variant="subtitle2" sx={{
-                                                                                    color: darkMode ? '#ffffff' : 'inherit'
-                                                                                }}>{clusterInfo.num_clusters}</Typography>
-                                                                            </Box>
-                                                                            <Box>
-                                                                                <Typography variant="caption" sx={{
-                                                                                    color: darkMode ? '#aaa' : 'text.secondary'
-                                                                                }}>DBCV Score</Typography>
-                                                                                <Typography variant="subtitle2" sx={{
-                                                                                    color: darkMode ? '#ffffff' : 'inherit'
-                                                                                }}>{clusterInfo.dbcv_score?.toFixed(3)}</Typography>
-                                                                            </Box>
-                                                                            <Box>
-                                                                                <Typography variant="caption" sx={{
-                                                                                    color: darkMode ? '#aaa' : 'text.secondary'
-                                                                                }}>Attributes</Typography>
-                                                                                <Typography variant="subtitle2" sx={{
-                                                                                    color: darkMode ? '#ffffff' : 'inherit'
-                                                                                }}>{clusterInfo.useful_attributes?.length || 0}</Typography>
+                                                                        
+                                                                        {/* Domain URLs */}
+                                                                        <Box sx={{ mb: 2 }}>
+                                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                                                                                URLs in this domain:
+                                                                            </Typography>
+                                                                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                                                                {domainResult.urls && domainResult.urls.map((url, urlIndex) => (
+                                                                                    <Chip key={urlIndex} label={url} size="small" color="secondary" />
+                                                                                ))}
                                                                             </Box>
                                                                         </Box>
-                                                                    );
-                                                                })()
-                                                            )}
-                                                        </AccordionDetails>
-                                                    </Accordion>
-                                                ))}
 
-                                                {/* Clustering Results Summary for Mode 1 (Domain-based) */}
-                                                {result.domain_results && result.domain_results.map((domainResult, domainIndex) => (
-                                                    <Box key={`domain-section-${domainIndex}`} sx={{ mt: 2 }}>
-                                                        <Typography variant="h6" sx={{ mt: 2, mb: 1, fontWeight: 'bold', color: 'secondary.main' }}>
-                                                            🌐 Domain: {domainResult.domain}
-                                                        </Typography>
-                                                        
-                                                        {/* Domain URLs */}
-                                                        <Box sx={{ mb: 2 }}>
-                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
-                                                                URLs in this domain:
-                                                            </Typography>
-                                                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                                                                {domainResult.urls && domainResult.urls.map((url, urlIndex) => (
-                                                                    <Chip key={urlIndex} label={url} size="small" color="secondary" />
+                                                                        {/* Show similarity results directly if available */}
+                                                                        {domainResult.processed_clusters && domainResult.processed_clusters.map((processedCluster, clusterIndex) => (
+                                                                            processedCluster.processed_data && processedCluster.processed_data.site_similarity &&
+                                                                            <div key={`domain-${domainIndex}-similarity-${clusterIndex}`}>
+                                                                                {renderSiteSimilarityResults(
+                                                                                    processedCluster.processed_data.site_similarity, 
+                                                                                    processedCluster.level, 
+                                                                                    processedCluster.processed_data,
+                                                                                    `${domainResult.domain} -`
+                                                                                )}
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
                                                                 ))}
                                                             </Box>
-                                                        </Box>
-
-                                                        {/* Domain Clustering Results */}
-                                                        {domainResult.clustering_results && domainResult.clustering_results.map((clusterResult, clusterIndex) => (
-                                                            <Accordion 
-                                                                key={`domain-${domainIndex}-cluster-${clusterIndex}`} 
-                                                                sx={{ 
-                                                                    mb: theme.spacing(1),
-                                                                    '&:before': { display: 'none' },
-                                                                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                                                                    borderRadius: '4px !important'
-                                                                }}
-                                                            >
-                                                                <AccordionSummary 
-                                                                    expandIcon={<ExpandMoreIcon />}
-                                                                    sx={{
-                                                                        backgroundColor: clusterResult.status === 'error' ? 'error.light' : 'grey.100',
-                                                                        '&:hover': {
-                                                                            backgroundColor: clusterResult.status === 'error' ? 'error.main' : 'grey.200',
-                                                                        }
-                                                                    }}
-                                                                >
-                                                                    <Typography sx={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
-                                                                        🧮 {domainResult.domain} - Level {clusterResult.level} - {clusterResult.status === 'error' ? '❌' : '✅'} {clusterResult.message}
-                                                                    </Typography>
-                                                                </AccordionSummary>
-                                                                <AccordionDetails sx={{ p: 2 }}>
-                                                                    {clusterResult.status === 'error' ? (
-                                                                        <Typography variant="body2" color="error">
-                                                                            {clusterResult.message}
-                                                                        </Typography>
-                                                                    ) : (
-                                                                        (() => {
-                                                                            const clusterInfo = getClusterInfo(clusterResult);
-                                                                            if (!clusterInfo) return null;
-                                                                            
-                                                                            return (
-                                                                                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 1 }}>
-                                                                                    <Box>
-                                                                                        <Typography variant="caption" color="text.secondary">Clusters</Typography>
-                                                                                        <Typography variant="subtitle2" sx={{
-                                                                                            color: darkMode ? '#ffffff' : 'inherit'
-                                                                                        }}>{clusterInfo.num_clusters}</Typography>
-                                                                                    </Box>
-                                                                                    <Box>
-                                                                                        <Typography variant="caption" color="text.secondary">DBCV Score</Typography>
-                                                                                        <Typography variant="subtitle2" sx={{
-                                                                                            color: darkMode ? '#ffffff' : 'inherit'
-                                                                                        }}>{clusterInfo.dbcv_score?.toFixed(3)}</Typography>
-                                                                                    </Box>
-                                                                                    <Box>
-                                                                                        <Typography variant="caption" color="text.secondary">Attributes</Typography>
-                                                                                        <Typography variant="subtitle2" sx={{
-                                                                                            color: darkMode ? '#ffffff' : 'inherit'
-                                                                                        }}>{clusterInfo.useful_attributes?.length || 0}</Typography>
-                                                                                    </Box>
-                                                                                </Box>
-                                                                            );
-                                                                        })()
-                                                                    )}
-                                                                </AccordionDetails>
-                                                            </Accordion>
-                                                        ))}
-                                                    </Box>
-                                                ))}
+                                                        );
+                                                    })()}
                                                 </CardContent>
                                             </Collapse>
                                         </Card>
@@ -3901,31 +4005,31 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                             />
                             <CardContent sx={{ p: 3 }}>
                                 <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
-                                                                            <Button 
-                                            variant="outlined" 
-                                            onClick={loadArchiveExperiments}
-                                            disabled={archiveLoading}
-                                            sx={{ 
-                                                borderRadius: '20px',
-                                                ...(darkMode && {
-                                                    borderColor: '#555',
-                                                    color: '#fff',
-                                                    '&:hover': {
-                                                        borderColor: '#777',
-                                                        backgroundColor: 'rgba(255,255,255,0.1)'
-                                                    }
-                                                })
-                                            }}
-                                        >
-                                            {archiveLoading ? (
-                                                <>
-                                                    <CircularProgress size={16} sx={{ mr: 1 }} />
-                                                    Loading...
-                                                </>
-                                            ) : (
-                                                '🔄 Refresh Archive'
-                                            )}
-                                        </Button>
+                                    <Button 
+                                        variant="outlined" 
+                                        onClick={loadArchiveExperiments}
+                                        disabled={archiveLoading}
+                                        sx={{ 
+                                            borderRadius: '20px',
+                                            ...(darkMode && {
+                                                borderColor: '#555',
+                                                color: '#fff',
+                                                '&:hover': {
+                                                    borderColor: '#777',
+                                                    backgroundColor: 'rgba(255,255,255,0.1)'
+                                                }
+                                            })
+                                        }}
+                                    >
+                                        {archiveLoading ? (
+                                            <>
+                                                <CircularProgress size={16} sx={{ mr: 1 }} />
+                                                Loading...
+                                            </>
+                                        ) : (
+                                            '🔄 Refresh Archive'
+                                        )}
+                                    </Button>
 
                                     {selectedExperiment && (
                                         <Button 
@@ -3943,22 +4047,42 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                 })
                                             }}
                                         >
-                                            ⬅️ Back to List
+                                            ✖️ Clear Selection
                                         </Button>
                                     )}
                                 </Box>
                             </CardContent>
                         </Card>
 
-                        {/* Experiment Selection */}
-                        {!selectedExperiment && archiveExperiments.length > 0 && (
+                        {/* Experiment List - Always visible when experiments are available */}
+                        {archiveExperiments.length > 0 && (
                             <Card sx={{ 
                                 mb: 3,
                                 backgroundColor: darkMode ? '#2a2a2a' : 'background.paper',
                                 color: darkMode ? '#ffffff' : 'inherit'
                             }}>
                                 <CardHeader 
-                                    title={`📚 Available Experiments (${archiveExperiments.length})`}
+                                    title={
+                                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                            <Typography variant="h6">
+                                                📚 Available Experiments ({archiveExperiments.length})
+                                            </Typography>
+                                            {selectedExperiment && (
+                                                <Typography variant="caption" sx={{
+                                                    color: darkMode ? '#4CAF50' : 'success.main',
+                                                    fontWeight: 'bold',
+                                                    backgroundColor: darkMode ? 'rgba(76, 175, 80, 0.1)' : 'rgba(76, 175, 80, 0.1)',
+                                                    px: 1.5,
+                                                    py: 0.5,
+                                                    borderRadius: '12px',
+                                                    border: '1px solid',
+                                                    borderColor: darkMode ? '#4CAF50' : 'success.main'
+                                                }}>
+                                                    ✓ Selected: {selectedExperiment.experiment_info.name}
+                                                </Typography>
+                                            )}
+                                        </Box>
+                                    }
                                     sx={{
                                         backgroundColor: darkMode ? '#333' : 'transparent',
                                         color: darkMode ? '#ffffff' : 'inherit'
@@ -3966,69 +4090,124 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                 />
                                 <CardContent sx={{ maxHeight: '500px', overflow: 'auto' }}>
                                     <Grid container spacing={3}>
-                                        {archiveExperiments.map((experiment, index) => (
-                                            <Grid item xs={12} sm={6} md={4} key={experiment.id}>
-                                                <Card 
-                                                    sx={{ 
-                                                        cursor: 'pointer',
-                                                        transition: 'all 0.2s',
-                                                        backgroundColor: darkMode ? '#333' : 'background.paper',
-                                                        color: darkMode ? '#ffffff' : 'inherit',
-                                                        '&:hover': {
-                                                            transform: 'translateY(-2px)',
-                                                            boxShadow: darkMode 
-                                                                ? '0 4px 12px rgba(0,0,0,0.4)' 
-                                                                : '0 4px 12px rgba(0,0,0,0.15)',
-                                                            backgroundColor: darkMode ? '#404040' : undefined
-                                                        },
-                                                        border: '1px solid',
-                                                        borderColor: darkMode ? '#555' : 'divider'
-                                                    }}
-                                                    onClick={() => loadExperimentDetails(experiment.id)}
-                                                >
-                                                    <CardContent sx={{ p: 2 }}>
-                                                        <Typography variant="h6" sx={{ 
-                                                            fontWeight: 'bold', 
-                                                            mb: 1, 
-                                                            fontSize: '1rem',
-                                                            color: darkMode ? '#ffffff' : 'inherit'
-                                                        }}>
-                                                            {experiment.name}
-                                                        </Typography>
-                                                        <Typography variant="caption" sx={{ 
-                                                            display: 'block', 
-                                                            mb: 1,
-                                                            color: darkMode ? '#aaa' : 'text.secondary'
-                                                        }}>
-                                                            {experiment.timestamp}
-                                                        </Typography>
-                                                        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, mb: 1 }}>
-                                                            <Box>
-                                                                <Typography variant="caption" sx={{ 
-                                                                    color: darkMode ? '#aaa' : 'text.secondary'
-                                                                }}>Tests</Typography>
-                                                                <Typography variant="subtitle2" sx={{
-                                                                    color: darkMode ? '#ffffff' : 'inherit'
-                                                                }}>{experiment.total_tests}</Typography>
+                                        {archiveExperiments.map((experiment, index) => {
+                                            const isSelected = selectedExperiment?.id === experiment.id;
+                                            return (
+                                                <Grid item xs={12} sm={6} md={4} key={experiment.id}>
+                                                    <Card 
+                                                        sx={{ 
+                                                            cursor: 'pointer',
+                                                            transition: 'all 0.3s ease-in-out',
+                                                            backgroundColor: isSelected 
+                                                                ? (darkMode ? '#1976d2' : 'primary.light')
+                                                                : (darkMode ? '#333' : 'background.paper'),
+                                                            color: isSelected 
+                                                                ? 'white'
+                                                                : (darkMode ? '#ffffff' : 'inherit'),
+                                                            transform: isSelected ? 'scale(1.02)' : 'scale(1)',
+                                                            '&:hover': {
+                                                                transform: isSelected ? 'scale(1.03)' : 'translateY(-2px)',
+                                                                boxShadow: isSelected
+                                                                    ? '0 8px 24px rgba(25, 118, 210, 0.4)'
+                                                                    : (darkMode 
+                                                                        ? '0 4px 12px rgba(0,0,0,0.4)' 
+                                                                        : '0 4px 12px rgba(0,0,0,0.15)'),
+                                                                backgroundColor: isSelected
+                                                                    ? (darkMode ? '#1565c0' : 'primary.main')
+                                                                    : (darkMode ? '#404040' : 'grey.50')
+                                                            },
+                                                            border: '2px solid',
+                                                            borderColor: isSelected 
+                                                                ? (darkMode ? '#42a5f5' : 'primary.main')
+                                                                : (darkMode ? '#555' : 'divider'),
+                                                            boxShadow: isSelected 
+                                                                ? '0 4px 16px rgba(25, 118, 210, 0.3)'
+                                                                : '0 2px 4px rgba(0,0,0,0.1)',
+                                                            position: 'relative',
+                                                            '&::before': isSelected ? {
+                                                                content: '""',
+                                                                position: 'absolute',
+                                                                top: 8,
+                                                                right: 8,
+                                                                width: 24,
+                                                                height: 24,
+                                                                backgroundColor: 'white',
+                                                                borderRadius: '50%',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                zIndex: 1
+                                                            } : {}
+                                                        }}
+                                                        onClick={() => loadExperimentDetails(experiment.id)}
+                                                    >
+                                                        {isSelected && (
+                                                            <Box sx={{
+                                                                position: 'absolute',
+                                                                top: 8,
+                                                                right: 8,
+                                                                width: 24,
+                                                                height: 24,
+                                                                backgroundColor: 'white',
+                                                                borderRadius: '50%',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                zIndex: 1,
+                                                                color: 'primary.main',
+                                                                fontSize: '16px',
+                                                                fontWeight: 'bold'
+                                                            }}>
+                                                                ✓
                                                             </Box>
-                                                            <Box>
-                                                                <Typography variant="caption" sx={{ 
-                                                                    color: darkMode ? '#aaa' : 'text.secondary'
-                                                                }}>Success Rate</Typography>
-                                                                <Typography variant="subtitle2" color="success.main">
-                                                                    {experiment.success_rate.toFixed(1)}%
-                                                                </Typography>
+                                                        )}
+                                                        <CardContent sx={{ p: 2 }}>
+                                                            <Typography variant="h6" sx={{ 
+                                                                fontWeight: 'bold', 
+                                                                mb: 1, 
+                                                                fontSize: '1rem',
+                                                                color: isSelected ? 'white' : (darkMode ? '#ffffff' : 'inherit')
+                                                            }}>
+                                                                {experiment.name}
+                                                            </Typography>
+                                                            <Typography variant="caption" sx={{ 
+                                                                display: 'block', 
+                                                                mb: 1,
+                                                                color: isSelected ? 'rgba(255,255,255,0.8)' : (darkMode ? '#aaa' : 'text.secondary')
+                                                            }}>
+                                                                {experiment.timestamp}
+                                                            </Typography>
+                                                            <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, mb: 1 }}>
+                                                                <Box>
+                                                                    <Typography variant="caption" sx={{ 
+                                                                        color: isSelected ? 'rgba(255,255,255,0.8)' : (darkMode ? '#aaa' : 'text.secondary')
+                                                                    }}>Tests</Typography>
+                                                                    <Typography variant="subtitle2" sx={{
+                                                                        color: isSelected ? 'white' : (darkMode ? '#ffffff' : 'inherit')
+                                                                    }}>{experiment.total_tests}</Typography>
+                                                                </Box>
+                                                                <Box>
+                                                                    <Typography variant="caption" sx={{ 
+                                                                        color: isSelected ? 'rgba(255,255,255,0.8)' : (darkMode ? '#aaa' : 'text.secondary')
+                                                                    }}>Success Rate</Typography>
+                                                                    <Typography variant="subtitle2" sx={{
+                                                                        color: isSelected ? '#81C784' : 'success.main',
+                                                                        fontWeight: isSelected ? 'bold' : 'normal'
+                                                                    }}>
+                                                                        {experiment.success_rate.toFixed(1)}%
+                                                                    </Typography>
+                                                                </Box>
                                                             </Box>
-                                                        </Box>
-                                                        <Typography variant="caption" sx={{ 
-                                                            color: darkMode ? '#aaa' : 'text.secondary'
-                                                        }}>
-                                                            Duration: {formatDuration(experiment.duration)}
-                                                        </Typography>
-                                                    </CardContent>
-                                                </Card>
-                                            </Grid>
-                                        ))}
+                                                            <Typography variant="caption" sx={{ 
+                                                                color: isSelected ? 'rgba(255,255,255,0.8)' : (darkMode ? '#aaa' : 'text.secondary')
+                                                            }}>
+                                                                Duration: {formatDuration(experiment.duration)}
+                                                            </Typography>
+                                                        </CardContent>
+                                                    </Card>
+                                                </Grid>
+                                            );
+                                        })}
                                     </Grid>
                                 </CardContent>
                             </Card>
@@ -4056,11 +4235,22 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                     />
                                     <CardContent>
                                         <Grid container spacing={3}>
-                                            <Grid item xs={12} md={6}>
+                                            <Grid item xs={12}>
                                                 <Typography variant="h6" gutterBottom sx={{
                                                     color: darkMode ? '#ffffff' : 'inherit'
                                                 }}>📈 Performance Summary</Typography>
-                                                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+                                                <Box sx={{ 
+                                                    display: 'grid', 
+                                                    gridTemplateColumns: 'repeat(5, 1fr)', 
+                                                    gap: 2,
+                                                    width: '100%',
+                                                    '@media (max-width: 768px)': {
+                                                        gridTemplateColumns: 'repeat(3, 1fr)'
+                                                    },
+                                                    '@media (max-width: 480px)': {
+                                                        gridTemplateColumns: 'repeat(2, 1fr)'
+                                                    }
+                                                }}>
                                                     <Box>
                                                         <Typography variant="caption" sx={{
                                                             color: darkMode ? '#aaa' : 'text.secondary'
@@ -4103,117 +4293,16 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                             {formatDuration(selectedExperiment.experiment_info.duration)}
                                                         </Typography>
                                                     </Box>
-                                                    
-                                                    {/* Data Optimization Info */}
-                                                    {selectedExperiment.experiment_info.data_optimization && (
-                                                        <Box sx={{ gridColumn: '1 / -1', mt: 1 }}>
-                                                            <Typography variant="caption" sx={{
-                                                                color: darkMode ? '#aaa' : 'text.secondary'
-                                                            }}>Data Optimization</Typography>
-                                                            <Typography variant="body2" sx={{
-                                                                color: darkMode ? '#81C784' : 'success.main',
-                                                                fontWeight: 'bold'
-                                                            }}>
-                                                                💾 {selectedExperiment.experiment_info.data_optimization.size_reduction_percent.toFixed(1)}% reduction 
-                                                                ({selectedExperiment.experiment_info.data_optimization.original_size_kb.toFixed(1)}KB → {selectedExperiment.experiment_info.data_optimization.optimized_size_kb.toFixed(1)}KB)
-                                                            </Typography>
-                                                        </Box>
-                                                    )}
                                                 </Box>
                                             </Grid>
-                                            <Grid item xs={12} md={6}>
+                                            <Grid item xs={12}>
                                                 <Typography variant="h6" gutterBottom sx={{
                                                     color: darkMode ? '#ffffff' : 'inherit'
                                                 }}>📁 Generated Files & Analysis</Typography>
                                                 
-                                                {/* Test Cases Info */}
-                                                {selectedExperiment.test_cases && (
-                                                    <Box sx={{ mb: 2 }}>
-                                                        <Typography variant="subtitle2" sx={{ 
-                                                            fontWeight: 'bold', 
-                                                            mb: 1,
-                                                            color: darkMode ? '#ffffff' : 'inherit'
-                                                        }}>
-                                                            🧪 Test Cases ({selectedExperiment.test_cases.length})
-                                                        </Typography>
-                                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                                                            {selectedExperiment.test_cases.map((testCase, index) => (
-                                                                <Chip
-                                                                    key={index}
-                                                                    label={`Mode ${testCase.mode} - ${testCase.url_count} URLs`}
-                                                                    size="small"
-                                                                    color={testCase.mode === 0 ? 'primary' : 'secondary'}
-                                                                    sx={{
-                                                                        ...(darkMode && {
-                                                                            backgroundColor: testCase.mode === 0 ? '#1976d2' : '#9c27b0',
-                                                                            color: '#fff'
-                                                                        })
-                                                                    }}
-                                                                />
-                                                            ))}
-                                                        </Box>
-                                                    </Box>
-                                                )}
-
-                                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                                                    {/* Gnuplot Files */}
-                                                    {selectedExperiment.gnuplot_files && selectedExperiment.gnuplot_files.length > 0 && (
-                                                        <Box>
-                                                            <Typography variant="subtitle2" sx={{ 
-                                                                fontWeight: 'bold', 
-                                                                mb: 1,
-                                                                color: darkMode ? '#ffffff' : 'inherit'
-                                                            }}>
-                                                                📊 Gnuplot Data Files ({selectedExperiment.gnuplot_files.length})
-                                                            </Typography>
-                                                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                                                                {selectedExperiment.gnuplot_files.slice(0, 8).map((file, index) => (
-                                                                    <Chip
-                                                                        key={index}
-                                                                        label={file.filename}
-                                                                        size="small"
-                                                                        onClick={(e) => {
-                                                                            if (e.ctrlKey || e.metaKey) {
-                                                                                handleGnuplotFileClick(selectedExperiment.id, file.filename, 'preview');
-                                                                            } else {
-                                                                                handleGnuplotFileClick(selectedExperiment.id, file.filename, 'download');
-                                                                            }
-                                                                        }}
-                                                                        sx={{ 
-                                                                            cursor: 'pointer',
-                                                                            backgroundColor: darkMode ? '#555' : undefined,
-                                                                            color: darkMode ? '#fff' : undefined,
-                                                                            '&:hover': {
-                                                                                backgroundColor: darkMode ? '#777' : 'primary.light',
-                                                                                color: darkMode ? '#fff' : 'primary.contrastText'
-                                                                            }
-                                                                        }}
-                                                                        title="Left-click to download, Ctrl+click to copy content"
-                                                                    />
-                                                                ))}
-                                                                {selectedExperiment.gnuplot_files.length > 8 && (
-                                                                    <Typography variant="caption" sx={{ 
-                                                                        display: 'flex', 
-                                                                        alignItems: 'center',
-                                                                        color: darkMode ? '#aaa' : 'text.secondary'
-                                                                    }}>
-                                                                        ... and {selectedExperiment.gnuplot_files.length - 8} more
-                                                                    </Typography>
-                                                                )}
-                                                            </Box>
-                                                            <Typography variant="caption" sx={{ 
-                                                                display: 'block', 
-                                                                mt: 1,
-                                                                color: darkMode ? '#aaa' : 'text.secondary'
-                                                            }}>
-                                                                💡 Left-click to download, Ctrl+click to copy content
-                                                            </Typography>
-                                                        </Box>
-                                                    )}
-
-                                                    {/* Generated Images */}
-                                                    {selectedExperiment.generated_images && selectedExperiment.generated_images.length > 0 && (
-                                                        <Box sx={{ mt: 2 }}>
+                                                {/* Generated Images */}
+                                                {selectedExperiment.generated_images && selectedExperiment.generated_images.length > 0 && (
+                                                    <Box sx={{ mt: 2 }}>
                                                             <Typography variant="subtitle2" sx={{ 
                                                                 fontWeight: 'bold', 
                                                                 mb: 1,
@@ -4299,7 +4388,6 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                             </Grid>
                                                         </Box>
                                                     )}
-                                                </Box>
                                             </Grid>
                                         </Grid>
                                     </CardContent>
@@ -4453,9 +4541,9 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                                     <Box sx={{ mt: 2, p: 1.5, backgroundColor: darkMode ? '#1e4620' : 'success.light', borderRadius: 1 }}>
                                                                         <Typography variant="body2" sx={{ color: darkMode ? '#81C784' : 'success.dark', fontWeight: 'bold' }}>
                                                                             💾 {result.timing_logs.performance_metrics.cache_savings}
-                                                                        </Typography>
-                                                                    </Box>
-                                                                )}
+                                                                </Typography>
+                                                            </Box>
+                                                        )}
                                                             </AccordionDetails>
                                                         </Accordion>
                                                     )}
@@ -4570,30 +4658,72 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                                         if (!clusterInfo) return null;
                                                                         
                                                                         return (
-                                                                            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 1 }}>
-                                                                                <Box>
-                                                                                    <Typography variant="caption" sx={{
-                                                                                        color: darkMode ? '#aaa' : 'text.secondary'
-                                                                                    }}>Clusters</Typography>
-                                                                                    <Typography variant="subtitle2" sx={{
-                                                                                        color: darkMode ? '#ffffff' : 'inherit'
-                                                                                    }}>{clusterInfo.num_clusters}</Typography>
+                                                                            <Box>
+                                                                                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 1 }}>
+                                                                                    <Box>
+                                                                                        <Typography variant="caption" sx={{
+                                                                                            color: darkMode ? '#aaa' : 'text.secondary'
+                                                                                        }}>Clusters</Typography>
+                                                                                        <Typography variant="subtitle2" sx={{
+                                                                                            color: darkMode ? '#ffffff' : 'inherit'
+                                                                                        }}>{clusterInfo.num_clusters}</Typography>
+                                                                                    </Box>
+                                                                                    <Box>
+                                                                                        <Typography variant="caption" sx={{
+                                                                                            color: darkMode ? '#aaa' : 'text.secondary'
+                                                                                        }}>DBCV Score</Typography>
+                                                                                        <Typography variant="subtitle2" sx={{
+                                                                                            color: darkMode ? '#ffffff' : 'inherit'
+                                                                                        }}>{clusterInfo.dbcv_score?.toFixed(3)}</Typography>
+                                                                                    </Box>
+                                                                                    <Box>
+                                                                                        <Typography variant="caption" sx={{
+                                                                                            color: darkMode ? '#aaa' : 'text.secondary'
+                                                                                        }}>Attributes</Typography>
+                                                                                        <Typography variant="subtitle2" sx={{
+                                                                                            color: darkMode ? '#ffffff' : 'inherit'
+                                                                                        }}>{clusterInfo.useful_attributes?.length || 0}</Typography>
+                                                                                    </Box>
                                                                                 </Box>
-                                                                                <Box>
-                                                                                    <Typography variant="caption" sx={{
-                                                                                        color: darkMode ? '#aaa' : 'text.secondary'
-                                                                                    }}>DBCV Score</Typography>
-                                                                                    <Typography variant="subtitle2" sx={{
-                                                                                        color: darkMode ? '#ffffff' : 'inherit'
-                                                                                    }}>{clusterInfo.dbcv_score?.toFixed(3)}</Typography>
-                                                                                </Box>
-                                                                                <Box>
-                                                                                    <Typography variant="caption" sx={{
-                                                                                        color: darkMode ? '#aaa' : 'text.secondary'
-                                                                                    }}>Attributes</Typography>
-                                                                                    <Typography variant="subtitle2" sx={{
-                                                                                        color: darkMode ? '#ffffff' : 'inherit'
-                                                                                    }}>{clusterInfo.useful_attributes?.length || 0}</Typography>
+                                                                                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                                                                                    <Tooltip title="Copy archived clustering summary">
+                                                                                        <Button
+                                                                                            variant="outlined"
+                                                                                            size="small"
+                                                                                            onClick={() => {
+                                                                                                const archivedClusteringSummary = {
+                                                                                                    level: clusterResult.level,
+                                                                                                    status: clusterResult.status,
+                                                                                                    message: clusterResult.message,
+                                                                                                    summary: {
+                                                                                                        num_clusters: clusterInfo.num_clusters,
+                                                                                                        dbcv_score: clusterInfo.dbcv_score,
+                                                                                                        min_cluster_size: clusterInfo.min_cluster_size,
+                                                                                                        cluster_selection_epsilon: clusterInfo.cluster_selection_epsilon,
+                                                                                                        useful_attributes_count: clusterInfo.useful_attributes?.length || 0
+                                                                                                    },
+                                                                                                    archived_test_id: result.test_metadata?.test_id,
+                                                                                                    timestamp: new Date().toISOString()
+                                                                                                };
+                                                                                                handleCopyToClipboard(JSON.stringify(archivedClusteringSummary, null, 2));
+                                                                                                setSuccess(`📋 Archived Level ${clusterResult.level} clustering summary copied!`);
+                                                                                            }}
+                                                                                            sx={{
+                                                                                                fontSize: '0.75rem',
+                                                                                                px: 2,
+                                                                                                ...(darkMode && {
+                                                                                                    borderColor: '#555',
+                                                                                                    color: '#fff',
+                                                                                                    '&:hover': {
+                                                                                                        borderColor: '#777',
+                                                                                                        backgroundColor: 'rgba(255,255,255,0.1)'
+                                                                                                    }
+                                                                                                })
+                                                                                            }}
+                                                                                        >
+                                                                                            📋 Copy Summary
+                                                                                        </Button>
+                                                                                    </Tooltip>
                                                                                 </Box>
                                                                             </Box>
                                                                         );
@@ -4652,24 +4782,66 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                                             if (!clusterInfo) return null;
                                                                             
                                                                             return (
-                                                                                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 1 }}>
-                                                                                    <Box>
-                                                                                        <Typography variant="caption" color="text.secondary">Clusters</Typography>
-                                                                                        <Typography variant="subtitle2" sx={{
-                                                                                            color: darkMode ? '#ffffff' : 'inherit'
-                                                                                        }}>{clusterInfo.num_clusters}</Typography>
+                                                                                <Box>
+                                                                                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 1 }}>
+                                                                                        <Box>
+                                                                                            <Typography variant="caption" color="text.secondary">Clusters</Typography>
+                                                                                            <Typography variant="subtitle2" sx={{
+                                                                                                color: darkMode ? '#ffffff' : 'inherit'
+                                                                                            }}>{clusterInfo.num_clusters}</Typography>
+                                                                                        </Box>
+                                                                                        <Box>
+                                                                                            <Typography variant="caption" color="text.secondary">DBCV Score</Typography>
+                                                                                            <Typography variant="subtitle2" sx={{
+                                                                                                color: darkMode ? '#ffffff' : 'inherit'
+                                                                                            }}>{clusterInfo.dbcv_score?.toFixed(3)}</Typography>
+                                                                                        </Box>
+                                                                                        <Box>
+                                                                                            <Typography variant="caption" color="text.secondary">Attributes</Typography>
+                                                                                            <Typography variant="subtitle2" sx={{
+                                                                                                color: darkMode ? '#ffffff' : 'inherit'
+                                                                                            }}>{clusterInfo.useful_attributes?.length || 0}</Typography>
+                                                                                        </Box>
                                                                                     </Box>
-                                                                                    <Box>
-                                                                                        <Typography variant="caption" color="text.secondary">DBCV Score</Typography>
-                                                                                        <Typography variant="subtitle2" sx={{
-                                                                                            color: darkMode ? '#ffffff' : 'inherit'
-                                                                                        }}>{clusterInfo.dbcv_score?.toFixed(3)}</Typography>
-                                                                                    </Box>
-                                                                                    <Box>
-                                                                                        <Typography variant="caption" color="text.secondary">Attributes</Typography>
-                                                                                        <Typography variant="subtitle2" sx={{
-                                                                                            color: darkMode ? '#ffffff' : 'inherit'
-                                                                                        }}>{clusterInfo.useful_attributes?.length || 0}</Typography>
+                                                                                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                                                                                        <Tooltip title="Copy domain clustering summary">
+                                                                                            <Button
+                                                                                                variant="outlined"
+                                                                                                size="small"
+                                                                                                onClick={() => {
+                                                                                                    const domainClusteringSummary = {
+                                                                                                        domain: domainResult.domain,
+                                                                                                        level: clusterResult.level,
+                                                                                                        status: clusterResult.status,
+                                                                                                        message: clusterResult.message,
+                                                                                                        summary: {
+                                                                                                            num_clusters: clusterInfo.num_clusters,
+                                                                                                            dbcv_score: clusterInfo.dbcv_score,
+                                                                                                            min_cluster_size: clusterInfo.min_cluster_size,
+                                                                                                            cluster_selection_epsilon: clusterInfo.cluster_selection_epsilon,
+                                                                                                            useful_attributes_count: clusterInfo.useful_attributes?.length || 0
+                                                                                                        },
+                                                                                                        timestamp: new Date().toISOString()
+                                                                                                    };
+                                                                                                    handleCopyToClipboard(JSON.stringify(domainClusteringSummary, null, 2));
+                                                                                                    setSuccess(`📋 Level ${clusterResult.level} clustering summary copied!`);
+                                                                                                }}
+                                                                                                sx={{
+                                                                                                    fontSize: '0.75rem',
+                                                                                                    px: 2,
+                                                                                                    ...(darkMode && {
+                                                                                                        borderColor: '#555',
+                                                                                                        color: '#fff',
+                                                                                                        '&:hover': {
+                                                                                                            borderColor: '#777',
+                                                                                                            backgroundColor: 'rgba(255,255,255,0.1)'
+                                                                                                        }
+                                                                                                    })
+                                                                                                }}
+                                                                                            >
+                                                                                                📋 Copy Summary
+                                                                                            </Button>
+                                                                                        </Tooltip>
                                                                                     </Box>
                                                                                 </Box>
                                                                             );
@@ -4679,6 +4851,30 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                             </Accordion>
                                                         ))
                                                     ))}
+
+                                                    {/* Export Buttons */}
+                                                    <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', mt: 3 }}>
+                                                        <Button
+                                                            variant="outlined"
+                                                            size="small"
+                                                            onClick={() => {
+                                                                // Pass the specific archived result data
+                                                                handleCopyComprehensiveResults(result);
+                                                            }}
+                                                        >
+                                                            📊 Copy Test Results
+                                                        </Button>
+                                                        <Button
+                                                            variant="outlined"
+                                                            size="small"
+                                                            onClick={() => {
+                                                                // Pass the specific archived result data
+                                                                handleCopyAllLevelsSummary(result);
+                                                            }}
+                                                        >
+                                                            📋 Copy Levels Summary
+                                                        </Button>
+                                                    </Box>
                                                 </CardContent>
                                             </Collapse>
                                         </Card>
@@ -4719,387 +4915,6 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                         )}
                     </Box>
                 );
-            case 'config':
-                return (
-                    <Box sx={{ width: '100%', maxWidth: '1600px', mx: 'auto', px: 3, py: 2 }}>
-                        <Typography variant="h4" gutterBottom sx={{ textAlign: 'center', mb: 4 }}>
-                            ⚙️ Custom Experiment Configuration Builder
-                        </Typography>
-
-                        {/* Configuration Form */}
-                        <Card sx={{ mb: 3 }}>
-                            <CardHeader title="🛠️ Build Your Custom Experiment" />
-                            <CardContent sx={{ p: 3 }}>
-                                <Grid container spacing={3}>
-                                    {/* Experiment Name */}
-                                    <Grid item xs={12}>
-                                        <TextField
-                                            fullWidth
-                                            label="Experiment Name"
-                                            value={customConfig.experiment_name}
-                                            onChange={(e) => setCustomConfig(prev => ({ ...prev, experiment_name: e.target.value }))}
-                                            placeholder="e.g., My Custom Thesis Experiment"
-                                        />
-                                    </Grid>
-
-                                    {/* URLs Section */}
-                                    <Grid item xs={12}>
-                                        <Typography variant="h6" gutterBottom>🌐 URLs to Test</Typography>
-                                        <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-                                            <TextField
-                                                fullWidth
-                                                label="Add URL(s)"
-                                                value={configUrlInput}
-                                                onChange={(e) => setConfigUrlInput(e.target.value)}
-                                                onKeyDown={(e) => e.key === 'Enter' && addConfigUrl()}
-                                                onPaste={handleConfigUrlPaste}
-                                                placeholder="https://example.com (or paste multiple URLs)"
-                                                multiline
-                                                maxRows={4}
-                                                helperText="💡 Paste multiple URLs separated by newlines or spaces"
-                                            />
-                                            <Button variant="contained" onClick={addConfigUrl}>
-                                                Add
-                                            </Button>
-                                        </Box>
-                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                                            {customConfig.available_urls.map((url, index) => (
-                                                <Chip
-                                                    key={index}
-                                                    label={url}
-                                                    onDelete={() => removeConfigUrl(index)}
-                                                    color="primary"
-                                                />
-                                            ))}
-                                        </Box>
-                                        <Typography variant="caption" color="text.secondary">
-                                            Added {customConfig.available_urls.length} URLs
-                                        </Typography>
-                                    </Grid>
-
-                                    {/* Processing Modes */}
-                                    <Grid item xs={12} md={6}>
-                                        <Typography variant="h6" gutterBottom>🔄 Processing Modes</Typography>
-                                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                                            <FormControlLabel
-                                                control={
-                                                    <Switch
-                                                        checked={customConfig.modes.includes(0)}
-                                                        onChange={(e) => {
-                                                            const newModes = e.target.checked 
-                                                                ? [...customConfig.modes, 0].filter((v, i, arr) => arr.indexOf(v) === i)
-                                                                : customConfig.modes.filter(m => m !== 0);
-                                                            setCustomConfig(prev => ({ ...prev, modes: newModes }));
-                                                        }}
-                                                    />
-                                                }
-                                                label="Mode 0: Process All URLs Together"
-                                            />
-                                            <FormControlLabel
-                                                control={
-                                                    <Switch
-                                                        checked={customConfig.modes.includes(1)}
-                                                        onChange={(e) => {
-                                                            const newModes = e.target.checked 
-                                                                ? [...customConfig.modes, 1].filter((v, i, arr) => arr.indexOf(v) === i)
-                                                                : customConfig.modes.filter(m => m !== 1);
-                                                            setCustomConfig(prev => ({ ...prev, modes: newModes }));
-                                                        }}
-                                                    />
-                                                }
-                                                label="Mode 1: Process by Domain"
-                                            />
-                                        </Box>
-                                    </Grid>
-
-                                    {/* DOM Levels */}
-                                    <Grid item xs={12} md={6}>
-                                        <Typography variant="h6" gutterBottom>📊 DOM Levels</Typography>
-                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                                            {Array.from({ length: 10 }, (_, i) => i + 1).map(level => (
-                                                <Chip
-                                                    key={level}
-                                                    label={level}
-                                                    onClick={() => {
-                                                        const newLevels = customConfig.levels.includes(level)
-                                                            ? customConfig.levels.filter(l => l !== level)
-                                                            : [...customConfig.levels, level].sort((a, b) => a - b);
-                                                        setCustomConfig(prev => ({ ...prev, levels: newLevels }));
-                                                    }}
-                                                    color={customConfig.levels.includes(level) ? 'primary' : 'default'}
-                                                />
-                                            ))}
-                                        </Box>
-                                        <Typography variant="caption" color="text.secondary">
-                                            Selected levels: {customConfig.levels.join(', ')}
-                                        </Typography>
-                                    </Grid>
-
-                                    {/* URL Combinations */}
-                                    <Grid item xs={12} md={6}>
-                                        <Typography variant="h6" gutterBottom>🔢 URLs per Test</Typography>
-                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                                            {Array.from({ length: Math.min(10, customConfig.available_urls.length) }, (_, i) => i + 2).map(count => (
-                                                <Chip
-                                                    key={count}
-                                                    label={count}
-                                                    onClick={() => {
-                                                        const newCombinations = customConfig.url_combinations.includes(count)
-                                                            ? customConfig.url_combinations.filter(c => c !== count)
-                                                            : [...customConfig.url_combinations, count].sort((a, b) => a - b);
-                                                        setCustomConfig(prev => ({ ...prev, url_combinations: newCombinations }));
-                                                    }}
-                                                    color={customConfig.url_combinations.includes(count) ? 'primary' : 'default'}
-                                                    disabled={count > customConfig.available_urls.length}
-                                                />
-                                            ))}
-                                        </Box>
-                                        <Typography variant="caption" color="text.secondary">
-                                            Test combinations: {customConfig.url_combinations.join(', ')} URLs per test
-                                        </Typography>
-                                    </Grid>
-
-                                    {/* Max Combinations */}
-                                    <Grid item xs={12} md={6}>
-                                        <Typography variant="h6" gutterBottom>⚡ Test Limits</Typography>
-                                        <TextField
-                                            type="number"
-                                            label="Max Test Combinations"
-                                            value={customConfig.max_combinations}
-                                            onChange={(e) => setCustomConfig(prev => ({ 
-                                                ...prev, 
-                                                max_combinations: Math.max(1, parseInt(e.target.value) || 25)
-                                            }))}
-                                            inputProps={{ min: 1, max: 10000 }}
-                                            fullWidth
-                                        />
-                                        <Typography variant="caption" color="text.secondary">
-                                            Will generate up to {customConfig.max_combinations} test combinations (max: 10,000)
-                                        </Typography>
-                                    </Grid>
-                                </Grid>
-
-                                {/* Estimated Tests Preview */}
-                                <Box sx={{ mt: 3, p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
-                                    <Typography variant="h6" gutterBottom>📋 Experiment Preview</Typography>
-                                    <Grid container spacing={2}>
-                                        <Grid item xs={6} sm={3}>
-                                            <Typography variant="subtitle2">URLs:</Typography>
-                                            <Typography variant="h6" color="primary">{customConfig.available_urls.length}</Typography>
-                                        </Grid>
-                                        <Grid item xs={6} sm={3}>
-                                            <Typography variant="subtitle2">Modes:</Typography>
-                                            <Typography variant="h6" color="primary">{customConfig.modes.length}</Typography>
-                                        </Grid>
-                                        <Grid item xs={6} sm={3}>
-                                            <Typography variant="subtitle2">Levels:</Typography>
-                                            <Typography variant="h6" color="primary">{customConfig.levels.length}</Typography>
-                                        </Grid>
-                                        <Grid item xs={6} sm={3}>
-                                            <Typography variant="subtitle2">Est. Tests:</Typography>
-                                            <Typography variant="h6" color="primary">
-                                                {(() => {
-                                                    // Calculate estimated test cases more accurately
-                                                    let totalTests = 0;
-                                                    for (const mode of customConfig.modes) {
-                                                        for (const urlCount of customConfig.url_combinations) {
-                                                            if (urlCount <= customConfig.available_urls.length) {
-                                                                const totalPossible = Math.min(5, Math.floor(customConfig.available_urls.length / urlCount));
-                                                                const variationsLimit = Math.min(totalPossible, customConfig.max_combinations - totalTests);
-                                                                totalTests += variationsLimit;
-                                                                if (totalTests >= customConfig.max_combinations) {
-                                                                    return customConfig.max_combinations;
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                    return Math.min(totalTests, customConfig.max_combinations);
-                                                })()}
-                                            </Typography>
-                                        </Grid>
-                                    </Grid>
-                                </Box>
-
-                                {/* Run Button */}
-                                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-                                    <Button
-                                        variant="contained"
-                                        color="primary"
-                                        size="large"
-                                        onClick={runCustomExperiment}
-                                        disabled={
-                                            experimentLoading || 
-                                            customConfig.available_urls.length === 0 || 
-                                            customConfig.levels.length === 0 ||
-                                            customConfig.modes.length === 0 ||
-                                            customConfig.url_combinations.length === 0
-                                        }
-                                        sx={{ 
-                                            borderRadius: '20px',
-                                            px: 4,
-                                            py: 1.5,
-                                            fontSize: '1.1rem'
-                                        }}
-                                    >
-                                        {experimentLoading ? (
-                                            <>
-                                                <CircularProgress size={20} sx={{ mr: 2 }} />
-                                                Running Custom Experiment...
-                                            </>
-                                        ) : (
-                                            <>
-                                                🚀 Run Custom Experiment
-                                            </>
-                                        )}
-                                    </Button>
-                                </Box>
-                            </CardContent>
-                        </Card>
-
-                        {/* Experiment Results Display */}
-                        {experimentResults && (
-                            <Box sx={{ width: '100%', mt: theme.spacing(4), maxWidth: '1600px', mx: 'auto', px: 2 }}>
-                                {/* Experiment Summary */}
-                                <Card sx={{ mb: 3 }}>
-                                    <CardHeader title="📊 Experiment Summary" />
-                                    <CardContent>
-                                        <Grid container spacing={3}>
-                                            <Grid item xs={12} md={6}>
-                                                <Typography variant="h6" gutterBottom>📈 Performance Overview</Typography>
-                                                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-                                                    <Box>
-                                                        <Typography variant="caption" color="text.secondary">Total Tests</Typography>
-                                                        <Typography variant="h6">{experimentResults.experiment_info.total_tests}</Typography>
-                                                    </Box>
-                                                    <Box>
-                                                        <Typography variant="caption" color="text.secondary">Success Rate</Typography>
-                                                        <Typography variant="h6" color="success.main">
-                                                            {experimentResults.experiment_info.success_rate.toFixed(1)}%
-                                                        </Typography>
-                                                    </Box>
-                                                    <Box>
-                                                        <Typography variant="caption" color="text.secondary">Successful</Typography>
-                                                        <Typography variant="h6" color="success.main">
-                                                            {experimentResults.experiment_info.successful_tests}
-                                                        </Typography>
-                                                    </Box>
-                                                    <Box>
-                                                        <Typography variant="caption" color="text.secondary">Failed</Typography>
-                                                        <Typography variant="h6" color="error.main">
-                                                            {experimentResults.experiment_info.failed_tests}
-                                                        </Typography>
-                                                    </Box>
-                                                    <Box>
-                                                        <Typography variant="caption" color="text.secondary">Duration</Typography>
-                                                        <Typography variant="h6">
-                                                            {formatDuration(experimentResults.experiment_info.duration)}
-                                                        </Typography>
-                                                    </Box>
-                                                </Box>
-                                            </Grid>
-                                            <Grid item xs={12} md={6}>
-                                                <Typography variant="h6" gutterBottom>📊 Generated Files & Analysis</Typography>
-                                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                                                    <Typography variant="body2" color="text.secondary">
-                                                        Data files for thesis analysis have been created and are ready for gnuplot visualization.
-                                                    </Typography>
-                                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                                                        <Chip label="📊 processing_times.dat" size="small" />
-                                                        <Chip label="🎯 cluster_counts.dat" size="small" />
-                                                        <Chip label="📄 html_file_counts.dat" size="small" />
-                                                        <Chip label="📈 *.gnuplot scripts" size="small" />
-                                                    </Box>
-                                                </Box>
-                                            </Grid>
-                                        </Grid>
-                                    </CardContent>
-                                </Card>
-
-                                {/* Process each result */}
-                                {experimentResults.results && experimentResults.results.map((result, index) => {
-                                    const cardId = `config-result-${index}`;
-                                    const collapsed = isCardCollapsed(cardId);
-                                    
-                                    return result.status === 'success' && (
-                                        <Card key={index} sx={{ 
-                                            mb: 4, 
-                                            border: '2px solid',
-                                            borderColor: 'success.light',
-                                            borderRadius: 3,
-                                            overflow: 'hidden',
-                                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                                            backgroundColor: darkMode ? '#2a2a2a' : 'background.paper'
-                                        }}>
-                                            <CardHeader 
-                                                title={
-                                                    <Typography variant="h5" sx={{ 
-                                                        fontWeight: 'bold',
-                                                        color: 'white',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        gap: 1
-                                                    }}>
-                                                        🧮 Test: {result.test_metadata?.test_name || `Test ${index + 1}`}
-                                                    </Typography>
-                                                }
-                                                subheader={
-                                                    <Typography variant="subtitle1" sx={{ color: 'rgba(255,255,255,0.8)' }}>
-                                                        ID: {result.test_metadata?.test_id} | Duration: {formatDuration(result.test_metadata?.duration || 0)}
-                                                    </Typography>
-                                                }
-                                                action={
-                                                    <Tooltip title={collapsed ? "Expand card" : "Collapse card"}>
-                                                        <IconButton
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                toggleCardCollapse(cardId);
-                                                            }}
-                                                            sx={{
-                                                                color: 'white',
-                                                                '&:hover': {
-                                                                    backgroundColor: 'rgba(255,255,255,0.1)'
-                                                                }
-                                                            }}
-                                                        >
-                                                            {collapsed ? <ExpandMoreIcon /> : <ExpandLessIcon />}
-                                                        </IconButton>
-                                                    </Tooltip>
-                                                }
-                                                onClick={() => toggleCardCollapse(cardId)}
-                                                sx={{
-                                                    backgroundColor: 'success.main',
-                                                    color: 'white',
-                                                    py: 2,
-                                                    cursor: 'pointer',
-                                                    '&:hover': {
-                                                        backgroundColor: 'success.dark'
-                                                    }
-                                                }}
-                                            />
-                                            <Collapse in={!collapsed} timeout="auto" unmountOnExit>
-                                                <CardContent sx={{ 
-                                                    p: 3,
-                                                    backgroundColor: darkMode ? '#2a2a2a' : 'background.paper',
-                                                    color: darkMode ? '#ffffff' : 'inherit'
-                                                }}>
-                                                    {/* Use the existing renderResults function for consistent display */}
-                                                    {result && setResult && (() => {
-                                                        const currentResult = result;
-                                                        setResult(currentResult);
-                                                        const renderedResults = renderResults();
-                                                        setResult(null); // Reset to avoid conflicts
-                                                        return renderedResults;
-                                                    })()}
-                                                </CardContent>
-                                            </Collapse>
-                                        </Card>
-                                    );
-                                })}
-                            </Box>
-                        )}
-                    </Box>
-                );
-
             default:
                 return <div>Home</div>;
         }
@@ -5202,7 +5017,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                     mx: 'auto'
                 }}>
                     {/* Left: Site Title */}
-                    <Box sx={{ display: 'flex', alignItems: 'center', minWidth: '200px' }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', minWidth: '200px' }}>
                         <Typography 
                             variant="h5" 
                             onClick={() => setCurrentView('home')}
@@ -5217,13 +5032,31 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                 fontSize: { xs: '1.2rem', sm: '1.5rem' },
                                 cursor: 'pointer',
                                 transition: 'all 0.2s ease-in-out',
+                                lineHeight: 1,
                                 '&:hover': {
                                     transform: 'scale(1.05)',
                                     opacity: 0.8
                                 }
                             }}
                         >
-                            🌐 WebSRC
+                            S⁴D
+                        </Typography>
+                        <Typography 
+                            variant="caption"
+                            onClick={() => setCurrentView('home')}
+                            sx={{ 
+                                fontSize: { xs: '0.6rem', sm: '0.7rem' },
+                                color: darkMode ? '#aaa' : 'text.secondary',
+                                cursor: 'pointer',
+                                mt: -0.5,
+                                lineHeight: 1,
+                                transition: 'all 0.2s ease-in-out',
+                                '&:hover': {
+                                    opacity: 0.8
+                                }
+                            }}
+                        >
+                            Style and Structure Similarity for Site Domains
                         </Typography>
                     </Box>
                     
@@ -5248,25 +5081,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                         >
                             🏠 Home
                         </Button>
-                        <Button 
-                            variant={currentView === 'clusters' ? 'contained' : 'outlined'} 
-                            onClick={() => setCurrentView('clusters')}
-                            sx={{ 
-                                minWidth: '100px', 
-                                fontSize: '0.875rem',
-                                ...(darkMode && currentView !== 'clusters' && {
-                                    borderColor: '#555',
-                                    color: '#fff',
-                                    '&:hover': {
-                                        borderColor: '#777',
-                                        backgroundColor: 'rgba(255,255,255,0.1)'
-                                    }
-                                })
-                            }}
-                            size="small"
-                        >
-                            🎯 Clusters
-                        </Button>
+
                         <Button 
                             variant={currentView === 'config' ? 'contained' : 'outlined'} 
                             onClick={() => setCurrentView('config')}
@@ -5284,7 +5099,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                             }}
                             size="small"
                         >
-                            ⚙️ Custom Experiments
+                            ⚙️ Experiments
                         </Button>
                         <Button 
                             variant={currentView === 'results' ? 'contained' : 'outlined'} 

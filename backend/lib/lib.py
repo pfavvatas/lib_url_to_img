@@ -19,6 +19,7 @@ import traceback
 import zipfile
 import random
 import glob
+import numpy as np
 from utils.clustering import perform_clustering_analysis
 from utils.site_similarity import compute_site_cosine_similarity
 from utils.cache_manager import CacheManager
@@ -642,9 +643,13 @@ def process_clusters_from_cli(clusters_data, from_api=False, level_info=None):
     for cluster in clusters:
         all_cluster_guids.update(cluster.guids) 
 
-    # Dictionary to store site-to-cluster mappings
+    # Dictionary to store site-to-cluster mappings with domain-based keys
     sites = {}
-          
+    # Dictionary to track domain counters for creating domain_1, domain_2, etc.
+    domain_counters = {}
+    # Dictionary to map full URLs to their domain-based keys
+    url_to_domain_key = {}
+      
     # Function to search for HTML data with a specific GUID
     def search_html_data(html_data, site_url):
         unique_id = str(html_data.get("unique_id"))
@@ -653,9 +658,51 @@ def process_clusters_from_cli(clusters_data, from_api=False, level_info=None):
                 for cluster in clusters:
                     if unique_id in cluster.guids:
                         cluster_id = int(cluster.id.split('_')[1]) + 1  # Extract the number from cluster_id and add 1
-                        if site_url not in sites:
-                            sites[site_url] = []
-                        sites[site_url].append(cluster_id)
+                        
+                        # Create domain-based key if not already created
+                        if site_url not in url_to_domain_key:
+                            from urllib.parse import urlparse
+                            try:
+                                parsed_url = urlparse(site_url)
+                                # Extract domain (remove www. if present)
+                                domain = parsed_url.netloc.replace('www.', '') if site_url else 'unknown'
+                                # Clean domain name for use as identifier (keep only alphanumeric and basic chars)
+                                clean_domain = ''.join(c for c in domain if c.isalnum() or c in '-._').rstrip('.')
+                                if not clean_domain:
+                                    clean_domain = 'unknown'
+                                
+                                # Remove common domain suffixes for cleaner names
+                                if '.' in clean_domain:
+                                    domain_parts = clean_domain.split('.')
+                                    # Take the main domain part (before first dot)
+                                    main_domain = domain_parts[0]
+                                else:
+                                    main_domain = clean_domain
+                                
+                                # Initialize counter for this domain if not seen before
+                                if main_domain not in domain_counters:
+                                    domain_counters[main_domain] = 0
+                                
+                                # Increment counter and create domain-based key
+                                domain_counters[main_domain] += 1
+                                domain_key = f"{main_domain}_{domain_counters[main_domain]}"
+                                
+                                # Store the mapping
+                                url_to_domain_key[site_url] = domain_key
+                            except:
+                                # Fallback in case of URL parsing errors
+                                if 'unknown' not in domain_counters:
+                                    domain_counters['unknown'] = 0
+                                domain_counters['unknown'] += 1
+                                domain_key = f"unknown_{domain_counters['unknown']}"
+                                url_to_domain_key[site_url] = domain_key
+                        
+                        # Use the domain-based key
+                        domain_key = url_to_domain_key[site_url]
+                        
+                        if domain_key not in sites:
+                            sites[domain_key] = []
+                        sites[domain_key].append(cluster_id)
                         if "clusters" not in html_data:
                             html_data["clusters"] = []
                         html_data["clusters"].append(cluster.__dict__)
@@ -752,19 +799,91 @@ def process_clusters_from_cli(clusters_data, from_api=False, level_info=None):
         }
     }
 
-    # Format sites as a string object
+    # Format sites as a string object with domain-based keys
     sites_str = "sites = {\n"
-    for site_url, cluster_ids in sites.items():
-        sites_str += f"    '{site_url}': {cluster_ids},\n"
+    for domain_key, cluster_ids in sites.items():
+        sites_str += f"    '{domain_key}': {cluster_ids},\n"
     sites_str += "}"
     
-    # Print the sites mapping
-    print("\n" + sites_str)
-    data_to_return.append(sites_str)
+    # Format URL to domain mapping for reference
+    url_mapping_str = "\n# URL to Domain Key Mapping:\n"
+    for url, domain_key in url_to_domain_key.items():
+        url_mapping_str += f"# {domain_key}: {url}\n"
     
-    # Step 2.5: Compute site similarity analysis
+    # Print the sites mapping and URL mapping
+    print("\n" + sites_str)
+    print(url_mapping_str)
+    data_to_return.append(sites_str)
+    data_to_return.append(url_mapping_str)
+    
+    # Step 2.5: Compute site similarity analysis with proper error handling
     similarity_step_start = time.time()
-    site_similarity_result = compute_site_cosine_similarity(sites)
+    
+    try:
+        sim_combined = compute_site_cosine_similarity(sites)
+        print(f"sim_combined result: {sim_combined}")
+        
+        # Create the formatted site similarity result object
+        if sim_combined.empty:
+            site_similarity_result = {
+                "status": "success",
+                "message": "No sites data provided",
+                "data": {
+                    "matrix": {},
+                    "sites": [],
+                    "raw_matrix": [],
+                    "summary": {
+                        "total_sites": 0,
+                        "average_similarity": 0,
+                        "max_similarity": 0,
+                        "min_similarity": 0
+                    }
+                }
+            }
+        else:
+            n = len(sim_combined.index)
+            
+            # Calculate summary statistics
+            if n == 0:
+                average_similarity = max_similarity = min_similarity = 0.0
+            elif n == 1:
+                average_similarity = max_similarity = min_similarity = 100.0
+            else:
+                # Multiple sites case - compute from upper triangular matrix (excluding diagonal)
+                upper_triangle_values = sim_combined.values[np.triu_indices(n, k=1)]
+                
+                if len(upper_triangle_values) == 0:
+                    average_similarity = max_similarity = min_similarity = 100.0
+                else:
+                    average_similarity = np.mean(upper_triangle_values)
+                    max_similarity = np.max(upper_triangle_values)
+                    min_similarity = np.min(upper_triangle_values)
+            
+            site_similarity_result = {
+                "status": "success",
+                "message": f"Role vector-based cosine similarity computed for {n} sites",
+                "data": {
+                    "matrix": sim_combined.to_dict(),
+                    "sites": list(sim_combined.index),
+                    "raw_matrix": sim_combined.values.tolist(),
+                    "summary": {
+                        "total_sites": n,
+                        "average_similarity": float(average_similarity),
+                        "max_similarity": float(max_similarity),
+                        "min_similarity": float(min_similarity)
+                    }
+                }
+            }
+    except Exception as e:
+        import traceback
+        site_similarity_result = {
+            "status": "error",
+            "message": f"Error computing site similarity: {str(e)}",
+            "data": None,
+            "traceback": traceback.format_exc()
+        }
+        print(f"Site similarity error: {str(e)}")
+    
     similarity_step_time = time.time() - similarity_step_start
     
     cluster_timing_logs["steps"]["site_similarity_analysis"] = {
@@ -1185,17 +1304,23 @@ def process_urls_from_api(urls, levels, mode=0):
             # Mode 1 - process URLs by domain with enhanced cache checking
             from urllib.parse import urlparse
             
-            print(f"\033[94m🌐 MODE 1: Starting domain-based processing for {len(urls)} URLs\033[0m")
+            print(f"\033[94m🌐 MODE 1: Starting domain-based processing\033[0m")
             
             # Group URLs by domain
             domain_groups = {}
             for url in urls:
-                domain = urlparse(url).netloc
-                if domain not in domain_groups:
-                    domain_groups[domain] = []
-                domain_groups[domain].append(url)
+                try:
+                    domain = urlparse(url).hostname or 'unknown'
+                    if domain not in domain_groups:
+                        domain_groups[domain] = []
+                    domain_groups[domain].append(url)
+                except Exception as e:
+                    print(f"\033[91m❌ Error parsing URL {url}: {e}\033[0m")
+                    if 'unknown' not in domain_groups:
+                        domain_groups['unknown'] = []
+                    domain_groups['unknown'].append(url)
             
-            print(f"\033[94m📊 Found {len(domain_groups)} domains: {list(domain_groups.keys())}\033[0m")
+            print(f"\033[94m📊 Grouped into {len(domain_groups)} domains: {list(domain_groups.keys())}\033[0m")
             
             # Process each domain group separately with enhanced cache reporting
             all_results = {
@@ -1211,6 +1336,9 @@ def process_urls_from_api(urls, levels, mode=0):
             
             total_cache_hits = 0
             total_urls_processed = 0
+            
+            # Calculate total URLs consistently
+            expected_total_urls = len(urls)
             
             for domain_index, (domain, domain_urls) in enumerate(domain_groups.items(), 1):
                 print(f"\033[96m🔄 Processing domain {domain_index}/{len(domain_groups)}: {domain} ({len(domain_urls)} URLs)\033[0m")

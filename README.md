@@ -53,10 +53,25 @@ Urls:
 
 https://nvd.nist.gov/vuln/detail/CVE-2020-14624
 https://nvd.nist.gov/vuln/detail/CVE-2018-5032
+https://nvd.nist.gov/vuln/detail/CVE-2025-6765
+https://nvd.nist.gov/vuln/detail/CVE-2025-6763
+
 http://jvn.jp/en/jp/JVN41119755/index.html
 http://jvn.jp/en/jp/JVN33214411/index.html
+http://jvn.jp/en/jp/JVN17860456/index.html
+http://jvn.jp/en/jp/JVN05562338/index.html
+
 https://www.kb.cert.org/vuls/id/366027
 https://www.kb.cert.org/vuls/id/229438
+https://www.kb.cert.org/vuls/id/806555
+https://www.kb.cert.org/vuls/id/282450
+
+
+https://www.pirateparty.gr/2025/06/temporyxia/
+https://www.pirateparty.gr/2025/06/katadiki-bebilosis-grafeion-israilitikis-koinotitas-ioanninon/
+https://www.pirateparty.gr/2025/06/ppgr-israel-aggression-iran/
+https://www.pirateparty.gr/2025/06/ppgr-12thcongress-decisions-resignation-from-ppeu-ppi/
+
 https://www.dia-trofis.gr/lifestyle/vassilopita-i-tixeri-apo-ton-ilia-mamalaki/
 https://www.dia-trofis.gr/lifestyle/pos-den-tha-ksefigete-tis-imeres-tou-pasxa/
 https://www.gastronomos.gr/syntagh/spitika-kraker-me-paprika/313344/

@@ -54,11 +54,6 @@ class HTMLTag:
     }
     return textContent.trim();
 """
-        #write me to a file line by line all the webelement results
-        with open('webelement_results.txt', 'a') as f:
-            f.write(f"Webelement: {webelement}\n")
-            f.write(f"Text: {driver.execute_script(script, webelement).strip()}\n")
-            f.write("-"*100 + "\n")
         return driver.execute_script(script, webelement).strip()
     
     def get_all_attributes(self, webelement, driver):
