@@ -326,108 +326,140 @@ For production deployment, consider implementing:
     \item Access logging and monitoring
 \end{itemize}
 
-\section{Integration Examples}
-\label{sec:integration-examples}
+\section{Main API Endpoints}
+\label{sec:main-api-endpoints}
 
-\subsection{Python Client Example}
-\label{subsec:python-client}
+This section provides simple usage examples for the four core API endpoints in the S\textsuperscript{4}D system.
 
-\begin{verbatim}
-import requests
-import json
+\subsection{URL Processing}
+\label{subsec:url-processing-api}
 
-# Process URLs
-url = "http://localhost:5000/process-urls"
-data = {
-    "urls": ["https://example.com", "https://test.com"],
-    "levels": [1, 2, 3],
-    "mode": 0
-}
+\textbf{Endpoint}: \texttt{POST /process-urls}
 
-response = requests.post(url, json=data)
-result = response.json()
+Processes multiple URLs for similarity analysis and clustering.
 
-if result["status"] == "success":
-    print(f"Processed {len(data['urls'])} URLs")
-    print(f"Generated {len(result['html_files'])} visualizations")
-else:
-    print(f"Error: {result['message']}")
-\end{verbatim}
-
-\subsection{JavaScript Client Example}
-\label{subsec:javascript-client}
-
-\begin{verbatim}
-async function processUrls(urls, levels, mode = 0) {
-    const response = await fetch('http://localhost:5000/process-urls', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            urls: urls,
-            levels: levels,
-            mode: mode
-        })
-    });
-    
-    const result = await response.json();
-    
-    if (result.status === 'success') {
-        console.log('Processing completed successfully');
-        return result;
-    } else {
-        throw new Error(result.message);
-    }
-}
-
-// Usage
-processUrls(['https://example.com'], [1, 2])
-    .then(result => console.log(result))
-    .catch(error => console.error(error));
-\end{verbatim}
-
-\subsection{cURL Examples}
-\label{subsec:curl-examples}
-
-\textbf{Basic URL Processing}:
+\begin{tcolorbox}[
+    colback=blue!5!white,
+    colframe=blue!75!black,
+    title=\textbf{cURL Example},
+    enhanced
+]
 \begin{verbatim}
 curl -X POST "http://localhost:5000/process-urls" \
-     -H "Content-Type: application/json" \
-     -d '{
-       "urls": ["https://example.com"],
-       "levels": [1, 2],
-       "mode": 0
-     }'
+  -H "Content-Type: application/json" \
+  -d '{
+    "urls": [
+      "https://example.com", 
+      "https://test.com"
+    ],
+    "levels": [1, 2, 3],
+    "mode": 0
+  }'
 \end{verbatim}
+\end{tcolorbox}
 
-\textbf{List Experiments}:
+\textbf{Response}: Returns clustering results, HTML files, and similarity matrices.
+
+\subsection{Experiment Batch Processing}
+\label{subsec:experiment-batch}
+
+\textbf{Endpoint}: \texttt{POST /experiments/run-batch}
+
+Executes batch experiments with multiple test configurations.
+
+\begin{tcolorbox}[
+    colback=orange!5!white,
+    colframe=orange!75!black,
+    title=\textbf{cURL Example},
+    enhanced
+]
+\begin{verbatim}
+curl -X POST "http://localhost:5000/experiments/run-batch" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "experiment_name": "Thesis Experiment",
+    "selected_test_cases": [
+      {
+        "id": "test_001",
+        "name": "Test Case 1",
+        "mode": 0,
+        "levels": [1, 2],
+        "urls": ["https://example.com", "https://test.com"]
+      }
+    ]
+  }'
+\end{verbatim}
+\end{tcolorbox}
+
+\textbf{Response}: Returns experiment summary with results and generated images.
+
+\subsection{Experiment Results Listing}
+\label{subsec:experiments-list}
+
+\textbf{Endpoint}: \texttt{GET /experiments/results/list}
+
+Retrieves list of completed experiments.
+
+\begin{tcolorbox}[
+    colback=purple!5!white,
+    colframe=purple!75!black,
+    title=\textbf{cURL Example},
+    enhanced
+]
 \begin{verbatim}
 curl -X GET "http://localhost:5000/experiments/results/list"
 \end{verbatim}
+\end{tcolorbox}
 
-\section{API Versioning and Updates}
-\label{sec:api-versioning}
+\textbf{Response}: Returns array of experiment summaries with metadata.
 
-\subsection{Current Version}
-\label{subsec:current-version}
+\subsection{Experiment Details}
+\label{subsec:experiment-details}
+
+\textbf{Endpoint}: \texttt{GET /experiments/results/\{experiment\_id\}}
+
+Retrieves detailed results for a specific experiment.
+
+\begin{tcolorbox}[
+    colback=red!5!white,
+    colframe=red!75!black,
+    title=\textbf{cURL Example},
+    enhanced
+]
+\begin{verbatim}
+curl -X GET "http://localhost:5000/experiments/results/exp_123"
+\end{verbatim}
+\end{tcolorbox}
+
+\textbf{Response}: Returns complete experiment data including generated images and analysis results.
+
+\section{File Access}
+\label{sec:file-access}
+
+The S\textsuperscript{4}D system provides multiple file access endpoints:
 
 \begin{itemize}
-    \item \textbf{Version}: v1.0
-    \item \textbf{Compatibility}: Backward compatible within major version
-    \item \textbf{Updates}: Non-breaking changes for minor versions
-    \item \textbf{Documentation}: Always reflects current implementation
+    \item \textbf{HTML Files}: \texttt{GET /output\_html\_files/\{filename\}}
+    \item \textbf{Experiment Files}: \texttt{GET /experiments/results/\{id\}/files/\{filename\}}
+    \item \textbf{Generated Images}: \texttt{GET /experiments/results/\{id\}/images/\{filename\}}
 \end{itemize}
 
-\subsection{Planned Enhancements}
-\label{subsec:planned-enhancements}
+\section{Error Handling}
+\label{sec:error-handling}
 
-Future API improvements may include:
+All endpoints return standardized error responses:
 
+\begin{verbatim}
+{
+    "status": "error",
+    "message": "Error description"
+}
+\end{verbatim}
+
+\textbf{Common HTTP Status Codes}:
 \begin{itemize}
-    \item WebSocket support for real-time progress updates
-    \item Batch processing status endpoints
-    \item Advanced filtering and query parameters
-    \item Result export in multiple formats (CSV, XML)
-    \item Clustering algorithm parameter customization
+    \item \texttt{200 OK}: Successful operation
+    \item \texttt{400 Bad Request}: Invalid parameters
+    \item \texttt{404 Not Found}: Resource not found
+    \item \texttt{500 Internal Server Error}: Processing error
 \end{itemize} 
