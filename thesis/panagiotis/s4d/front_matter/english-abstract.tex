@@ -1,0 +1,16 @@
+\newpage
+\selectlanguage{english}
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+This thesis presents S\textsuperscript{4}D (Style and Structure Similarity for Site Domains), a research platform for analyzing similarities between websites based on their structure and visual style. The system examines web pages by processing their DOM structure and CSS styling, combining both into a unified representation for comparison.
+
+Users can provide any number of URLs for analysis. Each page is processed independently to extract structural and styling information. During the similarity analysis phase, comparisons are performed at the domain level—regardless of how the URLs were grouped initially. The system supports analysis at multiple DOM depths, from level 1 to level 10.
+
+After grouping similar elements using HDBSCAN and evaluating cluster quality with DBCV, the system reassigns outliers to the most appropriate clusters when possible. Users can perform multiple experiments using different URL sets and DOM levels to support varied research scenarios.
+
+S\textsuperscript{4}D is built with React for the interface, Flask for backend APIs, and Python for processing logic. It integrates Gnuplot to generate charts and data suitable for academic analysis. A results archive enables users to compare and track experiment outputs over time.
+
+The system outputs color-coded HTML pages that highlight structural similarities, as well as similarity matrices based on cosine similarity. Timing metrics help evaluate system performance. Testing confirms that S\textsuperscript{4}D reliably groups and compares website content across domains, offering a robust tool for structural and visual web analysis.
+
+The full system implementation is available at: \url{https://github.com/pfavvatas/lib_url_to_img}

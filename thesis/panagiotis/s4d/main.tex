@@ -19,7 +19,7 @@
 % === Metadata ===
 \hypersetup{
     colorlinks=true,
-    linkcolor=blue,
+    linkcolor=black,
     urlcolor=cyan,
     pdftitle={S⁴D: Style and Structure Similarity for Site Domains},
     pdfauthor={Panagiotis Favvatas},
@@ -42,6 +42,7 @@
 
 % === Title Page ===
 \begin{titlepage}
+\thispagestyle{empty}
 \centering
 \vspace*{3cm}
 \includegraphics[width=4cm]{university_logo.png}\par\vspace{2cm}
@@ -99,28 +100,54 @@
 }
 \end{center}
 
+% === Front Matter (Roman numerals) ===
+\frontmatter
+\pagenumbering{roman}
+
 % === Greek Abstract ===
-\input{greek_abstract.tex}
+\input{front_matter/greek-abstract.tex}
 
 % === English Abstract ===
-\input{english_abstract.tex}
+\input{front_matter/english-abstract.tex}
 
 % === Acknowledgements ===
 \chapter*{Acknowledgements}
 \addcontentsline{toc}{chapter}{Acknowledgements}
-\input{acknowledgements.tex}
+\input{front_matter/acknowledgements.tex}
 
 % === Table of Contents ===
 \tableofcontents
-\newpage
 
-% === Chapters ===
+% === List of Tables ===
+% \listoftables
+% \addcontentsline{toc}{chapter}{List of Tables}
+% (Uncomment when you have tables)
+
+% === List of Figures ===
+% \listoffigures
+% \addcontentsline{toc}{chapter}{List of Figures}
+% (Uncomment when you have figures)
+
+% === List of Symbols ===
+% \chapter*{List of Symbols}
+% \addcontentsline{toc}{chapter}{List of Symbols}
+% (Uncomment and add symbols when needed)
+
+% === List of Abbreviations ===
+% \chapter*{List of Abbreviations}
+% \addcontentsline{toc}{chapter}{List of Abbreviations}
+% (Uncomment and add abbreviations when needed)
+
+% === Main Matter (Arabic numerals starting from 1) ===
 \mainmatter
+\pagenumbering{arabic}
 \selectlanguage{english}
-% Add more chapters as needed
+
+% === Chapter 1: Introduction ===
+\input{chapters/chapter1_introduction.tex}
 
 % === Bibliography ===
 \bibliographystyle{plain}
-\bibliography{references}
+\bibliography{bibliography/references}
 
 \end{document}
