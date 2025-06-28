@@ -1,54 +1,444 @@
 \chapter{Methodology}
 \label{ch:methodology}
 
-This chapter presents the comprehensive methodology employed in the S\textsuperscript{4}D system.
+This chapter presents the comprehensive methodology employed in the S\textsuperscript{4}D (Style and Structure Similarity for Site Domains) system. The methodology combines advanced web analysis techniques, sophisticated clustering algorithms, and multi-dimensional similarity computation to provide robust website comparison and categorization capabilities.
 
-\section{System Overview}
+\section{System Architecture Overview}
 \label{sec:system-overview}
 
-The S\textsuperscript{4}D methodology is built upon multi-dimensional web analysis, combining DOM structural information with CSS styling properties to create comprehensive representations of website characteristics.
+The S\textsuperscript{4}D methodology employs a multi-stage pipeline that transforms raw web pages into structured similarity matrices and clustering results. The system architecture consists of seven main components:
 
-\section{Data Collection and Preprocessing}
+\begin{enumerate}
+    \item \textbf{Web Page Acquisition and DOM Extraction} - Automated web page rendering and hierarchical DOM tree construction
+    \item \textbf{Multi-Level CSS Property Analysis} - Comprehensive CSS attribute extraction and normalization across multiple DOM depth levels
+    \item \textbf{Feature Engineering and Vector Representation} - Transformation of CSS properties into numerical vectors suitable for machine learning algorithms
+    \item \textbf{Advanced Clustering Analysis} - HDBSCAN-based clustering with automatic parameter optimization and quality validation
+    \item \textbf{Role Vector-based Similarity Computation} - Multi-dimensional similarity assessment using frequency, transition, and positional information
+    \item \textbf{Multi-Metric Similarity Framework} - Combined similarity scoring using geometric mean of multiple distance metrics
+    \item \textbf{Performance Optimization and Caching} - Intelligent caching strategies and scalable processing architectures
+\end{enumerate}
+
+\section{Web Page Acquisition and DOM Extraction}
 \label{sec:data-collection}
 
-The data collection phase forms the foundation of the S\textsuperscript{4}D analysis pipeline.
+\subsection{Automated Web Rendering}
+\label{subsec:web-rendering}
 
-\subsection{Web Page Acquisition}
-\label{subsec:web-acquisition}
+The S\textsuperscript{4}D system employs Selenium WebDriver with Chrome browser in headless mode to ensure consistent web page rendering. The browser configuration includes:
 
-Web page acquisition utilizes Selenium WebDriver with Chrome in headless mode to ensure consistent rendering and complete DOM construction.
+\begin{itemize}
+    \item \textbf{Headless Mode}: \texttt{--headless} flag eliminates GUI overhead and ensures reproducible rendering
+    \item \textbf{Security Configuration}: \texttt{--no-sandbox} and \texttt{--disable-dev-shm-usage} flags enable execution in containerized environments
+    \item \textbf{Performance Optimization}: \texttt{--disable-gpu} flag reduces resource consumption
+    \item \textbf{Standardized Viewport}: Fixed window size of 1920×1080 pixels ensures consistent element positioning
+\end{itemize}
 
-\subsection{DOM Structure Extraction}
-\label{subsec:dom-extraction}
+\subsection{Hierarchical DOM Tree Construction}
+\label{subsec:dom-construction}
 
-DOM structure extraction employs a recursive traversal algorithm that captures hierarchical relationships while maintaining unique element identification.
+The DOM extraction algorithm employs a recursive traversal strategy implemented through the \texttt{HTMLTag} class. Each web element is processed through the following steps:
 
-\subsection{CSS Property Analysis}
-\label{subsec:css-analysis}
+\subsubsection{Unique Element Identification}
+A sophisticated unique ID generation algorithm combines timestamps and random numbers to ensure element uniqueness:
 
-CSS property analysis focuses on extracting and normalizing styling information that contributes to visual similarity assessment.
+\begin{equation}
+\text{unique\_id} = \text{timestamp}_{ms} \times 10^{10} + \text{random}_{[10^9, 10^{10})}
+\end{equation}
 
-\section{Feature Engineering and Representation}
+where \texttt{timestamp\_ms} represents milliseconds since epoch and \texttt{random} is a uniformly distributed random integer.
+
+\subsubsection{Comprehensive Attribute Extraction}
+The system extracts three categories of element information:
+
+\begin{enumerate}
+    \item \textbf{HTML Attributes}: Native element attributes obtained via JavaScript execution
+    \item \textbf{Computed CSS Properties}: All computed style properties accessed through \texttt{window.getComputedStyle()}
+    \item \textbf{Geometric Properties}: Element bounding rectangle coordinates obtained via \texttt{getBoundingClientRect()}
+\end{enumerate}
+
+\subsubsection{Text Content Processing}
+Text extraction employs JavaScript-based DOM node traversal to isolate element-specific text content:
+
+\begin{lstlisting}[caption=Text Content Extraction Algorithm]
+let textContent = '';
+for (let node of element.childNodes) {
+    if (node.nodeType === Node.TEXT_NODE) {
+        textContent += node.textContent;
+    }
+}
+return textContent.trim();
+\end{lstlisting}
+
+Text content undergoes normalization through regular expression-based cleaning that preserves Unicode characters while removing non-printable ASCII characters.
+
+\subsection{Multi-Level DOM Analysis}
+\label{subsec:multi-level-analysis}
+
+The S\textsuperscript{4}D system supports analysis across 10 hierarchical DOM depth levels (levels 1-10), enabling multi-resolution website analysis. Each level captures different granularities of structural information:
+
+\begin{itemize}
+    \item \textbf{Level 1}: Root-level elements and primary containers
+    \item \textbf{Levels 2-3}: Major page sections and navigation components
+    \item \textbf{Levels 4-6}: Content areas and interactive elements
+    \item \textbf{Levels 7-10}: Fine-grained content and micro-components
+\end{itemize}
+
+\section{CSS Property Analysis and Normalization}
+\label{sec:css-analysis}
+
+\subsection{Attribute Filtering and Selection}
+\label{subsec:attribute-filtering}
+
+The system implements a sophisticated attribute filtering algorithm that identifies structurally significant CSS properties. The filtering process involves:
+
+\subsubsection{Element Frequency Analysis}
+For each CSS attribute, the system computes the distribution of elements across all analyzed websites:
+
+\begin{equation}
+\text{frequency}_{attr} = \frac{\text{elements\_with\_attr}}{\text{total\_elements}}
+\end{equation}
+
+\subsubsection{Useful Attribute Identification}
+Attributes are classified as "useful" based on their discriminative power. The algorithm specifically focuses on:
+
+\begin{itemize}
+    \item \textbf{Typography Properties}: \texttt{font-size}, \texttt{font-weight}, \texttt{font-style}
+    \item \textbf{Layout Properties}: \texttt{text-align}, \texttt{line-height}
+    \item \textbf{Interaction Properties}: \texttt{cursor}, \texttt{word-break}
+    \item \textbf{Decoration Properties}: \texttt{text-decoration-line}, \texttt{text-decoration-style}
+\end{itemize}
+
+\subsection{CSS Value Normalization}
+\label{subsec:css-normalization}
+
+The system implements comprehensive CSS value normalization to handle diverse value formats:
+
+\subsubsection{Pixel Value Normalization}
+Pixel values undergo standardized processing:
+
+\begin{equation}
+\text{normalized\_px} = \begin{cases}
+-1 & \text{if value} = \text{"auto"} \\
+-\frac{\text{percentage}}{100} & \text{if value contains "\%"} \\
+\text{float(value.replace("px", ""))} & \text{otherwise}
+\end{cases}
+\end{equation}
+
+\subsubsection{Color Space Processing}
+RGB/RGBA color values are converted to HSV color space for perceptual similarity analysis:
+
+\begin{align}
+H &= \arctan2(\sqrt{3}(G-B), 2R-G-B) \\
+S &= 1 - \frac{3\min(R,G,B)}{R+G+B} \\
+V &= \frac{R+G+B}{3}
+\end{align}
+
+\subsubsection{Dual-Coordinate Property Handling}
+Properties with multiple coordinate values (e.g., margins, padding) undergo specialized processing:
+
+\begin{equation}
+\text{ordering} = \begin{cases}
+(X, Y) & \text{if } X \geq Y \\
+(-X, -Y) & \text{if } X < Y
+\end{cases}
+\end{equation}
+
+\section{Feature Engineering and Vector Representation}
 \label{sec:feature-engineering}
 
-Feature engineering transforms raw DOM and CSS data into numerical representations suitable for similarity computation and clustering analysis.
+\subsection{Page Vector Construction}
+\label{subsec:page-vectors}
 
-\section{Similarity Measurement Framework}
-\label{sec:similarity-framework}
+The system constructs multi-dimensional feature vectors for each DOM element by processing useful CSS attributes. The vector construction algorithm:
 
-The similarity measurement framework combines multiple distance metrics and aggregation strategies to produce robust similarity assessments between web pages.
+\begin{enumerate}
+    \item \textbf{Initializes} empty vectors for each unique element ID
+    \item \textbf{Processes} each useful attribute sequentially
+    \item \textbf{Appends} normalized attribute values to element vectors
+    \item \textbf{Maintains} consistent vector dimensionality across all elements
+\end{enumerate}
 
-\section{Clustering Methodology}
+\subsection{String Value Space Mapping}
+\label{subsec:string-mapping}
+
+Non-numeric CSS values are mapped to numerical representations through a global string value space (\texttt{str\_VSM}):
+
+\begin{equation}
+\text{numerical\_value} = \text{index\_of\_string\_in\_VSM}
+\end{equation}
+
+Special handling is provided for framework-specific values (e.g., Bootstrap's "start" → "left", "end" → "right").
+
+\subsection{Data Standardization and Normalization}
+\label{subsec:data-standardization}
+
+Feature vectors undergo standardization using scikit-learn's \texttt{StandardScaler}:
+
+\begin{equation}
+X_{\text{scaled}} = \frac{X - \mu}{\sigma}
+\end{equation}
+
+where $\mu$ represents the feature mean and $\sigma$ represents the feature standard deviation.
+
+\section{Advanced Clustering Analysis}
 \label{sec:clustering-methodology}
 
-The clustering methodology employs HDBSCAN with automatic parameter optimization and outlier reassignment strategies.
+\subsection{HDBSCAN Clustering Algorithm}
+\label{subsec:hdbscan-algorithm}
 
-\section{Performance Optimization}
+The S\textsuperscript{4}D system employs Hierarchical Density-Based Spatial Clustering of Applications with Noise (HDBSCAN) for its superior performance with irregular cluster shapes and noise handling.
+
+\subsubsection{Parameter Optimization Framework}
+The system implements a grid search optimization strategy:
+
+\begin{algorithm}[H]
+\caption{HDBSCAN Parameter Optimization}
+\begin{algorithmic}[1]
+\State $\text{max\_range} \leftarrow \max(10, \lfloor 0.1 \times |\text{elements}| \rfloor)$
+\State $\text{size\_range} \leftarrow [5, \text{max\_range})$
+\State $\text{epsilon\_range} \leftarrow [0.0, 1.0]$ with step $0.333$
+\State $\text{best\_configs} \leftarrow \{\}$
+\For{$\text{min\_size} \in \text{size\_range}$}
+    \For{$\epsilon \in \text{epsilon\_range}$}
+        \State $\text{labels} \leftarrow \text{HDBSCAN}(\text{min\_size}, \epsilon)$
+        \If{$|\text{unique\_labels}| > 1$}
+            \State $\text{score} \leftarrow \text{DBCV}(\text{data}, \text{labels})$
+            \If{$\text{score} < 0.25$}
+                \State \textbf{break} \Comment{Early stopping}
+            \EndIf
+            \State $\text{best\_configs}[\text{min\_size}] \leftarrow \max(\text{score})$
+        \EndIf
+    \EndFor
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Outlier Reassignment Strategy}
+The system implements a novel outlier reassignment algorithm to improve cluster coherence:
+
+\begin{enumerate}
+    \item \textbf{Identify} outliers (elements with label = -1)
+    \item \textbf{Compute} cluster centroids excluding outliers
+    \item \textbf{Calculate} Euclidean distances from outliers to centroids
+    \item \textbf{Assign} outliers to nearest cluster centroids
+    \item \textbf{Recompute} centroids including reassigned outliers
+    \item \textbf{Repeat} reassignment until convergence
+\end{enumerate}
+
+\subsection{Cluster Quality Assessment}
+\label{subsec:cluster-quality}
+
+\subsubsection{Density-Based Cluster Validation (DBCV)}
+The system employs DBCV scoring for cluster quality assessment:
+
+\begin{equation}
+\text{DBCV} = \frac{1}{n} \sum_{i=1}^{n} \frac{\text{DSPC}(i) - \text{DSSC}(i)}{\max(\text{DSPC}(i), \text{DSSC}(i))}
+\end{equation}
+
+where DSPC represents density separation and DSSC represents density sparseness.
+
+\subsubsection{Optimal Configuration Selection}
+The system selects the configuration with the fewest clusters among those achieving DBCV > 0.5, prioritizing interpretability while maintaining quality.
+
+\section{Role Vector-based Similarity Computation}
+\label{sec:similarity-framework}
+
+\subsection{Multi-Dimensional Role Vector Construction}
+\label{subsec:role-vectors}
+
+The S\textsuperscript{4}D system constructs comprehensive role vectors for each cluster incorporating:
+
+\subsubsection{Frequency Information}
+Cluster occurrence frequency across website elements:
+
+\begin{equation}
+\text{frequency}_{cluster} = \frac{\text{occurrences}_{cluster}}{\text{total\_elements}}
+\end{equation}
+
+\subsubsection{Transition Matrices}
+Bi-directional transition probabilities between clusters:
+
+\begin{equation}
+T_{ij} = \text{count}(\text{cluster}_i \rightarrow \text{cluster}_j)
+\end{equation}
+
+\subsubsection{Positional Statistics}
+Statistical measures of cluster positions within DOM structures:
+
+\begin{align}
+\text{mean\_pos} &= \frac{1}{n} \sum_{i=1}^{n} \frac{\text{position}_i}{\max(\text{sequence\_length} - 1, 1)} \\
+\text{std\_pos} &= \sqrt{\frac{1}{n} \sum_{i=1}^{n} (\text{normalized\_pos}_i - \text{mean\_pos})^2} \\
+\text{min\_pos} &= \min(\text{normalized\_positions}) \\
+\text{max\_pos} &= \max(\text{normalized\_positions})
+\end{align}
+
+\subsection{Complete Role Vector Specification}
+\label{subsec:complete-role-vector}
+
+The complete role vector for each cluster includes:
+
+\begin{equation}
+\mathbf{R}_{cluster} = [\text{freq}, \mathbf{T}_{out}, \mathbf{T}_{in}, \text{mean\_pos}, \text{std\_pos}, \text{min\_pos}, \text{max\_pos}]
+\end{equation}
+
+where $\mathbf{T}_{out}$ and $\mathbf{T}_{in}$ represent outgoing and incoming transition vectors.
+
+\section{Multi-Metric Similarity Framework}
+\label{sec:multi-metric-similarity}
+
+\subsection{Domain-Level Aggregation}
+\label{subsec:domain-aggregation}
+
+The system performs domain-level analysis by:
+
+\begin{enumerate}
+    \item \textbf{Grouping} websites by domain using URL parsing
+    \item \textbf{Averaging} role vectors within domains
+    \item \textbf{Computing} domain-representative vectors
+\end{enumerate}
+
+\subsection{Multi-Metric Distance Computation}
+\label{subsec:multi-metric-distance}
+
+The system computes three complementary similarity metrics:
+
+\subsubsection{Cosine Similarity}
+Standard cosine similarity between domain average vectors:
+
+\begin{equation}
+\text{sim}_{cosine}(A,B) = \frac{\mathbf{A} \cdot \mathbf{B}}{|\mathbf{A}||\mathbf{B}|}
+\end{equation}
+
+\subsubsection{Earth Mover's Distance (EMD) Approximation}
+Bidirectional minimum distance computation:
+
+\begin{equation}
+\text{sim}_{EMD}(A,B) = \frac{1}{2}\left[(1 - \text{mean}(\min(\text{dist}(A,B)))) + (1 - \text{mean}(\min(\text{dist}(B,A))))\right]
+\end{equation}
+
+\subsubsection{Hausdorff Distance Approximation}
+Maximum minimum distance computation:
+
+\begin{equation}
+\text{sim}_{Hausdorff}(A,B) = \frac{1}{2}\left[(1 - \max(\min(\text{dist}(A,B)))) + (1 - \max(\min(\text{dist}(B,A))))\right]
+\end{equation}
+
+\subsection{Combined Similarity Score}
+\label{subsec:combined-similarity}
+
+The final similarity score employs geometric mean combination:
+
+\begin{equation}
+\text{sim}_{combined}(A,B) = (\text{sim}_{cosine} \times \text{sim}_{EMD} \times \text{sim}_{Hausdorff})^{1/3} \times 100\%
+\end{equation}
+
+The geometric mean provides balanced weighting while the percentage conversion ensures interpretable similarity scores.
+
+\section{Best Level Selection Algorithm}
+\label{sec:best-level-selection}
+
+\subsection{Median-Based Selection Strategy}
+\label{subsec:median-selection}
+
+The system implements a sophisticated algorithm to identify optimal clustering levels:
+
+\begin{algorithm}[H]
+\caption{Best Clustering Level Selection}
+\begin{algorithmic}[1]
+\State $\text{valid\_results} \leftarrow$ filter clustering results with clusters > 0 and DBCV > 0
+\State $\text{cluster\_counts} \leftarrow$ extract cluster counts from valid results
+\State $\text{median\_clusters} \leftarrow$ compute median of cluster counts
+\State $\text{ordered\_results} \leftarrow$ sort results by cluster count (ascending)
+\State $Y \leftarrow$ median position in ordered results
+\State $W \leftarrow$ cluster count at position $Y$
+\State $\text{filtered\_results} \leftarrow$ results with cluster count $\leq W$
+\State \textbf{return} result with highest DBCV score from filtered results
+\end{algorithmic}
+\end{algorithm}
+
+This approach balances clustering quality (DBCV score) with interpretability (fewer clusters), providing robust level selection across diverse website collections.
+
+\section{Performance Optimization and Scalability}
 \label{sec:performance-optimization}
 
-Performance optimization strategies ensure scalability and practical usability of the S\textsuperscript{4}D system.
+\subsection{Intelligent Caching System}
+\label{subsec:caching-system}
+
+The S\textsuperscript{4}D system implements a comprehensive caching strategy:
+
+\subsubsection{Cache Architecture}
+\begin{itemize}
+    \item \textbf{Complete Cache}: Full result sets for specific URL-level combinations
+    \item \textbf{Partial Cache}: Individual URL processing results
+    \item \textbf{TTL Management}: 24-hour cache lifetime for CLI, 1-hour for API
+\end{itemize}
+
+\subsubsection{Cache Key Generation}
+Cache keys combine URL lists and level specifications using SHA-256 hashing:
+
+\begin{equation}
+\text{cache\_key} = \text{SHA256}(\text{sorted\_urls} + \text{sorted\_levels})
+\end{equation}
+
+\subsection{Dual Processing Modes}
+\label{subsec:processing-modes}
+
+\subsubsection{Mode 0: Unified Processing}
+All URLs processed together for comprehensive cross-domain analysis.
+
+\subsubsection{Mode 1: Domain-Based Processing}
+URLs grouped by domain and processed separately for scalable domain-specific analysis.
+
+\subsection{Performance Monitoring}
+\label{subsec:performance-monitoring}
+
+The system implements comprehensive timing and performance tracking:
+
+\begin{itemize}
+    \item \textbf{Step-by-Step Timing}: Detailed timing for each processing stage
+    \item \textbf{URL-Level Metrics}: Per-URL processing times and success rates
+    \item \textbf{Cache Efficiency}: Cache hit rates and performance improvements
+    \item \textbf{Resource Utilization}: Memory usage and file size tracking
+\end{itemize}
+
+\section{Methodology Validation and Quality Assurance}
+\label{sec:methodology-validation}
+
+\subsection{Algorithmic Robustness}
+\label{subsec:algorithmic-robustness}
+
+The S\textsuperscript{4}D methodology ensures robustness through:
+
+\begin{itemize}
+    \item \textbf{Error Handling}: Comprehensive exception handling with graceful degradation
+    \item \textbf{Input Validation}: URL format validation and content accessibility verification
+    \item \textbf{Output Verification}: Result consistency checking and quality metrics
+\end{itemize}
+
+\subsection{Scalability Considerations}
+\label{subsec:scalability}
+
+The methodology addresses scalability through:
+
+\begin{itemize}
+    \item \textbf{Memory Management}: Efficient data structures and garbage collection
+    \item \textbf{Parallel Processing}: Independent URL processing with result aggregation
+    \item \textbf{Storage Optimization}: Compressed data formats and intelligent file management
+\end{itemize}
 
 \section{Methodology Summary}
 \label{sec:methodology-summary}
 
-The S\textsuperscript{4}D methodology provides a comprehensive framework for web similarity analysis that addresses key challenges in scalability, accuracy, and interpretability. 
+The S\textsuperscript{4}D methodology provides a comprehensive framework for web similarity analysis that addresses key challenges in scalability, accuracy, and interpretability. The integration of multi-level DOM analysis, advanced clustering algorithms, role vector-based similarity computation, and intelligent caching creates a robust system capable of processing large-scale website collections while maintaining high-quality analytical results.
+
+The methodology's novel contributions include:
+
+\begin{enumerate}
+    \item \textbf{Multi-Resolution Analysis}: Simultaneous analysis across 10 DOM depth levels
+    \item \textbf{Advanced Clustering Optimization}: Grid search parameter optimization with quality-based selection
+    \item \textbf{Role Vector Innovation}: Comprehensive cluster representation incorporating frequency, transitions, and positional information
+    \item \textbf{Multi-Metric Similarity}: Geometric mean combination of complementary distance metrics
+    \item \textbf{Intelligent Performance Optimization}: Adaptive caching and dual processing modes
+\end{enumerate}
+
+This methodology establishes a new paradigm for automated website analysis that balances analytical depth with computational efficiency, providing a foundation for future research in web structure and design pattern analysis. 
