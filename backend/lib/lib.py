@@ -512,6 +512,27 @@ def process_urls_from_cli(urls, levels, from_api=False):
     timing_logs["total_end_time"] = time.time()
     timing_logs["total_duration"] = timing_logs["total_end_time"] - timing_logs["total_start_time"]
     
+    # Find best clustering level using median-based algorithm
+    best_level_info = find_best_clustering_level(clustering_results)
+    if best_level_info:
+        print(f"\033[93m🏆 BEST CLUSTERING LEVEL DETECTED: Level {best_level_info['best_level']}\033[0m")
+        print(f"\033[93m   📊 {best_level_info['algorithm_details']['selection_reason']}\033[0m")
+        print(f"\033[93m   🔍 Algorithm: Median of {best_level_info['algorithm_details']['total_valid_levels']} levels, W={best_level_info['algorithm_details']['w_cluster_count']}, filtered {best_level_info['algorithm_details']['filtered_candidates']} candidates\033[0m")
+        
+        # Mark the best level in clustering results
+        for result in clustering_results:
+            if result.get('level') == best_level_info['best_level']:
+                result['is_best_level'] = True
+                result['best_level_details'] = best_level_info['algorithm_details']
+        
+        # Mark the best level in processed clusters
+        for processed_cluster in processed_clusters_data:
+            if processed_cluster.get('level') == best_level_info['best_level']:
+                processed_cluster['is_best_level'] = True
+                processed_cluster['best_level_details'] = best_level_info['algorithm_details']
+    else:
+        print(f"\033[94m📊 No best clustering level detected (insufficient valid results for comparison)\033[0m")
+    
     # Calculate performance metrics (conditional on caching)
     urls_from_cache = len(urls) - len(urls_to_process) if ENABLE_CACHING else 0
     cache_efficiency = (urls_from_cache / len(urls) * 100) if ENABLE_CACHING and len(urls) > 0 else 0.0
@@ -552,7 +573,8 @@ def process_urls_from_cli(urls, levels, from_api=False):
             "clustering_results": clustering_results,
             "processed_clusters": processed_clusters_data,
             "html_files": created_html_files,  # Include only the created HTML files
-            "timing_logs": timing_logs  # Add timing logs to the response
+            "timing_logs": timing_logs,  # Add timing logs to the response
+            "best_level_info": best_level_info  # Add best level information
         }
     else:
         return {
@@ -561,7 +583,8 @@ def process_urls_from_cli(urls, levels, from_api=False):
             "clustering_results": clustering_results,
             "processed_clusters": processed_clusters_data,
             "html_files": created_html_files,  # Include only the created HTML files
-            "timing_logs": timing_logs  # Add timing logs to the response
+            "timing_logs": timing_logs,  # Add timing logs to the response
+            "best_level_info": best_level_info  # Add best level information
         }
 
 
@@ -1298,7 +1321,8 @@ def process_urls_from_api(urls, levels, mode=0):
                 "clustering_results": result.get("clustering_results", {}),
                 "processed_clusters": result.get("processed_clusters", {}),
                 "html_files": result.get("html_files", []),  # Use tracked HTML files
-                "timing_logs": result.get("timing_logs", {})  # Include timing logs
+                "timing_logs": result.get("timing_logs", {}),  # Include timing logs
+                "best_level_info": result.get("best_level_info")  # Add missing best level info
             }
         else:
             # Mode 1 - process URLs by domain with enhanced cache checking
@@ -1358,6 +1382,29 @@ def process_urls_from_api(urls, levels, mode=0):
                         
                         print(f"\033[92m✅ Domain {domain}: {domain_cache_hits}/{domain_urls_count} URLs from cache ({(domain_cache_hits/domain_urls_count)*100:.1f}%)\033[0m")
                     
+                    # Find best clustering level for this domain
+                    domain_clustering_results = domain_result.get("clustering_results", [])
+                    domain_best_level_info = find_best_clustering_level(domain_clustering_results)
+                    
+                    if domain_best_level_info:
+                        print(f"\033[93m🏆 DOMAIN {domain} - BEST LEVEL: Level {domain_best_level_info['best_level']}\033[0m")
+                        print(f"\033[93m   📊 {domain_best_level_info['algorithm_details']['selection_reason']}\033[0m")
+                        
+                        # Mark the best level in domain clustering results
+                        for result in domain_clustering_results:
+                            if result.get('level') == domain_best_level_info['best_level']:
+                                result['is_best_level'] = True
+                                result['best_level_details'] = domain_best_level_info['algorithm_details']
+                        
+                        # Mark the best level in domain processed clusters
+                        domain_processed_clusters = domain_result.get("processed_clusters", [])
+                        for processed_cluster in domain_processed_clusters:
+                            if processed_cluster.get('level') == domain_best_level_info['best_level']:
+                                processed_cluster['is_best_level'] = True
+                                processed_cluster['best_level_details'] = domain_best_level_info['algorithm_details']
+                    else:
+                        print(f"\033[94m📊 Domain {domain}: No best clustering level detected\033[0m")
+                    
                     all_results["domain_results"].append({
                         "domain": domain,
                         "urls": domain_urls,
@@ -1366,7 +1413,8 @@ def process_urls_from_api(urls, levels, mode=0):
                         "clustering_results": domain_result.get("clustering_results", {}),
                         "processed_clusters": domain_result.get("processed_clusters", {}),
                         "html_files": domain_result.get("html_files", []),  # Use tracked HTML files
-                        "timing_logs": domain_result.get("timing_logs", {})  # Include timing logs
+                        "timing_logs": domain_result.get("timing_logs", {}),  # Include timing logs
+                        "best_level_info": domain_best_level_info  # Add best level info for this domain
                     })
                 except Exception as e:
                     print(f"\033[91m❌ Domain {domain} failed: {str(e)}\033[0m")
@@ -1393,6 +1441,34 @@ def process_urls_from_api(urls, levels, mode=0):
                 "cache_efficiency_percent": overall_cache_efficiency,
                 "cache_savings": f"Saved processing {total_cache_hits}/{total_urls_processed} URLs ({overall_cache_efficiency:.1f}%)",
                 "domains": list(domain_groups.keys())
+            }
+            
+            # Find overall best clustering level across all domains for Mode 1
+            all_clustering_results = []
+            for domain_result in all_results["domain_results"]:
+                if domain_result.get("status") == "success" and domain_result.get("clustering_results"):
+                    for cluster_result in domain_result["clustering_results"]:
+                        # Add domain context to clustering result for overall analysis
+                        cluster_result_copy = cluster_result.copy()
+                        cluster_result_copy["domain"] = domain_result["domain"]
+                        all_clustering_results.append(cluster_result_copy)
+            
+            overall_best_level_info = find_best_clustering_level(all_clustering_results)
+            if overall_best_level_info:
+                print(f"\033[93m🏆 MODE 1 OVERALL BEST LEVEL: Level {overall_best_level_info['best_level']} (across all domains)\033[0m")
+                print(f"\033[93m   📊 {overall_best_level_info['algorithm_details']['selection_reason']}\033[0m")
+                all_results["best_level_info"] = overall_best_level_info
+            else:
+                print(f"\033[94m📊 MODE 1: No overall best clustering level detected across domains\033[0m")
+                all_results["best_level_info"] = None
+            
+            # Add test metadata for frontend compatibility
+            all_results["test_metadata"] = {
+                "mode": mode,
+                "levels": levels,
+                "url_count": len(urls),
+                "urls": urls,
+                "duration": all_results["timing_logs"]["total_duration"]
             }
             
             if ENABLE_CACHING:
@@ -1439,6 +1515,96 @@ def process_clusters_from_api(clusters_data):
             "message": str(e),
             "stack_trace": stack_trace
         }
+
+def find_best_clustering_level(clustering_results):
+    """
+    Find the best clustering level using median-based algorithm.
+    
+    Algorithm:
+    1. Collect all cluster counts from all levels
+    2. Find median of cluster counts  
+    3. Order levels by cluster count (smallest to largest)
+    4. Take the level at median position (Y)
+    5. Get cluster count at that position (W)
+    6. Filter results with W clusters or fewer
+    7. Return the level with highest DBCV score from filtered results
+    
+    Args:
+        clustering_results: List of clustering result dictionaries
+        
+    Returns:
+        dict: Contains best_level and algorithm details, or None if no valid results
+    """
+    if not clustering_results:
+        return None
+    
+    # Step 1: Collect all successful clustering results
+    valid_results = []
+    for result in clustering_results:
+        if result.get('status') != 'error':
+            # Handle both lightweight and full cluster info structures
+            cluster_info = None
+            if result.get('cluster_info'):
+                cluster_info = result['cluster_info']
+            elif result.get('cluster_summary'):
+                cluster_info = result['cluster_summary']
+            
+            if cluster_info:
+                num_clusters = cluster_info.get('num_clusters', 0)
+                dbcv_score = cluster_info.get('dbcv_score', 0)
+                
+                # Only include results with valid clustering (more than 0 clusters and positive DBCV)
+                if num_clusters > 0 and dbcv_score > 0:
+                    valid_results.append({
+                        'level': result.get('level'),
+                        'num_clusters': num_clusters,
+                        'dbcv_score': dbcv_score,
+                        'result': result
+                    })
+    
+    if len(valid_results) < 2:  # Need at least 2 valid results for meaningful comparison
+        return None
+    
+    # Step 2: Find median of cluster counts
+    cluster_counts = [r['num_clusters'] for r in valid_results]
+    cluster_counts_sorted = sorted(cluster_counts)
+    n = len(cluster_counts_sorted)
+    
+    if n % 2 == 0:
+        median_clusters = (cluster_counts_sorted[n//2 - 1] + cluster_counts_sorted[n//2]) / 2
+    else:
+        median_clusters = cluster_counts_sorted[n//2]
+    
+    # Step 3: Order levels by cluster count (smallest to largest)
+    valid_results.sort(key=lambda x: x['num_clusters'])
+    
+    # Step 4: Take level at median position (Y)
+    median_position = n // 2
+    w_cluster_count = valid_results[median_position]['num_clusters']
+    
+    # Step 5: Filter results with W clusters or fewer
+    filtered_results = [r for r in valid_results if r['num_clusters'] <= w_cluster_count]
+    
+    # Step 6: Return the level with highest DBCV score from filtered results
+    if filtered_results:
+        best_result = max(filtered_results, key=lambda x: x['dbcv_score'])
+        
+        return {
+            'best_level': best_result['level'],
+            'best_num_clusters': best_result['num_clusters'],
+            'best_dbcv_score': best_result['dbcv_score'],
+            'algorithm_details': {
+                'total_valid_levels': len(valid_results),
+                'median_clusters': median_clusters,
+                'median_position': median_position,
+                'w_cluster_count': w_cluster_count,
+                'filtered_candidates': len(filtered_results),
+                'all_cluster_counts': cluster_counts,
+                'selection_reason': f"Selected level {best_result['level']} with {best_result['num_clusters']} clusters (≤{w_cluster_count}) and highest DBCV score {best_result['dbcv_score']:.3f}"
+            }
+        }
+    
+    return None
 
 if __name__ == '__main__':
     # Parse command-line arguments

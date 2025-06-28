@@ -1898,7 +1898,13 @@
         "div,div,div,a,div,div,div,nav,header,div": "#4A5956",
         "img,div,div,a,div,div,div,nav,header,div": "#6AAD40",
         "a,li,ul,div,div,div,div,div,header,div": "#3FBC71",
-        "u": "#105F30"
+        "u": "#105F30",
+        "section": "#551DF3",
+        "section,div": "#5105DE",
+        "div,h4": "#E52767",
+        "div,small": "#C3A471",
+        "pre,hgroup": "#48CEDC",
+        "pre,small": "#497A5D"
     },
     "tag_order": {
         "b": 1,
@@ -3799,6 +3805,12 @@
         "div,div,div,a,div,div,div,nav,header,div": 1896,
         "img,div,div,a,div,div,div,nav,header,div": 1897,
         "a,li,ul,div,div,div,div,div,header,div": 1898,
-        "u": 1899
+        "u": 1899,
+        "section": 1900,
+        "section,div": 1901,
+        "div,h4": 1902,
+        "div,small": 1903,
+        "pre,hgroup": 1904,
+        "pre,small": 1905
     }
 }

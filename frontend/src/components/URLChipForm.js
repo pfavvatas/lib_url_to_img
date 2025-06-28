@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, TextField, Chip, FormControl, Button, useTheme, Snackbar, CircularProgress, Grid2 as Grid, TextareaAutosize, Accordion, AccordionSummary, AccordionDetails, Typography, IconButton, Tooltip, Card, CardContent, CardHeader, Switch, FormControlLabel, Fab, Collapse, Modal } from '@mui/material';
+import { Box, TextField, Chip, FormControl, Button, useTheme, Snackbar, CircularProgress, Grid2 as Grid, TextareaAutosize, Accordion, AccordionSummary, AccordionDetails, Typography, IconButton, Tooltip, Card, CardContent, CardHeader, Fab, Collapse, Modal } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -9,6 +9,8 @@ import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import CloseIcon from '@mui/icons-material/Close';
+import StarIcon from '@mui/icons-material/Star';
+import InfoIcon from '@mui/icons-material/Info';
 import html2pdf from 'html2pdf.js';
 import { interpolateViridis } from 'd3-scale-chromatic';
 
@@ -38,7 +40,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
     const [selectedLevels, setSelectedLevels] = useState([]);
     const [currentView, setCurrentView] = useState('home'); // State for current view
     const [clusterInput, setClusterInput] = useState(""); // State for cluster input
-    const [isNewMode, setIsNewMode] = useState(false);
+
     const [abortController, setAbortController] = useState(null);
     
     // Custom experiments state
@@ -54,7 +56,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
     const [customConfig, setCustomConfig] = useState({
         experiment_name: '',
         available_urls: [],
-        modes: [0], // Fixed to mode 0 - process all URLs together
+        modes: [0], // Always process all URLs together
         levels: [1],
         url_combinations: [] // URLs per domain - no pre-selection, user must choose
     });
@@ -188,7 +190,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                 body: JSON.stringify({ 
                     urls, 
                     levels: selectedLevels,
-                    mode: isNewMode ? 1 : 0
+                    mode: 0
                 }),
                 signal: controller.signal
             });
@@ -1291,7 +1293,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
     };
 
     // Function to render site similarity results with comprehensive information
-    const renderSiteSimilarityResults = (siteSimilarity, level = null, processedClusterData = null, titlePrefix = '') => {
+    const renderSiteSimilarityResults = (siteSimilarity, level = null, processedClusterData = null, titlePrefix = '', isBestLevel = false, bestLevelDetails = null) => {
         if (!siteSimilarity || siteSimilarity.status !== 'success' || !siteSimilarity.data) return null;
 
         const { data } = siteSimilarity;
@@ -1324,12 +1326,16 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                         }
                     }}
                 >
-                    <Typography sx={{ 
-                        fontWeight: 'bold',
-                        color: darkMode ? '#ffffff' : 'inherit'
-                    }}>
-                        📊 Site Similarity Analysis {titlePrefix ? `${titlePrefix} ` : ''}Level {level} ({summary.total_sites} sites)
-                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                        <Typography sx={{ 
+                            fontWeight: 'bold',
+                            color: darkMode ? '#ffffff' : 'inherit',
+                            flexGrow: 1
+                        }}>
+                            📊 Site Similarity Analysis {titlePrefix ? `${titlePrefix} ` : ''}Level {level} ({summary.total_sites} sites)
+                        </Typography>
+                        {renderBestLevelIndicator(isBestLevel, bestLevelDetails)}
+                    </Box>
                 </AccordionSummary>
                 <AccordionDetails sx={{ 
                     p: 3,
@@ -2442,431 +2448,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
             return null;
         };
 
-        // Handle Mode 1 results (domain-based processing)
-        if (result.domain_results) {
-            return (
-                <Box sx={{ width: '100%', mt: theme.spacing(4), maxWidth: '1600px', mx: 'auto', px: 2 }}>
-                    <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
-                        🌐 Domain-Based Processing Results
-                    </Typography>
 
-                    
-                    {/* Site Similarity Results */}
-                    <Accordion 
-                        sx={{ 
-                            mb: theme.spacing(2),
-                            '&:before': { display: 'none', },
-                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                            borderRadius: '8px !important',
-                            backgroundColor: darkMode ? '#2a2a2a' : 'background.paper'
-                        }}
-                    >
-                        <AccordionSummary 
-                            expandIcon={<ExpandMoreIcon />}
-                            sx={{
-                                backgroundColor: darkMode ? '#333' : 'primary.light',
-                                color: darkMode ? '#ffffff' : 'inherit',
-                                '&:hover': {
-                                    backgroundColor: darkMode ? '#404040' : 'primary.main',
-                                    color: darkMode ? '#ffffff' : 'white',
-                                }
-                            }}
-                        >
-                            <Typography sx={{ fontWeight: 'bold' }}>
-                                🔍 Site Similarity Analysis
-                            </Typography>
-                        </AccordionSummary>
-                        
-                        <AccordionDetails sx={{ p: 3 }}>
-                            {result.domain_results.map((domainResult, domainIndex) => (
-                                domainResult.processed_clusters && domainResult.processed_clusters.map((processedCluster, clusterIndex) => (
-                                    processedCluster.processed_data && processedCluster.processed_data.site_similarity &&
-                                    <div key={`domain-${domainIndex}-similarity-${clusterIndex}`} style={{ marginBottom: '24px' }}>
-                                        <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: 'primary.main' }}>
-                                            📊 {domainResult.domain} - Level {processedCluster.level}
-                                        </Typography>
-                                        {renderSiteSimilarityResults(
-                                            processedCluster.processed_data.site_similarity, 
-                                            processedCluster.level, 
-                                            processedCluster.processed_data
-                                        )}
-                                    </div>
-                                ))
-                            ))}
-                        </AccordionDetails>
-                    </Accordion>
-
-                    {/* Domain Results */}
-                    {result.domain_results.map((domainResult, domainIndex) => (
-                        <Accordion 
-                            key={`domain-${domainIndex}`} 
-                            sx={{ 
-                                mb: theme.spacing(2),
-                                '&:before': { display: 'none', },
-                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                                borderRadius: '8px !important',
-                                backgroundColor: darkMode ? '#2a2a2a' : 'background.paper'
-                            }}
-                        >
-                            <AccordionSummary 
-                                expandIcon={<ExpandMoreIcon />}
-                                sx={{
-                                    backgroundColor: domainResult.status === 'error' 
-                                        ? 'error.light' 
-                                        : (darkMode ? '#333' : 'primary.light'),
-                                    color: darkMode ? '#ffffff' : 'inherit',
-                                    '&:hover': {
-                                        backgroundColor: domainResult.status === 'error' 
-                                            ? 'error.main' 
-                                            : (darkMode ? '#404040' : 'primary.main'),
-                                        color: darkMode ? '#ffffff' : 'white',
-                                    }
-                                }}
-                            >
-                                <Typography sx={{ fontWeight: 'bold' }}>
-                                    🌐 {domainResult.domain} ({domainResult.urls.length} URLs)
-                                </Typography>
-                            </AccordionSummary>
-                            
-                            <AccordionDetails sx={{ p: 3 }}>
-                                {domainResult.status === 'error' ? (
-                                    <Typography variant="body1" color="error">
-                                        ❌ {domainResult.message}
-                                    </Typography>
-                                ) : (
-                                    <>
-                                        {/* Clustering Results Section */}
-                                        {domainResult.clustering_results && domainResult.clustering_results.map((clusterResult, index) => (
-                                            <Accordion 
-                                                key={`cluster-result-${domainIndex}-${index}`} 
-                                                sx={{ 
-                                                    mb: theme.spacing(2),
-                                                    '&:before': {
-                                                        display: 'none',
-                                                    },
-                                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                                                    borderRadius: '8px !important',
-                                                    overflow: 'hidden',
-                                                    backgroundColor: darkMode ? '#2a2a2a' : 'background.paper'
-                                                }}
-                                            >
-                                                <AccordionSummary 
-                                                    expandIcon={<ExpandMoreIcon />}
-                                                    sx={{
-                                                        backgroundColor: clusterResult.status === 'error' 
-                                                            ? 'error.light' 
-                                                            : (darkMode ? '#333' : 'primary.light'),
-                                                        color: darkMode ? '#ffffff' : 'inherit',
-                                                        '&:hover': {
-                                                            backgroundColor: clusterResult.status === 'error' 
-                                                                ? 'error.main' 
-                                                                : (darkMode ? '#404040' : 'primary.main'),
-                                                            color: darkMode ? '#ffffff' : 'white',
-                                                        },
-                                                        '& .MuiAccordionSummary-expandIconWrapper': {
-                                                            color: 'inherit'
-                                                        }
-                                                    }}
-                                                >
-                                                    <Typography sx={{ fontWeight: 'bold' }}>
-                                                        🎯 Level {clusterResult.level} Clustering
-                                                        {clusterResult.status === 'error' && ' (Error)'}
-                                                    </Typography>
-                                                </AccordionSummary>
-                                                
-                                                <AccordionDetails sx={{ p: 3 }}>
-                                                    {clusterResult.status === 'error' ? (
-                                                        <Typography variant="body1" color="error">
-                                                            ❌ {clusterResult.message}
-                                                        </Typography>
-                                                    ) : (
-                                                        <>
-                                                            {/* Cluster Info Section */}
-                                                            {(() => {
-                                                                const clusterInfo = getClusterInfo(clusterResult);
-                                                                if (!clusterInfo) return null;
-                                                                
-                                                                return (
-                                                                    <Box sx={{ mb: theme.spacing(2) }}>
-                                                                        <Typography variant="h6" gutterBottom sx={{
-                                                                            color: darkMode ? '#ffffff' : 'inherit'
-                                                                        }}>
-                                                                            📊 Cluster Information
-                                                                        </Typography>
-                                                                        <Box sx={{ 
-                                                                            p: 3, 
-                                                                            bgcolor: 'background.paper', 
-                                                                            borderRadius: 2,
-                                                                            border: '1px solid',
-                                                                            borderColor: 'divider',
-                                                                            display: 'flex',
-                                                                            flexDirection: 'column',
-                                                                            gap: 2
-                                                                        }}>
-                                                                            <Box sx={{ 
-                                                                                display: 'grid',
-                                                                                gridTemplateColumns: '200px 1fr',
-                                                                                gap: 2,
-                                                                                alignItems: 'center'
-                                                                            }}>
-                                                                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                                                                                    Number of Clusters:
-                                                                                </Typography>
-                                                                                <Typography variant="subtitle1">
-                                                                                    {clusterInfo.num_clusters}
-                                                                                </Typography>
-
-                                                                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                                                                                    DBCV Score:
-                                                                                </Typography>
-                                                                                <Typography variant="subtitle1">
-                                                                                    {clusterInfo.dbcv_score?.toFixed(3) || 'N/A'}
-                                                                                </Typography>
-
-                                                                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                                                                                    Min Cluster Size:
-                                                                                </Typography>
-                                                                                <Typography variant="subtitle1">
-                                                                                    {clusterInfo.min_cluster_size}
-                                                                                </Typography>
-
-                                                                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                                                                                    Epsilon:
-                                                                                </Typography>
-                                                                                <Typography variant="subtitle1">
-                                                                                    {clusterInfo.cluster_selection_epsilon}
-                                                                                </Typography>
-
-                                                                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                                                                                    Useful Attributes:
-                                                                                </Typography>
-                                                                                <Typography variant="subtitle1">
-                                                                                    {clusterInfo.useful_attributes?.length || 0}
-                                                                                </Typography>
-                                                                            </Box>
-                                                                        </Box>
-                                                                    </Box>
-                                                                );
-                                                            })()}
-
-                                                            {/* Clusters Data Section */}
-                                                            {(() => {
-                                                                const clustersData = getClustersData(clusterResult);
-                                                                if (!clustersData) return null;
-                                                                
-                                                                return (
-                                                                    <Box sx={{ mb: theme.spacing(2) }}>
-                                                                        <Typography variant="h6" gutterBottom sx={{
-                                                                            color: darkMode ? '#ffffff' : 'inherit'
-                                                                        }}>
-                                                                            🎯 Clusters
-                                                                        </Typography>
-                                                                        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                                                                            <TextareaAutosize
-                                                                                minRows={2}
-                                                                                maxRows={4}
-                                                                                style={{ 
-                                                                                    width: '60%', 
-                                                                                    padding: '10px',
-                                                                                    fontFamily: 'monospace',
-                                                                                    borderRadius: '4px',
-                                                                                    border: '1px solid #ccc',
-                                                                                    resize: 'vertical',
-                                                                                    overflow: 'auto'
-                                                                                }}
-                                                                                value={clustersData.is_lightweight ? 
-                                                                                    clustersData.message : 
-                                                                                    JSON.stringify(clustersData, null, 1)
-                                                                                }
-                                                                                readOnly
-                                                                            />
-                                                                        </Box>
-                                                                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1, gap: 1 }}>
-                                                                            <Tooltip title="Copy clusters data to clipboard">
-                                                                                <IconButton 
-                                                                                    size="small" 
-                                                                                    onClick={() => handleCopyToClipboard(
-                                                                                        clustersData.is_lightweight ? 
-                                                                                        clustersData.message : 
-                                                                                        JSON.stringify(clustersData, null, 1)
-                                                                                    )}
-                                                                                    sx={{
-                                                                                        backgroundColor: darkMode ? '#404040' : 'grey.100',
-                                                                                        color: darkMode ? '#ffffff' : 'inherit',
-                                                                                        '&:hover': { 
-                                                                                            backgroundColor: darkMode ? '#505050' : 'grey.200'
-                                                                                        }
-                                                                                    }}
-                                                                                >
-                                                                                    <ContentCopyIcon />
-                                                                                </IconButton>
-                                                                            </Tooltip>
-                                                                            <Tooltip title="Copy complete clustering analysis for this domain level">
-                                                                                <Button
-                                                                                    variant="outlined"
-                                                                                    size="small"
-                                                                                    onClick={() => {
-                                                                                        const clusterInfo = getClusterInfo(clusterResult);
-                                                                                        const completeAnalysis = {
-                                                                                            domain: domainResult.domain,
-                                                                                            level: clusterResult.level,
-                                                                                            status: clusterResult.status,
-                                                                                            message: clusterResult.message,
-                                                                                            cluster_info: clusterInfo,
-                                                                                            clusters_data: clustersData,
-                                                                                            is_lightweight: clustersData?.is_lightweight || false,
-                                                                                            timestamp: new Date().toISOString()
-                                                                                        };
-                                                                                        handleCopyToClipboard(JSON.stringify(completeAnalysis, null, 2));
-                                                                                        setSuccess(`📋 ${domainResult.domain} Level ${clusterResult.level} clustering analysis copied!`);
-                                                                                    }}
-                                                                                    sx={{
-                                                                                        fontSize: '0.75rem',
-                                                                                        ...(darkMode && {
-                                                                                            borderColor: '#555',
-                                                                                            color: '#fff',
-                                                                                            '&:hover': {
-                                                                                                borderColor: '#777',
-                                                                                                backgroundColor: 'rgba(255,255,255,0.1)'
-                                                                                            }
-                                                                                        })
-                                                                                    }}
-                                                                                >
-                                                                                    📊 Copy Domain Analysis
-                                                                                </Button>
-                                                                            </Tooltip>
-                                                                            {clustersData.is_lightweight && (
-                                                                                <Tooltip title="Load full clustering data from separate file">
-                                                                                    <Button
-                                                                                        variant="outlined"
-                                                                                        size="small"
-                                                                                        onClick={async () => {
-                                                                                            const testId = result.test_metadata?.test_id;
-                                                                                            if (testId && selectedExperiment?.id) {
-                                                                                                const fullData = await loadLargeDataClusteringResults(selectedExperiment.id, testId);
-                                                                                                if (fullData) {
-                                                                                                    // Find the specific cluster result and update it
-                                                                                                    const clusterIndex = result.clustering_results.findIndex(cr => cr.level === clusterResult.level);
-                                                                                                    if (clusterIndex !== -1) {
-                                                                                                        // Update the result with full data
-                                                                                                        const updatedResult = { ...result };
-                                                                                                        updatedResult.clustering_results[clusterIndex] = fullData[clusterIndex];
-                                                                                                        setResult(updatedResult);
-                                                                                                        setSuccess('Full clustering data loaded successfully!');
-                                                                                                    }
-                                                                                                }
-                                                                                            }
-                                                                                        }}
-                                                                                        sx={{
-                                                                                            fontSize: '0.75rem',
-                                                                                            ...(darkMode && {
-                                                                                                borderColor: '#555',
-                                                                                                color: '#fff',
-                                                                                                '&:hover': {
-                                                                                                    borderColor: '#777',
-                                                                                                    backgroundColor: 'rgba(255,255,255,0.1)'
-                                                                                                }
-                                                                                            })
-                                                                                        }}
-                                                                                    >
-                                                                                        📥 Load Full Data
-                                                                                    </Button>
-                                                                                </Tooltip>
-                                                                            )}
-                                                                        </Box>
-                                                                    </Box>
-                                                                );
-                                                            })()}
-                                                        </>
-                                                    )}
-                                                </AccordionDetails>
-                                            </Accordion>
-                                        ))}
-
-                                        {/* Processed Clusters Section */}
-                                        {domainResult.processed_clusters && domainResult.processed_clusters.map((processedCluster, index) => (
-                                            <Accordion 
-                                                key={`processed-cluster-${domainIndex}-${index}`} 
-                                                sx={{ 
-                                                    mb: theme.spacing(2),
-                                                    '&:before': { display: 'none', },
-                                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                                                    borderRadius: '8px !important',
-                                                    backgroundColor: darkMode ? '#2a2a2a' : 'background.paper'
-                                                }}
-                                            >
-                                                <AccordionSummary 
-                                                    expandIcon={<ExpandMoreIcon />}
-                                                    sx={{
-                                                        backgroundColor: darkMode ? '#333' : 'grey.200',
-                                                        color: darkMode ? '#ffffff' : 'inherit',
-                                                        '&:hover': {
-                                                            backgroundColor: darkMode ? '#404040' : 'grey.300',
-                                                            color: darkMode ? '#ffffff' : 'text.primary',
-                                                        }
-                                                    }}
-                                                >
-                                                    <Typography sx={{ fontWeight: 'bold' }}>
-                                                        ⚙️ Processed Cluster Level {processedCluster.level}
-                                                    </Typography>
-                                                </AccordionSummary>
-                                                
-                                                <AccordionDetails sx={{ p: 3 }}>
-                                                    {processedCluster.processed_data && processedCluster.processed_data.sites && (
-                                                        <Box sx={{ mb: theme.spacing(2) }}>
-                                                            <Typography variant="h6" gutterBottom sx={{
-                                                                color: darkMode ? '#ffffff' : 'inherit'
-                                                            }}>
-                                                                📊 Sites Data
-                                                            </Typography>
-                                                            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                                                                <TextareaAutosize
-                                                                    minRows={2}
-                                                                    maxRows={4}
-                                                                    style={{ 
-                                                                        width: '60%', 
-                                                                        padding: '10px',
-                                                                        fontFamily: 'monospace',
-                                                                        borderRadius: '4px',
-                                                                        border: '1px solid #ccc',
-                                                                        resize: 'vertical',
-                                                                        overflow: 'auto'
-                                                                    }}
-                                                                    value={formatSitesData(processedCluster.processed_data.sites)}
-                                                                    readOnly
-                                                                />
-                                                            </Box>
-                                                            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1 }}>
-                                                                <Tooltip title="Copy to clipboard">
-                                                                    <IconButton 
-                                                                        size="small" 
-                                                                        onClick={() => handleCopyToClipboard(formatSitesData(processedCluster.processed_data.sites))}
-                                                                    >
-                                                                        <ContentCopyIcon />
-                                                                    </IconButton>
-                                                                </Tooltip>
-                                                            </Box>
-                                                        </Box>
-                                                    )}
-
-                                                    {/* Timing Logs Section for Processed Clusters */}
-                                                    {processedCluster.timing_logs && renderTimingLogs(processedCluster.timing_logs)}
-                                                </AccordionDetails>
-                                            </Accordion>
-                                        ))}
-                                    </>
-                                )}
-                            </AccordionDetails>
-                        </Accordion>
-                    ))}
-
-                    {/* Timing Logs Section for Regular Results */}
-                    {result.timing_logs && renderTimingLogs(result.timing_logs)}
-
-
-                </Box>
-            );
-        }
 
         // Original results rendering (mode 0)
         return (
@@ -2883,7 +2465,10 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                         {renderSiteSimilarityResults(
                             processedCluster.processed_data.site_similarity, 
                             processedCluster.level, 
-                            processedCluster.processed_data
+                            processedCluster.processed_data,
+                            '',
+                            processedCluster.is_best_level,
+                            processedCluster.best_level_details
                         )}
                     </div>
                 ))}
@@ -2922,10 +2507,13 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                 }
                             }}
                         >
-                            <Typography sx={{ fontWeight: 'bold' }}>
-                                🎯 Level {clusterResult.level} Clustering
-                                {clusterResult.status === 'error' && ' (Error)'}
-                            </Typography>
+                            <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                                <Typography sx={{ fontWeight: 'bold', flexGrow: 1 }}>
+                                    🎯 Level {clusterResult.level} Clustering
+                                    {clusterResult.status === 'error' && ' (Error)'}
+                                </Typography>
+                                {renderBestLevelIndicator(clusterResult.is_best_level, clusterResult.best_level_details)}
+                            </Box>
                         </AccordionSummary>
                         
                         <AccordionDetails sx={{ p: 3 }}>
@@ -3162,9 +2750,12 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                 }
                             }}
                         >
-                            <Typography sx={{ fontWeight: 'bold' }}>
-                                ⚙️ Processed Cluster Level {processedCluster.level}
-                            </Typography>
+                            <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                                <Typography sx={{ fontWeight: 'bold', flexGrow: 1 }}>
+                                    ⚙️ Processed Cluster Level {processedCluster.level}
+                                </Typography>
+                                {renderBestLevelIndicator(processedCluster.is_best_level, processedCluster.best_level_details)}
+                            </Box>
                         </AccordionSummary>
                         
                         <AccordionDetails sx={{ p: 3 }}>
@@ -3298,19 +2889,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                             </Box>
                         </Box>
 
-                        {/* Mode Switch */}
-                        <Box sx={{ maxWidth: '1400px', mx: 'auto', px: 3, mt: theme.spacing(2), display: 'flex', justifyContent: 'center' }}>
-                            <FormControlLabel
-                                control={
-                                    <Switch
-                                        checked={isNewMode}
-                                        onChange={(e) => setIsNewMode(e.target.checked)}
-                                        color="primary"
-                                    />
-                                }
-                                label={isNewMode ? "🌐 Process by Domain" : "📦 Process All Together"}
-                            />
-                        </Box>
+
 
                         {/* URL Cards */}
                         <Box sx={{ 
@@ -3925,52 +3504,640 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
 
                                                         return (
                                                             <Box sx={{ width: '100%', mt: theme.spacing(2), maxWidth: '1600px', mx: 'auto', px: 2 }}>
-                                                                {/* Mode 0: Show standard clustering results */}
-                                                                {archivedResult.test_metadata?.mode === 0 && archivedResult.processed_clusters && archivedResult.processed_clusters.map((processedCluster, clusterIndex) => (
-                                                                    processedCluster.processed_data && processedCluster.processed_data.site_similarity &&
-                                                                    <div key={`similarity-${clusterIndex}`}>
-                                                                        {renderSiteSimilarityResults(
-                                                                            processedCluster.processed_data.site_similarity, 
-                                                                            processedCluster.level, 
-                                                                            processedCluster.processed_data
-                                                                        )}
-                                                                    </div>
-                                                                ))}
+                                                                                                                {/* Mode 0: Show standard clustering results */}
+                                                {archivedResult.test_metadata?.mode === 0 && (
+                                                    <>
+                                                        {/* Site Similarity Results */}
+                                                        {archivedResult.processed_clusters && archivedResult.processed_clusters.map((processedCluster, clusterIndex) => (
+                                                            processedCluster.processed_data && processedCluster.processed_data.site_similarity &&
+                                                            <div key={`similarity-${clusterIndex}`}>
+                                                                {renderSiteSimilarityResults(
+                                                                    processedCluster.processed_data.site_similarity, 
+                                                                    processedCluster.level, 
+                                                                    processedCluster.processed_data,
+                                                                    '',
+                                                                    processedCluster.is_best_level,
+                                                                    processedCluster.best_level_details
+                                                                )}
+                                                            </div>
+                                                        ))}
 
-                                                                {/* Mode 1: Show domain-based results */}
-                                                                {archivedResult.test_metadata?.mode === 1 && archivedResult.domain_results && archivedResult.domain_results.map((domainResult, domainIndex) => (
-                                                                    <div key={`domain-${domainIndex}`}>
-                                                                        {/* Domain header */}
-                                                                        <Typography variant="h6" sx={{ mt: 3, mb: 2, fontWeight: 'bold', color: 'secondary.main' }}>
-                                                                            🌐 Domain: {domainResult.domain}
+                                                        {/* Clustering Results Section */}
+                                                        {archivedResult.clustering_results && archivedResult.clustering_results.map((clusterResult, index) => (
+                                                            <Accordion 
+                                                                key={`cluster-result-${index}`} 
+                                                                sx={{ 
+                                                                    mb: theme.spacing(2),
+                                                                    '&:before': {
+                                                                        display: 'none',
+                                                                    },
+                                                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                                                    borderRadius: '8px !important',
+                                                                    overflow: 'hidden',
+                                                                    backgroundColor: darkMode ? '#2a2a2a' : 'background.paper'
+                                                                }}
+                                                            >
+                                                                <AccordionSummary 
+                                                                    expandIcon={<ExpandMoreIcon />}
+                                                                    sx={{
+                                                                        backgroundColor: clusterResult.status === 'error' 
+                                                                            ? 'error.light' 
+                                                                            : (darkMode ? '#333' : 'primary.light'),
+                                                                        color: darkMode ? '#ffffff' : 'inherit',
+                                                                        '&:hover': {
+                                                                            backgroundColor: clusterResult.status === 'error' 
+                                                                                ? 'error.main' 
+                                                                                : (darkMode ? '#404040' : 'primary.main'),
+                                                                            color: darkMode ? '#ffffff' : 'white',
+                                                                        },
+                                                                        '& .MuiAccordionSummary-expandIconWrapper': {
+                                                                            color: 'inherit'
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                                                                        <Typography sx={{ fontWeight: 'bold', flexGrow: 1 }}>
+                                                                            🎯 Level {clusterResult.level} Clustering
+                                                                            {clusterResult.status === 'error' && ' (Error)'}
                                                                         </Typography>
-                                                                        
-                                                                        {/* Domain URLs */}
-                                                                        <Box sx={{ mb: 2 }}>
-                                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
-                                                                                URLs in this domain:
+                                                                        {renderBestLevelIndicator(clusterResult.is_best_level, clusterResult.best_level_details)}
+                                                                    </Box>
+                                                                </AccordionSummary>
+                                                                
+                                                                <AccordionDetails sx={{ p: 3 }}>
+                                                                    {clusterResult.status === 'error' ? (
+                                                                        <Typography variant="body1" color="error">
+                                                                            ❌ {clusterResult.message}
+                                                                        </Typography>
+                                                                    ) : (
+                                                                        <>
+                                                                            {/* Cluster Info Section */}
+                                                                            {(() => {
+                                                                                const clusterInfo = getClusterInfo(clusterResult);
+                                                                                if (!clusterInfo) return null;
+                                                                                
+                                                                                return (
+                                                                                    <Box sx={{ mb: theme.spacing(2) }}>
+                                                                                        <Typography variant="h6" gutterBottom sx={{
+                                                                                            color: darkMode ? '#ffffff' : 'inherit'
+                                                                                        }}>
+                                                                                            📊 Cluster Information
+                                                                                        </Typography>
+                                                                                        <Box sx={{ 
+                                                                                            p: 3, 
+                                                                                            bgcolor: 'background.paper', 
+                                                                                            borderRadius: 2,
+                                                                                            border: '1px solid',
+                                                                                            borderColor: 'divider',
+                                                                                            display: 'flex',
+                                                                                            flexDirection: 'column',
+                                                                                            gap: 2
+                                                                                        }}>
+                                                                                            <Box sx={{ 
+                                                                                                display: 'grid',
+                                                                                                gridTemplateColumns: '200px 1fr',
+                                                                                                gap: 2,
+                                                                                                alignItems: 'center'
+                                                                                            }}>
+                                                                                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                                                                    Number of Clusters:
+                                                                                                </Typography>
+                                                                                                <Typography variant="subtitle1">
+                                                                                                    {clusterInfo.num_clusters}
+                                                                                                </Typography>
+
+                                                                                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                                                                    DBCV Score:
+                                                                                                </Typography>
+                                                                                                <Typography variant="subtitle1">
+                                                                                                    {clusterInfo.dbcv_score?.toFixed(3) || 'N/A'}
+                                                                                                </Typography>
+
+                                                                                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                                                                    Min Cluster Size:
+                                                                                                </Typography>
+                                                                                                <Typography variant="subtitle1">
+                                                                                                    {clusterInfo.min_cluster_size}
+                                                                                                </Typography>
+
+                                                                                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                                                                    Epsilon:
+                                                                                                </Typography>
+                                                                                                <Typography variant="subtitle1">
+                                                                                                    {clusterInfo.cluster_selection_epsilon}
+                                                                                                </Typography>
+
+                                                                                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                                                                    Useful Attributes:
+                                                                                                </Typography>
+                                                                                                <Typography variant="subtitle1">
+                                                                                                    {clusterInfo.useful_attributes?.length || 0}
+                                                                                                </Typography>
+                                                                                            </Box>
+                                                                                        </Box>
+                                                                                    </Box>
+                                                                                );
+                                                                            })()}
+
+                                                                            {/* Clusters Data Section */}
+                                                                            {(() => {
+                                                                                const clustersData = getClustersData(clusterResult);
+                                                                                if (!clustersData) return null;
+                                                                                
+                                                                                return (
+                                                                                    <Box sx={{ mb: theme.spacing(2) }}>
+                                                                                        <Typography variant="h6" gutterBottom sx={{
+                                                                                            color: darkMode ? '#ffffff' : 'inherit'
+                                                                                        }}>
+                                                                                            🎯 Clusters
+                                                                                        </Typography>
+                                                                                        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                                                                            <TextareaAutosize
+                                                                                                minRows={2}
+                                                                                                maxRows={4}
+                                                                                                style={{ 
+                                                                                                    width: '60%', 
+                                                                                                    padding: '10px',
+                                                                                                    fontFamily: 'monospace',
+                                                                                                    borderRadius: '4px',
+                                                                                                    border: '1px solid #ccc',
+                                                                                                    resize: 'vertical',
+                                                                                                    overflow: 'auto'
+                                                                                                }}
+                                                                                                value={clustersData.is_lightweight ? 
+                                                                                                    clustersData.message : 
+                                                                                                    JSON.stringify(clustersData, null, 1)
+                                                                                                }
+                                                                                                readOnly
+                                                                                            />
+                                                                                        </Box>
+                                                                                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1, gap: 1 }}>
+                                                                                            <Tooltip title="Copy clusters data to clipboard">
+                                                                                                <IconButton 
+                                                                                                    size="small" 
+                                                                                                    onClick={() => handleCopyToClipboard(
+                                                                                                        clustersData.is_lightweight ? 
+                                                                                                        clustersData.message : 
+                                                                                                        JSON.stringify(clustersData, null, 1)
+                                                                                                    )}
+                                                                                                    sx={{
+                                                                                                        backgroundColor: darkMode ? '#404040' : 'grey.100',
+                                                                                                        color: darkMode ? '#ffffff' : 'inherit',
+                                                                                                        '&:hover': { 
+                                                                                                            backgroundColor: darkMode ? '#505050' : 'grey.200'
+                                                                                                        }
+                                                                                                    }}
+                                                                                                >
+                                                                                                    <ContentCopyIcon />
+                                                                                                </IconButton>
+                                                                                            </Tooltip>
+                                                                                            <Tooltip title="Copy complete clustering analysis for this level">
+                                                                                                <Button
+                                                                                                    variant="outlined"
+                                                                                                    size="small"
+                                                                                                    onClick={() => {
+                                                                                                        const clusterInfo = getClusterInfo(clusterResult);
+                                                                                                        const completeAnalysis = {
+                                                                                                            level: clusterResult.level,
+                                                                                                            status: clusterResult.status,
+                                                                                                            message: clusterResult.message,
+                                                                                                            cluster_info: clusterInfo,
+                                                                                                            clusters_data: clustersData,
+                                                                                                            is_lightweight: clustersData?.is_lightweight || false,
+                                                                                                            timestamp: new Date().toISOString()
+                                                                                                        };
+                                                                                                        handleCopyToClipboard(JSON.stringify(completeAnalysis, null, 2));
+                                                                                                        setSuccess(`📋 Level ${clusterResult.level} clustering analysis copied!`);
+                                                                                                    }}
+                                                                                                    sx={{
+                                                                                                        fontSize: '0.75rem',
+                                                                                                        ...(darkMode && {
+                                                                                                            borderColor: '#555',
+                                                                                                            color: '#fff',
+                                                                                                            '&:hover': {
+                                                                                                                borderColor: '#777',
+                                                                                                                backgroundColor: 'rgba(255,255,255,0.1)'
+                                                                                                            }
+                                                                                                        })
+                                                                                                    }}
+                                                                                                >
+                                                                                                    📊 Copy Analysis
+                                                                                                </Button>
+                                                                                            </Tooltip>
+                                                                                        </Box>
+                                                                                    </Box>
+                                                                                );
+                                                                            })()}
+                                                                        </>
+                                                                    )}
+                                                                </AccordionDetails>
+                                                            </Accordion>
+                                                        ))}
+
+                                                        {/* Processed Clusters Section */}
+                                                        {archivedResult.processed_clusters && archivedResult.processed_clusters.map((processedCluster, index) => (
+                                                            <Accordion 
+                                                                key={`processed-cluster-${index}`} 
+                                                                sx={{ 
+                                                                    mb: theme.spacing(2),
+                                                                    '&:before': { display: 'none', },
+                                                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                                                    borderRadius: '8px !important',
+                                                                    backgroundColor: darkMode ? '#2a2a2a' : 'background.paper'
+                                                                }}
+                                                            >
+                                                                <AccordionSummary 
+                                                                    expandIcon={<ExpandMoreIcon />}
+                                                                    sx={{
+                                                                        backgroundColor: darkMode ? '#333' : 'grey.200',
+                                                                        color: darkMode ? '#ffffff' : 'inherit',
+                                                                        '&:hover': {
+                                                                            backgroundColor: darkMode ? '#404040' : 'grey.300',
+                                                                            color: darkMode ? '#ffffff' : 'text.primary',
+                                                                        },
+                                                                        '& .MuiAccordionSummary-expandIconWrapper': {
+                                                                            color: 'inherit'
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                                                                        <Typography sx={{ fontWeight: 'bold', flexGrow: 1 }}>
+                                                                            ⚙️ Processed Cluster Level {processedCluster.level}
+                                                                        </Typography>
+                                                                        {renderBestLevelIndicator(processedCluster.is_best_level, processedCluster.best_level_details)}
+                                                                    </Box>
+                                                                </AccordionSummary>
+                                                                
+                                                                <AccordionDetails sx={{ p: 3 }}>
+                                                                    {processedCluster.processed_data && processedCluster.processed_data.sites && (
+                                                                        <Box sx={{ mb: theme.spacing(2) }}>
+                                                                            <Typography variant="h6" gutterBottom sx={{
+                                                                                color: darkMode ? '#ffffff' : 'inherit'
+                                                                            }}>
+                                                                                📊 Sites Data
                                                                             </Typography>
-                                                                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                                                                                {domainResult.urls && domainResult.urls.map((url, urlIndex) => (
-                                                                                    <Chip key={urlIndex} label={url} size="small" color="secondary" />
-                                                                                ))}
+                                                                            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                                                                <TextareaAutosize
+                                                                                    minRows={2}
+                                                                                    maxRows={4}
+                                                                                    style={{ 
+                                                                                        width: '60%', 
+                                                                                        padding: '10px',
+                                                                                        fontFamily: 'monospace',
+                                                                                        borderRadius: '4px',
+                                                                                        border: '1px solid #ccc',
+                                                                                        resize: 'vertical',
+                                                                                        overflow: 'auto'
+                                                                                    }}
+                                                                                    value={formatSitesData(processedCluster.processed_data.sites)}
+                                                                                    readOnly
+                                                                                />
+                                                                            </Box>
+                                                                            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1 }}>
+                                                                                <Tooltip title="Copy to clipboard">
+                                                                                    <IconButton 
+                                                                                        size="small" 
+                                                                                        onClick={() => handleCopyToClipboard(formatSitesData(processedCluster.processed_data.sites))}
+                                                                                    >
+                                                                                        <ContentCopyIcon />
+                                                                                    </IconButton>
+                                                                                </Tooltip>
                                                                             </Box>
                                                                         </Box>
+                                                                    )}
 
-                                                                        {/* Show similarity results directly if available */}
-                                                                        {domainResult.processed_clusters && domainResult.processed_clusters.map((processedCluster, clusterIndex) => (
-                                                                            processedCluster.processed_data && processedCluster.processed_data.site_similarity &&
-                                                                            <div key={`domain-${domainIndex}-similarity-${clusterIndex}`}>
-                                                                                {renderSiteSimilarityResults(
-                                                                                    processedCluster.processed_data.site_similarity, 
-                                                                                    processedCluster.level, 
-                                                                                    processedCluster.processed_data,
-                                                                                    `${domainResult.domain} -`
-                                                                                )}
-                                                                            </div>
-                                                                        ))}
-                                                                    </div>
+                                                                    {/* Timing Logs Section for Processed Clusters */}
+                                                                    {processedCluster.timing_logs && renderTimingLogs(processedCluster.timing_logs)}
+                                                                </AccordionDetails>
+                                                            </Accordion>
+                                                        ))}
+                                                    </>
+                                                )}
+
+                                                                                                                {/* Mode 1: Show domain-based results */}
+                                                {archivedResult.test_metadata?.mode === 1 && archivedResult.domain_results && archivedResult.domain_results.map((domainResult, domainIndex) => (
+                                                    <div key={`domain-${domainIndex}`}>
+                                                        {/* Domain header */}
+                                                        <Typography variant="h6" sx={{ mt: 3, mb: 2, fontWeight: 'bold', color: 'secondary.main' }}>
+                                                            🌐 Domain: {domainResult.domain}
+                                                        </Typography>
+                                                        
+                                                        {/* Domain URLs */}
+                                                        <Box sx={{ mb: 2 }}>
+                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                                                                URLs in this domain:
+                                                            </Typography>
+                                                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                                                {domainResult.urls && domainResult.urls.map((url, urlIndex) => (
+                                                                    <Chip key={urlIndex} label={url} size="small" color="secondary" />
                                                                 ))}
+                                                            </Box>
+                                                        </Box>
+
+                                                        {/* Show similarity results directly if available */}
+                                                        {domainResult.processed_clusters && domainResult.processed_clusters.map((processedCluster, clusterIndex) => (
+                                                            processedCluster.processed_data && processedCluster.processed_data.site_similarity &&
+                                                            <div key={`domain-${domainIndex}-similarity-${clusterIndex}`}>
+                                                                {renderSiteSimilarityResults(
+                                                                    processedCluster.processed_data.site_similarity, 
+                                                                    processedCluster.level, 
+                                                                    processedCluster.processed_data,
+                                                                    `${domainResult.domain} - `,
+                                                                    processedCluster.is_best_level,
+                                                                    processedCluster.best_level_details
+                                                                )}
+                                                            </div>
+                                                        ))}
+
+                                                        {/* Domain Clustering Results Section */}
+                                                        {domainResult.clustering_results && domainResult.clustering_results.map((clusterResult, clusterIndex) => (
+                                                            <Accordion 
+                                                                key={`domain-cluster-result-${domainIndex}-${clusterIndex}`} 
+                                                                sx={{ 
+                                                                    mb: theme.spacing(2),
+                                                                    '&:before': {
+                                                                        display: 'none',
+                                                                    },
+                                                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                                                    borderRadius: '8px !important',
+                                                                    overflow: 'hidden',
+                                                                    backgroundColor: darkMode ? '#2a2a2a' : 'background.paper'
+                                                                }}
+                                                            >
+                                                                <AccordionSummary 
+                                                                    expandIcon={<ExpandMoreIcon />}
+                                                                    sx={{
+                                                                        backgroundColor: clusterResult.status === 'error' 
+                                                                            ? 'error.light' 
+                                                                            : (darkMode ? '#333' : 'primary.light'),
+                                                                        color: darkMode ? '#ffffff' : 'inherit',
+                                                                        '&:hover': {
+                                                                            backgroundColor: clusterResult.status === 'error' 
+                                                                                ? 'error.main' 
+                                                                                : (darkMode ? '#404040' : 'primary.main'),
+                                                                            color: darkMode ? '#ffffff' : 'white',
+                                                                        },
+                                                                        '& .MuiAccordionSummary-expandIconWrapper': {
+                                                                            color: 'inherit'
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                                                                        <Typography sx={{ fontWeight: 'bold', flexGrow: 1 }}>
+                                                                            🎯 {domainResult.domain} - Level {clusterResult.level} Clustering
+                                                                            {clusterResult.status === 'error' && ' (Error)'}
+                                                                        </Typography>
+                                                                        {renderBestLevelIndicator(clusterResult.is_best_level, clusterResult.best_level_details)}
+                                                                    </Box>
+                                                                </AccordionSummary>
+                                                                
+                                                                <AccordionDetails sx={{ p: 3 }}>
+                                                                    {clusterResult.status === 'error' ? (
+                                                                        <Typography variant="body1" color="error">
+                                                                            ❌ {clusterResult.message}
+                                                                        </Typography>
+                                                                    ) : (
+                                                                        <>
+                                                                            {/* Cluster Info Section */}
+                                                                            {(() => {
+                                                                                const clusterInfo = getClusterInfo(clusterResult);
+                                                                                if (!clusterInfo) return null;
+                                                                                
+                                                                                return (
+                                                                                    <Box sx={{ mb: theme.spacing(2) }}>
+                                                                                        <Typography variant="h6" gutterBottom sx={{
+                                                                                            color: darkMode ? '#ffffff' : 'inherit'
+                                                                                        }}>
+                                                                                            📊 Cluster Information
+                                                                                        </Typography>
+                                                                                        <Box sx={{ 
+                                                                                            p: 3, 
+                                                                                            bgcolor: 'background.paper', 
+                                                                                            borderRadius: 2,
+                                                                                            border: '1px solid',
+                                                                                            borderColor: 'divider',
+                                                                                            display: 'flex',
+                                                                                            flexDirection: 'column',
+                                                                                            gap: 2
+                                                                                        }}>
+                                                                                            <Box sx={{ 
+                                                                                                display: 'grid',
+                                                                                                gridTemplateColumns: '200px 1fr',
+                                                                                                gap: 2,
+                                                                                                alignItems: 'center'
+                                                                                            }}>
+                                                                                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                                                                    Number of Clusters:
+                                                                                                </Typography>
+                                                                                                <Typography variant="subtitle1">
+                                                                                                    {clusterInfo.num_clusters}
+                                                                                                </Typography>
+
+                                                                                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                                                                    DBCV Score:
+                                                                                                </Typography>
+                                                                                                <Typography variant="subtitle1">
+                                                                                                    {clusterInfo.dbcv_score?.toFixed(3) || 'N/A'}
+                                                                                                </Typography>
+
+                                                                                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                                                                    Min Cluster Size:
+                                                                                                </Typography>
+                                                                                                <Typography variant="subtitle1">
+                                                                                                    {clusterInfo.min_cluster_size}
+                                                                                                </Typography>
+
+                                                                                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                                                                    Epsilon:
+                                                                                                </Typography>
+                                                                                                <Typography variant="subtitle1">
+                                                                                                    {clusterInfo.cluster_selection_epsilon}
+                                                                                                </Typography>
+
+                                                                                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                                                                                    Useful Attributes:
+                                                                                                </Typography>
+                                                                                                <Typography variant="subtitle1">
+                                                                                                    {clusterInfo.useful_attributes?.length || 0}
+                                                                                                </Typography>
+                                                                                            </Box>
+                                                                                        </Box>
+                                                                                    </Box>
+                                                                                );
+                                                                            })()}
+
+                                                                            {/* Clusters Data Section */}
+                                                                            {(() => {
+                                                                                const clustersData = getClustersData(clusterResult);
+                                                                                if (!clustersData) return null;
+                                                                                
+                                                                                return (
+                                                                                    <Box sx={{ mb: theme.spacing(2) }}>
+                                                                                        <Typography variant="h6" gutterBottom sx={{
+                                                                                            color: darkMode ? '#ffffff' : 'inherit'
+                                                                                        }}>
+                                                                                            🎯 Clusters
+                                                                                        </Typography>
+                                                                                        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                                                                            <TextareaAutosize
+                                                                                                minRows={2}
+                                                                                                maxRows={4}
+                                                                                                style={{ 
+                                                                                                    width: '60%', 
+                                                                                                    padding: '10px',
+                                                                                                    fontFamily: 'monospace',
+                                                                                                    borderRadius: '4px',
+                                                                                                    border: '1px solid #ccc',
+                                                                                                    resize: 'vertical',
+                                                                                                    overflow: 'auto'
+                                                                                                }}
+                                                                                                value={clustersData.is_lightweight ? 
+                                                                                                    clustersData.message : 
+                                                                                                    JSON.stringify(clustersData, null, 1)
+                                                                                                }
+                                                                                                readOnly
+                                                                                            />
+                                                                                        </Box>
+                                                                                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1, gap: 1 }}>
+                                                                                            <Tooltip title="Copy clusters data to clipboard">
+                                                                                                <IconButton 
+                                                                                                    size="small" 
+                                                                                                    onClick={() => handleCopyToClipboard(
+                                                                                                        clustersData.is_lightweight ? 
+                                                                                                        clustersData.message : 
+                                                                                                        JSON.stringify(clustersData, null, 1)
+                                                                                                    )}
+                                                                                                    sx={{
+                                                                                                        backgroundColor: darkMode ? '#404040' : 'grey.100',
+                                                                                                        color: darkMode ? '#ffffff' : 'inherit',
+                                                                                                        '&:hover': { 
+                                                                                                            backgroundColor: darkMode ? '#505050' : 'grey.200'
+                                                                                                        }
+                                                                                                    }}
+                                                                                                >
+                                                                                                    <ContentCopyIcon />
+                                                                                                </IconButton>
+                                                                                            </Tooltip>
+                                                                                            <Tooltip title="Copy complete clustering analysis for this domain level">
+                                                                                                <Button
+                                                                                                    variant="outlined"
+                                                                                                    size="small"
+                                                                                                    onClick={() => {
+                                                                                                        const clusterInfo = getClusterInfo(clusterResult);
+                                                                                                        const completeAnalysis = {
+                                                                                                            domain: domainResult.domain,
+                                                                                                            level: clusterResult.level,
+                                                                                                            status: clusterResult.status,
+                                                                                                            message: clusterResult.message,
+                                                                                                            cluster_info: clusterInfo,
+                                                                                                            clusters_data: clustersData,
+                                                                                                            is_lightweight: clustersData?.is_lightweight || false,
+                                                                                                            timestamp: new Date().toISOString()
+                                                                                                        };
+                                                                                                        handleCopyToClipboard(JSON.stringify(completeAnalysis, null, 2));
+                                                                                                        setSuccess(`📋 ${domainResult.domain} Level ${clusterResult.level} clustering analysis copied!`);
+                                                                                                    }}
+                                                                                                    sx={{
+                                                                                                        fontSize: '0.75rem',
+                                                                                                        ...(darkMode && {
+                                                                                                            borderColor: '#555',
+                                                                                                            color: '#fff',
+                                                                                                            '&:hover': {
+                                                                                                                borderColor: '#777',
+                                                                                                                backgroundColor: 'rgba(255,255,255,0.1)'
+                                                                                                            }
+                                                                                                        })
+                                                                                                    }}
+                                                                                                >
+                                                                                                    📊 Copy Domain Analysis
+                                                                                                </Button>
+                                                                                            </Tooltip>
+                                                                                        </Box>
+                                                                                    </Box>
+                                                                                );
+                                                                            })()}
+                                                                        </>
+                                                                    )}
+                                                                </AccordionDetails>
+                                                            </Accordion>
+                                                        ))}
+
+                                                        {/* Domain Processed Clusters Section */}
+                                                        {domainResult.processed_clusters && domainResult.processed_clusters.map((processedCluster, index) => (
+                                                            <Accordion 
+                                                                key={`domain-processed-cluster-${domainIndex}-${index}`} 
+                                                                sx={{ 
+                                                                    mb: theme.spacing(2),
+                                                                    '&:before': { display: 'none', },
+                                                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                                                    borderRadius: '8px !important',
+                                                                    backgroundColor: darkMode ? '#2a2a2a' : 'background.paper'
+                                                                }}
+                                                            >
+                                                                <AccordionSummary 
+                                                                    expandIcon={<ExpandMoreIcon />}
+                                                                    sx={{
+                                                                        backgroundColor: darkMode ? '#333' : 'grey.200',
+                                                                        color: darkMode ? '#ffffff' : 'inherit',
+                                                                        '&:hover': {
+                                                                            backgroundColor: darkMode ? '#404040' : 'grey.300',
+                                                                            color: darkMode ? '#ffffff' : 'text.primary',
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                                                                        <Typography sx={{ fontWeight: 'bold', flexGrow: 1 }}>
+                                                                            ⚙️ {domainResult.domain} - Processed Cluster Level {processedCluster.level}
+                                                                        </Typography>
+                                                                        {renderBestLevelIndicator(processedCluster.is_best_level, processedCluster.best_level_details)}
+                                                                    </Box>
+                                                                </AccordionSummary>
+                                                                
+                                                                <AccordionDetails sx={{ p: 3 }}>
+                                                                    {processedCluster.processed_data && processedCluster.processed_data.sites && (
+                                                                        <Box sx={{ mb: theme.spacing(2) }}>
+                                                                            <Typography variant="h6" gutterBottom sx={{
+                                                                                color: darkMode ? '#ffffff' : 'inherit'
+                                                                            }}>
+                                                                                📊 Sites Data
+                                                                            </Typography>
+                                                                            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                                                                <TextareaAutosize
+                                                                                    minRows={2}
+                                                                                    maxRows={4}
+                                                                                    style={{ 
+                                                                                        width: '60%', 
+                                                                                        padding: '10px',
+                                                                                        fontFamily: 'monospace',
+                                                                                        borderRadius: '4px',
+                                                                                        border: '1px solid #ccc',
+                                                                                        resize: 'vertical',
+                                                                                        overflow: 'auto'
+                                                                                    }}
+                                                                                    value={formatSitesData(processedCluster.processed_data.sites)}
+                                                                                    readOnly
+                                                                                />
+                                                                            </Box>
+                                                                            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1 }}>
+                                                                                <Tooltip title="Copy to clipboard">
+                                                                                    <IconButton 
+                                                                                        size="small" 
+                                                                                        onClick={() => handleCopyToClipboard(formatSitesData(processedCluster.processed_data.sites))}
+                                                                                    >
+                                                                                        <ContentCopyIcon />
+                                                                                    </IconButton>
+                                                                                </Tooltip>
+                                                                            </Box>
+                                                                        </Box>
+                                                                    )}
+
+                                                                    {/* Timing Logs Section for Processed Clusters */}
+                                                                    {processedCluster.timing_logs && renderTimingLogs(processedCluster.timing_logs)}
+                                                                </AccordionDetails>
+                                                            </Accordion>
+                                                        ))}
+                                                    </div>
+                                                ))}
                                                             </Box>
                                                         );
                                                     })()}
@@ -4424,7 +4591,7 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                 }
                                                 subheader={
                                                     <Typography variant="subtitle1" sx={{ color: 'rgba(255,255,255,0.8)' }}>
-                                                        ID: {result.test_metadata?.test_id} | Mode: {result.test_metadata?.mode === 0 ? '0 (All Together)' : '1 (Domain-based)'} | Duration: {formatDuration(result.test_metadata?.duration || 0)}
+                                                        ID: {result.test_metadata?.test_id} | Duration: {formatDuration(result.test_metadata?.duration || 0)}
                                                     </Typography>
                                                 }
                                                 action={
@@ -4570,7 +4737,10 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                             {renderSiteSimilarityResults(
                                                                 processedCluster.processed_data.site_similarity, 
                                                                 processedCluster.level, 
-                                                                processedCluster.processed_data
+                                                                processedCluster.processed_data,
+                                                                '',
+                                                                processedCluster.is_best_level,
+                                                                processedCluster.best_level_details
                                                             )}
                                                         </div>
                                                     ))}
@@ -4603,7 +4773,9 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
                                                                 processedCluster.processed_data.site_similarity, 
                                                                 processedCluster.level, 
                                                                 processedCluster.processed_data,
-                                                                `${domainResult.domain} -`
+                                                                `${domainResult.domain} - `,
+                                                                processedCluster.is_best_level,
+                                                                processedCluster.best_level_details
                                                             )}
                                                                 </div>
                                                             ))}
@@ -4918,6 +5090,69 @@ const URLChipForm = ({ darkMode, onThemeChange }) => {
             default:
                 return <div>Home</div>;
         }
+    };
+
+    // Function to render best level indicator
+    const renderBestLevelIndicator = (isbestLevel, bestLevelDetails) => {
+        if (!isbestLevel) return null;
+        
+        return (
+            <Box sx={{ display: 'inline-flex', alignItems: 'center', ml: 1 }}>
+                <Tooltip 
+                    title={
+                        <Box sx={{ p: 1 }}>
+                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                                🏆 Best Clustering Level
+                            </Typography>
+                            <Typography variant="body2" sx={{ mb: 1 }}>
+                                {bestLevelDetails?.selection_reason || 'Selected as optimal clustering level'}
+                            </Typography>
+                            {bestLevelDetails && (
+                                <Box sx={{ mt: 1, pt: 1, borderTop: '1px solid rgba(255,255,255,0.2)' }}>
+                                    <Typography variant="caption" sx={{ display: 'block' }}>
+                                        Algorithm: Median-based selection
+                                    </Typography>
+                                    <Typography variant="caption" sx={{ display: 'block' }}>
+                                        Valid levels: {bestLevelDetails.total_valid_levels}
+                                    </Typography>
+                                    <Typography variant="caption" sx={{ display: 'block' }}>
+                                        Threshold: ≤{bestLevelDetails.w_cluster_count} clusters
+                                    </Typography>
+                                    <Typography variant="caption" sx={{ display: 'block' }}>
+                                        Candidates: {bestLevelDetails.filtered_candidates}
+                                    </Typography>
+                                </Box>
+                            )}
+                        </Box>
+                    }
+                    arrow
+                    placement="top"
+                >
+                    <Chip
+                        icon={<StarIcon />}
+                        label="BEST"
+                        size="small"
+                        sx={{
+                            backgroundColor: '#FFD700',
+                            color: '#B8860B',
+                            fontWeight: 'bold',
+                            fontSize: '0.7rem',
+                            height: '20px',
+                            '& .MuiChip-icon': {
+                                color: '#B8860B',
+                                fontSize: '14px'
+                            },
+                            animation: 'pulse 2s infinite',
+                            '@keyframes pulse': {
+                                '0%': { boxShadow: '0 0 0 0 rgba(255, 215, 0, 0.7)' },
+                                '70%': { boxShadow: '0 0 0 4px rgba(255, 215, 0, 0)' },
+                                '100%': { boxShadow: '0 0 0 0 rgba(255, 215, 0, 0)' }
+                            }
+                        }}
+                    />
+                </Tooltip>
+            </Box>
+        );
     };
 
     // Function to play notification sound
