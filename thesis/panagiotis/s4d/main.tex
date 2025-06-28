@@ -1,0 +1,126 @@
+\documentclass[12pt,a4paper]{book}
+
+% === Language & Encoding ===
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english,greek]{babel} % English is default
+\usepackage{lmodern}
+
+% === Core packages ===
+\usepackage{graphicx}
+\usepackage{amsmath, amssymb}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage{natbib}
+
+% === Metadata ===
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=cyan,
+    pdftitle={S⁴D: Style and Structure Similarity for Site Domains},
+    pdfauthor={Panagiotis Favvatas},
+}
+
+% === Styling ===
+\geometry{margin=2.5cm}
+\onehalfspacing
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[C]{\thepage}
+\fancyhead[R]{\leftmark}
+
+% === Title ===
+\title{S\textsuperscript{4}D: Style and Structure Similarity for Site Domains}
+\author{Panagiotis Favvatas}
+\date{June 2025}
+
+\begin{document}
+
+% === Title Page ===
+\begin{titlepage}
+\centering
+\vspace*{3cm}
+\includegraphics[width=4cm]{university_logo.png}\par\vspace{2cm}
+{\Huge\bfseries \textlatin{S\textsuperscript{4}D}: \textlatin{Style and Structure Similarity for Site Domains}\par}
+\vfill
+\end{titlepage}
+
+% === Copyright Page ===
+\newpage
+\thispagestyle{empty}
+\vspace*{\fill}
+\begin{center}
+{\large 
+\textlatin{S\textsuperscript{4}D: Style and Structure Similarity for Site Domains: A system for website structure and visual style analysis, clustering, and comparison}\\
+\vspace{0.5cm}
+\textlatin{Panagiotis Favvatas}\\
+\vspace{0.5cm}
+\textlatin{Master's Thesis, Department of Informatics And Telecommunications}\\
+\textlatin{University of Peloponnese, June 2025}\\
+\vspace{0.5cm}
+\textlatin{Copyright © 2025 University of Peloponnese. All Rights Reserved}
+}
+\end{center}
+
+% === Detailed Thesis Page ===
+\newpage
+\thispagestyle{empty}
+\begin{center}
+\vspace*{2cm}
+{\Large\bfseries 
+\textlatin{S\textsuperscript{4}D: Style and Structure Similarity for Site Domains}: \textlatin{A}\\
+\textlatin{system for website structure and visual style analysis,}\\
+\textlatin{clustering, and comparison}\\
+}
+\vspace{1.5cm}
+{\large \textlatin{Panagiotis Favvatas}}\\
+\vspace{2cm}
+{\large
+\textlatin{A thesis submitted in partial fulfillment}\\
+\textlatin{of the requirements for the MSc in}\\
+\textlatin{Computer Science}\\
+}
+\vspace{2cm}
+{\large\bfseries \textlatin{Committee}}\\
+\vspace{0.5cm}
+{\large
+\textlatin{Professor, Spiros Skiadopoulos, Supervisor}\\
+\textlatin{Professor, [Committee Member 1]}\\
+\textlatin{Associate Professor, [Committee Member 2]}\\
+}
+\vspace{2cm}
+{\large
+\textlatin{University of the Peloponnese}\\
+\textlatin{2025}\\
+}
+\end{center}
+
+% === Greek Abstract ===
+\input{greek_abstract.tex}
+
+% === English Abstract ===
+\input{english_abstract.tex}
+
+% === Acknowledgements ===
+\chapter*{Acknowledgements}
+\addcontentsline{toc}{chapter}{Acknowledgements}
+\input{acknowledgements.tex}
+
+% === Table of Contents ===
+\tableofcontents
+\newpage
+
+% === Chapters ===
+\mainmatter
+\selectlanguage{english}
+% Add more chapters as needed
+
+% === Bibliography ===
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}
