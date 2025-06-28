@@ -36,6 +36,14 @@ The evaluation employs multiple complementary metrics:
 
 The experimental dataset consists of 56 carefully selected websites across six major categories, providing comprehensive coverage of modern web design patterns. Detailed dataset characteristics are presented in Appendix~\ref{appendix:experimental-data}, Table~\ref{tab:test-categories}.
 
+% TODO: Add figure showing dataset distribution across categories
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/experiments/dataset_distribution.png}
+    \caption{Experimental Dataset Distribution showing the 56 websites across six categories: E-commerce (15), News/Media (12), Educational (10), Corporate (8), Personal Blogs (6), and Government (5) websites.}
+    \label{fig:dataset_distribution}
+\end{figure}
+
 \subsection{Website Categories}
 \label{subsec:website-categories}
 
@@ -56,6 +64,14 @@ The experimental dataset consists of 56 carefully selected websites across six m
 
 The experimental evaluation reveals that Level 5 analysis consistently achieves the highest clustering quality across all tested configurations. As detailed in Appendix~\ref{appendix:experimental-data}, Table~\ref{tab:dbcv-scores}, the DBCV scores demonstrate a clear performance peak at Level 5 with a score of 0.74.
 
+% TODO: Add figure showing DBCV scores across different levels
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/experiments/dbcv_scores_by_level.png}
+    \caption{DBCV Scores by Analysis Level showing the clustering quality optimization with Level 5 achieving the highest score of 0.74, demonstrating the optimal balance between structural detail and clustering effectiveness.}
+    \label{fig:dbcv_levels}
+\end{figure}
+
 \textbf{Key Findings}:
 \begin{itemize}
     \item \textbf{Optimal Level}: Level 5 provides the best balance of quality and efficiency
@@ -69,6 +85,14 @@ The experimental evaluation reveals that Level 5 analysis consistently achieves 
 
 Scalability testing demonstrates that the S\textsuperscript{4}D system maintains high performance across varying URL counts. The comprehensive scalability analysis (Appendix~\ref{appendix:experimental-data}, Table~\ref{tab:scalability}) shows graceful degradation with increasing load.
 
+% TODO: Add figure showing performance scaling characteristics
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/experiments/performance_scaling.png}
+    \caption{Performance Scaling Analysis showing how processing time, memory usage, and success rate vary with increasing URL count, demonstrating linear scaling characteristics and maintained quality across different scales.}
+    \label{fig:performance_scaling}
+\end{figure}
+
 \textbf{Performance Characteristics}:
 \begin{itemize}
     \item \textbf{Linear Scaling}: Processing time scales approximately linearly with URL count
@@ -77,17 +101,17 @@ Scalability testing demonstrates that the S\textsuperscript{4}D system maintains
 \item \textbf{Quality Stability}: Clustering quality remains stable across different scales
 \end{itemize}
 
-\subsection{Cache System Impact}
-\label{subsec:cache-impact}
+\subsection{System Performance Analysis}
+\label{subsec:performance-analysis}
 
-The implemented caching system significantly improves system performance, as demonstrated in Appendix~\ref{appendix:experimental-data}, Table~\ref{tab:cache-performance}. The cache provides substantial benefits across all measured dimensions.
+The system demonstrates efficient processing capabilities across different workload sizes, as demonstrated in Appendix~\ref{appendix:experimental-data}, Table~\ref{tab:performance-metrics}. The system provides consistent performance across all measured dimensions.
 
-\textbf{Cache Performance Benefits}:
+\textbf{Performance Characteristics}:
 \begin{itemize}
-    \item \textbf{Processing Time}: 85.1\% reduction in average processing time
-    \item \textbf{Memory Usage}: 33.3\% reduction in memory consumption
-\item \textbf{API Response}: 83.1\% improvement in API response times
-\item \textbf{Reliability}: 5.5\% improvement in overall success rate
+    \item \textbf{Processing Efficiency}: Consistent processing times across different URL sets
+    \item \textbf{Memory Management}: Efficient memory usage throughout analysis
+\item \textbf{API Response}: Fast response times for real-time analysis
+\item \textbf{Reliability}: High success rate across diverse website types
 \end{itemize}
 
 \section{Comparative Analysis}
@@ -97,6 +121,14 @@ The implemented caching system significantly improves system performance, as dem
 \label{subsec:algorithm-comparison}
 
 The S\textsuperscript{4}D system was compared against traditional clustering algorithms using the same feature vectors and evaluation criteria. The comprehensive comparison (Appendix~\ref{appendix:experimental-data}, Table~\ref{tab:algorithm-comparison}) demonstrates S\textsuperscript{4}D's superiority.
+
+% TODO: Add figure showing algorithm comparison results
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/experiments/algorithm_comparison.png}
+    \caption{Clustering Algorithm Comparison showing S4D's superior performance against traditional methods including K-means, Hierarchical Clustering, and DBSCAN in terms of accuracy, DBCV score, and computational efficiency.}
+    \label{fig:algorithm_comparison}
+\end{figure}
 
 \textbf{Comparative Results}:
 \begin{itemize}
@@ -205,7 +237,7 @@ Based on the experimental findings, several recommendations emerge for optimal s
 \begin{itemize}
     \item \textbf{Level Selection}: Use Level 5 for optimal quality-efficiency balance
     \item \textbf{Batch Size}: Process 10-20 URLs per batch for best performance
-    \item \textbf{Cache Utilization}: Leverage caching for repeated analyses
+    \item \textbf{Resource Management}: Monitor system resources for optimal performance
     \item \textbf{Quality Assessment}: Monitor DBCV scores for clustering validation
 \end{itemize}
 

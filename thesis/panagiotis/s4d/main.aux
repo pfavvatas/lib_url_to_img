@@ -98,6 +98,8 @@
 \newlabel{ch:methodology}{{3}{15}{Methodology}{chapter.3}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {3.1}System Architecture Overview}{15}{section.3.1}\protected@file@percent }
 \newlabel{sec:system-overview}{{3.1}{15}{System Architecture Overview}{section.3.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.1}{\ignorespaces S\textsuperscript  {4}D System Architecture Overview showing the seven main components and data flow from web page acquisition through similarity computation to final clustering results.}}{16}{figure.3.1}\protected@file@percent }
+\newlabel{fig:system_architecture}{{3.1}{16}{S\textsuperscript {4}D System Architecture Overview showing the seven main components and data flow from web page acquisition through similarity computation to final clustering results}{figure.3.1}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {3.2}Web Page Acquisition and DOM Extraction}{16}{section.3.2}\protected@file@percent }
 \newlabel{sec:data-collection}{{3.2}{16}{Web Page Acquisition and DOM Extraction}{section.3.2}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.2.1}Automated Web Rendering}{16}{subsection.3.2.1}\protected@file@percent }
@@ -105,542 +107,581 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.2.2}Hierarchical DOM Tree Construction}{16}{subsection.3.2.2}\protected@file@percent }
 \newlabel{subsec:dom-construction}{{3.2.2}{16}{Hierarchical DOM Tree Construction}{subsection.3.2.2}{}}
 \@writefile{toc}{\contentsline {subsubsection}{Unique Element Identification}{16}{subsection.3.2.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Comprehensive Attribute Extraction}{16}{equation.3.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Comprehensive Attribute Extraction}{17}{equation.3.2.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{Text Content Processing}{17}{Item.15}\protected@file@percent }
 \@writefile{lol}{\contentsline {lstlisting}{\numberline {3.1}Text Content Extraction Algorithm}{17}{lstlisting.3.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.2.3}Multi-Level DOM Analysis}{17}{subsection.3.2.3}\protected@file@percent }
 \newlabel{subsec:multi-level-analysis}{{3.2.3}{17}{Multi-Level DOM Analysis}{subsection.3.2.3}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.3}CSS Property Analysis and Normalization}{17}{section.3.3}\protected@file@percent }
-\newlabel{sec:css-analysis}{{3.3}{17}{CSS Property Analysis and Normalization}{section.3.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.1}Attribute Filtering and Selection}{17}{subsection.3.3.1}\protected@file@percent }
-\newlabel{subsec:attribute-filtering}{{3.3.1}{17}{Attribute Filtering and Selection}{subsection.3.3.1}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Element Frequency Analysis}{17}{subsection.3.3.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Useful Attribute Identification}{18}{equation.3.3.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.2}CSS Value Normalization}{18}{subsection.3.3.2}\protected@file@percent }
-\newlabel{subsec:css-normalization}{{3.3.2}{18}{CSS Value Normalization}{subsection.3.3.2}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Pixel Value Normalization}{18}{subsection.3.3.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Color Space Processing}{18}{equation.3.3.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Dual-Coordinate Property Handling}{18}{equation.3.3.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {3.4}Feature Engineering and Vector Representation}{19}{section.3.4}\protected@file@percent }
-\newlabel{sec:feature-engineering}{{3.4}{19}{Feature Engineering and Vector Representation}{section.3.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.1}Page Vector Construction}{19}{subsection.3.4.1}\protected@file@percent }
-\newlabel{subsec:page-vectors}{{3.4.1}{19}{Page Vector Construction}{subsection.3.4.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.2}String Value Space Mapping}{19}{subsection.3.4.2}\protected@file@percent }
-\newlabel{subsec:string-mapping}{{3.4.2}{19}{String Value Space Mapping}{subsection.3.4.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.3}Data Standardization and Normalization}{19}{subsection.3.4.3}\protected@file@percent }
-\newlabel{subsec:data-standardization}{{3.4.3}{19}{Data Standardization and Normalization}{subsection.3.4.3}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.5}Advanced Clustering Analysis}{19}{section.3.5}\protected@file@percent }
-\newlabel{sec:clustering-methodology}{{3.5}{19}{Advanced Clustering Analysis}{section.3.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.5.1}HDBSCAN Clustering Algorithm}{19}{subsection.3.5.1}\protected@file@percent }
-\newlabel{subsec:hdbscan-algorithm}{{3.5.1}{19}{HDBSCAN Clustering Algorithm}{subsection.3.5.1}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Parameter Optimization Framework}{20}{subsection.3.5.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Outlier Reassignment Strategy}{20}{subsection.3.5.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.5.2}Cluster Quality Assessment}{20}{subsection.3.5.2}\protected@file@percent }
-\newlabel{subsec:cluster-quality}{{3.5.2}{20}{Cluster Quality Assessment}{subsection.3.5.2}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Density-Based Cluster Validation (DBCV)}{20}{subsection.3.5.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Optimal Configuration Selection}{20}{equation.3.5.10}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {3.6}Role Vector-based Similarity Computation}{21}{section.3.6}\protected@file@percent }
-\newlabel{sec:similarity-framework}{{3.6}{21}{Role Vector-based Similarity Computation}{section.3.6}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.6.1}Multi-Dimensional Role Vector Construction}{21}{subsection.3.6.1}\protected@file@percent }
-\newlabel{subsec:role-vectors}{{3.6.1}{21}{Multi-Dimensional Role Vector Construction}{subsection.3.6.1}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Frequency Information}{21}{subsection.3.6.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Transition Matrices}{21}{equation.3.6.11}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Positional Statistics}{21}{equation.3.6.12}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.6.2}Complete Role Vector Specification}{21}{subsection.3.6.2}\protected@file@percent }
-\newlabel{subsec:complete-role-vector}{{3.6.2}{21}{Complete Role Vector Specification}{subsection.3.6.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.7}Multi-Metric Similarity Framework}{22}{section.3.7}\protected@file@percent }
-\newlabel{sec:multi-metric-similarity}{{3.7}{22}{Multi-Metric Similarity Framework}{section.3.7}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.7.1}Domain-Level Aggregation}{22}{subsection.3.7.1}\protected@file@percent }
-\newlabel{subsec:domain-aggregation}{{3.7.1}{22}{Domain-Level Aggregation}{subsection.3.7.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.7.2}Multi-Metric Distance Computation}{22}{subsection.3.7.2}\protected@file@percent }
-\newlabel{subsec:multi-metric-distance}{{3.7.2}{22}{Multi-Metric Distance Computation}{subsection.3.7.2}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Cosine Similarity}{22}{subsection.3.7.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Earth Mover's Distance (EMD) Approximation}{22}{equation.3.7.18}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Hausdorff Distance Approximation}{22}{equation.3.7.19}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.7.3}Combined Similarity Score}{22}{subsection.3.7.3}\protected@file@percent }
-\newlabel{subsec:combined-similarity}{{3.7.3}{22}{Combined Similarity Score}{subsection.3.7.3}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.8}Best Level Selection Algorithm}{23}{section.3.8}\protected@file@percent }
-\newlabel{sec:best-level-selection}{{3.8}{23}{Best Level Selection Algorithm}{section.3.8}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.8.1}Median-Based Selection Strategy}{23}{subsection.3.8.1}\protected@file@percent }
-\newlabel{subsec:median-selection}{{3.8.1}{23}{Median-Based Selection Strategy}{subsection.3.8.1}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.9}Performance Optimization and Scalability}{23}{section.3.9}\protected@file@percent }
-\newlabel{sec:performance-optimization}{{3.9}{23}{Performance Optimization and Scalability}{section.3.9}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.9.1}Intelligent Caching System}{23}{subsection.3.9.1}\protected@file@percent }
-\newlabel{subsec:caching-system}{{3.9.1}{23}{Intelligent Caching System}{subsection.3.9.1}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Cache Architecture}{23}{subsection.3.9.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Cache Key Generation}{23}{subsection.3.9.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.9.2}Dual Processing Modes}{23}{subsection.3.9.2}\protected@file@percent }
-\newlabel{subsec:processing-modes}{{3.9.2}{23}{Dual Processing Modes}{subsection.3.9.2}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Mode 0: Unified Processing}{23}{subsection.3.9.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Mode 1: Domain-Based Processing}{24}{subsection.3.9.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.9.3}Performance Monitoring}{24}{subsection.3.9.3}\protected@file@percent }
-\newlabel{subsec:performance-monitoring}{{3.9.3}{24}{Performance Monitoring}{subsection.3.9.3}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.10}Methodology Validation and Quality Assurance}{24}{section.3.10}\protected@file@percent }
-\newlabel{sec:methodology-validation}{{3.10}{24}{Methodology Validation and Quality Assurance}{section.3.10}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.10.1}Algorithmic Robustness}{24}{subsection.3.10.1}\protected@file@percent }
-\newlabel{subsec:algorithmic-robustness}{{3.10.1}{24}{Algorithmic Robustness}{subsection.3.10.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.10.2}Scalability Considerations}{24}{subsection.3.10.2}\protected@file@percent }
-\newlabel{subsec:scalability}{{3.10.2}{24}{Scalability Considerations}{subsection.3.10.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.11}Methodology Summary}{24}{section.3.11}\protected@file@percent }
-\newlabel{sec:methodology-summary}{{3.11}{24}{Methodology Summary}{section.3.11}{}}
-\@writefile{toc}{\contentsline {chapter}{\numberline {4}System Implementation}{27}{chapter.4}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3.2}{\ignorespaces Bottom-up DOM Tree Traversal showing how levels 1-10 are constructed from leaf nodes upward, with Level 1 capturing the deepest elements and higher levels incorporating broader structural context.}}{18}{figure.3.2}\protected@file@percent }
+\newlabel{fig:dom_tree_traversal}{{3.2}{18}{Bottom-up DOM Tree Traversal showing how levels 1-10 are constructed from leaf nodes upward, with Level 1 capturing the deepest elements and higher levels incorporating broader structural context}{figure.3.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.3}CSS Property Analysis and Normalization}{18}{section.3.3}\protected@file@percent }
+\newlabel{sec:css-analysis}{{3.3}{18}{CSS Property Analysis and Normalization}{section.3.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.1}Attribute Filtering and Selection}{18}{subsection.3.3.1}\protected@file@percent }
+\newlabel{subsec:attribute-filtering}{{3.3.1}{18}{Attribute Filtering and Selection}{subsection.3.3.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.3}{\ignorespaces Multi-Level Analysis Flow diagram illustrating how the system processes DOM elements at different hierarchical levels, from content-specific leaf elements to broader structural containers.}}{19}{figure.3.3}\protected@file@percent }
+\newlabel{fig:multi_level_analysis}{{3.3}{19}{Multi-Level Analysis Flow diagram illustrating how the system processes DOM elements at different hierarchical levels, from content-specific leaf elements to broader structural containers}{figure.3.3}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Element Frequency Analysis}{20}{subsection.3.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Useful Attribute Identification}{20}{equation.3.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.2}CSS Value Normalization}{20}{subsection.3.3.2}\protected@file@percent }
+\newlabel{subsec:css-normalization}{{3.3.2}{20}{CSS Value Normalization}{subsection.3.3.2}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Pixel Value Normalization}{20}{subsection.3.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Color Space Processing}{20}{equation.3.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Dual-Coordinate Property Handling}{21}{equation.3.3.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3.4}Feature Engineering and Vector Representation}{21}{section.3.4}\protected@file@percent }
+\newlabel{sec:feature-engineering}{{3.4}{21}{Feature Engineering and Vector Representation}{section.3.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.1}Page Vector Construction}{21}{subsection.3.4.1}\protected@file@percent }
+\newlabel{subsec:page-vectors}{{3.4.1}{21}{Page Vector Construction}{subsection.3.4.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.2}String Value Space Mapping}{21}{subsection.3.4.2}\protected@file@percent }
+\newlabel{subsec:string-mapping}{{3.4.2}{21}{String Value Space Mapping}{subsection.3.4.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.3}Data Standardization and Normalization}{22}{subsection.3.4.3}\protected@file@percent }
+\newlabel{subsec:data-standardization}{{3.4.3}{22}{Data Standardization and Normalization}{subsection.3.4.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.5}Advanced Clustering Analysis}{22}{section.3.5}\protected@file@percent }
+\newlabel{sec:clustering-methodology}{{3.5}{22}{Advanced Clustering Analysis}{section.3.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5.1}HDBSCAN Clustering Algorithm}{22}{subsection.3.5.1}\protected@file@percent }
+\newlabel{subsec:hdbscan-algorithm}{{3.5.1}{22}{HDBSCAN Clustering Algorithm}{subsection.3.5.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Parameter Optimization Framework}{22}{subsection.3.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Outlier Reassignment Strategy}{22}{subsection.3.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5.2}Cluster Quality Assessment}{23}{subsection.3.5.2}\protected@file@percent }
+\newlabel{subsec:cluster-quality}{{3.5.2}{23}{Cluster Quality Assessment}{subsection.3.5.2}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Density-Based Cluster Validation (DBCV)}{23}{subsection.3.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Optimal Configuration Selection}{23}{equation.3.5.10}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3.4}{\ignorespaces HDBSCAN Clustering Algorithm Workflow showing parameter optimization through grid search, outlier reassignment strategy, and DBCV-based quality assessment for optimal cluster configuration selection.}}{23}{figure.3.4}\protected@file@percent }
+\newlabel{fig:hdbscan_workflow}{{3.4}{23}{HDBSCAN Clustering Algorithm Workflow showing parameter optimization through grid search, outlier reassignment strategy, and DBCV-based quality assessment for optimal cluster configuration selection}{figure.3.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.6}Role Vector-based Similarity Computation}{24}{section.3.6}\protected@file@percent }
+\newlabel{sec:similarity-framework}{{3.6}{24}{Role Vector-based Similarity Computation}{section.3.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6.1}Multi-Dimensional Role Vector Construction}{24}{subsection.3.6.1}\protected@file@percent }
+\newlabel{subsec:role-vectors}{{3.6.1}{24}{Multi-Dimensional Role Vector Construction}{subsection.3.6.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Frequency Information}{24}{subsection.3.6.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Transition Matrices}{24}{equation.3.6.11}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Positional Statistics}{24}{equation.3.6.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6.2}Complete Role Vector Specification}{24}{subsection.3.6.2}\protected@file@percent }
+\newlabel{subsec:complete-role-vector}{{3.6.2}{24}{Complete Role Vector Specification}{subsection.3.6.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.5}{\ignorespaces Role Vector Construction Process illustrating how frequency information, transition matrices, and positional statistics are combined to create comprehensive cluster representations for similarity computation.}}{25}{figure.3.5}\protected@file@percent }
+\newlabel{fig:role_vector_construction}{{3.5}{25}{Role Vector Construction Process illustrating how frequency information, transition matrices, and positional statistics are combined to create comprehensive cluster representations for similarity computation}{figure.3.5}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.7}Multi-Metric Similarity Framework}{26}{section.3.7}\protected@file@percent }
+\newlabel{sec:multi-metric-similarity}{{3.7}{26}{Multi-Metric Similarity Framework}{section.3.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.7.1}Domain-Level Aggregation}{26}{subsection.3.7.1}\protected@file@percent }
+\newlabel{subsec:domain-aggregation}{{3.7.1}{26}{Domain-Level Aggregation}{subsection.3.7.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.7.2}Multi-Metric Distance Computation}{26}{subsection.3.7.2}\protected@file@percent }
+\newlabel{subsec:multi-metric-distance}{{3.7.2}{26}{Multi-Metric Distance Computation}{subsection.3.7.2}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Cosine Similarity}{26}{subsection.3.7.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Earth Mover's Distance (EMD) Approximation}{26}{equation.3.7.18}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Hausdorff Distance Approximation}{26}{equation.3.7.19}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.7.3}Combined Similarity Score}{26}{subsection.3.7.3}\protected@file@percent }
+\newlabel{subsec:combined-similarity}{{3.7.3}{26}{Combined Similarity Score}{subsection.3.7.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.6}{\ignorespaces Multi-Metric Similarity Framework showing how Cosine, EMD, and Hausdorff distance metrics are computed independently and then combined using geometric mean to produce the final similarity score.}}{27}{figure.3.6}\protected@file@percent }
+\newlabel{fig:multi_metric_similarity}{{3.6}{27}{Multi-Metric Similarity Framework showing how Cosine, EMD, and Hausdorff distance metrics are computed independently and then combined using geometric mean to produce the final similarity score}{figure.3.6}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.8}Best Level Selection Algorithm}{27}{section.3.8}\protected@file@percent }
+\newlabel{sec:best-level-selection}{{3.8}{27}{Best Level Selection Algorithm}{section.3.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.8.1}Median-Based Selection Strategy}{27}{subsection.3.8.1}\protected@file@percent }
+\newlabel{subsec:median-selection}{{3.8.1}{27}{Median-Based Selection Strategy}{subsection.3.8.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.9}Performance Optimization and Scalability}{28}{section.3.9}\protected@file@percent }
+\newlabel{sec:performance-optimization}{{3.9}{28}{Performance Optimization and Scalability}{section.3.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.9.1}System Optimization Strategies}{28}{subsection.3.9.1}\protected@file@percent }
+\newlabel{subsec:optimization-strategies}{{3.9.1}{28}{System Optimization Strategies}{subsection.3.9.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Efficient Data Processing}{28}{subsection.3.9.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Algorithm Optimization}{28}{subsection.3.9.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.9.2}Dual Processing Modes}{28}{subsection.3.9.2}\protected@file@percent }
+\newlabel{subsec:processing-modes}{{3.9.2}{28}{Dual Processing Modes}{subsection.3.9.2}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Mode 0: Unified Processing}{28}{subsection.3.9.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Mode 1: Domain-Based Processing}{28}{subsection.3.9.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.9.3}Performance Monitoring}{28}{subsection.3.9.3}\protected@file@percent }
+\newlabel{subsec:performance-monitoring}{{3.9.3}{28}{Performance Monitoring}{subsection.3.9.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.10}Methodology Validation and Quality Assurance}{29}{section.3.10}\protected@file@percent }
+\newlabel{sec:methodology-validation}{{3.10}{29}{Methodology Validation and Quality Assurance}{section.3.10}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.10.1}Algorithmic Robustness}{29}{subsection.3.10.1}\protected@file@percent }
+\newlabel{subsec:algorithmic-robustness}{{3.10.1}{29}{Algorithmic Robustness}{subsection.3.10.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.10.2}Scalability Considerations}{29}{subsection.3.10.2}\protected@file@percent }
+\newlabel{subsec:scalability}{{3.10.2}{29}{Scalability Considerations}{subsection.3.10.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.11}Methodology Summary}{29}{section.3.11}\protected@file@percent }
+\newlabel{sec:methodology-summary}{{3.11}{29}{Methodology Summary}{section.3.11}{}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {4}System Implementation}{31}{chapter.4}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\newlabel{ch:implementation}{{4}{27}{System Implementation}{chapter.4}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.1}System Architecture Overview}{27}{section.4.1}\protected@file@percent }
-\newlabel{sec:architecture-overview}{{4.1}{27}{System Architecture Overview}{section.4.1}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.2}Backend Implementation}{27}{section.4.2}\protected@file@percent }
-\newlabel{sec:backend-implementation}{{4.2}{27}{Backend Implementation}{section.4.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.1}Core Processing Engine}{27}{subsection.4.2.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.2}Multi-Level Analysis Implementation}{28}{subsection.4.2.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4.3}API Implementation}{28}{section.4.3}\protected@file@percent }
-\newlabel{sec:api-implementation}{{4.3}{28}{API Implementation}{section.4.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.1}FastAPI Server Architecture}{28}{subsection.4.3.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{URL Processing Endpoint}{28}{subsection.4.3.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Batch Experiment Management}{28}{subsection.4.3.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Results Management}{29}{subsection.4.3.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.2}File Serving Infrastructure}{29}{subsection.4.3.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4.4}Frontend Implementation}{29}{section.4.4}\protected@file@percent }
-\newlabel{sec:frontend-implementation}{{4.4}{29}{Frontend Implementation}{section.4.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.1}React Application Architecture}{29}{subsection.4.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.2}User Interface Features}{30}{subsection.4.4.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.3}Integration with Backend Services}{30}{subsection.4.4.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4.5}Performance Optimization Implementation}{30}{section.4.5}\protected@file@percent }
-\newlabel{sec:performance-implementation}{{4.5}{30}{Performance Optimization Implementation}{section.4.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.1}Caching Strategy}{30}{subsection.4.5.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.2}Scalability Optimizations}{30}{subsection.4.5.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4.6}Deployment and Configuration}{31}{section.4.6}\protected@file@percent }
-\newlabel{sec:deployment-configuration}{{4.6}{31}{Deployment and Configuration}{section.4.6}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.6.1}Development Environment Setup}{31}{subsection.4.6.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.6.2}Production Deployment Considerations}{31}{subsection.4.6.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4.7}Implementation Summary}{31}{section.4.7}\protected@file@percent }
-\newlabel{sec:implementation-summary}{{4.7}{31}{Implementation Summary}{section.4.7}{}}
-\@writefile{toc}{\contentsline {chapter}{\numberline {5}Experiments and Evaluation}{33}{chapter.5}\protected@file@percent }
+\newlabel{ch:implementation}{{4}{31}{System Implementation}{chapter.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.1}System Architecture Overview}{31}{section.4.1}\protected@file@percent }
+\newlabel{sec:architecture-overview}{{4.1}{31}{System Architecture Overview}{section.4.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.2}Backend Implementation}{31}{section.4.2}\protected@file@percent }
+\newlabel{sec:backend-implementation}{{4.2}{31}{Backend Implementation}{section.4.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.1}Core Processing Engine}{31}{subsection.4.2.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4.1}{\ignorespaces S4D System Architecture Overview showing the three-tier modular design with Backend Processing Layer, API Service Layer, Frontend Interface Layer, and File Serving Layer, including communication flows and data processing pipeline.}}{32}{figure.4.1}\protected@file@percent }
+\newlabel{fig:system_architecture}{{4.1}{32}{S4D System Architecture Overview showing the three-tier modular design with Backend Processing Layer, API Service Layer, Frontend Interface Layer, and File Serving Layer, including communication flows and data processing pipeline}{figure.4.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.2}Multi-Level Analysis Implementation}{33}{subsection.4.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.3}API Implementation}{33}{section.4.3}\protected@file@percent }
+\newlabel{sec:api-implementation}{{4.3}{33}{API Implementation}{section.4.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.1}FastAPI Server Architecture}{33}{subsection.4.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{URL Processing Endpoint}{33}{subsection.4.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Batch Experiment Management}{34}{subsection.4.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Results Management}{34}{subsection.4.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.2}File Serving Infrastructure}{35}{subsection.4.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.4}Frontend Implementation}{35}{section.4.4}\protected@file@percent }
+\newlabel{sec:frontend-implementation}{{4.4}{35}{Frontend Implementation}{section.4.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.1}React Application Architecture}{35}{subsection.4.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.2}User Interface Features}{35}{subsection.4.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.3}Integration with Backend Services}{36}{subsection.4.4.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4.2}{\ignorespaces React Interface Overview showing the main URLChipForm component with URL input management, analysis configuration options, progress tracking, and results visualization interface for comprehensive user interaction.}}{36}{figure.4.2}\protected@file@percent }
+\newlabel{fig:react_interface}{{4.2}{36}{React Interface Overview showing the main URLChipForm component with URL input management, analysis configuration options, progress tracking, and results visualization interface for comprehensive user interaction}{figure.4.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.5}Performance Optimization Implementation}{37}{section.4.5}\protected@file@percent }
+\newlabel{sec:performance-implementation}{{4.5}{37}{Performance Optimization Implementation}{section.4.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.1}Optimization Strategy}{37}{subsection.4.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.2}Scalability Considerations}{37}{subsection.4.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.6}Deployment and Configuration}{37}{section.4.6}\protected@file@percent }
+\newlabel{sec:deployment-configuration}{{4.6}{37}{Deployment and Configuration}{section.4.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6.1}Development Environment Setup}{37}{subsection.4.6.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6.2}Process Management and Execution}{38}{subsection.4.6.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6.3}Production Deployment Considerations}{38}{subsection.4.6.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.7}Implementation Summary}{38}{section.4.7}\protected@file@percent }
+\newlabel{sec:implementation-summary}{{4.7}{38}{Implementation Summary}{section.4.7}{}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {5}Experiments and Evaluation}{41}{chapter.5}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\newlabel{chap:experiments}{{5}{33}{Experiments and Evaluation}{chapter.5}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5.1}Experimental Design}{33}{section.5.1}\protected@file@percent }
-\newlabel{sec:experimental-design}{{5.1}{33}{Experimental Design}{section.5.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1.1}Research Questions}{33}{subsection.5.1.1}\protected@file@percent }
-\newlabel{subsec:research-questions}{{5.1.1}{33}{Research Questions}{subsection.5.1.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1.2}Evaluation Metrics}{33}{subsection.5.1.2}\protected@file@percent }
-\newlabel{subsec:evaluation-metrics}{{5.1.2}{33}{Evaluation Metrics}{subsection.5.1.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5.2}Dataset Description}{34}{section.5.2}\protected@file@percent }
-\newlabel{sec:dataset-description}{{5.2}{34}{Dataset Description}{section.5.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2.1}Website Categories}{34}{subsection.5.2.1}\protected@file@percent }
-\newlabel{subsec:website-categories}{{5.2.1}{34}{Website Categories}{subsection.5.2.1}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5.3}Experimental Results}{34}{section.5.3}\protected@file@percent }
-\newlabel{sec:experimental-results}{{5.3}{34}{Experimental Results}{section.5.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.1}Clustering Quality Analysis}{34}{subsection.5.3.1}\protected@file@percent }
-\newlabel{subsec:clustering-quality}{{5.3.1}{34}{Clustering Quality Analysis}{subsection.5.3.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.2}Performance Scalability}{35}{subsection.5.3.2}\protected@file@percent }
-\newlabel{subsec:performance-scalability}{{5.3.2}{35}{Performance Scalability}{subsection.5.3.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.3}Cache System Impact}{35}{subsection.5.3.3}\protected@file@percent }
-\newlabel{subsec:cache-impact}{{5.3.3}{35}{Cache System Impact}{subsection.5.3.3}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5.4}Comparative Analysis}{35}{section.5.4}\protected@file@percent }
-\newlabel{sec:comparative-analysis}{{5.4}{35}{Comparative Analysis}{section.5.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.4.1}Algorithm Comparison}{35}{subsection.5.4.1}\protected@file@percent }
-\newlabel{subsec:algorithm-comparison}{{5.4.1}{35}{Algorithm Comparison}{subsection.5.4.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.4.2}Feature Importance Analysis}{36}{subsection.5.4.2}\protected@file@percent }
-\newlabel{subsec:feature-importance}{{5.4.2}{36}{Feature Importance Analysis}{subsection.5.4.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5.5}Statistical Validation}{36}{section.5.5}\protected@file@percent }
-\newlabel{sec:statistical-validation}{{5.5}{36}{Statistical Validation}{section.5.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.5.1}Significance Testing}{36}{subsection.5.5.1}\protected@file@percent }
-\newlabel{subsec:significance-testing}{{5.5.1}{36}{Significance Testing}{subsection.5.5.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.5.2}Cross-Validation Results}{36}{subsection.5.5.2}\protected@file@percent }
-\newlabel{subsec:cross-validation}{{5.5.2}{36}{Cross-Validation Results}{subsection.5.5.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5.6}Error Analysis and Limitations}{37}{section.5.6}\protected@file@percent }
-\newlabel{sec:error-analysis}{{5.6}{37}{Error Analysis and Limitations}{section.5.6}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.6.1}Failure Case Analysis}{37}{subsection.5.6.1}\protected@file@percent }
-\newlabel{subsec:failure-cases}{{5.6.1}{37}{Failure Case Analysis}{subsection.5.6.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.6.2}Quality Degradation Factors}{37}{subsection.5.6.2}\protected@file@percent }
-\newlabel{subsec:quality-factors}{{5.6.2}{37}{Quality Degradation Factors}{subsection.5.6.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5.7}Practical Implications}{37}{section.5.7}\protected@file@percent }
-\newlabel{sec:practical-implications}{{5.7}{37}{Practical Implications}{section.5.7}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.7.1}Real-World Applicability}{37}{subsection.5.7.1}\protected@file@percent }
-\newlabel{subsec:real-world-applicability}{{5.7.1}{37}{Real-World Applicability}{subsection.5.7.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.7.2}Performance Recommendations}{38}{subsection.5.7.2}\protected@file@percent }
-\newlabel{subsec:performance-recommendations}{{5.7.2}{38}{Performance Recommendations}{subsection.5.7.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5.8}Summary of Experimental Findings}{38}{section.5.8}\protected@file@percent }
-\newlabel{sec:experimental-summary}{{5.8}{38}{Summary of Experimental Findings}{section.5.8}{}}
-\@writefile{toc}{\contentsline {chapter}{\numberline {6}Results and Discussion}{39}{chapter.6}\protected@file@percent }
+\newlabel{chap:experiments}{{5}{41}{Experiments and Evaluation}{chapter.5}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.1}Experimental Design}{41}{section.5.1}\protected@file@percent }
+\newlabel{sec:experimental-design}{{5.1}{41}{Experimental Design}{section.5.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1.1}Research Questions}{41}{subsection.5.1.1}\protected@file@percent }
+\newlabel{subsec:research-questions}{{5.1.1}{41}{Research Questions}{subsection.5.1.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1.2}Evaluation Metrics}{41}{subsection.5.1.2}\protected@file@percent }
+\newlabel{subsec:evaluation-metrics}{{5.1.2}{41}{Evaluation Metrics}{subsection.5.1.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.2}Dataset Description}{42}{section.5.2}\protected@file@percent }
+\newlabel{sec:dataset-description}{{5.2}{42}{Dataset Description}{section.5.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.1}{\ignorespaces Experimental Dataset Distribution showing the 56 websites across six categories: E-commerce (15), News/Media (12), Educational (10), Corporate (8), Personal Blogs (6), and Government (5) websites.}}{42}{figure.5.1}\protected@file@percent }
+\newlabel{fig:dataset_distribution}{{5.1}{42}{Experimental Dataset Distribution showing the 56 websites across six categories: E-commerce (15), News/Media (12), Educational (10), Corporate (8), Personal Blogs (6), and Government (5) websites}{figure.5.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2.1}Website Categories}{42}{subsection.5.2.1}\protected@file@percent }
+\newlabel{subsec:website-categories}{{5.2.1}{42}{Website Categories}{subsection.5.2.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.3}Experimental Results}{43}{section.5.3}\protected@file@percent }
+\newlabel{sec:experimental-results}{{5.3}{43}{Experimental Results}{section.5.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.1}Clustering Quality Analysis}{43}{subsection.5.3.1}\protected@file@percent }
+\newlabel{subsec:clustering-quality}{{5.3.1}{43}{Clustering Quality Analysis}{subsection.5.3.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.2}Performance Scalability}{43}{subsection.5.3.2}\protected@file@percent }
+\newlabel{subsec:performance-scalability}{{5.3.2}{43}{Performance Scalability}{subsection.5.3.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.2}{\ignorespaces DBCV Scores by Analysis Level showing the clustering quality optimization with Level 5 achieving the highest score of 0.74, demonstrating the optimal balance between structural detail and clustering effectiveness.}}{44}{figure.5.2}\protected@file@percent }
+\newlabel{fig:dbcv_levels}{{5.2}{44}{DBCV Scores by Analysis Level showing the clustering quality optimization with Level 5 achieving the highest score of 0.74, demonstrating the optimal balance between structural detail and clustering effectiveness}{figure.5.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.3}{\ignorespaces Performance Scaling Analysis showing how processing time, memory usage, and success rate vary with increasing URL count, demonstrating linear scaling characteristics and maintained quality across different scales.}}{45}{figure.5.3}\protected@file@percent }
+\newlabel{fig:performance_scaling}{{5.3}{45}{Performance Scaling Analysis showing how processing time, memory usage, and success rate vary with increasing URL count, demonstrating linear scaling characteristics and maintained quality across different scales}{figure.5.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.3}System Performance Analysis}{46}{subsection.5.3.3}\protected@file@percent }
+\newlabel{subsec:performance-analysis}{{5.3.3}{46}{System Performance Analysis}{subsection.5.3.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.4}Comparative Analysis}{46}{section.5.4}\protected@file@percent }
+\newlabel{sec:comparative-analysis}{{5.4}{46}{Comparative Analysis}{section.5.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4.1}Algorithm Comparison}{46}{subsection.5.4.1}\protected@file@percent }
+\newlabel{subsec:algorithm-comparison}{{5.4.1}{46}{Algorithm Comparison}{subsection.5.4.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4.2}Feature Importance Analysis}{46}{subsection.5.4.2}\protected@file@percent }
+\newlabel{subsec:feature-importance}{{5.4.2}{46}{Feature Importance Analysis}{subsection.5.4.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.4}{\ignorespaces Clustering Algorithm Comparison showing S4D's superior performance against traditional methods including K-means, Hierarchical Clustering, and DBSCAN in terms of accuracy, DBCV score, and computational efficiency.}}{47}{figure.5.4}\protected@file@percent }
+\newlabel{fig:algorithm_comparison}{{5.4}{47}{Clustering Algorithm Comparison showing S4D's superior performance against traditional methods including K-means, Hierarchical Clustering, and DBSCAN in terms of accuracy, DBCV score, and computational efficiency}{figure.5.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.5}Statistical Validation}{48}{section.5.5}\protected@file@percent }
+\newlabel{sec:statistical-validation}{{5.5}{48}{Statistical Validation}{section.5.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5.1}Significance Testing}{48}{subsection.5.5.1}\protected@file@percent }
+\newlabel{subsec:significance-testing}{{5.5.1}{48}{Significance Testing}{subsection.5.5.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5.2}Cross-Validation Results}{48}{subsection.5.5.2}\protected@file@percent }
+\newlabel{subsec:cross-validation}{{5.5.2}{48}{Cross-Validation Results}{subsection.5.5.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.6}Error Analysis and Limitations}{48}{section.5.6}\protected@file@percent }
+\newlabel{sec:error-analysis}{{5.6}{48}{Error Analysis and Limitations}{section.5.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.6.1}Failure Case Analysis}{48}{subsection.5.6.1}\protected@file@percent }
+\newlabel{subsec:failure-cases}{{5.6.1}{48}{Failure Case Analysis}{subsection.5.6.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.6.2}Quality Degradation Factors}{49}{subsection.5.6.2}\protected@file@percent }
+\newlabel{subsec:quality-factors}{{5.6.2}{49}{Quality Degradation Factors}{subsection.5.6.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.7}Practical Implications}{49}{section.5.7}\protected@file@percent }
+\newlabel{sec:practical-implications}{{5.7}{49}{Practical Implications}{section.5.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.7.1}Real-World Applicability}{49}{subsection.5.7.1}\protected@file@percent }
+\newlabel{subsec:real-world-applicability}{{5.7.1}{49}{Real-World Applicability}{subsection.5.7.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.7.2}Performance Recommendations}{49}{subsection.5.7.2}\protected@file@percent }
+\newlabel{subsec:performance-recommendations}{{5.7.2}{49}{Performance Recommendations}{subsection.5.7.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.8}Summary of Experimental Findings}{50}{section.5.8}\protected@file@percent }
+\newlabel{sec:experimental-summary}{{5.8}{50}{Summary of Experimental Findings}{section.5.8}{}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {6}Results and Discussion}{51}{chapter.6}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\newlabel{ch:results}{{6}{39}{Results and Discussion}{chapter.6}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {6.1}Clustering Performance Results}{39}{section.6.1}\protected@file@percent }
-\newlabel{sec:clustering-results}{{6.1}{39}{Clustering Performance Results}{section.6.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.1.1}Overall Clustering Quality}{39}{subsection.6.1.1}\protected@file@percent }
-\newlabel{subsec:overall-clustering}{{6.1.1}{39}{Overall Clustering Quality}{subsection.6.1.1}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {6.1}{\ignorespaces Clustering Quality Results by Website Category}}{39}{table.6.1}\protected@file@percent }
-\newlabel{tab:clustering-quality}{{6.1}{39}{Clustering Quality Results by Website Category}{table.6.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.1.2}Domain-Specific Performance}{39}{subsection.6.1.2}\protected@file@percent }
-\newlabel{subsec:domain-performance}{{6.1.2}{39}{Domain-Specific Performance}{subsection.6.1.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {6.2}Similarity Measurement Results}{40}{section.6.2}\protected@file@percent }
-\newlabel{sec:similarity-results}{{6.2}{40}{Similarity Measurement Results}{section.6.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.2.1}Individual Metric Performance}{40}{subsection.6.2.1}\protected@file@percent }
-\newlabel{subsec:individual-metrics}{{6.2.1}{40}{Individual Metric Performance}{subsection.6.2.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.2.2}Combined Metric Effectiveness}{40}{subsection.6.2.2}\protected@file@percent }
-\newlabel{subsec:combined-metric}{{6.2.2}{40}{Combined Metric Effectiveness}{subsection.6.2.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {6.3}Computational Performance Results}{40}{section.6.3}\protected@file@percent }
-\newlabel{sec:performance-results}{{6.3}{40}{Computational Performance Results}{section.6.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.3.1}Processing Time Analysis}{40}{subsection.6.3.1}\protected@file@percent }
-\newlabel{subsec:processing-time-results}{{6.3.1}{40}{Processing Time Analysis}{subsection.6.3.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.3.2}Memory Usage Characteristics}{40}{subsection.6.3.2}\protected@file@percent }
-\newlabel{subsec:memory-results}{{6.3.2}{40}{Memory Usage Characteristics}{subsection.6.3.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {6.4}Feature Engineering Analysis}{41}{section.6.4}\protected@file@percent }
-\newlabel{sec:feature-analysis}{{6.4}{41}{Feature Engineering Analysis}{section.6.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.4.1}Feature Component Contributions}{41}{subsection.6.4.1}\protected@file@percent }
-\newlabel{subsec:feature-contributions}{{6.4.1}{41}{Feature Component Contributions}{subsection.6.4.1}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {6.2}{\ignorespaces Feature Component Contribution Analysis}}{41}{table.6.2}\protected@file@percent }
-\newlabel{tab:feature-analysis}{{6.2}{41}{Feature Component Contribution Analysis}{table.6.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {6.5}Comparative Analysis Results}{41}{section.6.5}\protected@file@percent }
-\newlabel{sec:comparative-results}{{6.5}{41}{Comparative Analysis Results}{section.6.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.5.1}Performance Against Baselines}{41}{subsection.6.5.1}\protected@file@percent }
-\newlabel{subsec:baseline-performance}{{6.5.1}{41}{Performance Against Baselines}{subsection.6.5.1}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {6.6}Case Study Results}{41}{section.6.6}\protected@file@percent }
-\newlabel{sec:case-study-results}{{6.6}{41}{Case Study Results}{section.6.6}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.6.1}E-commerce Template Detection}{42}{subsection.6.6.1}\protected@file@percent }
-\newlabel{subsec:ecommerce-results}{{6.6.1}{42}{E-commerce Template Detection}{subsection.6.6.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.6.2}News Website Pattern Analysis}{42}{subsection.6.6.2}\protected@file@percent }
-\newlabel{subsec:news-results}{{6.6.2}{42}{News Website Pattern Analysis}{subsection.6.6.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {6.7}System Validation Results}{42}{section.6.7}\protected@file@percent }
-\newlabel{sec:validation-results}{{6.7}{42}{System Validation Results}{section.6.7}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.7.1}Expert Classification Correlation}{42}{subsection.6.7.1}\protected@file@percent }
-\newlabel{subsec:expert-correlation}{{6.7.1}{42}{Expert Classification Correlation}{subsection.6.7.1}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {6.8}Discussion of Findings}{42}{section.6.8}\protected@file@percent }
-\newlabel{sec:findings-discussion}{{6.8}{42}{Discussion of Findings}{section.6.8}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.8.1}Methodological Contributions}{42}{subsection.6.8.1}\protected@file@percent }
-\newlabel{subsec:methodological-contributions}{{6.8.1}{42}{Methodological Contributions}{subsection.6.8.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.8.2}Practical Implications}{43}{subsection.6.8.2}\protected@file@percent }
-\newlabel{subsec:practical-implications}{{6.8.2}{43}{Practical Implications}{subsection.6.8.2}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Web Development and Design}{43}{subsection.6.8.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Content Management}{43}{subsection.6.8.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Research Applications}{43}{subsection.6.8.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.8.3}Technical Insights}{43}{subsection.6.8.3}\protected@file@percent }
-\newlabel{subsec:technical-insights}{{6.8.3}{43}{Technical Insights}{subsection.6.8.3}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Feature Engineering Importance}{43}{subsection.6.8.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Clustering Algorithm Selection}{44}{subsection.6.8.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Similarity Metric Complementarity}{44}{subsection.6.8.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {6.9}Limitations and Challenges}{44}{section.6.9}\protected@file@percent }
-\newlabel{sec:limitations-discussion}{{6.9}{44}{Limitations and Challenges}{section.6.9}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.9.1}Dynamic Content Handling}{44}{subsection.6.9.1}\protected@file@percent }
-\newlabel{subsec:dynamic-content}{{6.9.1}{44}{Dynamic Content Handling}{subsection.6.9.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.9.2}Cross-Browser Variations}{44}{subsection.6.9.2}\protected@file@percent }
-\newlabel{subsec:browser-variations}{{6.9.2}{44}{Cross-Browser Variations}{subsection.6.9.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.9.3}Cultural and Linguistic Factors}{44}{subsection.6.9.3}\protected@file@percent }
-\newlabel{subsec:cultural-factors}{{6.9.3}{44}{Cultural and Linguistic Factors}{subsection.6.9.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.9.4}Scalability Considerations}{44}{subsection.6.9.4}\protected@file@percent }
-\newlabel{subsec:scalability-considerations}{{6.9.4}{44}{Scalability Considerations}{subsection.6.9.4}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {6.10}Future Work Implications}{44}{section.6.10}\protected@file@percent }
-\newlabel{sec:future-work}{{6.10}{44}{Future Work Implications}{section.6.10}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.10.1}Enhanced Dynamic Content Support}{45}{subsection.6.10.1}\protected@file@percent }
-\newlabel{subsec:enhanced-dynamic}{{6.10.1}{45}{Enhanced Dynamic Content Support}{subsection.6.10.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.10.2}Cross-Browser Compatibility}{45}{subsection.6.10.2}\protected@file@percent }
-\newlabel{subsec:cross-browser}{{6.10.2}{45}{Cross-Browser Compatibility}{subsection.6.10.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.10.3}Machine Learning Integration}{45}{subsection.6.10.3}\protected@file@percent }
-\newlabel{subsec:ml-integration}{{6.10.3}{45}{Machine Learning Integration}{subsection.6.10.3}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {6.11}Results Summary}{45}{section.6.11}\protected@file@percent }
-\newlabel{sec:results-summary}{{6.11}{45}{Results Summary}{section.6.11}{}}
-\@writefile{toc}{\contentsline {chapter}{\numberline {A}User Guide}{47}{appendix.A}\protected@file@percent }
+\newlabel{ch:results}{{6}{51}{Results and Discussion}{chapter.6}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.1}Clustering Performance Results}{51}{section.6.1}\protected@file@percent }
+\newlabel{sec:clustering-results}{{6.1}{51}{Clustering Performance Results}{section.6.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1.1}Overall Clustering Quality}{51}{subsection.6.1.1}\protected@file@percent }
+\newlabel{subsec:overall-clustering}{{6.1.1}{51}{Overall Clustering Quality}{subsection.6.1.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {6.1}{\ignorespaces Clustering Quality Results by Website Category}}{51}{table.6.1}\protected@file@percent }
+\newlabel{tab:clustering-quality}{{6.1}{51}{Clustering Quality Results by Website Category}{table.6.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1.2}Domain-Specific Performance}{51}{subsection.6.1.2}\protected@file@percent }
+\newlabel{subsec:domain-performance}{{6.1.2}{51}{Domain-Specific Performance}{subsection.6.1.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.1}{\ignorespaces Clustering Quality Results by Website Category showing DBCV scores, Silhouette coefficients, and other clustering validity metrics demonstrating superior performance for E-commerce websites and consistent quality across all categories.}}{52}{figure.6.1}\protected@file@percent }
+\newlabel{fig:clustering_quality_category}{{6.1}{52}{Clustering Quality Results by Website Category showing DBCV scores, Silhouette coefficients, and other clustering validity metrics demonstrating superior performance for E-commerce websites and consistent quality across all categories}{figure.6.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.2}Similarity Measurement Results}{53}{section.6.2}\protected@file@percent }
+\newlabel{sec:similarity-results}{{6.2}{53}{Similarity Measurement Results}{section.6.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2.1}Individual Metric Performance}{53}{subsection.6.2.1}\protected@file@percent }
+\newlabel{subsec:individual-metrics}{{6.2.1}{53}{Individual Metric Performance}{subsection.6.2.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.2}{\ignorespaces Performance Comparison of Individual Similarity Metrics showing the effectiveness of Cosine, EMD, and Hausdorff distance metrics in capturing different aspects of website similarity and their contribution to the overall analysis.}}{53}{figure.6.2}\protected@file@percent }
+\newlabel{fig:individual_metrics}{{6.2}{53}{Performance Comparison of Individual Similarity Metrics showing the effectiveness of Cosine, EMD, and Hausdorff distance metrics in capturing different aspects of website similarity and their contribution to the overall analysis}{figure.6.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2.2}Combined Metric Effectiveness}{54}{subsection.6.2.2}\protected@file@percent }
+\newlabel{subsec:combined-metric}{{6.2.2}{54}{Combined Metric Effectiveness}{subsection.6.2.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.3}Computational Performance Results}{54}{section.6.3}\protected@file@percent }
+\newlabel{sec:performance-results}{{6.3}{54}{Computational Performance Results}{section.6.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3.1}Processing Time Analysis}{54}{subsection.6.3.1}\protected@file@percent }
+\newlabel{subsec:processing-time-results}{{6.3.1}{54}{Processing Time Analysis}{subsection.6.3.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3.2}Memory Usage Characteristics}{54}{subsection.6.3.2}\protected@file@percent }
+\newlabel{subsec:memory-results}{{6.3.2}{54}{Memory Usage Characteristics}{subsection.6.3.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.4}Feature Engineering Analysis}{54}{section.6.4}\protected@file@percent }
+\newlabel{sec:feature-analysis}{{6.4}{54}{Feature Engineering Analysis}{section.6.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.4.1}Feature Component Contributions}{54}{subsection.6.4.1}\protected@file@percent }
+\newlabel{subsec:feature-contributions}{{6.4.1}{54}{Feature Component Contributions}{subsection.6.4.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.3}{\ignorespaces Computational Performance Analysis showing processing time and memory usage scaling characteristics for different dataset sizes, demonstrating linear scalability and efficient resource utilization.}}{55}{figure.6.3}\protected@file@percent }
+\newlabel{fig:computational_performance}{{6.3}{55}{Computational Performance Analysis showing processing time and memory usage scaling characteristics for different dataset sizes, demonstrating linear scalability and efficient resource utilization}{figure.6.3}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {6.2}{\ignorespaces Feature Component Contribution Analysis}}{56}{table.6.2}\protected@file@percent }
+\newlabel{tab:feature-analysis}{{6.2}{56}{Feature Component Contribution Analysis}{table.6.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.5}Comparative Analysis Results}{56}{section.6.5}\protected@file@percent }
+\newlabel{sec:comparative-results}{{6.5}{56}{Comparative Analysis Results}{section.6.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.5.1}Performance Against Baselines}{56}{subsection.6.5.1}\protected@file@percent }
+\newlabel{subsec:baseline-performance}{{6.5.1}{56}{Performance Against Baselines}{subsection.6.5.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.6}Case Study Results}{56}{section.6.6}\protected@file@percent }
+\newlabel{sec:case-study-results}{{6.6}{56}{Case Study Results}{section.6.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.6.1}E-commerce Template Detection}{56}{subsection.6.6.1}\protected@file@percent }
+\newlabel{subsec:ecommerce-results}{{6.6.1}{56}{E-commerce Template Detection}{subsection.6.6.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.6.2}News Website Pattern Analysis}{56}{subsection.6.6.2}\protected@file@percent }
+\newlabel{subsec:news-results}{{6.6.2}{56}{News Website Pattern Analysis}{subsection.6.6.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.7}System Validation Results}{56}{section.6.7}\protected@file@percent }
+\newlabel{sec:validation-results}{{6.7}{56}{System Validation Results}{section.6.7}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.4}{\ignorespaces E-commerce Website Clustering Visualization showing the identification of common design patterns and template relationships among online retailers with 94\% accuracy in template detection.}}{57}{figure.6.4}\protected@file@percent }
+\newlabel{fig:ecommerce_clustering}{{6.4}{57}{E-commerce Website Clustering Visualization showing the identification of common design patterns and template relationships among online retailers with 94\% accuracy in template detection}{figure.6.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.7.1}Expert Classification Correlation}{58}{subsection.6.7.1}\protected@file@percent }
+\newlabel{subsec:expert-correlation}{{6.7.1}{58}{Expert Classification Correlation}{subsection.6.7.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.8}Discussion of Findings}{58}{section.6.8}\protected@file@percent }
+\newlabel{sec:findings-discussion}{{6.8}{58}{Discussion of Findings}{section.6.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.8.1}Methodological Contributions}{58}{subsection.6.8.1}\protected@file@percent }
+\newlabel{subsec:methodological-contributions}{{6.8.1}{58}{Methodological Contributions}{subsection.6.8.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.8.2}Practical Implications}{58}{subsection.6.8.2}\protected@file@percent }
+\newlabel{subsec:practical-implications}{{6.8.2}{58}{Practical Implications}{subsection.6.8.2}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Web Development and Design}{58}{subsection.6.8.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Content Management}{59}{subsection.6.8.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Research Applications}{59}{subsection.6.8.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.8.3}Technical Insights}{59}{subsection.6.8.3}\protected@file@percent }
+\newlabel{subsec:technical-insights}{{6.8.3}{59}{Technical Insights}{subsection.6.8.3}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Feature Engineering Importance}{59}{subsection.6.8.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Clustering Algorithm Selection}{59}{subsection.6.8.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Similarity Metric Complementarity}{59}{subsection.6.8.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6.9}Limitations and Challenges}{59}{section.6.9}\protected@file@percent }
+\newlabel{sec:limitations-discussion}{{6.9}{59}{Limitations and Challenges}{section.6.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.9.1}Dynamic Content Handling}{60}{subsection.6.9.1}\protected@file@percent }
+\newlabel{subsec:dynamic-content}{{6.9.1}{60}{Dynamic Content Handling}{subsection.6.9.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.9.2}Cross-Browser Variations}{60}{subsection.6.9.2}\protected@file@percent }
+\newlabel{subsec:browser-variations}{{6.9.2}{60}{Cross-Browser Variations}{subsection.6.9.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.9.3}Cultural and Linguistic Factors}{60}{subsection.6.9.3}\protected@file@percent }
+\newlabel{subsec:cultural-factors}{{6.9.3}{60}{Cultural and Linguistic Factors}{subsection.6.9.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.9.4}Scalability Considerations}{60}{subsection.6.9.4}\protected@file@percent }
+\newlabel{subsec:scalability-considerations}{{6.9.4}{60}{Scalability Considerations}{subsection.6.9.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.10}Future Work Implications}{60}{section.6.10}\protected@file@percent }
+\newlabel{sec:future-work}{{6.10}{60}{Future Work Implications}{section.6.10}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.10.1}Enhanced Dynamic Content Support}{60}{subsection.6.10.1}\protected@file@percent }
+\newlabel{subsec:enhanced-dynamic}{{6.10.1}{60}{Enhanced Dynamic Content Support}{subsection.6.10.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.10.2}Cross-Browser Compatibility}{60}{subsection.6.10.2}\protected@file@percent }
+\newlabel{subsec:cross-browser}{{6.10.2}{60}{Cross-Browser Compatibility}{subsection.6.10.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.10.3}Machine Learning Integration}{61}{subsection.6.10.3}\protected@file@percent }
+\newlabel{subsec:ml-integration}{{6.10.3}{61}{Machine Learning Integration}{subsection.6.10.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.10.4}Performance Optimization Enhancements}{61}{subsection.6.10.4}\protected@file@percent }
+\newlabel{subsec:performance-optimization}{{6.10.4}{61}{Performance Optimization Enhancements}{subsection.6.10.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.11}Results Summary}{61}{section.6.11}\protected@file@percent }
+\newlabel{sec:results-summary}{{6.11}{61}{Results Summary}{section.6.11}{}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {A}User Guide}{63}{appendix.A}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\newlabel{appendix:user-guide}{{A}{47}{User Guide}{appendix.A}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {A.1}Getting Started}{47}{section.A.1}\protected@file@percent }
-\newlabel{sec:getting-started}{{A.1}{47}{Getting Started}{section.A.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.1.1}System Requirements}{47}{subsection.A.1.1}\protected@file@percent }
-\newlabel{subsec:system-requirements}{{A.1.1}{47}{System Requirements}{subsection.A.1.1}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {A.2}Interface Overview}{47}{section.A.2}\protected@file@percent }
-\newlabel{sec:interface-overview}{{A.2}{47}{Interface Overview}{section.A.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {A.3}Basic URL Analysis}{47}{section.A.3}\protected@file@percent }
-\newlabel{sec:basic-url-analysis}{{A.3}{47}{Basic URL Analysis}{section.A.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.3.1}Adding URLs}{47}{subsection.A.3.1}\protected@file@percent }
-\newlabel{subsec:adding-urls}{{A.3.1}{47}{Adding URLs}{subsection.A.3.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.3.2}Selecting Analysis Levels}{48}{subsection.A.3.2}\protected@file@percent }
-\newlabel{subsec:selecting-levels}{{A.3.2}{48}{Selecting Analysis Levels}{subsection.A.3.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.3.3}Running Analysis}{48}{subsection.A.3.3}\protected@file@percent }
-\newlabel{subsec:running-analysis}{{A.3.3}{48}{Running Analysis}{subsection.A.3.3}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {A.4}Understanding Results}{49}{section.A.4}\protected@file@percent }
-\newlabel{sec:understanding-results}{{A.4}{49}{Understanding Results}{section.A.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.4.1}Site Similarity Analysis}{49}{subsection.A.4.1}\protected@file@percent }
-\newlabel{subsec:similarity-analysis}{{A.4.1}{49}{Site Similarity Analysis}{subsection.A.4.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.4.2}Clustering Results}{49}{subsection.A.4.2}\protected@file@percent }
-\newlabel{subsec:clustering-results}{{A.4.2}{49}{Clustering Results}{subsection.A.4.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.4.3}Generated HTML Files}{49}{subsection.A.4.3}\protected@file@percent }
-\newlabel{subsec:generated-html}{{A.4.3}{49}{Generated HTML Files}{subsection.A.4.3}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {A.5}Advanced Features}{50}{section.A.5}\protected@file@percent }
-\newlabel{sec:advanced-features}{{A.5}{50}{Advanced Features}{section.A.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.5.1}Experiment Configuration}{50}{subsection.A.5.1}\protected@file@percent }
-\newlabel{subsec:experiment-configuration}{{A.5.1}{50}{Experiment Configuration}{subsection.A.5.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.5.2}Results Archive}{50}{subsection.A.5.2}\protected@file@percent }
-\newlabel{subsec:results-archive}{{A.5.2}{50}{Results Archive}{subsection.A.5.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {A.6}Performance and Optimization}{50}{section.A.6}\protected@file@percent }
-\newlabel{sec:performance-optimization}{{A.6}{50}{Performance and Optimization}{section.A.6}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.6.1}Cache System}{50}{subsection.A.6.1}\protected@file@percent }
-\newlabel{subsec:cache-system}{{A.6.1}{50}{Cache System}{subsection.A.6.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.6.2}Performance Monitoring}{51}{subsection.A.6.2}\protected@file@percent }
-\newlabel{subsec:performance-monitoring}{{A.6.2}{51}{Performance Monitoring}{subsection.A.6.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {A.7}Troubleshooting}{51}{section.A.7}\protected@file@percent }
-\newlabel{sec:troubleshooting}{{A.7}{51}{Troubleshooting}{section.A.7}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.7.1}Common Issues}{51}{subsection.A.7.1}\protected@file@percent }
-\newlabel{subsec:common-issues}{{A.7.1}{51}{Common Issues}{subsection.A.7.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.7.2}Error Messages}{52}{subsection.A.7.2}\protected@file@percent }
-\newlabel{subsec:error-messages}{{A.7.2}{52}{Error Messages}{subsection.A.7.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {A.8}Best Practices}{52}{section.A.8}\protected@file@percent }
-\newlabel{sec:best-practices}{{A.8}{52}{Best Practices}{section.A.8}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.8.1}Optimal Usage Patterns}{52}{subsection.A.8.1}\protected@file@percent }
-\newlabel{subsec:optimal-usage}{{A.8.1}{52}{Optimal Usage Patterns}{subsection.A.8.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.8.2}Result Interpretation}{52}{subsection.A.8.2}\protected@file@percent }
-\newlabel{subsec:result-interpretation}{{A.8.2}{52}{Result Interpretation}{subsection.A.8.2}{}}
-\@writefile{toc}{\contentsline {chapter}{\numberline {B}API Documentation}{53}{appendix.B}\protected@file@percent }
+\newlabel{appendix:user-guide}{{A}{63}{User Guide}{appendix.A}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {A.1}Getting Started}{63}{section.A.1}\protected@file@percent }
+\newlabel{sec:getting-started}{{A.1}{63}{Getting Started}{section.A.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.1.1}System Requirements}{63}{subsection.A.1.1}\protected@file@percent }
+\newlabel{subsec:system-requirements}{{A.1.1}{63}{System Requirements}{subsection.A.1.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {A.2}Interface Overview}{63}{section.A.2}\protected@file@percent }
+\newlabel{sec:interface-overview}{{A.2}{63}{Interface Overview}{section.A.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {A.3}Basic URL Analysis}{63}{section.A.3}\protected@file@percent }
+\newlabel{sec:basic-url-analysis}{{A.3}{63}{Basic URL Analysis}{section.A.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.3.1}Adding URLs}{63}{subsection.A.3.1}\protected@file@percent }
+\newlabel{subsec:adding-urls}{{A.3.1}{63}{Adding URLs}{subsection.A.3.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.3.2}Selecting Analysis Levels}{64}{subsection.A.3.2}\protected@file@percent }
+\newlabel{subsec:selecting-levels}{{A.3.2}{64}{Selecting Analysis Levels}{subsection.A.3.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.3.3}Running Analysis}{64}{subsection.A.3.3}\protected@file@percent }
+\newlabel{subsec:running-analysis}{{A.3.3}{64}{Running Analysis}{subsection.A.3.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {A.4}Understanding Results}{65}{section.A.4}\protected@file@percent }
+\newlabel{sec:understanding-results}{{A.4}{65}{Understanding Results}{section.A.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.4.1}Site Similarity Analysis}{65}{subsection.A.4.1}\protected@file@percent }
+\newlabel{subsec:similarity-analysis}{{A.4.1}{65}{Site Similarity Analysis}{subsection.A.4.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.4.2}Clustering Results}{65}{subsection.A.4.2}\protected@file@percent }
+\newlabel{subsec:clustering-results}{{A.4.2}{65}{Clustering Results}{subsection.A.4.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.4.3}Generated HTML Files}{65}{subsection.A.4.3}\protected@file@percent }
+\newlabel{subsec:generated-html}{{A.4.3}{65}{Generated HTML Files}{subsection.A.4.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {A.5}Advanced Features}{66}{section.A.5}\protected@file@percent }
+\newlabel{sec:advanced-features}{{A.5}{66}{Advanced Features}{section.A.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.5.1}Experiment Configuration}{66}{subsection.A.5.1}\protected@file@percent }
+\newlabel{subsec:experiment-configuration}{{A.5.1}{66}{Experiment Configuration}{subsection.A.5.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.5.2}Results Archive}{66}{subsection.A.5.2}\protected@file@percent }
+\newlabel{subsec:results-archive}{{A.5.2}{66}{Results Archive}{subsection.A.5.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {A.6}Performance and Optimization}{66}{section.A.6}\protected@file@percent }
+\newlabel{sec:performance-optimization}{{A.6}{66}{Performance and Optimization}{section.A.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.6.1}System Efficiency}{66}{subsection.A.6.1}\protected@file@percent }
+\newlabel{subsec:system-efficiency}{{A.6.1}{66}{System Efficiency}{subsection.A.6.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.6.2}Performance Monitoring}{67}{subsection.A.6.2}\protected@file@percent }
+\newlabel{subsec:performance-monitoring}{{A.6.2}{67}{Performance Monitoring}{subsection.A.6.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {A.7}Troubleshooting}{67}{section.A.7}\protected@file@percent }
+\newlabel{sec:troubleshooting}{{A.7}{67}{Troubleshooting}{section.A.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.7.1}Common Issues}{67}{subsection.A.7.1}\protected@file@percent }
+\newlabel{subsec:common-issues}{{A.7.1}{67}{Common Issues}{subsection.A.7.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.7.2}Error Messages}{68}{subsection.A.7.2}\protected@file@percent }
+\newlabel{subsec:error-messages}{{A.7.2}{68}{Error Messages}{subsection.A.7.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {A.8}Best Practices}{68}{section.A.8}\protected@file@percent }
+\newlabel{sec:best-practices}{{A.8}{68}{Best Practices}{section.A.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.8.1}Optimal Usage Patterns}{68}{subsection.A.8.1}\protected@file@percent }
+\newlabel{subsec:optimal-usage}{{A.8.1}{68}{Optimal Usage Patterns}{subsection.A.8.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.8.2}Result Interpretation}{68}{subsection.A.8.2}\protected@file@percent }
+\newlabel{subsec:result-interpretation}{{A.8.2}{68}{Result Interpretation}{subsection.A.8.2}{}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {B}API Documentation}{69}{appendix.B}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\newlabel{appendix:api-documentation}{{B}{53}{API Documentation}{appendix.B}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {B.1}API Overview}{53}{section.B.1}\protected@file@percent }
-\newlabel{sec:api-overview}{{B.1}{53}{API Overview}{section.B.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {B.1.1}Base Configuration}{53}{subsection.B.1.1}\protected@file@percent }
-\newlabel{subsec:base-configuration}{{B.1.1}{53}{Base Configuration}{subsection.B.1.1}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {B.2}Core Processing Endpoints}{53}{section.B.2}\protected@file@percent }
-\newlabel{sec:core-endpoints}{{B.2}{53}{Core Processing Endpoints}{section.B.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {B.2.1}Process URLs}{53}{subsection.B.2.1}\protected@file@percent }
-\newlabel{subsec:process-urls}{{B.2.1}{53}{Process URLs}{subsection.B.2.1}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Request Format}{53}{subsection.B.2.1}\protected@file@percent }
-\newlabel{subsubsec:request-format}{{B.2.1}{53}{Request Format}{subsection.B.2.1}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Response Format}{54}{subsection.B.2.1}\protected@file@percent }
-\newlabel{subsubsec:response-format}{{B.2.1}{54}{Response Format}{subsection.B.2.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {B.2.2}Process Clusters}{55}{subsection.B.2.2}\protected@file@percent }
-\newlabel{subsec:process-clusters}{{B.2.2}{55}{Process Clusters}{subsection.B.2.2}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Request Format}{55}{subsection.B.2.2}\protected@file@percent }
-\newlabel{subsubsec:cluster-request}{{B.2.2}{55}{Request Format}{subsection.B.2.2}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Response Format}{55}{subsection.B.2.2}\protected@file@percent }
-\newlabel{subsubsec:cluster-response}{{B.2.2}{55}{Response Format}{subsection.B.2.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {B.3}Experiment Management Endpoints}{55}{section.B.3}\protected@file@percent }
-\newlabel{sec:experiment-endpoints}{{B.3}{55}{Experiment Management Endpoints}{section.B.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {B.3.1}Run Experiment Batch}{55}{subsection.B.3.1}\protected@file@percent }
-\newlabel{subsec:experiment-batch}{{B.3.1}{55}{Run Experiment Batch}{subsection.B.3.1}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Request Format}{55}{subsection.B.3.1}\protected@file@percent }
-\newlabel{subsubsec:experiment-request}{{B.3.1}{55}{Request Format}{subsection.B.3.1}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Response Format}{56}{subsection.B.3.1}\protected@file@percent }
-\newlabel{subsubsec:experiment-response}{{B.3.1}{56}{Response Format}{subsection.B.3.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {B.3.2}List Experiment Results}{56}{subsection.B.3.2}\protected@file@percent }
-\newlabel{subsec:list-experiments}{{B.3.2}{56}{List Experiment Results}{subsection.B.3.2}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Response Format}{56}{subsection.B.3.2}\protected@file@percent }
-\newlabel{subsubsec:experiments-list}{{B.3.2}{56}{Response Format}{subsection.B.3.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {B.3.3}Get Experiment Details}{57}{subsection.B.3.3}\protected@file@percent }
-\newlabel{subsec:experiment-details}{{B.3.3}{57}{Get Experiment Details}{subsection.B.3.3}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Response Format}{57}{subsection.B.3.3}\protected@file@percent }
-\newlabel{subsubsec:experiment-detail}{{B.3.3}{57}{Response Format}{subsection.B.3.3}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {B.4}File Access Endpoints}{57}{section.B.4}\protected@file@percent }
-\newlabel{sec:file-endpoints}{{B.4}{57}{File Access Endpoints}{section.B.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {B.4.1}HTML File Serving}{57}{subsection.B.4.1}\protected@file@percent }
-\newlabel{subsec:html-serving}{{B.4.1}{57}{HTML File Serving}{subsection.B.4.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {B.4.2}Experiment File Downloads}{57}{subsection.B.4.2}\protected@file@percent }
-\newlabel{subsec:experiment-files}{{B.4.2}{57}{Experiment File Downloads}{subsection.B.4.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {B.4.3}Generated Images}{58}{subsection.B.4.3}\protected@file@percent }
-\newlabel{subsec:generated-images}{{B.4.3}{58}{Generated Images}{subsection.B.4.3}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {B.5}Error Handling}{58}{section.B.5}\protected@file@percent }
-\newlabel{sec:error-handling}{{B.5}{58}{Error Handling}{section.B.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {B.5.1}Standard Error Response}{58}{subsection.B.5.1}\protected@file@percent }
-\newlabel{subsec:error-response}{{B.5.1}{58}{Standard Error Response}{subsection.B.5.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {B.5.2}HTTP Status Codes}{58}{subsection.B.5.2}\protected@file@percent }
-\newlabel{subsec:status-codes}{{B.5.2}{58}{HTTP Status Codes}{subsection.B.5.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {B.5.3}Common Error Messages}{58}{subsection.B.5.3}\protected@file@percent }
-\newlabel{subsec:error-messages}{{B.5.3}{58}{Common Error Messages}{subsection.B.5.3}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {B.6}Rate Limiting and Performance}{58}{section.B.6}\protected@file@percent }
-\newlabel{sec:rate-limiting}{{B.6}{58}{Rate Limiting and Performance}{section.B.6}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {B.6.1}Request Limits}{58}{subsection.B.6.1}\protected@file@percent }
-\newlabel{subsec:request-limits}{{B.6.1}{58}{Request Limits}{subsection.B.6.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {B.6.2}Performance Considerations}{59}{subsection.B.6.2}\protected@file@percent }
-\newlabel{subsec:performance-considerations}{{B.6.2}{59}{Performance Considerations}{subsection.B.6.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {B.7}Authentication and Security}{59}{section.B.7}\protected@file@percent }
-\newlabel{sec:authentication}{{B.7}{59}{Authentication and Security}{section.B.7}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {B.7.1}Current Implementation}{59}{subsection.B.7.1}\protected@file@percent }
-\newlabel{subsec:current-auth}{{B.7.1}{59}{Current Implementation}{subsection.B.7.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {B.7.2}Production Considerations}{59}{subsection.B.7.2}\protected@file@percent }
-\newlabel{subsec:production-security}{{B.7.2}{59}{Production Considerations}{subsection.B.7.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {B.8}Main API Endpoints}{59}{section.B.8}\protected@file@percent }
-\newlabel{sec:main-api-endpoints}{{B.8}{59}{Main API Endpoints}{section.B.8}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {B.8.1}URL Processing}{60}{subsection.B.8.1}\protected@file@percent }
-\newlabel{subsec:url-processing-api}{{B.8.1}{60}{URL Processing}{subsection.B.8.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {B.8.2}Experiment Batch Processing}{60}{subsection.B.8.2}\protected@file@percent }
-\newlabel{subsec:experiment-batch}{{B.8.2}{60}{Experiment Batch Processing}{subsection.B.8.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {B.8.3}Experiment Results Listing}{61}{subsection.B.8.3}\protected@file@percent }
-\newlabel{subsec:experiments-list}{{B.8.3}{61}{Experiment Results Listing}{subsection.B.8.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {B.8.4}Experiment Details}{61}{subsection.B.8.4}\protected@file@percent }
-\newlabel{subsec:experiment-details}{{B.8.4}{61}{Experiment Details}{subsection.B.8.4}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {B.9}File Access}{61}{section.B.9}\protected@file@percent }
-\newlabel{sec:file-access}{{B.9}{61}{File Access}{section.B.9}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {B.10}Error Handling}{61}{section.B.10}\protected@file@percent }
-\newlabel{sec:error-handling}{{B.10}{61}{Error Handling}{section.B.10}{}}
-\@writefile{toc}{\contentsline {chapter}{\numberline {C}Technology Stack Details}{63}{appendix.C}\protected@file@percent }
+\newlabel{appendix:api-documentation}{{B}{69}{API Documentation}{appendix.B}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B.1}API Overview}{69}{section.B.1}\protected@file@percent }
+\newlabel{sec:api-overview}{{B.1}{69}{API Overview}{section.B.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.1.1}Base Configuration}{69}{subsection.B.1.1}\protected@file@percent }
+\newlabel{subsec:base-configuration}{{B.1.1}{69}{Base Configuration}{subsection.B.1.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B.2}Core Processing Endpoints}{69}{section.B.2}\protected@file@percent }
+\newlabel{sec:core-endpoints}{{B.2}{69}{Core Processing Endpoints}{section.B.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.2.1}Process URLs}{69}{subsection.B.2.1}\protected@file@percent }
+\newlabel{subsec:process-urls}{{B.2.1}{69}{Process URLs}{subsection.B.2.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Request Format}{69}{subsection.B.2.1}\protected@file@percent }
+\newlabel{subsubsec:request-format}{{B.2.1}{69}{Request Format}{subsection.B.2.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Response Format}{70}{subsection.B.2.1}\protected@file@percent }
+\newlabel{subsubsec:response-format}{{B.2.1}{70}{Response Format}{subsection.B.2.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.2.2}Process Clusters}{71}{subsection.B.2.2}\protected@file@percent }
+\newlabel{subsec:process-clusters}{{B.2.2}{71}{Process Clusters}{subsection.B.2.2}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Request Format}{71}{subsection.B.2.2}\protected@file@percent }
+\newlabel{subsubsec:cluster-request}{{B.2.2}{71}{Request Format}{subsection.B.2.2}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Response Format}{71}{subsection.B.2.2}\protected@file@percent }
+\newlabel{subsubsec:cluster-response}{{B.2.2}{71}{Response Format}{subsection.B.2.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B.3}Experiment Management Endpoints}{71}{section.B.3}\protected@file@percent }
+\newlabel{sec:experiment-endpoints}{{B.3}{71}{Experiment Management Endpoints}{section.B.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.3.1}Run Experiment Batch}{71}{subsection.B.3.1}\protected@file@percent }
+\newlabel{subsec:experiment-batch}{{B.3.1}{71}{Run Experiment Batch}{subsection.B.3.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Request Format}{71}{subsection.B.3.1}\protected@file@percent }
+\newlabel{subsubsec:experiment-request}{{B.3.1}{71}{Request Format}{subsection.B.3.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Response Format}{72}{subsection.B.3.1}\protected@file@percent }
+\newlabel{subsubsec:experiment-response}{{B.3.1}{72}{Response Format}{subsection.B.3.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.3.2}List Experiment Results}{72}{subsection.B.3.2}\protected@file@percent }
+\newlabel{subsec:list-experiments}{{B.3.2}{72}{List Experiment Results}{subsection.B.3.2}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Response Format}{72}{subsection.B.3.2}\protected@file@percent }
+\newlabel{subsubsec:experiments-list}{{B.3.2}{72}{Response Format}{subsection.B.3.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.3.3}Get Experiment Details}{73}{subsection.B.3.3}\protected@file@percent }
+\newlabel{subsec:experiment-details}{{B.3.3}{73}{Get Experiment Details}{subsection.B.3.3}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Response Format}{73}{subsection.B.3.3}\protected@file@percent }
+\newlabel{subsubsec:experiment-detail}{{B.3.3}{73}{Response Format}{subsection.B.3.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B.4}File Access Endpoints}{73}{section.B.4}\protected@file@percent }
+\newlabel{sec:file-endpoints}{{B.4}{73}{File Access Endpoints}{section.B.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.4.1}HTML File Serving}{73}{subsection.B.4.1}\protected@file@percent }
+\newlabel{subsec:html-serving}{{B.4.1}{73}{HTML File Serving}{subsection.B.4.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.4.2}Experiment File Downloads}{73}{subsection.B.4.2}\protected@file@percent }
+\newlabel{subsec:experiment-files}{{B.4.2}{73}{Experiment File Downloads}{subsection.B.4.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.4.3}Generated Images}{74}{subsection.B.4.3}\protected@file@percent }
+\newlabel{subsec:generated-images}{{B.4.3}{74}{Generated Images}{subsection.B.4.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B.5}Error Handling}{74}{section.B.5}\protected@file@percent }
+\newlabel{sec:error-handling}{{B.5}{74}{Error Handling}{section.B.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.5.1}Standard Error Response}{74}{subsection.B.5.1}\protected@file@percent }
+\newlabel{subsec:error-response}{{B.5.1}{74}{Standard Error Response}{subsection.B.5.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.5.2}HTTP Status Codes}{74}{subsection.B.5.2}\protected@file@percent }
+\newlabel{subsec:status-codes}{{B.5.2}{74}{HTTP Status Codes}{subsection.B.5.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.5.3}Common Error Messages}{74}{subsection.B.5.3}\protected@file@percent }
+\newlabel{subsec:error-messages}{{B.5.3}{74}{Common Error Messages}{subsection.B.5.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B.6}Rate Limiting and Performance}{74}{section.B.6}\protected@file@percent }
+\newlabel{sec:rate-limiting}{{B.6}{74}{Rate Limiting and Performance}{section.B.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.6.1}Request Limits}{74}{subsection.B.6.1}\protected@file@percent }
+\newlabel{subsec:request-limits}{{B.6.1}{74}{Request Limits}{subsection.B.6.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.6.2}Performance Considerations}{75}{subsection.B.6.2}\protected@file@percent }
+\newlabel{subsec:performance-considerations}{{B.6.2}{75}{Performance Considerations}{subsection.B.6.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B.7}Authentication and Security}{75}{section.B.7}\protected@file@percent }
+\newlabel{sec:authentication}{{B.7}{75}{Authentication and Security}{section.B.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.7.1}Current Implementation}{75}{subsection.B.7.1}\protected@file@percent }
+\newlabel{subsec:current-auth}{{B.7.1}{75}{Current Implementation}{subsection.B.7.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.7.2}Production Considerations}{75}{subsection.B.7.2}\protected@file@percent }
+\newlabel{subsec:production-security}{{B.7.2}{75}{Production Considerations}{subsection.B.7.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B.8}Main API Endpoints}{75}{section.B.8}\protected@file@percent }
+\newlabel{sec:main-api-endpoints}{{B.8}{75}{Main API Endpoints}{section.B.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.8.1}URL Processing}{76}{subsection.B.8.1}\protected@file@percent }
+\newlabel{subsec:url-processing-api}{{B.8.1}{76}{URL Processing}{subsection.B.8.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.8.2}Experiment Batch Processing}{76}{subsection.B.8.2}\protected@file@percent }
+\newlabel{subsec:experiment-batch}{{B.8.2}{76}{Experiment Batch Processing}{subsection.B.8.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.8.3}Experiment Results Listing}{77}{subsection.B.8.3}\protected@file@percent }
+\newlabel{subsec:experiments-list}{{B.8.3}{77}{Experiment Results Listing}{subsection.B.8.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.8.4}Experiment Details}{77}{subsection.B.8.4}\protected@file@percent }
+\newlabel{subsec:experiment-details}{{B.8.4}{77}{Experiment Details}{subsection.B.8.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B.9}File Access}{77}{section.B.9}\protected@file@percent }
+\newlabel{sec:file-access}{{B.9}{77}{File Access}{section.B.9}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B.10}Error Handling}{77}{section.B.10}\protected@file@percent }
+\newlabel{sec:error-handling}{{B.10}{77}{Error Handling}{section.B.10}{}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {C}Technology Stack Details}{79}{appendix.C}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\newlabel{appendix:technology-stack}{{C}{63}{Technology Stack Details}{appendix.C}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {C.1}Technology Stack Overview}{63}{section.C.1}\protected@file@percent }
-\newlabel{sec:tech-overview}{{C.1}{63}{Technology Stack Overview}{section.C.1}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {C.2}Backend Technologies}{63}{section.C.2}\protected@file@percent }
-\newlabel{sec:backend-tech}{{C.2}{63}{Backend Technologies}{section.C.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.2.1}Core Programming Language}{63}{subsection.C.2.1}\protected@file@percent }
-\newlabel{subsec:core-language}{{C.2.1}{63}{Core Programming Language}{subsection.C.2.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.2.2}Web Automation Framework}{63}{subsection.C.2.2}\protected@file@percent }
-\newlabel{subsec:selenium}{{C.2.2}{63}{Web Automation Framework}{subsection.C.2.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.2.3}API Framework}{64}{subsection.C.2.3}\protected@file@percent }
-\newlabel{subsec:api-framework}{{C.2.3}{64}{API Framework}{subsection.C.2.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.2.4}Data Processing Libraries}{65}{subsection.C.2.4}\protected@file@percent }
-\newlabel{subsec:data-processing}{{C.2.4}{65}{Data Processing Libraries}{subsection.C.2.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.2.5}Machine Learning Libraries}{65}{subsection.C.2.5}\protected@file@percent }
-\newlabel{subsec:ml-libraries}{{C.2.5}{65}{Machine Learning Libraries}{subsection.C.2.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.2.6}Image and Visualization Libraries}{66}{subsection.C.2.6}\protected@file@percent }
-\newlabel{subsec:visualization-libs}{{C.2.6}{66}{Image and Visualization Libraries}{subsection.C.2.6}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.2.7}Color Processing}{66}{subsection.C.2.7}\protected@file@percent }
-\newlabel{subsec:color-processing}{{C.2.7}{66}{Color Processing}{subsection.C.2.7}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {C.3}Frontend Technologies}{67}{section.C.3}\protected@file@percent }
-\newlabel{sec:frontend-tech}{{C.3}{67}{Frontend Technologies}{section.C.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.3.1}Core Framework}{67}{subsection.C.3.1}\protected@file@percent }
-\newlabel{subsec:react-framework}{{C.3.1}{67}{Core Framework}{subsection.C.3.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.3.2}UI Component Library}{67}{subsection.C.3.2}\protected@file@percent }
-\newlabel{subsec:material-ui}{{C.3.2}{67}{UI Component Library}{subsection.C.3.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.3.3}Data Visualization}{68}{subsection.C.3.3}\protected@file@percent }
-\newlabel{subsec:d3-visualization}{{C.3.3}{68}{Data Visualization}{subsection.C.3.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.3.4}PDF Generation}{68}{subsection.C.3.4}\protected@file@percent }
-\newlabel{subsec:pdf-generation}{{C.3.4}{68}{PDF Generation}{subsection.C.3.4}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {C.4}Development and Deployment}{68}{section.C.4}\protected@file@percent }
-\newlabel{sec:development-deployment}{{C.4}{68}{Development and Deployment}{section.C.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.4.1}Package Management}{68}{subsection.C.4.1}\protected@file@percent }
-\newlabel{subsec:package-management}{{C.4.1}{68}{Package Management}{subsection.C.4.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.4.2}Development Tools}{68}{subsection.C.4.2}\protected@file@percent }
-\newlabel{subsec:development-tools}{{C.4.2}{68}{Development Tools}{subsection.C.4.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {C.5}Data Management}{69}{section.C.5}\protected@file@percent }
-\newlabel{sec:data-management}{{C.5}{69}{Data Management}{section.C.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.5.1}File System Storage}{69}{subsection.C.5.1}\protected@file@percent }
-\newlabel{subsec:file-storage}{{C.5.1}{69}{File System Storage}{subsection.C.5.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.5.2}Caching System}{69}{subsection.C.5.2}\protected@file@percent }
-\newlabel{subsec:caching-system}{{C.5.2}{69}{Caching System}{subsection.C.5.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {C.6}Performance Optimization Technologies}{70}{section.C.6}\protected@file@percent }
-\newlabel{sec:performance-tech}{{C.6}{70}{Performance Optimization Technologies}{section.C.6}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.6.1}Parallel Processing}{70}{subsection.C.6.1}\protected@file@percent }
-\newlabel{subsec:parallel-processing}{{C.6.1}{70}{Parallel Processing}{subsection.C.6.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.6.2}Algorithm Optimization}{70}{subsection.C.6.2}\protected@file@percent }
-\newlabel{subsec:algorithm-optimization}{{C.6.2}{70}{Algorithm Optimization}{subsection.C.6.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {C.7}Browser Compatibility}{70}{section.C.7}\protected@file@percent }
-\newlabel{sec:browser-compatibility}{{C.7}{70}{Browser Compatibility}{section.C.7}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.7.1}Supported Browsers}{70}{subsection.C.7.1}\protected@file@percent }
-\newlabel{subsec:supported-browsers}{{C.7.1}{70}{Supported Browsers}{subsection.C.7.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.7.2}Progressive Enhancement}{71}{subsection.C.7.2}\protected@file@percent }
-\newlabel{subsec:progressive-enhancement}{{C.7.2}{71}{Progressive Enhancement}{subsection.C.7.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {C.8}Security Considerations}{71}{section.C.8}\protected@file@percent }
-\newlabel{sec:security-considerations}{{C.8}{71}{Security Considerations}{section.C.8}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.8.1}Input Validation}{71}{subsection.C.8.1}\protected@file@percent }
-\newlabel{subsec:input-validation}{{C.8.1}{71}{Input Validation}{subsection.C.8.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.8.2}CORS Configuration}{71}{subsection.C.8.2}\protected@file@percent }
-\newlabel{subsec:cors-configuration}{{C.8.2}{71}{CORS Configuration}{subsection.C.8.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {C.9}System Requirements}{71}{section.C.9}\protected@file@percent }
-\newlabel{sec:system-requirements}{{C.9}{71}{System Requirements}{section.C.9}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.9.1}Minimum Requirements}{71}{subsection.C.9.1}\protected@file@percent }
-\newlabel{subsec:minimum-requirements}{{C.9.1}{71}{Minimum Requirements}{subsection.C.9.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.9.2}Recommended Configuration}{72}{subsection.C.9.2}\protected@file@percent }
-\newlabel{subsec:recommended-configuration}{{C.9.2}{72}{Recommended Configuration}{subsection.C.9.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {C.10}Version Management}{72}{section.C.10}\protected@file@percent }
-\newlabel{sec:version-management}{{C.10}{72}{Version Management}{section.C.10}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.10.1}Dependency Versioning}{72}{subsection.C.10.1}\protected@file@percent }
-\newlabel{subsec:dependency-versioning}{{C.10.1}{72}{Dependency Versioning}{subsection.C.10.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.10.2}Technology Lifecycle}{72}{subsection.C.10.2}\protected@file@percent }
-\newlabel{subsec:technology-lifecycle}{{C.10.2}{72}{Technology Lifecycle}{subsection.C.10.2}{}}
-\@writefile{toc}{\contentsline {chapter}{\numberline {D}Experimental Data}{73}{appendix.D}\protected@file@percent }
+\newlabel{appendix:technology-stack}{{C}{79}{Technology Stack Details}{appendix.C}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {C.1}Technology Stack Overview}{79}{section.C.1}\protected@file@percent }
+\newlabel{sec:tech-overview}{{C.1}{79}{Technology Stack Overview}{section.C.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {C.2}Backend Technologies}{79}{section.C.2}\protected@file@percent }
+\newlabel{sec:backend-tech}{{C.2}{79}{Backend Technologies}{section.C.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.2.1}Core Programming Language}{79}{subsection.C.2.1}\protected@file@percent }
+\newlabel{subsec:core-language}{{C.2.1}{79}{Core Programming Language}{subsection.C.2.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.2.2}Web Automation Framework}{79}{subsection.C.2.2}\protected@file@percent }
+\newlabel{subsec:selenium}{{C.2.2}{79}{Web Automation Framework}{subsection.C.2.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.2.3}API Framework}{80}{subsection.C.2.3}\protected@file@percent }
+\newlabel{subsec:api-framework}{{C.2.3}{80}{API Framework}{subsection.C.2.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.2.4}Data Processing Libraries}{81}{subsection.C.2.4}\protected@file@percent }
+\newlabel{subsec:data-processing}{{C.2.4}{81}{Data Processing Libraries}{subsection.C.2.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.2.5}Machine Learning Libraries}{81}{subsection.C.2.5}\protected@file@percent }
+\newlabel{subsec:ml-libraries}{{C.2.5}{81}{Machine Learning Libraries}{subsection.C.2.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.2.6}Image and Visualization Libraries}{82}{subsection.C.2.6}\protected@file@percent }
+\newlabel{subsec:visualization-libs}{{C.2.6}{82}{Image and Visualization Libraries}{subsection.C.2.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.2.7}Color Processing}{82}{subsection.C.2.7}\protected@file@percent }
+\newlabel{subsec:color-processing}{{C.2.7}{82}{Color Processing}{subsection.C.2.7}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {C.3}Frontend Technologies}{83}{section.C.3}\protected@file@percent }
+\newlabel{sec:frontend-tech}{{C.3}{83}{Frontend Technologies}{section.C.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.3.1}Core Framework}{83}{subsection.C.3.1}\protected@file@percent }
+\newlabel{subsec:react-framework}{{C.3.1}{83}{Core Framework}{subsection.C.3.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.3.2}UI Component Library}{83}{subsection.C.3.2}\protected@file@percent }
+\newlabel{subsec:material-ui}{{C.3.2}{83}{UI Component Library}{subsection.C.3.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.3.3}Data Visualization}{84}{subsection.C.3.3}\protected@file@percent }
+\newlabel{subsec:d3-visualization}{{C.3.3}{84}{Data Visualization}{subsection.C.3.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.3.4}PDF Generation}{84}{subsection.C.3.4}\protected@file@percent }
+\newlabel{subsec:pdf-generation}{{C.3.4}{84}{PDF Generation}{subsection.C.3.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {C.4}Development and Deployment}{84}{section.C.4}\protected@file@percent }
+\newlabel{sec:development-deployment}{{C.4}{84}{Development and Deployment}{section.C.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.4.1}Package Management}{84}{subsection.C.4.1}\protected@file@percent }
+\newlabel{subsec:package-management}{{C.4.1}{84}{Package Management}{subsection.C.4.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.4.2}Development Tools}{84}{subsection.C.4.2}\protected@file@percent }
+\newlabel{subsec:development-tools}{{C.4.2}{84}{Development Tools}{subsection.C.4.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {C.5}Data Management}{85}{section.C.5}\protected@file@percent }
+\newlabel{sec:data-management}{{C.5}{85}{Data Management}{section.C.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.5.1}File System Storage}{85}{subsection.C.5.1}\protected@file@percent }
+\newlabel{subsec:file-storage}{{C.5.1}{85}{File System Storage}{subsection.C.5.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.5.2}Data Processing Optimization}{85}{subsection.C.5.2}\protected@file@percent }
+\newlabel{subsec:data-optimization}{{C.5.2}{85}{Data Processing Optimization}{subsection.C.5.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {C.6}Performance Optimization Technologies}{86}{section.C.6}\protected@file@percent }
+\newlabel{sec:performance-tech}{{C.6}{86}{Performance Optimization Technologies}{section.C.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.6.1}Parallel Processing}{86}{subsection.C.6.1}\protected@file@percent }
+\newlabel{subsec:parallel-processing}{{C.6.1}{86}{Parallel Processing}{subsection.C.6.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.6.2}Algorithm Optimization}{86}{subsection.C.6.2}\protected@file@percent }
+\newlabel{subsec:algorithm-optimization}{{C.6.2}{86}{Algorithm Optimization}{subsection.C.6.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {C.7}Browser Compatibility}{86}{section.C.7}\protected@file@percent }
+\newlabel{sec:browser-compatibility}{{C.7}{86}{Browser Compatibility}{section.C.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.7.1}Supported Browsers}{86}{subsection.C.7.1}\protected@file@percent }
+\newlabel{subsec:supported-browsers}{{C.7.1}{86}{Supported Browsers}{subsection.C.7.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.7.2}Progressive Enhancement}{87}{subsection.C.7.2}\protected@file@percent }
+\newlabel{subsec:progressive-enhancement}{{C.7.2}{87}{Progressive Enhancement}{subsection.C.7.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {C.8}Security Considerations}{87}{section.C.8}\protected@file@percent }
+\newlabel{sec:security-considerations}{{C.8}{87}{Security Considerations}{section.C.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.8.1}Input Validation}{87}{subsection.C.8.1}\protected@file@percent }
+\newlabel{subsec:input-validation}{{C.8.1}{87}{Input Validation}{subsection.C.8.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.8.2}CORS Configuration}{87}{subsection.C.8.2}\protected@file@percent }
+\newlabel{subsec:cors-configuration}{{C.8.2}{87}{CORS Configuration}{subsection.C.8.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {C.9}System Requirements}{87}{section.C.9}\protected@file@percent }
+\newlabel{sec:system-requirements}{{C.9}{87}{System Requirements}{section.C.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.9.1}Minimum Requirements}{87}{subsection.C.9.1}\protected@file@percent }
+\newlabel{subsec:minimum-requirements}{{C.9.1}{87}{Minimum Requirements}{subsection.C.9.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.9.2}Recommended Configuration}{88}{subsection.C.9.2}\protected@file@percent }
+\newlabel{subsec:recommended-configuration}{{C.9.2}{88}{Recommended Configuration}{subsection.C.9.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {C.10}Version Management}{88}{section.C.10}\protected@file@percent }
+\newlabel{sec:version-management}{{C.10}{88}{Version Management}{section.C.10}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.10.1}Dependency Versioning}{88}{subsection.C.10.1}\protected@file@percent }
+\newlabel{subsec:dependency-versioning}{{C.10.1}{88}{Dependency Versioning}{subsection.C.10.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.10.2}Technology Lifecycle}{88}{subsection.C.10.2}\protected@file@percent }
+\newlabel{subsec:technology-lifecycle}{{C.10.2}{88}{Technology Lifecycle}{subsection.C.10.2}{}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {D}Experimental Data}{89}{appendix.D}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\newlabel{appendix:experimental-data}{{D}{73}{Experimental Data}{appendix.D}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {D.1}Experimental Design Overview}{73}{section.D.1}\protected@file@percent }
-\newlabel{sec:experimental-design}{{D.1}{73}{Experimental Design Overview}{section.D.1}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {D.2}Dataset Characteristics}{73}{section.D.2}\protected@file@percent }
-\newlabel{sec:dataset-characteristics}{{D.2}{73}{Dataset Characteristics}{section.D.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {D.2.1}Test Website Categories}{73}{subsection.D.2.1}\protected@file@percent }
-\newlabel{subsec:test-categories}{{D.2.1}{73}{Test Website Categories}{subsection.D.2.1}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {D.1}{\ignorespaces Test Website Categories and Characteristics}}{73}{table.D.1}\protected@file@percent }
-\newlabel{tab:test-categories}{{D.1}{73}{Test Website Categories and Characteristics}{table.D.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {D.2.2}URL Distribution}{73}{subsection.D.2.2}\protected@file@percent }
-\newlabel{subsec:url-distribution}{{D.2.2}{73}{URL Distribution}{subsection.D.2.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {D.3}Performance Metrics}{74}{section.D.3}\protected@file@percent }
-\newlabel{sec:performance-metrics}{{D.3}{74}{Performance Metrics}{section.D.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {D.3.1}Processing Time Analysis}{74}{subsection.D.3.1}\protected@file@percent }
-\newlabel{subsec:processing-time}{{D.3.1}{74}{Processing Time Analysis}{subsection.D.3.1}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {D.2}{\ignorespaces Processing Time by Analysis Level}}{74}{table.D.2}\protected@file@percent }
-\newlabel{tab:processing-times}{{D.2}{74}{Processing Time by Analysis Level}{table.D.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {D.3.2}Cache Performance}{74}{subsection.D.3.2}\protected@file@percent }
-\newlabel{subsec:cache-performance}{{D.3.2}{74}{Cache Performance}{subsection.D.3.2}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {D.3}{\ignorespaces Cache Performance Statistics}}{74}{table.D.3}\protected@file@percent }
-\newlabel{tab:cache-performance}{{D.3}{74}{Cache Performance Statistics}{table.D.3}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {D.4}Clustering Quality Results}{74}{section.D.4}\protected@file@percent }
-\newlabel{sec:clustering-quality}{{D.4}{74}{Clustering Quality Results}{section.D.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {D.4.1}DBCV Scores by Level}{74}{subsection.D.4.1}\protected@file@percent }
-\newlabel{subsec:dbcv-scores}{{D.4.1}{74}{DBCV Scores by Level}{subsection.D.4.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {D.4.2}Optimal Level Identification}{74}{subsection.D.4.2}\protected@file@percent }
-\newlabel{subsec:optimal-level}{{D.4.2}{74}{Optimal Level Identification}{subsection.D.4.2}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {D.4}{\ignorespaces DBCV Clustering Quality Scores}}{75}{table.D.4}\protected@file@percent }
-\newlabel{tab:dbcv-scores}{{D.4}{75}{DBCV Clustering Quality Scores}{table.D.4}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {D.5}Similarity Analysis Results}{75}{section.D.5}\protected@file@percent }
-\newlabel{sec:similarity-analysis}{{D.5}{75}{Similarity Analysis Results}{section.D.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {D.5.1}Cosine Similarity Distribution}{75}{subsection.D.5.1}\protected@file@percent }
-\newlabel{subsec:cosine-similarity}{{D.5.1}{75}{Cosine Similarity Distribution}{subsection.D.5.1}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {D.5}{\ignorespaces Cosine Similarity Statistics by Website Category}}{75}{table.D.5}\protected@file@percent }
-\newlabel{tab:cosine-similarity}{{D.5}{75}{Cosine Similarity Statistics by Website Category}{table.D.5}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {D.6}{\ignorespaces Comparison of Similarity Metrics}}{76}{table.D.6}\protected@file@percent }
-\newlabel{tab:similarity-metrics}{{D.6}{76}{Comparison of Similarity Metrics}{table.D.6}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {D.7}{\ignorespaces Scalability Analysis Results}}{76}{table.D.7}\protected@file@percent }
-\newlabel{tab:scalability}{{D.7}{76}{Scalability Analysis Results}{table.D.7}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {D.5.2}Multi-Metric Comparison}{76}{subsection.D.5.2}\protected@file@percent }
-\newlabel{subsec:multi-metric}{{D.5.2}{76}{Multi-Metric Comparison}{subsection.D.5.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {D.6}Scalability Analysis}{76}{section.D.6}\protected@file@percent }
-\newlabel{sec:scalability-analysis}{{D.6}{76}{Scalability Analysis}{section.D.6}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {D.6.1}URL Count vs Processing Time}{76}{subsection.D.6.1}\protected@file@percent }
-\newlabel{subsec:url-scaling}{{D.6.1}{76}{URL Count vs Processing Time}{subsection.D.6.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {D.6.2}Memory Usage Patterns}{76}{subsection.D.6.2}\protected@file@percent }
-\newlabel{subsec:memory-patterns}{{D.6.2}{76}{Memory Usage Patterns}{subsection.D.6.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {D.7}Experiment Validation Results}{76}{section.D.7}\protected@file@percent }
-\newlabel{sec:validation-results}{{D.7}{76}{Experiment Validation Results}{section.D.7}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {D.7.1}Ground Truth Validation}{76}{subsection.D.7.1}\protected@file@percent }
-\newlabel{subsec:ground-truth}{{D.7.1}{76}{Ground Truth Validation}{subsection.D.7.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {D.7.2}Cross-Validation Results}{76}{subsection.D.7.2}\protected@file@percent }
-\newlabel{subsec:cross-validation}{{D.7.2}{76}{Cross-Validation Results}{subsection.D.7.2}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {D.8}{\ignorespaces Clustering Accuracy vs Ground Truth}}{77}{table.D.8}\protected@file@percent }
-\newlabel{tab:ground-truth}{{D.8}{77}{Clustering Accuracy vs Ground Truth}{table.D.8}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {D.9}{\ignorespaces Cross-Validation Performance}}{77}{table.D.9}\protected@file@percent }
-\newlabel{tab:cross-validation}{{D.9}{77}{Cross-Validation Performance}{table.D.9}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {D.8}Comparative Analysis}{77}{section.D.8}\protected@file@percent }
-\newlabel{sec:comparative-analysis}{{D.8}{77}{Comparative Analysis}{section.D.8}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {D.8.1}Baseline Comparisons}{77}{subsection.D.8.1}\protected@file@percent }
-\newlabel{subsec:baseline-comparisons}{{D.8.1}{77}{Baseline Comparisons}{subsection.D.8.1}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {D.10}{\ignorespaces Algorithm Performance Comparison}}{77}{table.D.10}\protected@file@percent }
-\newlabel{tab:algorithm-comparison}{{D.10}{77}{Algorithm Performance Comparison}{table.D.10}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {D.8.2}Feature Importance Analysis}{77}{subsection.D.8.2}\protected@file@percent }
-\newlabel{subsec:feature-importance}{{D.8.2}{77}{Feature Importance Analysis}{subsection.D.8.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {D.9}Error Analysis}{77}{section.D.9}\protected@file@percent }
-\newlabel{sec:error-analysis}{{D.9}{77}{Error Analysis}{section.D.9}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {D.9.1}Failure Case Analysis}{77}{subsection.D.9.1}\protected@file@percent }
-\newlabel{subsec:failure-cases}{{D.9.1}{77}{Failure Case Analysis}{subsection.D.9.1}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {D.11}{\ignorespaces Feature Importance Rankings}}{78}{table.D.11}\protected@file@percent }
-\newlabel{tab:feature-importance}{{D.11}{78}{Feature Importance Rankings}{table.D.11}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {D.12}{\ignorespaces Failure Analysis}}{78}{table.D.12}\protected@file@percent }
-\newlabel{tab:failure-analysis}{{D.12}{78}{Failure Analysis}{table.D.12}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {D.9.2}Quality Degradation Factors}{78}{subsection.D.9.2}\protected@file@percent }
-\newlabel{subsec:quality-degradation}{{D.9.2}{78}{Quality Degradation Factors}{subsection.D.9.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {D.10}Performance Optimization Results}{78}{section.D.10}\protected@file@percent }
-\newlabel{sec:optimization-results}{{D.10}{78}{Performance Optimization Results}{section.D.10}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {D.10.1}Optimization Techniques Impact}{78}{subsection.D.10.1}\protected@file@percent }
-\newlabel{subsec:optimization-impact}{{D.10.1}{78}{Optimization Techniques Impact}{subsection.D.10.1}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {D.13}{\ignorespaces Performance Optimization Impact}}{78}{table.D.13}\protected@file@percent }
-\newlabel{tab:optimization-impact}{{D.13}{78}{Performance Optimization Impact}{table.D.13}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {D.11}Statistical Significance Tests}{79}{section.D.11}\protected@file@percent }
-\newlabel{sec:statistical-tests}{{D.11}{79}{Statistical Significance Tests}{section.D.11}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {D.11.1}Hypothesis Testing Results}{79}{subsection.D.11.1}\protected@file@percent }
-\newlabel{subsec:hypothesis-testing}{{D.11.1}{79}{Hypothesis Testing Results}{subsection.D.11.1}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {D.12}Reproducibility Information}{79}{section.D.12}\protected@file@percent }
-\newlabel{sec:reproducibility}{{D.12}{79}{Reproducibility Information}{section.D.12}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {D.12.1}Experimental Configuration}{79}{subsection.D.12.1}\protected@file@percent }
-\newlabel{subsec:experimental-config}{{D.12.1}{79}{Experimental Configuration}{subsection.D.12.1}{}}
+\newlabel{appendix:experimental-data}{{D}{89}{Experimental Data}{appendix.D}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {D.1}Experimental Design Overview}{89}{section.D.1}\protected@file@percent }
+\newlabel{sec:experimental-design}{{D.1}{89}{Experimental Design Overview}{section.D.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {D.2}Dataset Characteristics}{89}{section.D.2}\protected@file@percent }
+\newlabel{sec:dataset-characteristics}{{D.2}{89}{Dataset Characteristics}{section.D.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {D.2.1}Test Website Categories}{89}{subsection.D.2.1}\protected@file@percent }
+\newlabel{subsec:test-categories}{{D.2.1}{89}{Test Website Categories}{subsection.D.2.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {D.1}{\ignorespaces Test Website Categories and Characteristics}}{89}{table.D.1}\protected@file@percent }
+\newlabel{tab:test-categories}{{D.1}{89}{Test Website Categories and Characteristics}{table.D.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {D.2.2}URL Distribution}{89}{subsection.D.2.2}\protected@file@percent }
+\newlabel{subsec:url-distribution}{{D.2.2}{89}{URL Distribution}{subsection.D.2.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {D.1}{\ignorespaces Distribution of URLs by Website Category showing the comprehensive dataset coverage across E-commerce, News/Media, Educational, Corporate, Blog, and Government websites.}}{90}{figure.D.1}\protected@file@percent }
+\newlabel{fig:url-distribution}{{D.1}{90}{Distribution of URLs by Website Category showing the comprehensive dataset coverage across E-commerce, News/Media, Educational, Corporate, Blog, and Government websites}{figure.D.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {D.3}Performance Metrics}{91}{section.D.3}\protected@file@percent }
+\newlabel{sec:performance-metrics}{{D.3}{91}{Performance Metrics}{section.D.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {D.3.1}Processing Time Analysis}{91}{subsection.D.3.1}\protected@file@percent }
+\newlabel{subsec:processing-time}{{D.3.1}{91}{Processing Time Analysis}{subsection.D.3.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {D.2}{\ignorespaces Processing Time by Analysis Level}}{91}{table.D.2}\protected@file@percent }
+\newlabel{tab:processing-times}{{D.2}{91}{Processing Time by Analysis Level}{table.D.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {D.3.2}System Performance Metrics}{91}{subsection.D.3.2}\protected@file@percent }
+\newlabel{subsec:system-performance}{{D.3.2}{91}{System Performance Metrics}{subsection.D.3.2}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {D.3}{\ignorespaces System Performance Statistics}}{91}{table.D.3}\protected@file@percent }
+\newlabel{tab:performance-metrics}{{D.3}{91}{System Performance Statistics}{table.D.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {D.4}Clustering Quality Results}{91}{section.D.4}\protected@file@percent }
+\newlabel{sec:clustering-quality}{{D.4}{91}{Clustering Quality Results}{section.D.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {D.4.1}DBCV Scores by Level}{91}{subsection.D.4.1}\protected@file@percent }
+\newlabel{subsec:dbcv-scores}{{D.4.1}{91}{DBCV Scores by Level}{subsection.D.4.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {D.4.2}Optimal Level Identification}{91}{subsection.D.4.2}\protected@file@percent }
+\newlabel{subsec:optimal-level}{{D.4.2}{91}{Optimal Level Identification}{subsection.D.4.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {D.2}{\ignorespaces Processing Time vs Analysis Level showing the exponential increase in computational complexity as analysis depth increases from Level 1 to Level 10.}}{92}{figure.D.2}\protected@file@percent }
+\newlabel{fig:processing-time}{{D.2}{92}{Processing Time vs Analysis Level showing the exponential increase in computational complexity as analysis depth increases from Level 1 to Level 10}{figure.D.2}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {D.4}{\ignorespaces DBCV Clustering Quality Scores}}{92}{table.D.4}\protected@file@percent }
+\newlabel{tab:dbcv-scores}{{D.4}{92}{DBCV Clustering Quality Scores}{table.D.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {D.5}Similarity Analysis Results}{93}{section.D.5}\protected@file@percent }
+\newlabel{sec:similarity-analysis}{{D.5}{93}{Similarity Analysis Results}{section.D.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {D.5.1}Cosine Similarity Distribution}{93}{subsection.D.5.1}\protected@file@percent }
+\newlabel{subsec:cosine-similarity}{{D.5.1}{93}{Cosine Similarity Distribution}{subsection.D.5.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {D.5}{\ignorespaces Cosine Similarity Statistics by Website Category}}{93}{table.D.5}\protected@file@percent }
+\newlabel{tab:cosine-similarity}{{D.5}{93}{Cosine Similarity Statistics by Website Category}{table.D.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {D.5.2}Multi-Metric Comparison}{93}{subsection.D.5.2}\protected@file@percent }
+\newlabel{subsec:multi-metric}{{D.5.2}{93}{Multi-Metric Comparison}{subsection.D.5.2}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {D.6}{\ignorespaces Comparison of Similarity Metrics}}{93}{table.D.6}\protected@file@percent }
+\newlabel{tab:similarity-metrics}{{D.6}{93}{Comparison of Similarity Metrics}{table.D.6}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {D.6}Scalability Analysis}{93}{section.D.6}\protected@file@percent }
+\newlabel{sec:scalability-analysis}{{D.6}{93}{Scalability Analysis}{section.D.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {D.6.1}URL Count vs Processing Time}{93}{subsection.D.6.1}\protected@file@percent }
+\newlabel{subsec:url-scaling}{{D.6.1}{93}{URL Count vs Processing Time}{subsection.D.6.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {D.6.2}Memory Usage Patterns}{93}{subsection.D.6.2}\protected@file@percent }
+\newlabel{subsec:memory-patterns}{{D.6.2}{93}{Memory Usage Patterns}{subsection.D.6.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {D.3}{\ignorespaces Website Category Similarity Heatmap showing intra-category and inter-category similarity patterns, with E-commerce websites showing highest internal similarity and lowest cross-category similarity.}}{94}{figure.D.3}\protected@file@percent }
+\newlabel{fig:similarity-heatmap}{{D.3}{94}{Website Category Similarity Heatmap showing intra-category and inter-category similarity patterns, with E-commerce websites showing highest internal similarity and lowest cross-category similarity}{figure.D.3}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {D.7}{\ignorespaces Scalability Analysis Results}}{94}{table.D.7}\protected@file@percent }
+\newlabel{tab:scalability}{{D.7}{94}{Scalability Analysis Results}{table.D.7}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {D.7}Experiment Validation Results}{95}{section.D.7}\protected@file@percent }
+\newlabel{sec:validation-results}{{D.7}{95}{Experiment Validation Results}{section.D.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {D.7.1}Ground Truth Validation}{95}{subsection.D.7.1}\protected@file@percent }
+\newlabel{subsec:ground-truth}{{D.7.1}{95}{Ground Truth Validation}{subsection.D.7.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {D.8}{\ignorespaces Clustering Accuracy vs Ground Truth}}{95}{table.D.8}\protected@file@percent }
+\newlabel{tab:ground-truth}{{D.8}{95}{Clustering Accuracy vs Ground Truth}{table.D.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {D.7.2}Cross-Validation Results}{95}{subsection.D.7.2}\protected@file@percent }
+\newlabel{subsec:cross-validation}{{D.7.2}{95}{Cross-Validation Results}{subsection.D.7.2}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {D.9}{\ignorespaces Cross-Validation Performance}}{95}{table.D.9}\protected@file@percent }
+\newlabel{tab:cross-validation}{{D.9}{95}{Cross-Validation Performance}{table.D.9}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {D.8}Comparative Analysis}{95}{section.D.8}\protected@file@percent }
+\newlabel{sec:comparative-analysis}{{D.8}{95}{Comparative Analysis}{section.D.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {D.8.1}Baseline Comparisons}{95}{subsection.D.8.1}\protected@file@percent }
+\newlabel{subsec:baseline-comparisons}{{D.8.1}{95}{Baseline Comparisons}{subsection.D.8.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {D.10}{\ignorespaces Algorithm Performance Comparison}}{96}{table.D.10}\protected@file@percent }
+\newlabel{tab:algorithm-comparison}{{D.10}{96}{Algorithm Performance Comparison}{table.D.10}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {D.8.2}Feature Importance Analysis}{96}{subsection.D.8.2}\protected@file@percent }
+\newlabel{subsec:feature-importance}{{D.8.2}{96}{Feature Importance Analysis}{subsection.D.8.2}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {D.11}{\ignorespaces Feature Importance Rankings}}{96}{table.D.11}\protected@file@percent }
+\newlabel{tab:feature-importance}{{D.11}{96}{Feature Importance Rankings}{table.D.11}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {D.9}Error Analysis}{96}{section.D.9}\protected@file@percent }
+\newlabel{sec:error-analysis}{{D.9}{96}{Error Analysis}{section.D.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {D.9.1}Failure Case Analysis}{96}{subsection.D.9.1}\protected@file@percent }
+\newlabel{subsec:failure-cases}{{D.9.1}{96}{Failure Case Analysis}{subsection.D.9.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {D.12}{\ignorespaces Failure Analysis}}{96}{table.D.12}\protected@file@percent }
+\newlabel{tab:failure-analysis}{{D.12}{96}{Failure Analysis}{table.D.12}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {D.9.2}Quality Degradation Factors}{96}{subsection.D.9.2}\protected@file@percent }
+\newlabel{subsec:quality-degradation}{{D.9.2}{96}{Quality Degradation Factors}{subsection.D.9.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {D.10}Performance Optimization Results}{97}{section.D.10}\protected@file@percent }
+\newlabel{sec:optimization-results}{{D.10}{97}{Performance Optimization Results}{section.D.10}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {D.10.1}Optimization Techniques Impact}{97}{subsection.D.10.1}\protected@file@percent }
+\newlabel{subsec:optimization-impact}{{D.10.1}{97}{Optimization Techniques Impact}{subsection.D.10.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {D.13}{\ignorespaces Performance Optimization Impact}}{97}{table.D.13}\protected@file@percent }
+\newlabel{tab:optimization-impact}{{D.13}{97}{Performance Optimization Impact}{table.D.13}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {D.11}Statistical Significance Tests}{97}{section.D.11}\protected@file@percent }
+\newlabel{sec:statistical-tests}{{D.11}{97}{Statistical Significance Tests}{section.D.11}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {D.11.1}Hypothesis Testing Results}{97}{subsection.D.11.1}\protected@file@percent }
+\newlabel{subsec:hypothesis-testing}{{D.11.1}{97}{Hypothesis Testing Results}{subsection.D.11.1}{}}
 \bibstyle{plain}
 \bibdata{bibliography/references}
-\@writefile{toc}{\contentsline {subsection}{\numberline {D.12.2}Data Availability}{80}{subsection.D.12.2}\protected@file@percent }
-\newlabel{subsec:data-availability}{{D.12.2}{80}{Data Availability}{subsection.D.12.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {D.12}Reproducibility Information}{98}{section.D.12}\protected@file@percent }
+\newlabel{sec:reproducibility}{{D.12}{98}{Reproducibility Information}{section.D.12}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {D.12.1}Experimental Configuration}{98}{subsection.D.12.1}\protected@file@percent }
+\newlabel{subsec:experimental-config}{{D.12.1}{98}{Experimental Configuration}{subsection.D.12.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {D.12.2}Data Availability}{98}{subsection.D.12.2}\protected@file@percent }
+\newlabel{subsec:data-availability}{{D.12.2}{98}{Data Availability}{subsection.D.12.2}{}}
 \bibcite{chen2021websrc}{{1}{}{{}}{{}}}
 \bibcite{deng2022domlm}{{2}{}{{}}{{}}}
 \bibcite{gulhane2011vertex}{{3}{}{{}}{{}}}
@@ -648,4 +689,4 @@
 \bibcite{mcinnes2017hdbscan}{{5}{}{{}}{{}}}
 \bibcite{moulavi2014dbcv}{{6}{}{{}}{{}}}
 \providecommand\NAT@force@numbers{}\NAT@force@numbers
-\gdef \@abspage@last{99}
+\gdef \@abspage@last{117}

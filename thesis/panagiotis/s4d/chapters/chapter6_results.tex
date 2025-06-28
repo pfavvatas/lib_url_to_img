@@ -13,6 +13,14 @@ The clustering performance evaluation demonstrates the effectiveness of the S\te
 
 The system achieved consistently high clustering quality across all tested datasets, with average DBCV scores ranging from 0.65 to 0.82 depending on the website category and complexity.
 
+% TODO: Add figure showing clustering quality results by category
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/results/clustering_quality_by_category.png}
+    \caption{Clustering Quality Results by Website Category showing DBCV scores, Silhouette coefficients, and other clustering validity metrics demonstrating superior performance for E-commerce websites and consistent quality across all categories.}
+    \label{fig:clustering_quality_category}
+\end{figure}
+
 % Table placeholder for clustering results
 \begin{table}[h]
 \centering
@@ -52,13 +60,13 @@ Each similarity metric contributed unique insights to the analysis:
     \item \textbf{Hausdorff Distance}: Provided robust worst-case similarity assessment
 \end{itemize}
 
-% Figure placeholder for metric performance comparison
-% \begin{figure}[h]
-% \centering
-% \includegraphics[width=0.8\textwidth]{individual_metric_performance}
-% \caption{Performance Comparison of Individual Similarity Metrics}
-% \label{fig:individual-metrics}
-% \end{figure}
+% TODO: Add figure showing individual similarity metric performance comparison
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/results/individual_metric_performance.png}
+    \caption{Performance Comparison of Individual Similarity Metrics showing the effectiveness of Cosine, EMD, and Hausdorff distance metrics in capturing different aspects of website similarity and their contribution to the overall analysis.}
+    \label{fig:individual_metrics}
+\end{figure}
 
 \subsection{Combined Metric Effectiveness}
 \label{subsec:combined-metric}
@@ -80,6 +88,14 @@ Processing time scaled approximately linearly with dataset size, with average pr
     \item 50-website batch: 12-18 minutes
     \item 100-website batch: 25-35 minutes
 \end{itemize}
+
+% TODO: Add figure showing computational performance characteristics
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/results/computational_performance.png}
+    \caption{Computational Performance Analysis showing processing time and memory usage scaling characteristics for different dataset sizes, demonstrating linear scalability and efficient resource utilization.}
+    \label{fig:computational_performance}
+\end{figure}
 
 \subsection{Memory Usage Characteristics}
 \label{subsec:memory-results}
@@ -147,13 +163,13 @@ Detailed case studies provide insights into system performance on specific appli
 
 The system successfully identified common e-commerce templates and design patterns, with 94\% accuracy in detecting template-based relationships between online retailers.
 
-% Figure placeholder for e-commerce clustering visualization
-% \begin{figure}[h]
-% \centering
-% \includegraphics[width=0.8\textwidth]{ecommerce_clustering_visualization}
-% \caption{E-commerce Website Clustering Visualization}
-% \label{fig:ecommerce-clustering}
-% \end{figure}
+% TODO: Add figure showing e-commerce clustering visualization
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/results/ecommerce_clustering_visualization.png}
+    \caption{E-commerce Website Clustering Visualization showing the identification of common design patterns and template relationships among online retailers with 94\% accuracy in template detection.}
+    \label{fig:ecommerce_clustering}
+\end{figure}
 
 \subsection{News Website Pattern Analysis}
 \label{subsec:news-results}
@@ -295,6 +311,17 @@ Machine learning approaches could enhance system capabilities:
     \item Learned feature representations for web structures
     \item Adaptive similarity weighting based on domain characteristics
     \item Predictive modeling for design trend analysis
+\end{itemize}
+
+\subsection{Performance Optimization Enhancements}
+\label{subsec:performance-optimization}
+
+Several performance optimization strategies could significantly improve system efficiency:
+\begin{itemize}
+    \item \textbf{Intelligent Caching System}: Implementation of multi-level caching for DOM extraction, similarity computations, and clustering results to reduce redundant processing
+    \item \textbf{Parallel Processing}: Multi-threaded URL processing and distributed similarity computation for large-scale analysis
+    \item \textbf{Incremental Analysis}: Support for incremental website updates and differential analysis
+    \item \textbf{Memory Optimization}: Advanced memory management strategies for very large website collections
 \end{itemize}
 
 \section{Results Summary}

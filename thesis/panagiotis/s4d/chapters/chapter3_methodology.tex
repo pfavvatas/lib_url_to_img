@@ -15,8 +15,16 @@ The S\textsuperscript{4}D methodology employs a multi-stage pipeline that transf
     \item \textbf{Advanced Clustering Analysis} - HDBSCAN-based clustering with automatic parameter optimization and quality validation
     \item \textbf{Role Vector-based Similarity Computation} - Multi-dimensional similarity assessment using frequency, transition, and positional information
     \item \textbf{Multi-Metric Similarity Framework} - Combined similarity scoring using geometric mean of multiple distance metrics
-    \item \textbf{Performance Optimization and Caching} - Intelligent caching strategies and scalable processing architectures
+    \item \textbf{Performance Optimization} - Efficient data structures and scalable processing architectures
 \end{enumerate}
+
+% TODO: Add figure showing the complete S4D system architecture overview
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/methodology/system_architecture_overview.png}
+    \caption{S\textsuperscript{4}D System Architecture Overview showing the seven main components and data flow from web page acquisition through similarity computation to final clustering results.}
+    \label{fig:system_architecture}
+\end{figure}
 
 \section{Web Page Acquisition and DOM Extraction}
 \label{sec:data-collection}
@@ -74,14 +82,33 @@ Text content undergoes normalization through regular expression-based cleaning t
 \subsection{Multi-Level DOM Analysis}
 \label{subsec:multi-level-analysis}
 
-The S\textsuperscript{4}D system supports analysis across 10 hierarchical DOM depth levels (levels 1-10), enabling multi-resolution website analysis. Each level captures different granularities of structural information:
+The S\textsuperscript{4}D system implements a bottom-up hierarchical analysis approach across 10 configurable levels (levels 1-10). The level system works from the leaf nodes of the DOM tree upward, where each level represents the path length from leaf elements toward the root:
 
 \begin{itemize}
-    \item \textbf{Level 1}: Root-level elements and primary containers
-    \item \textbf{Levels 2-3}: Major page sections and navigation components
-    \item \textbf{Levels 4-6}: Content areas and interactive elements
-    \item \textbf{Levels 7-10}: Fine-grained content and micro-components
+    \item \textbf{Level 1}: Leaf elements (bottom-most elements with no children)
+    \item \textbf{Level 2}: Leaf elements plus their immediate parent elements
+    \item \textbf{Level 3}: Leaf elements plus parent and grandparent elements
+    \item \textbf{Levels 4-6}: Extended upward paths capturing intermediate structural relationships
+    \item \textbf{Levels 7-10}: Complete structural hierarchies approaching root-level containers
 \end{itemize}
+
+This bottom-up approach ensures that the most content-specific elements are captured first, with increasing levels incorporating broader structural context. The exact structural granularity captured at each level varies depending on the specific DOM tree depth and organization of each website.
+
+% TODO: Add figure showing DOM tree traversal from leaf nodes upward
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/methodology/dom_tree_traversal.png}
+    \caption{Bottom-up DOM Tree Traversal showing how levels 1-10 are constructed from leaf nodes upward, with Level 1 capturing the deepest elements and higher levels incorporating broader structural context.}
+    \label{fig:dom_tree_traversal}
+\end{figure}
+
+% TODO: Add figure showing multi-level analysis flow
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/methodology/multi_level_analysis_flow.png}
+    \caption{Multi-Level Analysis Flow diagram illustrating how the system processes DOM elements at different hierarchical levels, from content-specific leaf elements to broader structural containers.}
+    \label{fig:multi_level_analysis}
+\end{figure}
 
 \section{CSS Property Analysis and Normalization}
 \label{sec:css-analysis}
@@ -240,6 +267,14 @@ where DSPC represents density separation and DSSC represents density sparseness.
 \subsubsection{Optimal Configuration Selection}
 The system selects the configuration with the fewest clusters among those achieving DBCV > 0.5, prioritizing interpretability while maintaining quality.
 
+% TODO: Add figure showing HDBSCAN clustering algorithm workflow
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/methodology/hdbscan_clustering_workflow.png}
+    \caption{HDBSCAN Clustering Algorithm Workflow showing parameter optimization through grid search, outlier reassignment strategy, and DBCV-based quality assessment for optimal cluster configuration selection.}
+    \label{fig:hdbscan_workflow}
+\end{figure}
+
 \section{Role Vector-based Similarity Computation}
 \label{sec:similarity-framework}
 
@@ -282,6 +317,14 @@ The complete role vector for each cluster includes:
 \end{equation}
 
 where $\mathbf{T}_{out}$ and $\mathbf{T}_{in}$ represent outgoing and incoming transition vectors.
+
+% TODO: Add figure showing role vector construction process
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/methodology/role_vector_construction.png}
+    \caption{Role Vector Construction Process illustrating how frequency information, transition matrices, and positional statistics are combined to create comprehensive cluster representations for similarity computation.}
+    \label{fig:role_vector_construction}
+\end{figure}
 
 \section{Multi-Metric Similarity Framework}
 \label{sec:multi-metric-similarity}
@@ -334,6 +377,14 @@ The final similarity score employs geometric mean combination:
 
 The geometric mean provides balanced weighting while the percentage conversion ensures interpretable similarity scores.
 
+% TODO: Add figure showing multi-metric similarity computation framework
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/methodology/multi_metric_similarity_framework.png}
+    \caption{Multi-Metric Similarity Framework showing how Cosine, EMD, and Hausdorff distance metrics are computed independently and then combined using geometric mean to produce the final similarity score.}
+    \label{fig:multi_metric_similarity}
+\end{figure}
+
 \section{Best Level Selection Algorithm}
 \label{sec:best-level-selection}
 
@@ -361,24 +412,20 @@ This approach balances clustering quality (DBCV score) with interpretability (fe
 \section{Performance Optimization and Scalability}
 \label{sec:performance-optimization}
 
-\subsection{Intelligent Caching System}
-\label{subsec:caching-system}
+\subsection{System Optimization Strategies}
+\label{subsec:optimization-strategies}
 
-The S\textsuperscript{4}D system implements a comprehensive caching strategy:
+The S\textsuperscript{4}D system implements several performance optimization approaches:
 
-\subsubsection{Cache Architecture}
+\subsubsection{Efficient Data Processing}
 \begin{itemize}
-    \item \textbf{Complete Cache}: Full result sets for specific URL-level combinations
-    \item \textbf{Partial Cache}: Individual URL processing results
-    \item \textbf{TTL Management}: 24-hour cache lifetime for CLI, 1-hour for API
+    \item \textbf{Optimized Data Structures}: Memory-efficient representations for large-scale analysis
+    \item \textbf{Batch Processing}: Grouped operations to reduce computational overhead
+    \item \textbf{Resource Management}: Careful allocation and deallocation of system resources
 \end{itemize}
 
-\subsubsection{Cache Key Generation}
-Cache keys combine URL lists and level specifications using SHA-256 hashing:
-
-\begin{equation}
-\text{cache\_key} = \text{SHA256}(\text{sorted\_urls} + \text{sorted\_levels})
-\end{equation}
+\subsubsection{Algorithm Optimization}
+The system employs optimized algorithms and data processing techniques to ensure scalable performance across varying workload sizes.
 
 \subsection{Dual Processing Modes}
 \label{subsec:processing-modes}
@@ -397,7 +444,7 @@ The system implements comprehensive timing and performance tracking:
 \begin{itemize}
     \item \textbf{Step-by-Step Timing}: Detailed timing for each processing stage
     \item \textbf{URL-Level Metrics}: Per-URL processing times and success rates
-    \item \textbf{Cache Efficiency}: Cache hit rates and performance improvements
+    \item \textbf{Processing Efficiency}: Response times and resource utilization
     \item \textbf{Resource Utilization}: Memory usage and file size tracking
 \end{itemize}
 
@@ -422,23 +469,23 @@ The methodology addresses scalability through:
 
 \begin{itemize}
     \item \textbf{Memory Management}: Efficient data structures and garbage collection
-    \item \textbf{Parallel Processing}: Independent URL processing with result aggregation
+    \item \textbf{Sequential Processing}: Systematic URL processing with efficient resource utilization
     \item \textbf{Storage Optimization}: Compressed data formats and intelligent file management
 \end{itemize}
 
 \section{Methodology Summary}
 \label{sec:methodology-summary}
 
-The S\textsuperscript{4}D methodology provides a comprehensive framework for web similarity analysis that addresses key challenges in scalability, accuracy, and interpretability. The integration of multi-level DOM analysis, advanced clustering algorithms, role vector-based similarity computation, and intelligent caching creates a robust system capable of processing large-scale website collections while maintaining high-quality analytical results.
+The S\textsuperscript{4}D methodology provides a comprehensive framework for web similarity analysis that addresses key challenges in scalability, accuracy, and interpretability. The integration of multi-level DOM analysis, advanced clustering algorithms, and role vector-based similarity computation creates a robust system capable of processing large-scale website collections while maintaining high-quality analytical results.
 
 The methodology's novel contributions include:
 
 \begin{enumerate}
-    \item \textbf{Multi-Resolution Analysis}: Simultaneous analysis across 10 DOM depth levels
-    \item \textbf{Advanced Clustering Optimization}: Grid search parameter optimization with quality-based selection
+    \item \textbf{Bottom-Up Multi-Level Analysis}: Hierarchical analysis from leaf nodes upward across 10 DOM depth levels
+    \item \textbf{Advanced Clustering Optimization}: Grid search parameter optimization with DBCV-based quality selection
     \item \textbf{Role Vector Innovation}: Comprehensive cluster representation incorporating frequency, transitions, and positional information
     \item \textbf{Multi-Metric Similarity}: Geometric mean combination of complementary distance metrics
-    \item \textbf{Intelligent Performance Optimization}: Adaptive caching and dual processing modes
+    \item \textbf{Scalable Performance Architecture}: Dual processing modes and efficient resource management
 \end{enumerate}
 
-This methodology establishes a new paradigm for automated website analysis that balances analytical depth with computational efficiency, providing a foundation for future research in web structure and design pattern analysis. 
+This methodology establishes a new paradigm for automated website analysis that balances analytical depth with computational efficiency, providing a foundation for future research in web structure and design pattern analysis. The system's implementation using mprocs for process management ensures reliable execution and monitoring across all components. 
