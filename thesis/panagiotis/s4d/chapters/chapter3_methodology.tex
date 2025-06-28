@@ -1,0 +1,54 @@
+\chapter{Methodology}
+\label{ch:methodology}
+
+This chapter presents the comprehensive methodology employed in the S\textsuperscript{4}D system.
+
+\section{System Overview}
+\label{sec:system-overview}
+
+The S\textsuperscript{4}D methodology is built upon multi-dimensional web analysis, combining DOM structural information with CSS styling properties to create comprehensive representations of website characteristics.
+
+\section{Data Collection and Preprocessing}
+\label{sec:data-collection}
+
+The data collection phase forms the foundation of the S\textsuperscript{4}D analysis pipeline.
+
+\subsection{Web Page Acquisition}
+\label{subsec:web-acquisition}
+
+Web page acquisition utilizes Selenium WebDriver with Chrome in headless mode to ensure consistent rendering and complete DOM construction.
+
+\subsection{DOM Structure Extraction}
+\label{subsec:dom-extraction}
+
+DOM structure extraction employs a recursive traversal algorithm that captures hierarchical relationships while maintaining unique element identification.
+
+\subsection{CSS Property Analysis}
+\label{subsec:css-analysis}
+
+CSS property analysis focuses on extracting and normalizing styling information that contributes to visual similarity assessment.
+
+\section{Feature Engineering and Representation}
+\label{sec:feature-engineering}
+
+Feature engineering transforms raw DOM and CSS data into numerical representations suitable for similarity computation and clustering analysis.
+
+\section{Similarity Measurement Framework}
+\label{sec:similarity-framework}
+
+The similarity measurement framework combines multiple distance metrics and aggregation strategies to produce robust similarity assessments between web pages.
+
+\section{Clustering Methodology}
+\label{sec:clustering-methodology}
+
+The clustering methodology employs HDBSCAN with automatic parameter optimization and outlier reassignment strategies.
+
+\section{Performance Optimization}
+\label{sec:performance-optimization}
+
+Performance optimization strategies ensure scalability and practical usability of the S\textsuperscript{4}D system.
+
+\section{Methodology Summary}
+\label{sec:methodology-summary}
+
+The S\textsuperscript{4}D methodology provides a comprehensive framework for web similarity analysis that addresses key challenges in scalability, accuracy, and interpretability. 

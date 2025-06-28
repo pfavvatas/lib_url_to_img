@@ -15,13 +15,42 @@ S\textsuperscript{4}D addresses the growing need for scalable, automated tools t
 \section{Problem Statement}
 \label{sec:problem-statement}
 
-The current landscape of web analysis tools primarily focuses on content-based analysis, often overlooking the significance of visual design patterns and structural similarities between websites. Traditional approaches face several challenges:
+The current landscape of web analysis tools primarily focuses on content-based analysis, often overlooking the significance of visual design patterns and structural similarities between websites. In the era of rapidly expanding web content, understanding the structural similarity between websites has become increasingly important for various applications including web mining, content analysis, and automated web processing. Traditional approaches face several critical challenges:
+
+\subsection{Web Structure Analysis Challenges}
+\label{subsec:web-challenges}
+
+Modern web structure analysis presents several unique technical challenges that our S4D system specifically addresses:
 
 \begin{itemize}
-    \item \textbf{Limited structural analysis}: Most existing tools focus on textual content rather than the underlying HTML structure and CSS styling patterns.
-    \item \textbf{Scalability issues}: Manual analysis of website similarities is time-consuming and impractical for large-scale studies.
-    \item \textbf{Lack of comprehensive comparison metrics}: Current methods often rely on simple metrics that fail to capture the complexity of modern web design.
-    \item \textbf{Domain-specific analysis gaps}: There is a need for tools that can identify design trends and patterns across different industry domains.
+    \item \textbf{DOM Complexity and Recursive Processing}: Modern websites contain deeply nested DOM structures with thousands of elements requiring recursive traversal algorithms. Our system handles complex parent-child relationships through unique ID generation and hierarchical tree processing, managing elements at multiple depth levels (1-10) while maintaining structural integrity during analysis.
+    
+    \item \textbf{CSS Style Diversity and Standardization}: The variety of CSS styling approaches across websites creates inconsistency in structural representation. Our implementation processes diverse CSS formats including pixel values (\texttt{px}), percentages (\texttt{\%}), RGB/RGBA colors, and relative units, requiring sophisticated parsing and normalization algorithms to enable meaningful comparisons.
+    
+    \item \textbf{Attribute Extraction and Feature Engineering}: Extracting meaningful features from HTML elements involves processing hundreds of CSS properties per element. Our system implements selective attribute filtering, focusing on structurally significant properties like \texttt{font-size}, \texttt{text-align}, \texttt{line-height}, and \texttt{cursor}, while handling special cases like color space conversions and unit standardization.
+    
+    \item \textbf{Scalability and Performance Optimization}: Processing large numbers of websites requires efficient algorithms and memory management. Our system implements domain-based processing modes, ChromeDriver optimization, and parallel data processing to handle batch website analysis while minimizing computational overhead and ensuring reliable performance across different scales.
+    
+    \item \textbf{Multi-dimensional Similarity Computation}: Defining meaningful similarity measures for web structures involves multiple algorithmic challenges. Our approach combines HDBSCAN clustering with DBCV (Density-Based Cluster Validation) scoring \cite{moulavi2014dbcv}, cosine similarity matrices, and role vector analysis to capture structural, visual, and positional relationships between website elements.
+    
+    \item \textbf{Clustering Parameter Optimization}: Achieving optimal clustering results requires dynamic parameter tuning. Our system implements grid search optimization over cluster size ranges and selection epsilon values, with automatic outlier reassignment to nearest cluster centroids based on Euclidean distance calculations.
+    
+    \item \textbf{Cross-Domain Pattern Recognition}: Identifying design trends across different domains requires sophisticated comparison frameworks. Our implementation uses domain-level aggregation, transition matrices between design elements, and combined similarity metrics (cosine, EMD, Hausdorff) to enable meaningful cross-domain analysis.
+\end{itemize}
+
+\subsection{Research Motivation}
+\label{subsec:research-motivation}
+
+The need for automated web structural analysis stems from several key factors:
+
+\begin{itemize}
+    \item \textbf{Content Management}: Organizations need tools to understand and manage large collections of web content based on structural and visual characteristics.
+    
+    \item \textbf{Design Pattern Analysis}: Web developers and designers benefit from understanding common structural patterns and visual trends across websites in their domain.
+    
+    \item \textbf{Accessibility Evaluation}: Automated structural analysis can help identify accessibility issues and design inconsistencies across multiple web properties.
+    
+    \item \textbf{Web Analytics Enhancement}: Structural similarity analysis provides deeper insights into website categorization and user experience patterns beyond traditional content-based metrics.
 \end{itemize}
 
 \section{Research Objectives}
