@@ -1,12 +1,12 @@
-\chapter{Methodology}
-\label{ch:methodology}
+\chapter{The S\textsuperscript{4}D System}
+\label{ch:s4d-system}
 
-This chapter presents the comprehensive methodology employed in the S\textsuperscript{4}D (Style and Structure Similarity for Site Domains) system. The methodology combines advanced web analysis techniques, sophisticated clustering algorithms, and multi-dimensional similarity computation to provide robust website comparison and categorization capabilities.
+This chapter presents the complete S\textsuperscript{4}D (Style and Structure Similarity for Site Domains) system implementation, detailing the 7-step workflow from web page acquisition through similarity analysis to final result presentation. The system combines advanced web parsing, clustering algorithms, and multi-dimensional similarity computation to provide robust website comparison and categorization capabilities.
 
-\section{System Architecture Overview}
+\section{System Overview}
 \label{sec:system-overview}
 
-The S\textsuperscript{4}D methodology employs a multi-stage pipeline that transforms raw web pages into structured similarity matrices and clustering results. The system architecture consists of seven main components:
+The S\textsuperscript{4}D methodology employs a comprehensive multi-stage pipeline that transforms raw web pages into structured similarity matrices and clustering results. The system architecture consists of seven main processing components integrated within an 8-section organizational framework:
 
 \begin{enumerate}
     \item \textbf{Web Page Acquisition and DOM Extraction} - Automated web page rendering and hierarchical DOM tree construction
@@ -26,8 +26,82 @@ The S\textsuperscript{4}D methodology employs a multi-stage pipeline that transf
     \label{fig:system_architecture}
 \end{figure}
 
-\section{Web Page Acquisition and DOM Extraction}
-\label{sec:data-collection}
+\section{Technology Stack and Tools}
+\label{sec:technology-stack}
+
+The S\textsuperscript{4}D system is built using a comprehensive technology stack that ensures scalability, performance, and maintainability across all system components.
+
+\subsection{Backend Technologies}
+\label{subsec:backend-technologies}
+
+\textbf{Core Programming Language}
+\begin{itemize}
+    \item \textbf{Python 3.8+}: Primary backend development language with rich ecosystem for data science and web development
+    \item \textbf{FastAPI}: High-performance REST API framework with automatic OpenAPI documentation
+    \item \textbf{Selenium WebDriver 4.x}: Web automation framework for DOM extraction and CSS analysis
+\end{itemize}
+
+\textbf{Data Processing Libraries}
+\begin{itemize}
+    \item \textbf{NumPy 1.24+}: Numerical computing and array operations for vector calculations
+    \item \textbf{Pandas 2.0+}: Data manipulation and analysis for role vector computation
+    \item \textbf{Scikit-learn 1.3+}: Machine learning algorithms and preprocessing including StandardScaler
+\end{itemize}
+
+\textbf{Clustering and Similarity Analysis}
+\begin{itemize}
+    \item \textbf{HDBSCAN 0.8+}: Hierarchical density-based clustering with automatic cluster detection
+    \item \textbf{DBCV}: Density-Based Cluster Validation for clustering quality assessment
+    \item \textbf{SciPy 1.10+}: Scientific computing for distance calculations and statistical functions
+\end{itemize}
+
+\subsection{Frontend Technologies}
+\label{subsec:frontend-technologies}
+
+\textbf{User Interface Framework}
+\begin{itemize}
+    \item \textbf{React 18.x}: Component-based frontend framework for interactive user interfaces
+    \item \textbf{Material-UI (MUI) 5.x}: React component library providing consistent design system
+    \item \textbf{D3.js}: Scientific color scales for similarity matrix visualizations using Viridis colormap
+\end{itemize}
+
+\subsection{System Integration}
+\label{subsec:system-integration}
+
+\textbf{Process Management}
+\begin{itemize}
+    \item \textbf{mprocs}: Multi-process orchestration for concurrent service management
+    \item \textbf{Chrome WebDriver}: Headless browser automation with optimized configuration
+    \item \textbf{JSON}: Structured data storage and exchange format for all system components
+\end{itemize}
+
+\subsection{More: Extended Technology Stack Details}
+\label{subsec:more-technology-stack}
+
+This subsection contains additional technology stack components and extended system architecture details that complement the core technology infrastructure.
+
+\subsubsection{Additional Development Dependencies}
+Extended development environment including:
+\begin{itemize}
+    \item \textbf{Development Tools}: Standard code editors and development environments
+    \item \textbf{Version Control}: Git repository management for source code tracking
+    \item \textbf{Documentation}: FastAPI automatic OpenAPI/Swagger documentation generation
+    \item \textbf{Process Management}: mprocs for multi-service orchestration and monitoring
+\end{itemize}
+
+\subsubsection{Data Storage and Management}
+Data persistence and storage solutions:
+\begin{itemize}
+    \item \textbf{JSON File Storage}: Structured JSON storage with hierarchical organization for all data persistence
+    \item \textbf{In-Memory Processing}: Efficient in-memory data structures for real-time analysis
+    \item \textbf{Basic Caching}: Simple file-based caching implementation with configurable TTL
+    \item \textbf{Result Organization}: Systematic file organization for experiment results and analysis outputs
+\end{itemize}
+
+\section{Web Parsing with Multi-Level Analysis and Clustering Integration}
+\label{sec:web-parsing}
+
+This section details the comprehensive web parsing implementation that combines automated DOM extraction with multi-level structural analysis (levels 1-10) and integrated clustering preparation for the subsequent HDBSCAN analysis phase.
 
 \subsection{Automated Web Rendering}
 \label{subsec:web-rendering}
@@ -207,76 +281,237 @@ X_{\text{scaled}} = \frac{X - \mu}{\sigma}
 
 where $\mu$ represents the feature mean and $\sigma$ represents the feature standard deviation.
 
-\section{Advanced Clustering Analysis}
-\label{sec:clustering-methodology}
+\subsection{More: Extended Web Parsing Capabilities}
+\label{subsec:more-web-parsing}
 
-\subsection{HDBSCAN Clustering Algorithm}
-\label{subsec:hdbscan-algorithm}
+This subsection contains additional web parsing features and extended analysis capabilities that complement the core DOM extraction and CSS processing.
 
-The S\textsuperscript{4}D system employs Hierarchical Density-Based Spatial Clustering of Applications with Noise (HDBSCAN) for its superior performance with irregular cluster shapes and noise handling.
+\subsubsection{Advanced Content Extraction}
+Extended content analysis including:
+\begin{itemize}
+    \item \textbf{JavaScript Rendering}: Dynamic content extraction from JavaScript-heavy websites
+    \item \textbf{Media Analysis}: Image and video element processing with metadata extraction
+    \item \textbf{Form Processing}: Interactive element analysis and form structure mapping
+    \item \textbf{Mobile Responsive Detection}: Responsive design pattern identification
+\end{itemize}
 
-\subsubsection{Parameter Optimization Framework}
-The system implements a grid search optimization strategy:
+\subsubsection{Cross-Browser Compatibility}
+Multi-browser analysis support:
+\begin{itemize}
+    \item \textbf{Browser Engine Testing}: Chrome, Firefox, Safari compatibility testing
+    \item \textbf{Rendering Difference Analysis}: Cross-browser rendering comparison
+    \item \textbf{Mobile Browser Support}: Mobile-specific browser testing capabilities
+    \item \textbf{Legacy Browser Analysis}: Historical browser compatibility assessment
+\end{itemize}
 
-\begin{algorithm}[H]
-\caption{HDBSCAN Parameter Optimization}
-\begin{algorithmic}[1]
-\State $\text{max\_range} \leftarrow \max(10, \lfloor 0.1 \times |\text{elements}| \rfloor)$
-\State $\text{size\_range} \leftarrow [5, \text{max\_range})$
-\State $\text{epsilon\_range} \leftarrow [0.0, 1.0]$ with step $0.333$
-\State $\text{best\_configs} \leftarrow \{\}$
-\For{$\text{min\_size} \in \text{size\_range}$}
-    \For{$\epsilon \in \text{epsilon\_range}$}
-        \State $\text{labels} \leftarrow \text{HDBSCAN}(\text{min\_size}, \epsilon)$
-        \If{$|\text{unique\_labels}| > 1$}
-            \State $\text{score} \leftarrow \text{DBCV}(\text{data}, \text{labels})$
-            \If{$\text{score} < 0.25$}
-                \State \textbf{break} \Comment{Early stopping}
-            \EndIf
-            \State $\text{best\_configs}[\text{min\_size}] \leftarrow \max(\text{score})$
-        \EndIf
-    \EndFor
-\EndFor
-\end{algorithmic}
-\end{algorithm}
+\section{Data Modeling with Multi-Level Integration and Clustering Support}
+\label{sec:data-modeling}
 
-\subsubsection{Outlier Reassignment Strategy}
-The system implements a novel outlier reassignment algorithm to improve cluster coherence:
+The S\textsuperscript{4}D system employs sophisticated data modeling techniques to transform raw web page data into structured representations suitable for multi-level analysis and HDBSCAN clustering. This includes both pre-clustering data preparation across DOM levels 1-10 and post-clustering data enrichment with cluster assignments and metadata.
+
+\subsection{Pre-Clustering Data Modeling}
+\label{subsec:pre-clustering-modeling}
+
+Before clustering analysis, the system creates comprehensive data models:
+
+\textbf{JSON Data Structures}
+\begin{itemize}
+    \item \textbf{Hierarchical DOM Representation}: Complete DOM trees with unique element identifiers
+    \item \textbf{CSS Property Mapping}: Inverted index structure mapping elements to CSS property values
+    \item \textbf{Metadata Integration}: URL information, timestamps, and processing parameters
+\end{itemize}
+
+\textbf{Element-to-Property Relations}
+\begin{itemize}
+    \item \textbf{Comprehensive Attribute Extraction}: All computed CSS properties for each DOM element
+    \item \textbf{Geometric Information}: Bounding rectangles and positional data
+    \item \textbf{Content Analysis}: Text content with size metrics and semantic information
+\end{itemize}
+
+\subsection{Vector Space Construction}
+\label{subsec:vector-space-construction}
+
+The system constructs multi-dimensional feature vectors for machine learning processing:
+
+\textbf{Feature Vector Components}
+\begin{itemize}
+    \item \textbf{Normalized CSS Values}: Pixel values, percentages, and categorical properties
+    \item \textbf{Color Space Representations}: RGB to HSV conversions for perceptual similarity
+    \item \textbf{Positional Encoding}: Relative positions within DOM hierarchy
+\end{itemize}
+
+\subsection{Vectorization and HDBSCAN Clustering Integration}
+\label{subsec:clustering-integration}
+
+\textbf{Step 3: Vectorizing and Clustering Web Elements}
+
+The data modeling phase seamlessly integrates with the HDBSCAN clustering algorithm to transform feature vectors into meaningful element groupings using density-based clustering with DBCV validation.
+
+\subsubsection{HDBSCAN Parameter Optimization}
+The system implements a grid search optimization strategy across multiple parameter combinations:
+
+\begin{itemize}
+    \item \textbf{Cluster Size Range}: Dynamic range from 5 to 10\% of total elements
+    \item \textbf{Selection Epsilon}: Range from 0.0 to 1.0 with 0.333 step increments  
+    \item \textbf{DBCV Threshold}: Early stopping at scores below 0.25
+    \item \textbf{Quality Selection}: Chooses configuration with fewest clusters among DBCV > 0.5
+\end{itemize}
+
+\subsubsection{Intelligent Outlier Reassignment}
+The system implements a novel outlier reassignment strategy:
 
 \begin{enumerate}
-    \item \textbf{Identify} outliers (elements with label = -1)
-    \item \textbf{Compute} cluster centroids excluding outliers
-    \item \textbf{Calculate} Euclidean distances from outliers to centroids
-    \item \textbf{Assign} outliers to nearest cluster centroids
-    \item \textbf{Recompute} centroids including reassigned outliers
-    \item \textbf{Repeat} reassignment until convergence
+    \item Identify outliers (elements with cluster label = -1)
+    \item Compute cluster centroids excluding outliers
+    \item Calculate Euclidean distances from outliers to centroids
+    \item Assign outliers to nearest cluster centroids
+    \item Recompute centroids and repeat until convergence
 \end{enumerate}
 
-\subsection{Cluster Quality Assessment}
-\label{subsec:cluster-quality}
+\subsection{Post-Clustering Data Modeling}
+\label{subsec:post-clustering-modeling}
 
-\subsubsection{Density-Based Cluster Validation (DBCV)}
-The system employs DBCV scoring for cluster quality assessment:
+After clustering analysis, the system creates enriched data models:
+
+\textbf{Cluster-Enhanced Structures}
+\begin{itemize}
+    \item \textbf{Element Cluster Assignments}: Each DOM element tagged with cluster membership
+    \item \textbf{Cluster Metadata}: Cluster sizes, quality metrics, and statistical summaries
+    \item \textbf{Visual Annotations}: Color-coded cluster assignments for visualization
+    \item \textbf{Array of Clustered Elements}: Systematic organization of clustering results per page
+    \item \textbf{Serial Arrays by Cluster IDs}: Sequential arrangement of clustered elements according to cl_ids
+\end{itemize}
+
+\subsection{More: Visualization of Clustered Elements}
+\label{subsec:more-visualization}
+
+\textbf{Step 4a: Presentation of Colored Clustered Elements within Pages}
+
+This subsection describes additional visualization capabilities for presenting colored clustered elements within the parsed web pages.
+
+\subsubsection{Interactive HTML Generation}
+The system generates color-coded HTML representations of clustered elements:
+
+\begin{itemize}
+    \item \textbf{Cluster Color Mapping}: Dynamic color assignment for each identified cluster
+    \item \textbf{Level-based Organization}: Separate visualizations for DOM levels 1-10
+    \item \textbf{Real-time Updates}: Dynamic visualization updates as clustering parameters change
+    \item \textbf{Export Capabilities}: PNG, SVG, and interactive HTML format exports
+\end{itemize}
+
+\subsubsection{Step 4b: Data Modeling for Clustered Pages}
+The system creates serial arrays of clustered elements for each page according to cluster IDs (cl_ids):
+
+\begin{itemize}
+    \item \textbf{Sequential Element Organization}: Elements ordered by DOM traversal with cluster assignments
+    \item \textbf{Cluster ID Arrays}: Serial representation of cluster assignments per page
+    \item \textbf{Hierarchical Preservation}: Maintains DOM level information within cluster assignments
+    \item \textbf{Metadata Integration}: Includes clustering quality metrics and statistical summaries
+\end{itemize}
+
+\section{Data Mining}
+\label{sec:data-mining}
+
+\textbf{Step 5: Transition Matrix Construction and Role Vector Extraction}
+
+This section describes the data mining phase that transforms clustered elements into role vectors through transition matrix analysis and positional statistics computation.
+
+\subsection{Transition Matrix Construction}
+\label{subsec:transition-matrix}
+
+The system constructs comprehensive transition matrices to capture sequential relationships between clusters within DOM structures:
+
+\textbf{Algorithm Implementation}
+\begin{enumerate}
+    \item \textbf{Sequence Extraction}: Extract cluster ID sequences for each processed page
+    \item \textbf{Transition Counting}: Count bidirectional transitions between adjacent clusters
+    \item \textbf{Matrix Construction}: Build square matrices with dimensions equal to the number of unique clusters
+    \item \textbf{Normalization}: Convert raw counts to probability distributions
+\end{enumerate}
+
+\textbf{Transition Probability Calculation}
+For clusters $i$ and $j$, the transition probability is:
 
 \begin{equation}
-\text{DBCV} = \frac{1}{n} \sum_{i=1}^{n} \frac{\text{DSPC}(i) - \text{DSSC}(i)}{\max(\text{DSPC}(i), \text{DSSC}(i))}
+T_{i \rightarrow j} = \frac{\text{count}(i \rightarrow j)}{\sum_{k} \text{count}(i \rightarrow k)}
 \end{equation}
 
-where DSPC represents density separation and DSSC represents density sparseness.
+\subsection{Cluster Positional Statistics}
+\label{subsec:positional-statistics}
 
-\subsubsection{Optimal Configuration Selection}
-The system selects the configuration with the fewest clusters among those achieving DBCV > 0.5, prioritizing interpretability while maintaining quality.
+The system computes comprehensive positional statistics for each cluster to capture spatial distribution patterns:
 
-% TODO: Add figure showing HDBSCAN clustering algorithm workflow
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.9\textwidth]{figures/methodology/hdbscan_clustering_workflow.png}
-    \caption{HDBSCAN Clustering Algorithm Workflow showing parameter optimization through grid search, outlier reassignment strategy, and DBCV-based quality assessment for optimal cluster configuration selection.}
-    \label{fig:hdbscan_workflow}
-\end{figure}
+\textbf{Position Normalization}
+Raw positions are normalized to ensure comparability across different page structures:
 
-\section{Role Vector-based Similarity Computation}
-\label{sec:similarity-framework}
+\begin{equation}
+\text{normalized\_pos} = \frac{\text{position}}{\max(\text{sequence\_length} - 1, 1)}
+\end{equation}
+
+\textbf{Statistical Measures}
+For each cluster, the system computes:
+
+\begin{align}
+\mu_{pos} &= \frac{1}{n} \sum_{i=1}^{n} \text{pos}_{i,normalized} \\
+\sigma_{pos} &= \sqrt{\frac{1}{n} \sum_{i=1}^{n} (\text{pos}_{i,normalized} - \mu_{pos})^2} \\
+\min_{pos} &= \min(\text{normalized\_positions}) \\
+\max_{pos} &= \max(\text{normalized\_positions})
+\end{align}
+
+\subsection{Role Vector Construction}
+\label{subsec:role-vector-construction}
+
+The system constructs comprehensive role vectors combining frequency, transition, and positional information:
+
+\textbf{Complete Role Vector Specification}
+Each cluster's role vector contains:
+
+\begin{equation}
+\mathbf{R}_{cluster} = [\text{freq}, \mathbf{T}_{out}, \mathbf{T}_{in}, \mu_{pos}, \sigma_{pos}, \min_{pos}, \max_{pos}]
+\end{equation}
+
+where:
+\begin{itemize}
+    \item $\text{freq}$: Cluster occurrence frequency
+    \item $\mathbf{T}_{out}$: Outgoing transition probability vector
+    \item $\mathbf{T}_{in}$: Incoming transition probability vector  
+    \item $\mu_{pos}, \sigma_{pos}, \min_{pos}, \max_{pos}$: Positional statistics
+\end{itemize}
+
+\textbf{Frequency Calculation}
+The cluster frequency represents relative occurrence across all elements:
+
+\begin{equation}
+\text{frequency}_{cluster} = \frac{\text{occurrences}_{cluster}}{\text{total\_elements}}
+\end{equation}
+
+\subsection{More: Extended Data Mining Techniques}
+\label{subsec:more-data-mining}
+
+This subsection contains additional advanced data mining methodologies and extended analysis techniques that complement the core transition matrix and role vector extraction processes.
+
+\subsubsection{Advanced Positional Analysis}
+Extended positional statistics computation including:
+\begin{itemize}
+    \item \textbf{Quartile Analysis}: Q1, Q2, Q3 positional quartiles for each cluster
+    \item \textbf{Outlier Detection}: Identification of positionally anomalous elements
+    \item \textbf{Distribution Modeling}: Gaussian mixture modeling of cluster positions
+\end{itemize}
+
+\subsubsection{Enhanced Transition Modeling}
+Extended transition matrix analysis including:
+\begin{itemize}
+    \item \textbf{Bidirectional Flow Analysis}: In-flow and out-flow probability computations
+    \item \textbf{Markov Chain Analysis}: Steady-state probability calculations
+    \item \textbf{Transition Strength Metrics}: Quantification of inter-cluster relationships
+\end{itemize}
+
+\section{Similarity Analysis}
+\label{sec:similarity-analysis}
+
+\textbf{Step 6: Multi-Metric Similarity Computation}
+
+This section describes the comprehensive similarity analysis framework that combines multiple distance metrics to produce robust similarity assessments between website domains.
 
 \subsection{Multi-Dimensional Role Vector Construction}
 \label{subsec:role-vectors}
@@ -326,8 +561,35 @@ where $\mathbf{T}_{out}$ and $\mathbf{T}_{in}$ represent outgoing and incoming t
     \label{fig:role_vector_construction}
 \end{figure}
 
-\section{Multi-Metric Similarity Framework}
-\label{sec:multi-metric-similarity}
+\subsection{Best Setting Extraction}
+\label{subsec:best-setting-extraction}
+
+\textbf{Best Setting Extraction: Median Number of Clusters + Best DBCV Score}
+
+The system implements a sophisticated algorithm to identify optimal clustering configurations through a combination of median cluster count analysis and DBCV score optimization:
+
+\subsubsection{Median-Based Cluster Selection}
+The system uses median cluster count as a stability criterion:
+
+\begin{enumerate}
+    \item \textbf{Valid Result Filtering}: Extract clustering results with clusters > 0 and DBCV > 0
+    \item \textbf{Cluster Count Collection}: Gather cluster counts from all valid configurations
+    \item \textbf{Median Computation}: Calculate median cluster count across all results
+    \item \textbf{Configuration Ranking}: Order configurations by proximity to median cluster count
+    \item \textbf{Quality Selection}: Among configurations near median, select highest DBCV score
+\end{enumerate}
+
+\subsubsection{DBCV Score Optimization}
+The best configuration combines stability (median clusters) with quality (DBCV score):
+
+\begin{equation}
+\text{Best Config} = \arg\max_{\text{config}} \text{DBCV}(\text{config}) \text{ s.t. } |\text{clusters}(\text{config}) - \text{median}| \leq \tau
+\end{equation}
+
+where $\tau$ is a tolerance parameter for cluster count deviation from median.
+
+\section{More: Extended Similarity Analysis Framework}
+\label{sec:more-similarity}
 
 \subsection{Domain-Level Aggregation}
 \label{subsec:domain-aggregation}
@@ -384,6 +646,161 @@ The geometric mean provides balanced weighting while the percentage conversion e
     \caption{Multi-Metric Similarity Framework showing how Cosine, EMD, and Hausdorff distance metrics are computed independently and then combined using geometric mean to produce the final similarity score.}
     \label{fig:multi_metric_similarity}
 \end{figure}
+
+\section{Presentation of Analysis}
+\label{sec:presentation}
+
+\textbf{Step 7: Similarity Matrix Visualization and Result Presentation}
+
+This section describes the final stage of the S\textsuperscript{4}D system where computed similarity scores are presented through interactive visualizations and comprehensive result matrices.
+
+\subsection{Similarity Matrix Construction}
+\label{subsec:similarity-matrix-construction}
+
+The system constructs symmetric similarity matrices containing pairwise similarity scores between all analyzed domains:
+
+\textbf{Matrix Properties}
+\begin{itemize}
+    \item \textbf{Symmetric Structure}: $S_{ij} = S_{ji}$ for all domain pairs
+    \item \textbf{Self-Similarity}: $S_{ii} = 100\%$ (perfect similarity with self)
+    \item \textbf{Percentage Encoding}: All scores converted to percentages for intuitive interpretation
+    \item \textbf{Comprehensive Coverage}: All possible domain pairs included
+\end{itemize}
+
+\textbf{Score Aggregation}
+Domain-level scores are computed by averaging individual page similarities within each domain, ensuring robust domain-representative measurements.
+
+\subsection{Interactive Visualization Framework}
+\label{subsec:interactive-visualization}
+
+The system provides comprehensive visualization capabilities through a React-based interface:
+
+\textbf{Viridis Color Mapping}
+The visualization employs the scientifically-proven Viridis colormap for perceptually-accurate similarity representation:
+
+\begin{itemize}
+    \item \textbf{Color Range}: Deep purple (low similarity) to bright yellow (high similarity)
+    \item \textbf{Perceptual Uniformity}: Equal perceptual differences for equal data differences
+    \item \textbf{Accessibility}: Colorblind-friendly representation
+\end{itemize}
+
+\textbf{Interactive Features}
+\begin{itemize}
+    \item \textbf{Hover Details}: Real-time similarity score display on element interaction
+    \item \textbf{Dynamic Scaling}: Responsive matrix sizing for various screen resolutions
+    \item \textbf{Export Capabilities}: PNG and SVG export for integration into reports
+    \item \textbf{Filtering Options}: Domain-specific filtering and selection capabilities
+\end{itemize}
+
+\subsection{Result Interpretation Guidelines}
+\label{subsec:result-interpretation}
+
+The system provides clear guidelines for interpreting similarity scores:
+
+\textbf{Similarity Score Ranges}
+\begin{itemize}
+    \item \textbf{90-100\%}: Highly similar websites (same design framework or template)
+    \item \textbf{70-90\%}: Moderately similar websites (shared design patterns)
+    \item \textbf{50-70\%}: Some structural similarities (common elements or layouts)
+    \item \textbf{30-50\%}: Limited similarities (basic web conventions only)
+    \item \textbf{0-30\%}: Minimal similarities (distinctly different designs)
+\end{itemize}
+
+\textbf{Statistical Summaries}
+The system provides comprehensive statistical summaries including:
+\begin{itemize}
+    \item \textbf{Mean Similarity}: Average similarity across all domain pairs
+    \item \textbf{Standard Deviation}: Variability measure for similarity distribution
+    \item \textbf{Minimum/Maximum}: Extreme similarity values and corresponding domain pairs
+    \item \textbf{Distribution Analysis}: Histogram and density plots of similarity scores
+\end{itemize}
+
+\subsection{More: Extended Presentation and Export Features}
+\label{subsec:more-presentation}
+
+This subsection contains additional presentation capabilities and export features that extend the core similarity matrix visualization.
+
+\subsubsection{Advanced Export Options}
+Extended export capabilities including:
+\begin{itemize}
+    \item \textbf{High-Resolution Graphics}: Vector-based exports for publication-quality figures
+    \item \textbf{Data Export Formats}: CSV, JSON, and XML format exports for data analysis
+    \item \textbf{Interactive Dashboards}: Real-time dashboard creation for ongoing analysis
+    \item \textbf{Custom Visualizations}: Configurable chart types and styling options
+\end{itemize}
+
+\subsubsection{Statistical Reporting}
+Comprehensive statistical analysis and reporting including:
+\begin{itemize}
+    \item \textbf{Correlation Analysis}: Domain similarity correlation matrices
+    \item \textbf{Clustering Dendrograms}: Hierarchical similarity cluster visualizations
+    \item \textbf{Trend Analysis}: Temporal similarity evolution tracking
+    \item \textbf{Comparative Reports}: Multi-analysis comparison summaries
+\end{itemize}
+
+\section{Usage and Parameters}
+\label{sec:usage-parameters}
+
+This section provides comprehensive guidance for system usage and parameter configuration across different analysis scenarios.
+
+\subsection{System Configuration Parameters}
+\label{subsec:system-configuration}
+
+\textbf{DOM Analysis Parameters}
+\begin{itemize}
+    \item \textbf{Analysis Levels}: Configurable levels 1-10 for different structural granularity
+    \item \textbf{Level Selection}: Bottom-up analysis from leaf nodes (Level 1) to broader structures (Level 10)
+    \item \textbf{Element Filtering}: Configurable CSS attribute filtering for domain-specific analysis
+\end{itemize}
+
+\textbf{Clustering Parameters}
+\begin{itemize}
+    \item \textbf{HDBSCAN Settings}: Automatic parameter optimization through grid search
+    \item \textbf{Minimum Cluster Size}: Dynamic range from 5 to 10\% of total elements
+    \item \textbf{Epsilon Range}: Clustering density thresholds from 0.0 to 1.0
+    \item \textbf{DBCV Threshold}: Quality threshold of 0.25 for acceptable clustering
+\end{itemize}
+
+\textbf{Processing Mode Configuration}
+\begin{itemize}
+    \item \textbf{Mode 0}: Unified processing for comprehensive cross-domain analysis
+    \item \textbf{Mode 1}: Domain-separated processing for scalable large-scale analysis
+\end{itemize}
+
+\subsection{Performance Tuning Guidelines}
+\label{subsec:performance-tuning}
+
+\textbf{Resource Optimization}
+\begin{itemize}
+    \item \textbf{Memory Management}: Configure appropriate batch sizes for available system memory
+    \item \textbf{Processing Concurrency}: Optimize Chrome WebDriver instances for CPU cores
+    \item \textbf{Timeout Settings}: Adjust page load timeouts for network conditions
+\end{itemize}
+
+\textbf{Quality vs. Performance Trade-offs}
+\begin{itemize}
+    \item \textbf{Level Selection}: Higher levels provide more detail but require more processing time
+    \item \textbf{Clustering Precision}: Finer grid search improves quality but increases computation time
+    \item \textbf{Element Threshold}: Higher minimum cluster sizes improve performance but may reduce granularity
+\end{itemize}
+
+\subsection{Usage Recommendations}
+\label{subsec:usage-recommendations}
+
+\textbf{Optimal Analysis Scenarios}
+\begin{itemize}
+    \item \textbf{Template Detection}: Use Mode 0 with levels 3-7 for comprehensive template analysis
+    \item \textbf{Design Pattern Analysis}: Use levels 1-5 with detailed CSS attribute filtering
+    \item \textbf{Large-Scale Surveys}: Use Mode 1 with optimized parameters for scalability
+    \item \textbf{Domain Comparison}: Use median-based level selection for balanced analysis
+\end{itemize}
+
+\textbf{Input Requirements}
+\begin{itemize}
+    \item \textbf{URL Format}: Standard HTTP/HTTPS URLs with valid domain names
+    \item \textbf{Accessibility}: Publicly accessible websites without authentication requirements
+    \item \textbf{Content Type}: HTML-based websites with CSS styling (JavaScript-rendered content supported)
+\end{itemize}
 
 \section{Best Level Selection Algorithm}
 \label{sec:best-level-selection}

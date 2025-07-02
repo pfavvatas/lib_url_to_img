@@ -1,0 +1,201 @@
+<mxfile host="app.diagrams.net" modified="2025-01-27T10:00:00.000Z" agent="5.0" etag="s4d123" version="22.1.16" type="device">
+  <diagram name="S4D 7-Step Flow" id="s4d-7step-flow">
+    <mxGraphModel dx="2200" dy="1400" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1800" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Title -->
+        <mxCell id="title" value="S⁴D System: 7-Step Workflow for Style and Structure Similarity Analysis" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1;fontColor=#1565C0;" vertex="1" parent="1">
+          <mxGeometry x="400" y="20" width="1000" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- Step 1: Web Page Acquisition & DOM Parsing -->
+        <mxCell id="step1" value="🌐 STEP 1: Web Page Acquisition &amp; DOM Parsing&#xa;&#xa;• Selenium WebDriver + Chrome&#xa;• URL Processing &#xa;• DOM Tree Extraction&#xa;• Computed CSS Properties&#xa;• Multi-Level Analysis (1-10)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E8;strokeColor=#4CAF50;fontSize=12;align=center;verticalAlign=middle;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="100" width="200" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- Step 2: Data Modeling & JSON Structuring -->
+        <mxCell id="step2" value="📊 STEP 2: Data Modeling &amp; JSON Structuring&#xa;&#xa;• Inverted Index Construction&#xa;• CSS Property Mapping&#xa;• Element-to-Property Relations&#xa;• JSON Data Structure&#xa;• Attribute Filtering" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#2196F3;fontSize=12;align=center;verticalAlign=middle;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="280" y="100" width="200" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- Step 3: Vectorization & Clustering -->
+        <mxCell id="step3" value="🎯 STEP 3: Vectorization &amp; Clustering&#xa;&#xa;• Feature Vector Construction&#xa;• HDBSCAN Algorithm&#xa;• DBCV Validation&#xa;• Parameter Grid Search&#xa;• Intelligent Outlier Reassignment" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#FF9800;fontSize=12;align=center;verticalAlign=middle;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="520" y="100" width="200" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- Step 4a: Visualization -->
+        <mxCell id="step4a" value="🎨 STEP 4a: Visualization&#xa;&#xa;• Color-coded Clusters&#xa;• HTML Generation&#xa;• Interactive Display&#xa;• Level-based Organization&#xa;• Export Capabilities" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3E5F5;strokeColor=#9C27B0;fontSize=12;align=center;verticalAlign=middle;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="760" y="40" width="180" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- Step 4b: Data Modeling -->
+        <mxCell id="step4b" value="📋 STEP 4b: Data Modeling&#xa;&#xa;• Serial Array Generation&#xa;• Cluster ID Sequences&#xa;• Page-level Organization&#xa;• Domain Grouping&#xa;• Data Preparation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3E5F5;strokeColor=#9C27B0;fontSize=12;align=center;verticalAlign=middle;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="760" y="160" width="180" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- Step 5: Data Mining & Role Vector Extraction -->
+        <mxCell id="step5" value="⚙️ STEP 5: Data Mining &amp; Role Vector Extraction&#xa;&#xa;• Transition Matrix Construction&#xa;• Positional Statistics (mean, std, min, max)&#xa;• Frequency Analysis&#xa;• Role Vector Generation&#xa;• Normalization (0-1 scale)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFEBEE;strokeColor=#F44336;fontSize=12;align=center;verticalAlign=middle;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="980" y="100" width="220" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- Step 6: Multi-Metric Similarity Analysis -->
+        <mxCell id="step6" value="📐 STEP 6: Multi-Metric Similarity Analysis&#xa;&#xa;a) Cosine Similarity&#xa;   • Angular Distance Measurement&#xa;   • Average Role Vectors&#xa;&#xa;b) Earth Mover's Distance (EMD)&#xa;   • Distribution-based Similarity&#xa;   • Bidirectional Analysis&#xa;&#xa;c) Hausdorff Distance&#xa;   • Maximum Deviation Metric&#xa;   • Worst-case Analysis&#xa;&#xa;• Combined Score (Geometric Mean)&#xa;• Optimal Parameter Extraction" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E8;strokeColor=#4CAF50;fontSize=11;align=left;verticalAlign=middle;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="280" width="280" height="200" as="geometry" />
+        </mxCell>
+
+        <!-- Step 7: Similarity Matrix Presentation -->
+        <mxCell id="step7" value="📊 STEP 7: Similarity Matrix Presentation&#xa;&#xa;• Final Similarity Scores (0-100%)&#xa;• Interactive Matrix Visualization&#xa;• Viridis Colormap&#xa;• Domain Comparison Results&#xa;• Performance Metrics&#xa;• Export &amp; Reporting" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#0277BD;fontSize=12;align=center;verticalAlign=middle;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="280" width="220" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- Input URLs -->
+        <mxCell id="input_urls" value="📝 Input URLs&#xa;• website1.com&#xa;• website2.com&#xa;• website3.com" style="ellipse;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#4CAF50;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="120" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Final Output -->
+        <mxCell id="final_output" value="🏆 Final Results&#xa;• Similarity Matrix&#xa;• Performance Reports&#xa;• Cluster Visualizations" style="ellipse;whiteSpace=wrap;html=1;fillColor=#BBDEFB;strokeColor=#2196F3;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="620" y="280" width="130" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Flow Arrows -->
+        <mxCell id="arrow1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;strokeColor=#1976D2;endArrow=block;endFill=1;" edge="1" parent="1" source="input_urls" target="step1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="arrow2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;strokeColor=#1976D2;endArrow=block;endFill=1;" edge="1" parent="1" source="step1" target="step2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="arrow3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;strokeColor=#1976D2;endArrow=block;endFill=1;" edge="1" parent="1" source="step2" target="step3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="arrow4a" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#9C27B0;endArrow=block;endFill=1;" edge="1" parent="1" source="step3" target="step4a">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="arrow4b" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#9C27B0;endArrow=block;endFill=1;" edge="1" parent="1" source="step3" target="step4b">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="arrow5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;strokeColor=#F44336;endArrow=block;endFill=1;" edge="1" parent="1" source="step4b" target="step5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="arrow6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;strokeColor=#4CAF50;endArrow=block;endFill=1;" edge="1" parent="1" source="step5" target="step6">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1090" y="250" />
+              <mxPoint x="180" y="250" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="arrow7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;strokeColor=#0277BD;endArrow=block;endFill=1;" edge="1" parent="1" source="step6" target="step7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="arrow_final" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;strokeColor=#2196F3;endArrow=block;endFill=1;" edge="1" parent="1" source="step7" target="final_output">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Data Flow Labels -->
+        <mxCell id="label1" value="Raw HTML/CSS" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontStyle=2;fontColor=#1976D2;" vertex="1" parent="1">
+          <mxGeometry x="250" y="140" width="80" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="label2" value="Structured Data" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontStyle=2;fontColor=#1976D2;" vertex="1" parent="1">
+          <mxGeometry x="490" y="140" width="80" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="label3" value="Clusters" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontStyle=2;fontColor=#9C27B0;" vertex="1" parent="1">
+          <mxGeometry x="720" y="120" width="50" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="label4" value="Cluster Arrays" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontStyle=2;fontColor=#F44336;" vertex="1" parent="1">
+          <mxGeometry x="950" y="180" width="80" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="label5" value="Role Vectors" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontStyle=2;fontColor=#4CAF50;" vertex="1" parent="1">
+          <mxGeometry x="600" y="220" width="80" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="label6" value="Similarity Scores" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontStyle=2;fontColor=#0277BD;" vertex="1" parent="1">
+          <mxGeometry x="330" y="300" width="90" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- Key Technologies Used -->
+        <mxCell id="tech_title" value="Key Technologies &amp; Algorithms" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1;fontColor=#333;" vertex="1" parent="1">
+          <mxGeometry x="40" y="520" width="200" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="tech_selenium" value="🌐 Selenium WebDriver" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E8;strokeColor=#4CAF50;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="40" y="560" width="140" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="tech_hdbscan" value="🎯 HDBSCAN + DBCV" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#FF9800;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="200" y="560" width="140" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="tech_similarity" value="📐 Multi-Metric Similarity" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E8;strokeColor=#4CAF50;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="360" y="560" width="140" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="tech_visualization" value="📊 Interactive Visualization" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#0277BD;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="520" y="560" width="140" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Configuration Panel -->
+        <mxCell id="config_title" value="System Configuration" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1;fontColor=#333;" vertex="1" parent="1">
+          <mxGeometry x="700" y="520" width="200" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="config_panel" value="📊 Levels: 1-10 • 🎯 DBCV &gt; 0.5 • ⚙️ Min Cluster: 5-15 • 📐 Geometric Mean • 🔄 Mode 0/1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#BDBDBD;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="700" y="560" width="500" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Performance Metrics -->
+        <mxCell id="perf_title" value="Performance Metrics" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1;fontColor=#333;" vertex="1" parent="1">
+          <mxGeometry x="40" y="620" width="200" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="perf_metrics" value="⏱️ Processing: 0.5-2s/URL • 🎯 DBCV: 0.65-0.82 • 💾 Cache: 0-100% • 📊 Success: &gt;90% • 🔍 Accuracy: High" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFEBEE;strokeColor=#F44336;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="40" y="660" width="1160" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Step Details Boxes -->
+        <mxCell id="detail_box1" value="STEP 1-2 Details:&#xa;• Chrome headless mode&#xa;• Computed CSS extraction&#xa;• Property normalization&#xa;• Multi-level DOM parsing" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0F8FF;strokeColor=#87CEEB;fontSize=10;align=left;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="1250" y="40" width="160" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="detail_box2" value="STEP 3 Details:&#xa;• StandardScaler normalization&#xa;• Grid search optimization&#xa;• Outlier reassignment&#xa;• Best config selection" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0F8FF;strokeColor=#87CEEB;fontSize=10;align=left;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="1250" y="140" width="160" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="detail_box3" value="STEP 5-6 Details:&#xa;• Transition matrices&#xa;• Positional statistics&#xa;• Frequency analysis&#xa;• Multi-metric combination" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0F8FF;strokeColor=#87CEEB;fontSize=10;align=left;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="1250" y="240" width="160" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="detail_box4" value="STEP 7 Details:&#xa;• Interactive matrix display&#xa;• Viridis colormap&#xa;• Export capabilities&#xa;• Real-time updates" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0F8FF;strokeColor=#87CEEB;fontSize=10;align=left;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="1250" y="340" width="160" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Process Flow Indicator -->
+        <mxCell id="process_flow" value="DATA FLOW DIRECTION" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontColor=#1976D2;" vertex="1" parent="1">
+          <mxGeometry x="1420" y="20" width="140" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="flow_arrow" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=4;strokeColor=#1976D2;endArrow=block;endFill=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1420" y="50" as="sourcePoint" />
+            <mxPoint x="1560" y="50" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile> 

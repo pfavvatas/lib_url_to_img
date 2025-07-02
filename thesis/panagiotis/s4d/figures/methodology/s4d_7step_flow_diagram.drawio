@@ -1,0 +1,193 @@
+<mxfile host="app.diagrams.net" modified="2025-01-27T12:00:00.000Z" agent="5.0" etag="s4d7step" version="22.1.16" type="device">
+  <diagram name="S4D 7-Step Flow" id="s4d-7step-flow">
+    <mxGraphModel dx="2200" dy="1400" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1800" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Title -->
+        <mxCell id="title" value="S⁴D System: 7-Step Workflow for Style and Structure Similarity Analysis" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="20" width="1400" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Input URLs -->
+        <mxCell id="input" value="📝 Input URLs&lt;br/&gt;• website1.com&lt;br/&gt;• website2.com&lt;br/&gt;• website3.com" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="100" width="200" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Step 1: Web Page Acquisition -->
+        <mxCell id="step1" value="🌐 STEP 1: Web Page Acquisition &amp; DOM Parsing&lt;br/&gt;&lt;br/&gt;• Selenium WebDriver + Chrome&lt;br/&gt;• URL Processing&lt;br/&gt;• DOM Tree Extraction&lt;br/&gt;• Computed CSS Properties&lt;br/&gt;• Multi-Level Analysis (1-10)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="300" y="100" width="280" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- Step 2: Data Modeling -->
+        <mxCell id="step2" value="📊 STEP 2: Data Modeling &amp; JSON Structuring&lt;br/&gt;&lt;br/&gt;• Inverted Index Construction&lt;br/&gt;• CSS Property Mapping&lt;br/&gt;• Element-to-Property Relations&lt;br/&gt;• JSON Data Structure&lt;br/&gt;• Attribute Filtering" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="620" y="100" width="280" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- Step 3: Clustering -->
+        <mxCell id="step3" value="🎯 STEP 3: Vectorization &amp; Clustering&lt;br/&gt;&lt;br/&gt;• Feature Vector Construction&lt;br/&gt;• HDBSCAN Algorithm&lt;br/&gt;• DBCV Validation&lt;br/&gt;• Parameter Grid Search&lt;br/&gt;• Intelligent Outlier Reassignment" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="940" y="100" width="280" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- Step 4a: Visualization -->
+        <mxCell id="step4a" value="🎨 STEP 4a: Visualization&lt;br/&gt;&lt;br/&gt;• Color-coded Clusters&lt;br/&gt;• HTML Generation&lt;br/&gt;• Interactive Display&lt;br/&gt;• Level-based Organization&lt;br/&gt;• Export Capabilities" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="50" y="300" width="280" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- Step 4b: Data Modeling -->
+        <mxCell id="step4b" value="📋 STEP 4b: Data Modeling&lt;br/&gt;&lt;br/&gt;• Serial Array of Cluster IDs&lt;br/&gt;• Element Cluster Assignments&lt;br/&gt;• Cluster Metadata Integration&lt;br/&gt;• Quality Metrics Storage&lt;br/&gt;• Statistical Summaries" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fad7ac;strokeColor=#b46504;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="370" y="300" width="280" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- Step 5: Data Mining -->
+        <mxCell id="step5" value="⛏️ STEP 5: Data Mining&lt;br/&gt;&lt;br/&gt;• Transition Matrix Construction&lt;br/&gt;• Cluster Statistics Computation&lt;br/&gt;• Role Vector Extraction&lt;br/&gt;• Positional Analysis (mean, std, min, max)&lt;br/&gt;• Frequency &amp; Probability Calculation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6d0de;strokeColor=#996185;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="690" y="300" width="280" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- Step 6: Similarity Analysis -->
+        <mxCell id="step6" value="🔍 STEP 6: Similarity Analysis&lt;br/&gt;&lt;br/&gt;• a. Cosine Similarity of Role Vectors&lt;br/&gt;• b. Earth Mover's Distance (EMD)&lt;br/&gt;• c. Hausdorff Distance&lt;br/&gt;• Combined Geometric Mean Score&lt;br/&gt;• Best Level Selection (median + DBCV)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d0cee2;strokeColor=#56517e;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="300" width="280" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- Step 7: Presentation -->
+        <mxCell id="step7" value="📈 STEP 7: Similarity Matrix Presentation&lt;br/&gt;&lt;br/&gt;• Symmetric Similarity Matrix&lt;br/&gt;• Percentage Score Display&lt;br/&gt;• Viridis Color Mapping&lt;br/&gt;• Interactive React Interface&lt;br/&gt;• Statistical Summaries &amp; Export" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f1c2a0;strokeColor=#c46100;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1330" y="300" width="280" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- Output -->
+        <mxCell id="output" value="📊 Final Output&lt;br/&gt;Similarity Matrix&lt;br/&gt;(Percentage Scores)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1370" y="500" width="200" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Flow Arrows -->
+        <mxCell id="arrow1" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#333333;" edge="1" parent="1" source="input" target="step1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="260" y="140" as="sourcePoint" />
+            <mxPoint x="290" y="140" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="arrow2" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#333333;" edge="1" parent="1" source="step1" target="step2">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="590" y="160" as="sourcePoint" />
+            <mxPoint x="610" y="160" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="arrow3" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#333333;" edge="1" parent="1" source="step2" target="step3">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="910" y="160" as="sourcePoint" />
+            <mxPoint x="930" y="160" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="arrow4a" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#333333;" edge="1" parent="1" source="step3" target="step4a">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="940" y="220" as="sourcePoint" />
+            <mxPoint x="330" y="300" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1080" y="260" />
+              <mxPoint x="190" y="260" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="arrow4b" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#333333;" edge="1" parent="1" source="step3" target="step4b">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="940" y="220" as="sourcePoint" />
+            <mxPoint x="510" y="300" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1080" y="260" />
+              <mxPoint x="510" y="260" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="arrow5" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#333333;" edge="1" parent="1" source="step4b" target="step5">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="660" y="360" as="sourcePoint" />
+            <mxPoint x="680" y="360" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="arrow6" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#333333;" edge="1" parent="1" source="step5" target="step6">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="980" y="360" as="sourcePoint" />
+            <mxPoint x="1000" y="360" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="arrow7" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#333333;" edge="1" parent="1" source="step6" target="step7">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1300" y="360" as="sourcePoint" />
+            <mxPoint x="1320" y="360" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="arrow8" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#333333;" edge="1" parent="1" source="step7" target="output">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1470" y="430" as="sourcePoint" />
+            <mxPoint x="1470" y="490" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Labels for parallel steps -->
+        <mxCell id="parallel-label" value="Parallel Processing" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontStyle=2;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="170" y="240" width="120" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- Technology annotations -->
+        <mxCell id="tech1" value="Selenium + Chrome WebDriver" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="320" y="80" width="180" height="15" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tech2" value="JSON + Inverted Index" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="660" y="80" width="120" height="15" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tech3" value="HDBSCAN + DBCV" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="80" width="120" height="15" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tech5" value="Transition Matrices + Statistics" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="700" y="440" width="160" height="15" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tech6" value="Cosine + EMD + Hausdorff" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="1030" y="440" width="140" height="15" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tech7" value="React + Viridis Colormap" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="1360" y="440" width="120" height="15" as="geometry" />
+        </mxCell>
+
+        <!-- Legend -->
+        <mxCell id="legend-title" value="Legend:" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="650" width="60" height="20" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend1" value="🌐 Web Parsing" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="50" y="680" width="100" height="15" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend2" value="📊 Data Processing" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="200" y="680" width="120" height="15" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend3" value="🎯 Machine Learning" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="360" y="680" width="130" height="15" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend4" value="🔍 Analysis & Mining" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="530" y="680" width="130" height="15" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend5" value="📈 Visualization" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="700" y="680" width="100" height="15" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile> 

@@ -13,32 +13,31 @@
 \contentsline {section}{\numberline {1.3}Research Objectives}{3}{section.1.3}%
 \contentsline {section}{\numberline {1.4}Contributions}{4}{section.1.4}%
 \contentsline {section}{\numberline {1.5}Thesis Structure}{4}{section.1.5}%
-\contentsline {chapter}{\numberline {2}Literature Review}{5}{chapter.2}%
-\contentsline {section}{\numberline {2.1}Web Structure Analysis and Mining}{5}{section.2.1}%
+\contentsline {chapter}{\numberline {2}Theoretical Background}{5}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Web Parsing: DOM, CSS Analysis, and Layout Patterns}{5}{section.2.1}%
 \contentsline {subsection}{\numberline {2.1.1}Structural Understanding of Web Documents}{5}{subsection.2.1.1}%
 \contentsline {subsection}{\numberline {2.1.2}Information Extraction from Web Pages}{6}{subsection.2.1.2}%
 \contentsline {subsection}{\numberline {2.1.3}DOM Tree Analysis and Processing}{6}{subsection.2.1.3}%
-\contentsline {section}{\numberline {2.2}Website Similarity and Clustering}{6}{section.2.2}%
-\contentsline {subsection}{\numberline {2.2.1}Multi-dimensional Similarity Approaches}{7}{subsection.2.2.1}%
-\contentsline {subsection}{\numberline {2.2.2}Graph-based Similarity Measures}{7}{subsection.2.2.2}%
-\contentsline {subsection}{\numberline {2.2.3}Role Vector Similarity}{7}{subsection.2.2.3}%
-\contentsline {section}{\numberline {2.3}Clustering Algorithms for Web Data}{7}{section.2.3}%
-\contentsline {subsection}{\numberline {2.3.1}Density-Based Clustering}{7}{subsection.2.3.1}%
-\contentsline {subsection}{\numberline {2.3.2}Cluster Validation}{8}{subsection.2.3.2}%
-\contentsline {subsection}{\numberline {2.3.3}Multi-level Clustering Analysis}{8}{subsection.2.3.3}%
-\contentsline {section}{\numberline {2.4}Feature Engineering for Web Analysis}{8}{section.2.4}%
-\contentsline {subsection}{\numberline {2.4.1}CSS Property Standardization}{8}{subsection.2.4.1}%
-\contentsline {subsection}{\numberline {2.4.2}Attribute Selection and Filtering}{9}{subsection.2.4.2}%
-\contentsline {subsection}{\numberline {2.4.3}Vector Space Representation}{9}{subsection.2.4.3}%
-\contentsline {section}{\numberline {2.5}Similarity Measures for Web Data}{9}{section.2.5}%
-\contentsline {subsection}{\numberline {2.5.1}Cosine Similarity}{9}{subsection.2.5.1}%
-\contentsline {subsection}{\numberline {2.5.2}Earth Mover's Distance (EMD)}{10}{subsection.2.5.2}%
-\contentsline {subsection}{\numberline {2.5.3}Hausdorff Distance}{10}{subsection.2.5.3}%
-\contentsline {subsection}{\numberline {2.5.4}Combined Similarity Metrics}{10}{subsection.2.5.4}%
-\contentsline {section}{\numberline {2.6}Performance Optimization for Web Analysis}{10}{section.2.6}%
-\contentsline {subsection}{\numberline {2.6.1}Caching Strategies}{10}{subsection.2.6.1}%
-\contentsline {subsection}{\numberline {2.6.2}Processing Mode Optimization}{10}{subsection.2.6.2}%
-\contentsline {subsection}{\numberline {2.6.3}Parallel Processing}{11}{subsection.2.6.3}%
+\contentsline {section}{\numberline {2.2}Data Modeling for Web}{7}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}Web Data Representation Challenges}{7}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}JSON Structuring for Web Analysis}{7}{subsection.2.2.2}%
+\contentsline {section}{\numberline {2.3}Similarity and Clustering Methods for Web Data}{7}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}Multi-dimensional Similarity Approaches}{7}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}Graph-based Similarity Measures}{8}{subsection.2.3.2}%
+\contentsline {subsection}{\numberline {2.3.3}Role Vector Similarity}{8}{subsection.2.3.3}%
+\contentsline {section}{\numberline {2.4}Clustering Algorithms for Web Data}{8}{section.2.4}%
+\contentsline {subsection}{\numberline {2.4.1}Density-Based Clustering}{8}{subsection.2.4.1}%
+\contentsline {subsection}{\numberline {2.4.2}Cluster Validation}{9}{subsection.2.4.2}%
+\contentsline {subsection}{\numberline {2.4.3}Multi-level Clustering Analysis}{9}{subsection.2.4.3}%
+\contentsline {section}{\numberline {2.5}Feature Engineering for Web Analysis}{9}{section.2.5}%
+\contentsline {subsection}{\numberline {2.5.1}CSS Property Standardization}{9}{subsection.2.5.1}%
+\contentsline {subsection}{\numberline {2.5.2}Attribute Selection and Filtering}{9}{subsection.2.5.2}%
+\contentsline {subsection}{\numberline {2.5.3}Vector Space Representation}{10}{subsection.2.5.3}%
+\contentsline {section}{\numberline {2.6}Similarity Measures for Web Data}{10}{section.2.6}%
+\contentsline {subsection}{\numberline {2.6.1}Cosine Similarity}{10}{subsection.2.6.1}%
+\contentsline {subsection}{\numberline {2.6.2}Earth Mover's Distance (EMD)}{10}{subsection.2.6.2}%
+\contentsline {subsection}{\numberline {2.6.3}Hausdorff Distance}{11}{subsection.2.6.3}%
+\contentsline {subsection}{\numberline {2.6.4}Combined Similarity Metrics}{11}{subsection.2.6.4}%
 \contentsline {section}{\numberline {2.7}Applications and Use Cases}{11}{section.2.7}%
 \contentsline {subsection}{\numberline {2.7.1}Web Mining and Content Analysis}{11}{subsection.2.7.1}%
 \contentsline {subsection}{\numberline {2.7.2}User Interface Research}{11}{subsection.2.7.2}%
@@ -50,276 +49,337 @@
 \contentsline {subsection}{\numberline {2.8.3}Dynamic Content Handling}{12}{subsection.2.8.3}%
 \contentsline {subsection}{\numberline {2.8.4}Cross-domain Generalization}{12}{subsection.2.8.4}%
 \contentsline {section}{\numberline {2.9}Literature Review Summary}{12}{section.2.9}%
-\contentsline {chapter}{\numberline {3}Methodology}{15}{chapter.3}%
-\contentsline {section}{\numberline {3.1}System Architecture Overview}{15}{section.3.1}%
-\contentsline {section}{\numberline {3.2}Web Page Acquisition and DOM Extraction}{16}{section.3.2}%
-\contentsline {subsection}{\numberline {3.2.1}Automated Web Rendering}{16}{subsection.3.2.1}%
-\contentsline {subsection}{\numberline {3.2.2}Hierarchical DOM Tree Construction}{16}{subsection.3.2.2}%
-\contentsline {subsubsection}{Unique Element Identification}{16}{subsection.3.2.2}%
-\contentsline {subsubsection}{Comprehensive Attribute Extraction}{17}{equation.3.2.1}%
-\contentsline {subsubsection}{Text Content Processing}{17}{Item.15}%
-\contentsline {subsection}{\numberline {3.2.3}Multi-Level DOM Analysis}{17}{subsection.3.2.3}%
-\contentsline {section}{\numberline {3.3}CSS Property Analysis and Normalization}{18}{section.3.3}%
-\contentsline {subsection}{\numberline {3.3.1}Attribute Filtering and Selection}{18}{subsection.3.3.1}%
-\contentsline {subsubsection}{Element Frequency Analysis}{20}{subsection.3.3.1}%
-\contentsline {subsubsection}{Useful Attribute Identification}{20}{equation.3.3.2}%
-\contentsline {subsection}{\numberline {3.3.2}CSS Value Normalization}{20}{subsection.3.3.2}%
-\contentsline {subsubsection}{Pixel Value Normalization}{20}{subsection.3.3.2}%
-\contentsline {subsubsection}{Color Space Processing}{20}{equation.3.3.3}%
-\contentsline {subsubsection}{Dual-Coordinate Property Handling}{21}{equation.3.3.6}%
-\contentsline {section}{\numberline {3.4}Feature Engineering and Vector Representation}{21}{section.3.4}%
-\contentsline {subsection}{\numberline {3.4.1}Page Vector Construction}{21}{subsection.3.4.1}%
-\contentsline {subsection}{\numberline {3.4.2}String Value Space Mapping}{21}{subsection.3.4.2}%
-\contentsline {subsection}{\numberline {3.4.3}Data Standardization and Normalization}{22}{subsection.3.4.3}%
-\contentsline {section}{\numberline {3.5}Advanced Clustering Analysis}{22}{section.3.5}%
-\contentsline {subsection}{\numberline {3.5.1}HDBSCAN Clustering Algorithm}{22}{subsection.3.5.1}%
-\contentsline {subsubsection}{Parameter Optimization Framework}{22}{subsection.3.5.1}%
-\contentsline {subsubsection}{Outlier Reassignment Strategy}{22}{subsection.3.5.1}%
-\contentsline {subsection}{\numberline {3.5.2}Cluster Quality Assessment}{23}{subsection.3.5.2}%
-\contentsline {subsubsection}{Density-Based Cluster Validation (DBCV)}{23}{subsection.3.5.2}%
-\contentsline {subsubsection}{Optimal Configuration Selection}{23}{equation.3.5.10}%
-\contentsline {section}{\numberline {3.6}Role Vector-based Similarity Computation}{24}{section.3.6}%
-\contentsline {subsection}{\numberline {3.6.1}Multi-Dimensional Role Vector Construction}{24}{subsection.3.6.1}%
-\contentsline {subsubsection}{Frequency Information}{24}{subsection.3.6.1}%
-\contentsline {subsubsection}{Transition Matrices}{24}{equation.3.6.11}%
-\contentsline {subsubsection}{Positional Statistics}{24}{equation.3.6.12}%
-\contentsline {subsection}{\numberline {3.6.2}Complete Role Vector Specification}{24}{subsection.3.6.2}%
-\contentsline {section}{\numberline {3.7}Multi-Metric Similarity Framework}{26}{section.3.7}%
-\contentsline {subsection}{\numberline {3.7.1}Domain-Level Aggregation}{26}{subsection.3.7.1}%
-\contentsline {subsection}{\numberline {3.7.2}Multi-Metric Distance Computation}{26}{subsection.3.7.2}%
-\contentsline {subsubsection}{Cosine Similarity}{26}{subsection.3.7.2}%
-\contentsline {subsubsection}{Earth Mover's Distance (EMD) Approximation}{26}{equation.3.7.18}%
-\contentsline {subsubsection}{Hausdorff Distance Approximation}{26}{equation.3.7.19}%
-\contentsline {subsection}{\numberline {3.7.3}Combined Similarity Score}{26}{subsection.3.7.3}%
-\contentsline {section}{\numberline {3.8}Best Level Selection Algorithm}{27}{section.3.8}%
-\contentsline {subsection}{\numberline {3.8.1}Median-Based Selection Strategy}{27}{subsection.3.8.1}%
-\contentsline {section}{\numberline {3.9}Performance Optimization and Scalability}{28}{section.3.9}%
-\contentsline {subsection}{\numberline {3.9.1}System Optimization Strategies}{28}{subsection.3.9.1}%
-\contentsline {subsubsection}{Efficient Data Processing}{28}{subsection.3.9.1}%
-\contentsline {subsubsection}{Algorithm Optimization}{28}{subsection.3.9.1}%
-\contentsline {subsection}{\numberline {3.9.2}Dual Processing Modes}{28}{subsection.3.9.2}%
-\contentsline {subsubsection}{Mode 0: Unified Processing}{28}{subsection.3.9.2}%
-\contentsline {subsubsection}{Mode 1: Domain-Based Processing}{28}{subsection.3.9.2}%
-\contentsline {subsection}{\numberline {3.9.3}Performance Monitoring}{28}{subsection.3.9.3}%
-\contentsline {section}{\numberline {3.10}Methodology Validation and Quality Assurance}{29}{section.3.10}%
-\contentsline {subsection}{\numberline {3.10.1}Algorithmic Robustness}{29}{subsection.3.10.1}%
-\contentsline {subsection}{\numberline {3.10.2}Scalability Considerations}{29}{subsection.3.10.2}%
-\contentsline {section}{\numberline {3.11}Methodology Summary}{29}{section.3.11}%
-\contentsline {chapter}{\numberline {4}System Implementation}{31}{chapter.4}%
-\contentsline {section}{\numberline {4.1}System Architecture Overview}{31}{section.4.1}%
-\contentsline {section}{\numberline {4.2}Backend Implementation}{31}{section.4.2}%
-\contentsline {subsection}{\numberline {4.2.1}Core Processing Engine}{31}{subsection.4.2.1}%
-\contentsline {subsection}{\numberline {4.2.2}Multi-Level Analysis Implementation}{33}{subsection.4.2.2}%
-\contentsline {section}{\numberline {4.3}API Implementation}{33}{section.4.3}%
-\contentsline {subsection}{\numberline {4.3.1}FastAPI Server Architecture}{33}{subsection.4.3.1}%
-\contentsline {subsubsection}{URL Processing Endpoint}{33}{subsection.4.3.1}%
-\contentsline {subsubsection}{Batch Experiment Management}{34}{subsection.4.3.1}%
-\contentsline {subsubsection}{Results Management}{34}{subsection.4.3.1}%
-\contentsline {subsection}{\numberline {4.3.2}File Serving Infrastructure}{35}{subsection.4.3.2}%
-\contentsline {section}{\numberline {4.4}Frontend Implementation}{35}{section.4.4}%
-\contentsline {subsection}{\numberline {4.4.1}React Application Architecture}{35}{subsection.4.4.1}%
-\contentsline {subsection}{\numberline {4.4.2}User Interface Features}{35}{subsection.4.4.2}%
-\contentsline {subsection}{\numberline {4.4.3}Integration with Backend Services}{36}{subsection.4.4.3}%
-\contentsline {section}{\numberline {4.5}Performance Optimization Implementation}{37}{section.4.5}%
-\contentsline {subsection}{\numberline {4.5.1}Optimization Strategy}{37}{subsection.4.5.1}%
-\contentsline {subsection}{\numberline {4.5.2}Scalability Considerations}{37}{subsection.4.5.2}%
-\contentsline {section}{\numberline {4.6}Deployment and Configuration}{37}{section.4.6}%
-\contentsline {subsection}{\numberline {4.6.1}Development Environment Setup}{37}{subsection.4.6.1}%
-\contentsline {subsection}{\numberline {4.6.2}Process Management and Execution}{38}{subsection.4.6.2}%
-\contentsline {subsection}{\numberline {4.6.3}Production Deployment Considerations}{38}{subsection.4.6.3}%
-\contentsline {section}{\numberline {4.7}Implementation Summary}{38}{section.4.7}%
-\contentsline {chapter}{\numberline {5}Experiments and Evaluation}{41}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Experimental Design}{41}{section.5.1}%
-\contentsline {subsection}{\numberline {5.1.1}Research Questions}{41}{subsection.5.1.1}%
-\contentsline {subsection}{\numberline {5.1.2}Evaluation Metrics}{41}{subsection.5.1.2}%
-\contentsline {section}{\numberline {5.2}Dataset Description}{42}{section.5.2}%
-\contentsline {subsection}{\numberline {5.2.1}Website Categories}{42}{subsection.5.2.1}%
-\contentsline {section}{\numberline {5.3}Experimental Results}{43}{section.5.3}%
-\contentsline {subsection}{\numberline {5.3.1}Clustering Quality Analysis}{43}{subsection.5.3.1}%
-\contentsline {subsection}{\numberline {5.3.2}Performance Scalability}{43}{subsection.5.3.2}%
-\contentsline {subsection}{\numberline {5.3.3}System Performance Analysis}{46}{subsection.5.3.3}%
-\contentsline {section}{\numberline {5.4}Comparative Analysis}{46}{section.5.4}%
-\contentsline {subsection}{\numberline {5.4.1}Algorithm Comparison}{46}{subsection.5.4.1}%
-\contentsline {subsection}{\numberline {5.4.2}Feature Importance Analysis}{46}{subsection.5.4.2}%
-\contentsline {section}{\numberline {5.5}Statistical Validation}{48}{section.5.5}%
-\contentsline {subsection}{\numberline {5.5.1}Significance Testing}{48}{subsection.5.5.1}%
-\contentsline {subsection}{\numberline {5.5.2}Cross-Validation Results}{48}{subsection.5.5.2}%
-\contentsline {section}{\numberline {5.6}Error Analysis and Limitations}{48}{section.5.6}%
-\contentsline {subsection}{\numberline {5.6.1}Failure Case Analysis}{48}{subsection.5.6.1}%
-\contentsline {subsection}{\numberline {5.6.2}Quality Degradation Factors}{49}{subsection.5.6.2}%
-\contentsline {section}{\numberline {5.7}Practical Implications}{49}{section.5.7}%
-\contentsline {subsection}{\numberline {5.7.1}Real-World Applicability}{49}{subsection.5.7.1}%
-\contentsline {subsection}{\numberline {5.7.2}Performance Recommendations}{49}{subsection.5.7.2}%
-\contentsline {section}{\numberline {5.8}Summary of Experimental Findings}{50}{section.5.8}%
-\contentsline {chapter}{\numberline {6}Results and Discussion}{51}{chapter.6}%
-\contentsline {section}{\numberline {6.1}Clustering Performance Results}{51}{section.6.1}%
-\contentsline {subsection}{\numberline {6.1.1}Overall Clustering Quality}{51}{subsection.6.1.1}%
-\contentsline {subsection}{\numberline {6.1.2}Domain-Specific Performance}{51}{subsection.6.1.2}%
-\contentsline {section}{\numberline {6.2}Similarity Measurement Results}{53}{section.6.2}%
-\contentsline {subsection}{\numberline {6.2.1}Individual Metric Performance}{53}{subsection.6.2.1}%
-\contentsline {subsection}{\numberline {6.2.2}Combined Metric Effectiveness}{54}{subsection.6.2.2}%
-\contentsline {section}{\numberline {6.3}Computational Performance Results}{54}{section.6.3}%
-\contentsline {subsection}{\numberline {6.3.1}Processing Time Analysis}{54}{subsection.6.3.1}%
-\contentsline {subsection}{\numberline {6.3.2}Memory Usage Characteristics}{54}{subsection.6.3.2}%
-\contentsline {section}{\numberline {6.4}Feature Engineering Analysis}{54}{section.6.4}%
-\contentsline {subsection}{\numberline {6.4.1}Feature Component Contributions}{54}{subsection.6.4.1}%
-\contentsline {section}{\numberline {6.5}Comparative Analysis Results}{56}{section.6.5}%
-\contentsline {subsection}{\numberline {6.5.1}Performance Against Baselines}{56}{subsection.6.5.1}%
-\contentsline {section}{\numberline {6.6}Case Study Results}{56}{section.6.6}%
-\contentsline {subsection}{\numberline {6.6.1}E-commerce Template Detection}{56}{subsection.6.6.1}%
-\contentsline {subsection}{\numberline {6.6.2}News Website Pattern Analysis}{56}{subsection.6.6.2}%
-\contentsline {section}{\numberline {6.7}System Validation Results}{56}{section.6.7}%
-\contentsline {subsection}{\numberline {6.7.1}Expert Classification Correlation}{58}{subsection.6.7.1}%
-\contentsline {section}{\numberline {6.8}Discussion of Findings}{58}{section.6.8}%
-\contentsline {subsection}{\numberline {6.8.1}Methodological Contributions}{58}{subsection.6.8.1}%
-\contentsline {subsection}{\numberline {6.8.2}Practical Implications}{58}{subsection.6.8.2}%
-\contentsline {subsubsection}{Web Development and Design}{58}{subsection.6.8.2}%
-\contentsline {subsubsection}{Content Management}{59}{subsection.6.8.2}%
-\contentsline {subsubsection}{Research Applications}{59}{subsection.6.8.2}%
-\contentsline {subsection}{\numberline {6.8.3}Technical Insights}{59}{subsection.6.8.3}%
-\contentsline {subsubsection}{Feature Engineering Importance}{59}{subsection.6.8.3}%
-\contentsline {subsubsection}{Clustering Algorithm Selection}{59}{subsection.6.8.3}%
-\contentsline {subsubsection}{Similarity Metric Complementarity}{59}{subsection.6.8.3}%
-\contentsline {section}{\numberline {6.9}Limitations and Challenges}{59}{section.6.9}%
-\contentsline {subsection}{\numberline {6.9.1}Dynamic Content Handling}{60}{subsection.6.9.1}%
-\contentsline {subsection}{\numberline {6.9.2}Cross-Browser Variations}{60}{subsection.6.9.2}%
-\contentsline {subsection}{\numberline {6.9.3}Cultural and Linguistic Factors}{60}{subsection.6.9.3}%
-\contentsline {subsection}{\numberline {6.9.4}Scalability Considerations}{60}{subsection.6.9.4}%
-\contentsline {section}{\numberline {6.10}Future Work Implications}{60}{section.6.10}%
-\contentsline {subsection}{\numberline {6.10.1}Enhanced Dynamic Content Support}{60}{subsection.6.10.1}%
-\contentsline {subsection}{\numberline {6.10.2}Cross-Browser Compatibility}{60}{subsection.6.10.2}%
-\contentsline {subsection}{\numberline {6.10.3}Machine Learning Integration}{61}{subsection.6.10.3}%
-\contentsline {subsection}{\numberline {6.10.4}Performance Optimization Enhancements}{61}{subsection.6.10.4}%
-\contentsline {section}{\numberline {6.11}Results Summary}{61}{section.6.11}%
-\contentsline {chapter}{\numberline {A}User Guide}{63}{appendix.A}%
-\contentsline {section}{\numberline {A.1}Getting Started}{63}{section.A.1}%
-\contentsline {subsection}{\numberline {A.1.1}System Requirements}{63}{subsection.A.1.1}%
-\contentsline {section}{\numberline {A.2}Interface Overview}{63}{section.A.2}%
-\contentsline {section}{\numberline {A.3}Basic URL Analysis}{63}{section.A.3}%
-\contentsline {subsection}{\numberline {A.3.1}Adding URLs}{63}{subsection.A.3.1}%
-\contentsline {subsection}{\numberline {A.3.2}Selecting Analysis Levels}{64}{subsection.A.3.2}%
-\contentsline {subsection}{\numberline {A.3.3}Running Analysis}{64}{subsection.A.3.3}%
-\contentsline {section}{\numberline {A.4}Understanding Results}{65}{section.A.4}%
-\contentsline {subsection}{\numberline {A.4.1}Site Similarity Analysis}{65}{subsection.A.4.1}%
-\contentsline {subsection}{\numberline {A.4.2}Clustering Results}{65}{subsection.A.4.2}%
-\contentsline {subsection}{\numberline {A.4.3}Generated HTML Files}{65}{subsection.A.4.3}%
-\contentsline {section}{\numberline {A.5}Advanced Features}{66}{section.A.5}%
-\contentsline {subsection}{\numberline {A.5.1}Experiment Configuration}{66}{subsection.A.5.1}%
-\contentsline {subsection}{\numberline {A.5.2}Results Archive}{66}{subsection.A.5.2}%
-\contentsline {section}{\numberline {A.6}Performance and Optimization}{66}{section.A.6}%
-\contentsline {subsection}{\numberline {A.6.1}System Efficiency}{66}{subsection.A.6.1}%
-\contentsline {subsection}{\numberline {A.6.2}Performance Monitoring}{67}{subsection.A.6.2}%
-\contentsline {section}{\numberline {A.7}Troubleshooting}{67}{section.A.7}%
-\contentsline {subsection}{\numberline {A.7.1}Common Issues}{67}{subsection.A.7.1}%
-\contentsline {subsection}{\numberline {A.7.2}Error Messages}{68}{subsection.A.7.2}%
-\contentsline {section}{\numberline {A.8}Best Practices}{68}{section.A.8}%
-\contentsline {subsection}{\numberline {A.8.1}Optimal Usage Patterns}{68}{subsection.A.8.1}%
-\contentsline {subsection}{\numberline {A.8.2}Result Interpretation}{68}{subsection.A.8.2}%
-\contentsline {chapter}{\numberline {B}API Documentation}{69}{appendix.B}%
-\contentsline {section}{\numberline {B.1}API Overview}{69}{section.B.1}%
-\contentsline {subsection}{\numberline {B.1.1}Base Configuration}{69}{subsection.B.1.1}%
-\contentsline {section}{\numberline {B.2}Core Processing Endpoints}{69}{section.B.2}%
-\contentsline {subsection}{\numberline {B.2.1}Process URLs}{69}{subsection.B.2.1}%
-\contentsline {subsubsection}{Request Format}{69}{subsection.B.2.1}%
-\contentsline {subsubsection}{Response Format}{70}{subsection.B.2.1}%
-\contentsline {subsection}{\numberline {B.2.2}Process Clusters}{71}{subsection.B.2.2}%
-\contentsline {subsubsection}{Request Format}{71}{subsection.B.2.2}%
-\contentsline {subsubsection}{Response Format}{71}{subsection.B.2.2}%
-\contentsline {section}{\numberline {B.3}Experiment Management Endpoints}{71}{section.B.3}%
-\contentsline {subsection}{\numberline {B.3.1}Run Experiment Batch}{71}{subsection.B.3.1}%
-\contentsline {subsubsection}{Request Format}{71}{subsection.B.3.1}%
-\contentsline {subsubsection}{Response Format}{72}{subsection.B.3.1}%
-\contentsline {subsection}{\numberline {B.3.2}List Experiment Results}{72}{subsection.B.3.2}%
-\contentsline {subsubsection}{Response Format}{72}{subsection.B.3.2}%
-\contentsline {subsection}{\numberline {B.3.3}Get Experiment Details}{73}{subsection.B.3.3}%
-\contentsline {subsubsection}{Response Format}{73}{subsection.B.3.3}%
-\contentsline {section}{\numberline {B.4}File Access Endpoints}{73}{section.B.4}%
-\contentsline {subsection}{\numberline {B.4.1}HTML File Serving}{73}{subsection.B.4.1}%
-\contentsline {subsection}{\numberline {B.4.2}Experiment File Downloads}{73}{subsection.B.4.2}%
-\contentsline {subsection}{\numberline {B.4.3}Generated Images}{74}{subsection.B.4.3}%
-\contentsline {section}{\numberline {B.5}Error Handling}{74}{section.B.5}%
-\contentsline {subsection}{\numberline {B.5.1}Standard Error Response}{74}{subsection.B.5.1}%
-\contentsline {subsection}{\numberline {B.5.2}HTTP Status Codes}{74}{subsection.B.5.2}%
-\contentsline {subsection}{\numberline {B.5.3}Common Error Messages}{74}{subsection.B.5.3}%
-\contentsline {section}{\numberline {B.6}Rate Limiting and Performance}{74}{section.B.6}%
-\contentsline {subsection}{\numberline {B.6.1}Request Limits}{74}{subsection.B.6.1}%
-\contentsline {subsection}{\numberline {B.6.2}Performance Considerations}{75}{subsection.B.6.2}%
-\contentsline {section}{\numberline {B.7}Authentication and Security}{75}{section.B.7}%
-\contentsline {subsection}{\numberline {B.7.1}Current Implementation}{75}{subsection.B.7.1}%
-\contentsline {subsection}{\numberline {B.7.2}Production Considerations}{75}{subsection.B.7.2}%
-\contentsline {section}{\numberline {B.8}Main API Endpoints}{75}{section.B.8}%
-\contentsline {subsection}{\numberline {B.8.1}URL Processing}{76}{subsection.B.8.1}%
-\contentsline {subsection}{\numberline {B.8.2}Experiment Batch Processing}{76}{subsection.B.8.2}%
-\contentsline {subsection}{\numberline {B.8.3}Experiment Results Listing}{77}{subsection.B.8.3}%
-\contentsline {subsection}{\numberline {B.8.4}Experiment Details}{77}{subsection.B.8.4}%
-\contentsline {section}{\numberline {B.9}File Access}{77}{section.B.9}%
-\contentsline {section}{\numberline {B.10}Error Handling}{77}{section.B.10}%
-\contentsline {chapter}{\numberline {C}Technology Stack Details}{79}{appendix.C}%
-\contentsline {section}{\numberline {C.1}Technology Stack Overview}{79}{section.C.1}%
-\contentsline {section}{\numberline {C.2}Backend Technologies}{79}{section.C.2}%
-\contentsline {subsection}{\numberline {C.2.1}Core Programming Language}{79}{subsection.C.2.1}%
-\contentsline {subsection}{\numberline {C.2.2}Web Automation Framework}{79}{subsection.C.2.2}%
-\contentsline {subsection}{\numberline {C.2.3}API Framework}{80}{subsection.C.2.3}%
-\contentsline {subsection}{\numberline {C.2.4}Data Processing Libraries}{81}{subsection.C.2.4}%
-\contentsline {subsection}{\numberline {C.2.5}Machine Learning Libraries}{81}{subsection.C.2.5}%
-\contentsline {subsection}{\numberline {C.2.6}Image and Visualization Libraries}{82}{subsection.C.2.6}%
-\contentsline {subsection}{\numberline {C.2.7}Color Processing}{82}{subsection.C.2.7}%
-\contentsline {section}{\numberline {C.3}Frontend Technologies}{83}{section.C.3}%
-\contentsline {subsection}{\numberline {C.3.1}Core Framework}{83}{subsection.C.3.1}%
-\contentsline {subsection}{\numberline {C.3.2}UI Component Library}{83}{subsection.C.3.2}%
-\contentsline {subsection}{\numberline {C.3.3}Data Visualization}{84}{subsection.C.3.3}%
-\contentsline {subsection}{\numberline {C.3.4}PDF Generation}{84}{subsection.C.3.4}%
-\contentsline {section}{\numberline {C.4}Development and Deployment}{84}{section.C.4}%
-\contentsline {subsection}{\numberline {C.4.1}Package Management}{84}{subsection.C.4.1}%
-\contentsline {subsection}{\numberline {C.4.2}Development Tools}{84}{subsection.C.4.2}%
-\contentsline {section}{\numberline {C.5}Data Management}{85}{section.C.5}%
-\contentsline {subsection}{\numberline {C.5.1}File System Storage}{85}{subsection.C.5.1}%
-\contentsline {subsection}{\numberline {C.5.2}Data Processing Optimization}{85}{subsection.C.5.2}%
-\contentsline {section}{\numberline {C.6}Performance Optimization Technologies}{86}{section.C.6}%
-\contentsline {subsection}{\numberline {C.6.1}Parallel Processing}{86}{subsection.C.6.1}%
-\contentsline {subsection}{\numberline {C.6.2}Algorithm Optimization}{86}{subsection.C.6.2}%
-\contentsline {section}{\numberline {C.7}Browser Compatibility}{86}{section.C.7}%
-\contentsline {subsection}{\numberline {C.7.1}Supported Browsers}{86}{subsection.C.7.1}%
-\contentsline {subsection}{\numberline {C.7.2}Progressive Enhancement}{87}{subsection.C.7.2}%
-\contentsline {section}{\numberline {C.8}Security Considerations}{87}{section.C.8}%
-\contentsline {subsection}{\numberline {C.8.1}Input Validation}{87}{subsection.C.8.1}%
-\contentsline {subsection}{\numberline {C.8.2}CORS Configuration}{87}{subsection.C.8.2}%
-\contentsline {section}{\numberline {C.9}System Requirements}{87}{section.C.9}%
-\contentsline {subsection}{\numberline {C.9.1}Minimum Requirements}{87}{subsection.C.9.1}%
-\contentsline {subsection}{\numberline {C.9.2}Recommended Configuration}{88}{subsection.C.9.2}%
-\contentsline {section}{\numberline {C.10}Version Management}{88}{section.C.10}%
-\contentsline {subsection}{\numberline {C.10.1}Dependency Versioning}{88}{subsection.C.10.1}%
-\contentsline {subsection}{\numberline {C.10.2}Technology Lifecycle}{88}{subsection.C.10.2}%
-\contentsline {chapter}{\numberline {D}Experimental Data}{89}{appendix.D}%
-\contentsline {section}{\numberline {D.1}Experimental Design Overview}{89}{section.D.1}%
-\contentsline {section}{\numberline {D.2}Dataset Characteristics}{89}{section.D.2}%
-\contentsline {subsection}{\numberline {D.2.1}Test Website Categories}{89}{subsection.D.2.1}%
-\contentsline {subsection}{\numberline {D.2.2}URL Distribution}{89}{subsection.D.2.2}%
-\contentsline {section}{\numberline {D.3}Performance Metrics}{91}{section.D.3}%
-\contentsline {subsection}{\numberline {D.3.1}Processing Time Analysis}{91}{subsection.D.3.1}%
-\contentsline {subsection}{\numberline {D.3.2}System Performance Metrics}{91}{subsection.D.3.2}%
-\contentsline {section}{\numberline {D.4}Clustering Quality Results}{91}{section.D.4}%
-\contentsline {subsection}{\numberline {D.4.1}DBCV Scores by Level}{91}{subsection.D.4.1}%
-\contentsline {subsection}{\numberline {D.4.2}Optimal Level Identification}{91}{subsection.D.4.2}%
-\contentsline {section}{\numberline {D.5}Similarity Analysis Results}{93}{section.D.5}%
-\contentsline {subsection}{\numberline {D.5.1}Cosine Similarity Distribution}{93}{subsection.D.5.1}%
-\contentsline {subsection}{\numberline {D.5.2}Multi-Metric Comparison}{93}{subsection.D.5.2}%
-\contentsline {section}{\numberline {D.6}Scalability Analysis}{93}{section.D.6}%
-\contentsline {subsection}{\numberline {D.6.1}URL Count vs Processing Time}{93}{subsection.D.6.1}%
-\contentsline {subsection}{\numberline {D.6.2}Memory Usage Patterns}{93}{subsection.D.6.2}%
-\contentsline {section}{\numberline {D.7}Experiment Validation Results}{95}{section.D.7}%
-\contentsline {subsection}{\numberline {D.7.1}Ground Truth Validation}{95}{subsection.D.7.1}%
-\contentsline {subsection}{\numberline {D.7.2}Cross-Validation Results}{95}{subsection.D.7.2}%
-\contentsline {section}{\numberline {D.8}Comparative Analysis}{95}{section.D.8}%
-\contentsline {subsection}{\numberline {D.8.1}Baseline Comparisons}{95}{subsection.D.8.1}%
-\contentsline {subsection}{\numberline {D.8.2}Feature Importance Analysis}{96}{subsection.D.8.2}%
-\contentsline {section}{\numberline {D.9}Error Analysis}{96}{section.D.9}%
-\contentsline {subsection}{\numberline {D.9.1}Failure Case Analysis}{96}{subsection.D.9.1}%
-\contentsline {subsection}{\numberline {D.9.2}Quality Degradation Factors}{96}{subsection.D.9.2}%
-\contentsline {section}{\numberline {D.10}Performance Optimization Results}{97}{section.D.10}%
-\contentsline {subsection}{\numberline {D.10.1}Optimization Techniques Impact}{97}{subsection.D.10.1}%
-\contentsline {section}{\numberline {D.11}Statistical Significance Tests}{97}{section.D.11}%
-\contentsline {subsection}{\numberline {D.11.1}Hypothesis Testing Results}{97}{subsection.D.11.1}%
-\contentsline {section}{\numberline {D.12}Reproducibility Information}{98}{section.D.12}%
-\contentsline {subsection}{\numberline {D.12.1}Experimental Configuration}{98}{subsection.D.12.1}%
-\contentsline {subsection}{\numberline {D.12.2}Data Availability}{98}{subsection.D.12.2}%
+\contentsline {section}{\numberline {2.10}Transition to System Design}{13}{section.2.10}%
+\contentsline {chapter}{\numberline {3}The S\textsuperscript {4}D System}{15}{chapter.3}%
+\contentsline {section}{\numberline {3.1}System Overview}{15}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Technology Stack and Tools}{16}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Backend Technologies}{16}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}Frontend Technologies}{17}{subsection.3.2.2}%
+\contentsline {subsection}{\numberline {3.2.3}System Integration}{17}{subsection.3.2.3}%
+\contentsline {subsection}{\numberline {3.2.4}More: Extended Technology Stack Details}{17}{subsection.3.2.4}%
+\contentsline {subsubsection}{Additional Development Dependencies}{17}{subsection.3.2.4}%
+\contentsline {subsubsection}{Data Storage and Management}{18}{subsection.3.2.4}%
+\contentsline {section}{\numberline {3.3}Web Parsing with Multi-Level Analysis and Clustering Integration}{18}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Automated Web Rendering}{18}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}Hierarchical DOM Tree Construction}{18}{subsection.3.3.2}%
+\contentsline {subsubsection}{Unique Element Identification}{19}{subsection.3.3.2}%
+\contentsline {subsubsection}{Comprehensive Attribute Extraction}{19}{equation.3.3.1}%
+\contentsline {subsubsection}{Text Content Processing}{19}{Item.15}%
+\contentsline {subsection}{\numberline {3.3.3}Multi-Level DOM Analysis}{19}{subsection.3.3.3}%
+\contentsline {section}{\numberline {3.4}CSS Property Analysis and Normalization}{22}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}Attribute Filtering and Selection}{22}{subsection.3.4.1}%
+\contentsline {subsubsection}{Element Frequency Analysis}{22}{subsection.3.4.1}%
+\contentsline {subsubsection}{Useful Attribute Identification}{22}{equation.3.4.2}%
+\contentsline {subsection}{\numberline {3.4.2}CSS Value Normalization}{22}{subsection.3.4.2}%
+\contentsline {subsubsection}{Pixel Value Normalization}{22}{subsection.3.4.2}%
+\contentsline {subsubsection}{Color Space Processing}{23}{equation.3.4.3}%
+\contentsline {subsubsection}{Dual-Coordinate Property Handling}{23}{equation.3.4.6}%
+\contentsline {section}{\numberline {3.5}Feature Engineering and Vector Representation}{23}{section.3.5}%
+\contentsline {subsection}{\numberline {3.5.1}Page Vector Construction}{23}{subsection.3.5.1}%
+\contentsline {subsection}{\numberline {3.5.2}String Value Space Mapping}{23}{subsection.3.5.2}%
+\contentsline {subsection}{\numberline {3.5.3}Data Standardization and Normalization}{24}{subsection.3.5.3}%
+\contentsline {subsection}{\numberline {3.5.4}More: Extended Web Parsing Capabilities}{24}{subsection.3.5.4}%
+\contentsline {subsubsection}{Advanced Content Extraction}{24}{subsection.3.5.4}%
+\contentsline {subsubsection}{Cross-Browser Compatibility}{24}{subsection.3.5.4}%
+\contentsline {section}{\numberline {3.6}Data Modeling with Multi-Level Integration and Clustering Support}{24}{section.3.6}%
+\contentsline {subsection}{\numberline {3.6.1}Pre-Clustering Data Modeling}{25}{subsection.3.6.1}%
+\contentsline {subsection}{\numberline {3.6.2}Vector Space Construction}{25}{subsection.3.6.2}%
+\contentsline {subsection}{\numberline {3.6.3}Vectorization and HDBSCAN Clustering Integration}{25}{subsection.3.6.3}%
+\contentsline {subsubsection}{HDBSCAN Parameter Optimization}{25}{subsection.3.6.3}%
+\contentsline {subsubsection}{Intelligent Outlier Reassignment}{26}{subsection.3.6.3}%
+\contentsline {subsection}{\numberline {3.6.4}Post-Clustering Data Modeling}{26}{subsection.3.6.4}%
+\contentsline {subsection}{\numberline {3.6.5}More: Visualization of Clustered Elements}{26}{subsection.3.6.5}%
+\contentsline {subsubsection}{Interactive HTML Generation}{27}{subsection.3.6.5}%
+\contentsline {subsubsection}{Step 4b: Data Modeling for Clustered Pages}{27}{subsection.3.6.5}%
+\contentsline {section}{\numberline {3.7}Data Mining}{27}{section.3.7}%
+\contentsline {subsection}{\numberline {3.7.1}Transition Matrix Construction}{27}{subsection.3.7.1}%
+\contentsline {subsection}{\numberline {3.7.2}Cluster Positional Statistics}{28}{subsection.3.7.2}%
+\contentsline {subsection}{\numberline {3.7.3}Role Vector Construction}{28}{subsection.3.7.3}%
+\contentsline {subsection}{\numberline {3.7.4}More: Extended Data Mining Techniques}{29}{subsection.3.7.4}%
+\contentsline {subsubsection}{Advanced Positional Analysis}{29}{subsection.3.7.4}%
+\contentsline {subsubsection}{Enhanced Transition Modeling}{29}{subsection.3.7.4}%
+\contentsline {section}{\numberline {3.8}Similarity Analysis}{29}{section.3.8}%
+\contentsline {subsection}{\numberline {3.8.1}Multi-Dimensional Role Vector Construction}{29}{subsection.3.8.1}%
+\contentsline {subsubsection}{Frequency Information}{30}{subsection.3.8.1}%
+\contentsline {subsubsection}{Transition Matrices}{30}{equation.3.8.18}%
+\contentsline {subsubsection}{Positional Statistics}{30}{equation.3.8.19}%
+\contentsline {subsection}{\numberline {3.8.2}Complete Role Vector Specification}{30}{subsection.3.8.2}%
+\contentsline {subsection}{\numberline {3.8.3}Best Setting Extraction}{30}{subsection.3.8.3}%
+\contentsline {subsubsection}{Median-Based Cluster Selection}{30}{subsection.3.8.3}%
+\contentsline {subsubsection}{DBCV Score Optimization}{32}{Item.33}%
+\contentsline {section}{\numberline {3.9}More: Extended Similarity Analysis Framework}{32}{section.3.9}%
+\contentsline {subsection}{\numberline {3.9.1}Domain-Level Aggregation}{32}{subsection.3.9.1}%
+\contentsline {subsection}{\numberline {3.9.2}Multi-Metric Distance Computation}{32}{subsection.3.9.2}%
+\contentsline {subsubsection}{Cosine Similarity}{32}{subsection.3.9.2}%
+\contentsline {subsubsection}{Earth Mover's Distance (EMD) Approximation}{33}{equation.3.9.26}%
+\contentsline {subsubsection}{Hausdorff Distance Approximation}{33}{equation.3.9.27}%
+\contentsline {subsection}{\numberline {3.9.3}Combined Similarity Score}{33}{subsection.3.9.3}%
+\contentsline {section}{\numberline {3.10}Presentation of Analysis}{33}{section.3.10}%
+\contentsline {subsection}{\numberline {3.10.1}Similarity Matrix Construction}{33}{subsection.3.10.1}%
+\contentsline {subsection}{\numberline {3.10.2}Interactive Visualization Framework}{35}{subsection.3.10.2}%
+\contentsline {subsection}{\numberline {3.10.3}Result Interpretation Guidelines}{35}{subsection.3.10.3}%
+\contentsline {subsection}{\numberline {3.10.4}More: Extended Presentation and Export Features}{36}{subsection.3.10.4}%
+\contentsline {subsubsection}{Advanced Export Options}{36}{subsection.3.10.4}%
+\contentsline {subsubsection}{Statistical Reporting}{36}{subsection.3.10.4}%
+\contentsline {section}{\numberline {3.11}Usage and Parameters}{36}{section.3.11}%
+\contentsline {subsection}{\numberline {3.11.1}System Configuration Parameters}{36}{subsection.3.11.1}%
+\contentsline {subsection}{\numberline {3.11.2}Performance Tuning Guidelines}{37}{subsection.3.11.2}%
+\contentsline {subsection}{\numberline {3.11.3}Usage Recommendations}{38}{subsection.3.11.3}%
+\contentsline {section}{\numberline {3.12}Best Level Selection Algorithm}{38}{section.3.12}%
+\contentsline {subsection}{\numberline {3.12.1}Median-Based Selection Strategy}{38}{subsection.3.12.1}%
+\contentsline {section}{\numberline {3.13}Performance Optimization and Scalability}{38}{section.3.13}%
+\contentsline {subsection}{\numberline {3.13.1}System Optimization Strategies}{38}{subsection.3.13.1}%
+\contentsline {subsubsection}{Efficient Data Processing}{39}{subsection.3.13.1}%
+\contentsline {subsubsection}{Algorithm Optimization}{39}{subsection.3.13.1}%
+\contentsline {subsection}{\numberline {3.13.2}Dual Processing Modes}{39}{subsection.3.13.2}%
+\contentsline {subsubsection}{Mode 0: Unified Processing}{39}{subsection.3.13.2}%
+\contentsline {subsubsection}{Mode 1: Domain-Based Processing}{39}{subsection.3.13.2}%
+\contentsline {subsection}{\numberline {3.13.3}Performance Monitoring}{39}{subsection.3.13.3}%
+\contentsline {section}{\numberline {3.14}Methodology Validation and Quality Assurance}{39}{section.3.14}%
+\contentsline {subsection}{\numberline {3.14.1}Algorithmic Robustness}{39}{subsection.3.14.1}%
+\contentsline {subsection}{\numberline {3.14.2}Scalability Considerations}{40}{subsection.3.14.2}%
+\contentsline {section}{\numberline {3.15}Methodology Summary}{40}{section.3.15}%
+\contentsline {chapter}{\numberline {4}System Implementation}{41}{chapter.4}%
+\contentsline {section}{\numberline {4.1}System Architecture Overview}{41}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Backend Implementation}{41}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}Core Processing Engine}{41}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}Multi-Level Analysis Implementation}{43}{subsection.4.2.2}%
+\contentsline {section}{\numberline {4.3}API Implementation}{43}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}FastAPI Server Architecture}{43}{subsection.4.3.1}%
+\contentsline {subsubsection}{URL Processing Endpoint}{43}{subsection.4.3.1}%
+\contentsline {subsubsection}{Batch Experiment Management}{44}{subsection.4.3.1}%
+\contentsline {subsubsection}{Results Management}{44}{subsection.4.3.1}%
+\contentsline {subsection}{\numberline {4.3.2}File Serving Infrastructure}{45}{subsection.4.3.2}%
+\contentsline {section}{\numberline {4.4}Frontend Implementation}{45}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}React Application Architecture}{45}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.4.2}User Interface Features}{45}{subsection.4.4.2}%
+\contentsline {subsection}{\numberline {4.4.3}Integration with Backend Services}{46}{subsection.4.4.3}%
+\contentsline {section}{\numberline {4.5}Performance Optimization Implementation}{47}{section.4.5}%
+\contentsline {subsection}{\numberline {4.5.1}Optimization Strategy}{47}{subsection.4.5.1}%
+\contentsline {subsection}{\numberline {4.5.2}Scalability Considerations}{47}{subsection.4.5.2}%
+\contentsline {section}{\numberline {4.6}Deployment and Configuration}{47}{section.4.6}%
+\contentsline {subsection}{\numberline {4.6.1}Development Environment Setup}{47}{subsection.4.6.1}%
+\contentsline {subsection}{\numberline {4.6.2}Process Management and Execution}{48}{subsection.4.6.2}%
+\contentsline {subsection}{\numberline {4.6.3}Production Deployment Considerations}{48}{subsection.4.6.3}%
+\contentsline {section}{\numberline {4.7}Implementation Summary}{48}{section.4.7}%
+\contentsline {chapter}{\numberline {5}Experiments and Evaluation}{51}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Experimental Design}{51}{section.5.1}%
+\contentsline {subsection}{\numberline {5.1.1}Research Questions}{51}{subsection.5.1.1}%
+\contentsline {subsection}{\numberline {5.1.2}Evaluation Metrics}{51}{subsection.5.1.2}%
+\contentsline {section}{\numberline {5.2}Dataset Description}{52}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Website Categories}{52}{subsection.5.2.1}%
+\contentsline {section}{\numberline {5.3}Experimental Results}{53}{section.5.3}%
+\contentsline {subsection}{\numberline {5.3.1}Clustering Quality Analysis}{53}{subsection.5.3.1}%
+\contentsline {subsection}{\numberline {5.3.2}Performance Scalability}{53}{subsection.5.3.2}%
+\contentsline {subsection}{\numberline {5.3.3}System Performance Analysis}{56}{subsection.5.3.3}%
+\contentsline {section}{\numberline {5.4}Comparative Analysis}{56}{section.5.4}%
+\contentsline {subsection}{\numberline {5.4.1}Algorithm Comparison}{56}{subsection.5.4.1}%
+\contentsline {subsection}{\numberline {5.4.2}Feature Importance Analysis}{56}{subsection.5.4.2}%
+\contentsline {section}{\numberline {5.5}Statistical Validation}{58}{section.5.5}%
+\contentsline {subsection}{\numberline {5.5.1}Significance Testing}{58}{subsection.5.5.1}%
+\contentsline {subsection}{\numberline {5.5.2}Cross-Validation Results}{58}{subsection.5.5.2}%
+\contentsline {section}{\numberline {5.6}Error Analysis and Limitations}{58}{section.5.6}%
+\contentsline {subsection}{\numberline {5.6.1}Failure Case Analysis}{58}{subsection.5.6.1}%
+\contentsline {subsection}{\numberline {5.6.2}Quality Degradation Factors}{59}{subsection.5.6.2}%
+\contentsline {section}{\numberline {5.7}Practical Implications}{59}{section.5.7}%
+\contentsline {subsection}{\numberline {5.7.1}Real-World Applicability}{59}{subsection.5.7.1}%
+\contentsline {subsection}{\numberline {5.7.2}Performance Recommendations}{59}{subsection.5.7.2}%
+\contentsline {section}{\numberline {5.8}Summary of Experimental Findings}{60}{section.5.8}%
+\contentsline {chapter}{\numberline {6}Results and Discussion}{61}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Clustering Performance Results}{61}{section.6.1}%
+\contentsline {subsection}{\numberline {6.1.1}Overall Clustering Quality}{61}{subsection.6.1.1}%
+\contentsline {subsection}{\numberline {6.1.2}Domain-Specific Performance}{61}{subsection.6.1.2}%
+\contentsline {section}{\numberline {6.2}Similarity Measurement Results}{63}{section.6.2}%
+\contentsline {subsection}{\numberline {6.2.1}Individual Metric Performance}{63}{subsection.6.2.1}%
+\contentsline {subsection}{\numberline {6.2.2}Combined Metric Effectiveness}{64}{subsection.6.2.2}%
+\contentsline {section}{\numberline {6.3}Computational Performance Results}{64}{section.6.3}%
+\contentsline {subsection}{\numberline {6.3.1}Processing Time Analysis}{64}{subsection.6.3.1}%
+\contentsline {subsection}{\numberline {6.3.2}Memory Usage Characteristics}{64}{subsection.6.3.2}%
+\contentsline {section}{\numberline {6.4}Feature Engineering Analysis}{64}{section.6.4}%
+\contentsline {subsection}{\numberline {6.4.1}Feature Component Contributions}{64}{subsection.6.4.1}%
+\contentsline {section}{\numberline {6.5}Comparative Analysis Results}{66}{section.6.5}%
+\contentsline {subsection}{\numberline {6.5.1}Performance Against Baselines}{66}{subsection.6.5.1}%
+\contentsline {section}{\numberline {6.6}Case Study Results}{66}{section.6.6}%
+\contentsline {subsection}{\numberline {6.6.1}E-commerce Template Detection}{66}{subsection.6.6.1}%
+\contentsline {subsection}{\numberline {6.6.2}News Website Pattern Analysis}{66}{subsection.6.6.2}%
+\contentsline {section}{\numberline {6.7}System Validation Results}{66}{section.6.7}%
+\contentsline {subsection}{\numberline {6.7.1}Expert Classification Correlation}{68}{subsection.6.7.1}%
+\contentsline {section}{\numberline {6.8}Discussion of Findings}{68}{section.6.8}%
+\contentsline {subsection}{\numberline {6.8.1}Methodological Contributions}{68}{subsection.6.8.1}%
+\contentsline {subsection}{\numberline {6.8.2}Practical Implications}{68}{subsection.6.8.2}%
+\contentsline {subsubsection}{Web Development and Design}{68}{subsection.6.8.2}%
+\contentsline {subsubsection}{Content Management}{69}{subsection.6.8.2}%
+\contentsline {subsubsection}{Research Applications}{69}{subsection.6.8.2}%
+\contentsline {subsection}{\numberline {6.8.3}Technical Insights}{69}{subsection.6.8.3}%
+\contentsline {subsubsection}{Feature Engineering Importance}{69}{subsection.6.8.3}%
+\contentsline {subsubsection}{Clustering Algorithm Selection}{69}{subsection.6.8.3}%
+\contentsline {subsubsection}{Similarity Metric Complementarity}{69}{subsection.6.8.3}%
+\contentsline {section}{\numberline {6.9}Limitations and Challenges}{69}{section.6.9}%
+\contentsline {subsection}{\numberline {6.9.1}Dynamic Content Handling}{70}{subsection.6.9.1}%
+\contentsline {subsection}{\numberline {6.9.2}Cross-Browser Variations}{70}{subsection.6.9.2}%
+\contentsline {subsection}{\numberline {6.9.3}Cultural and Linguistic Factors}{70}{subsection.6.9.3}%
+\contentsline {subsection}{\numberline {6.9.4}Scalability Considerations}{70}{subsection.6.9.4}%
+\contentsline {section}{\numberline {6.10}Future Work Implications}{70}{section.6.10}%
+\contentsline {subsection}{\numberline {6.10.1}Enhanced Dynamic Content Support}{70}{subsection.6.10.1}%
+\contentsline {subsection}{\numberline {6.10.2}Cross-Browser Compatibility}{70}{subsection.6.10.2}%
+\contentsline {subsection}{\numberline {6.10.3}Machine Learning Integration}{71}{subsection.6.10.3}%
+\contentsline {subsection}{\numberline {6.10.4}Performance Optimization Enhancements}{71}{subsection.6.10.4}%
+\contentsline {section}{\numberline {6.11}Results Summary}{71}{section.6.11}%
+\contentsline {chapter}{\numberline {7}Conclusion and Future Work}{73}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Summary of Contributions}{73}{section.7.1}%
+\contentsline {subsection}{\numberline {7.1.1}Primary Research Contributions}{73}{subsection.7.1.1}%
+\contentsline {section}{\numberline {7.2}Key Research Findings}{74}{section.7.2}%
+\contentsline {subsection}{\numberline {7.2.1}Optimal Analysis Configuration}{74}{subsection.7.2.1}%
+\contentsline {subsection}{\numberline {7.2.2}Performance and Accuracy Results}{74}{subsection.7.2.2}%
+\contentsline {subsection}{\numberline {7.2.3}Domain-Specific Performance Patterns}{75}{subsection.7.2.3}%
+\contentsline {subsection}{\numberline {7.2.4}Feature Importance Analysis}{75}{subsection.7.2.4}%
+\contentsline {section}{\numberline {7.3}Theoretical and Practical Implications}{75}{section.7.3}%
+\contentsline {subsection}{\numberline {7.3.1}Theoretical Implications}{75}{subsection.7.3.1}%
+\contentsline {subsection}{\numberline {7.3.2}Practical Applications}{76}{subsection.7.3.2}%
+\contentsline {section}{\numberline {7.4}Limitations and Challenges}{77}{section.7.4}%
+\contentsline {subsection}{\numberline {7.4.1}Technical Limitations}{77}{subsection.7.4.1}%
+\contentsline {subsection}{\numberline {7.4.2}Methodological Limitations}{77}{subsection.7.4.2}%
+\contentsline {section}{\numberline {7.5}Future Work Directions}{77}{section.7.5}%
+\contentsline {subsection}{\numberline {7.5.1}Enhanced Dynamic Content Support}{78}{subsection.7.5.1}%
+\contentsline {subsection}{\numberline {7.5.2}Cross-Browser and Cross-Platform Analysis}{78}{subsection.7.5.2}%
+\contentsline {subsection}{\numberline {7.5.3}Machine Learning Integration}{78}{subsection.7.5.3}%
+\contentsline {subsection}{\numberline {7.5.4}Semantic and Content Integration}{79}{subsection.7.5.4}%
+\contentsline {subsection}{\numberline {7.5.5}Scalability and Performance Enhancements}{79}{subsection.7.5.5}%
+\contentsline {section}{\numberline {7.6}Broader Impact and Significance}{80}{section.7.6}%
+\contentsline {subsection}{\numberline {7.6.1}Web Mining and Information Retrieval}{80}{subsection.7.6.1}%
+\contentsline {subsection}{\numberline {7.6.2}Human-Computer Interaction}{80}{subsection.7.6.2}%
+\contentsline {subsection}{\numberline {7.6.3}Digital Humanities and Social Sciences}{80}{subsection.7.6.3}%
+\contentsline {subsection}{\numberline {7.6.4}Accessibility and Inclusive Design}{80}{subsection.7.6.4}%
+\contentsline {section}{\numberline {7.7}Final Remarks}{80}{section.7.7}%
+\contentsline {chapter}{\numberline {A}User Guide}{83}{appendix.A}%
+\contentsline {section}{\numberline {A.1}Getting Started}{83}{section.A.1}%
+\contentsline {subsection}{\numberline {A.1.1}System Requirements}{83}{subsection.A.1.1}%
+\contentsline {section}{\numberline {A.2}Interface Overview}{83}{section.A.2}%
+\contentsline {section}{\numberline {A.3}Basic URL Analysis}{83}{section.A.3}%
+\contentsline {subsection}{\numberline {A.3.1}Adding URLs}{83}{subsection.A.3.1}%
+\contentsline {subsection}{\numberline {A.3.2}Selecting Analysis Levels}{84}{subsection.A.3.2}%
+\contentsline {subsection}{\numberline {A.3.3}Running Analysis}{84}{subsection.A.3.3}%
+\contentsline {section}{\numberline {A.4}Understanding Results}{85}{section.A.4}%
+\contentsline {subsection}{\numberline {A.4.1}Site Similarity Analysis}{85}{subsection.A.4.1}%
+\contentsline {subsection}{\numberline {A.4.2}Clustering Results}{85}{subsection.A.4.2}%
+\contentsline {subsection}{\numberline {A.4.3}Generated HTML Files}{85}{subsection.A.4.3}%
+\contentsline {section}{\numberline {A.5}Advanced Features}{86}{section.A.5}%
+\contentsline {subsection}{\numberline {A.5.1}Experiment Configuration}{86}{subsection.A.5.1}%
+\contentsline {subsection}{\numberline {A.5.2}Results Archive}{86}{subsection.A.5.2}%
+\contentsline {section}{\numberline {A.6}Performance and Optimization}{86}{section.A.6}%
+\contentsline {subsection}{\numberline {A.6.1}System Efficiency}{86}{subsection.A.6.1}%
+\contentsline {subsection}{\numberline {A.6.2}Performance Monitoring}{87}{subsection.A.6.2}%
+\contentsline {section}{\numberline {A.7}Troubleshooting}{87}{section.A.7}%
+\contentsline {subsection}{\numberline {A.7.1}Common Issues}{87}{subsection.A.7.1}%
+\contentsline {subsection}{\numberline {A.7.2}Error Messages}{88}{subsection.A.7.2}%
+\contentsline {section}{\numberline {A.8}Best Practices}{88}{section.A.8}%
+\contentsline {subsection}{\numberline {A.8.1}Optimal Usage Patterns}{88}{subsection.A.8.1}%
+\contentsline {subsection}{\numberline {A.8.2}Result Interpretation}{88}{subsection.A.8.2}%
+\contentsline {chapter}{\numberline {B}API Documentation}{89}{appendix.B}%
+\contentsline {section}{\numberline {B.1}API Overview}{89}{section.B.1}%
+\contentsline {subsection}{\numberline {B.1.1}Base Configuration}{89}{subsection.B.1.1}%
+\contentsline {section}{\numberline {B.2}Core Processing Endpoints}{89}{section.B.2}%
+\contentsline {subsection}{\numberline {B.2.1}Process URLs}{89}{subsection.B.2.1}%
+\contentsline {subsubsection}{Request Format}{89}{subsection.B.2.1}%
+\contentsline {subsubsection}{Response Format}{90}{subsection.B.2.1}%
+\contentsline {subsection}{\numberline {B.2.2}Process Clusters}{91}{subsection.B.2.2}%
+\contentsline {subsubsection}{Request Format}{91}{subsection.B.2.2}%
+\contentsline {subsubsection}{Response Format}{91}{subsection.B.2.2}%
+\contentsline {section}{\numberline {B.3}Experiment Management Endpoints}{91}{section.B.3}%
+\contentsline {subsection}{\numberline {B.3.1}Run Experiment Batch}{91}{subsection.B.3.1}%
+\contentsline {subsubsection}{Request Format}{91}{subsection.B.3.1}%
+\contentsline {subsubsection}{Response Format}{92}{subsection.B.3.1}%
+\contentsline {subsection}{\numberline {B.3.2}List Experiment Results}{92}{subsection.B.3.2}%
+\contentsline {subsubsection}{Response Format}{92}{subsection.B.3.2}%
+\contentsline {subsection}{\numberline {B.3.3}Get Experiment Details}{93}{subsection.B.3.3}%
+\contentsline {subsubsection}{Response Format}{93}{subsection.B.3.3}%
+\contentsline {section}{\numberline {B.4}File Access Endpoints}{93}{section.B.4}%
+\contentsline {subsection}{\numberline {B.4.1}HTML File Serving}{93}{subsection.B.4.1}%
+\contentsline {subsection}{\numberline {B.4.2}Experiment File Downloads}{93}{subsection.B.4.2}%
+\contentsline {subsection}{\numberline {B.4.3}Generated Images}{94}{subsection.B.4.3}%
+\contentsline {section}{\numberline {B.5}Error Handling}{94}{section.B.5}%
+\contentsline {subsection}{\numberline {B.5.1}Standard Error Response}{94}{subsection.B.5.1}%
+\contentsline {subsection}{\numberline {B.5.2}HTTP Status Codes}{94}{subsection.B.5.2}%
+\contentsline {subsection}{\numberline {B.5.3}Common Error Messages}{94}{subsection.B.5.3}%
+\contentsline {section}{\numberline {B.6}Rate Limiting and Performance}{94}{section.B.6}%
+\contentsline {subsection}{\numberline {B.6.1}Request Limits}{94}{subsection.B.6.1}%
+\contentsline {subsection}{\numberline {B.6.2}Performance Considerations}{95}{subsection.B.6.2}%
+\contentsline {section}{\numberline {B.7}Authentication and Security}{95}{section.B.7}%
+\contentsline {subsection}{\numberline {B.7.1}Current Implementation}{95}{subsection.B.7.1}%
+\contentsline {subsection}{\numberline {B.7.2}Production Considerations}{95}{subsection.B.7.2}%
+\contentsline {section}{\numberline {B.8}Main API Endpoints}{95}{section.B.8}%
+\contentsline {subsection}{\numberline {B.8.1}URL Processing}{96}{subsection.B.8.1}%
+\contentsline {subsection}{\numberline {B.8.2}Experiment Batch Processing}{96}{subsection.B.8.2}%
+\contentsline {subsection}{\numberline {B.8.3}Experiment Results Listing}{97}{subsection.B.8.3}%
+\contentsline {subsection}{\numberline {B.8.4}Experiment Details}{97}{subsection.B.8.4}%
+\contentsline {section}{\numberline {B.9}File Access}{97}{section.B.9}%
+\contentsline {section}{\numberline {B.10}Error Handling}{97}{section.B.10}%
+\contentsline {chapter}{\numberline {C}Technology Stack Details}{99}{appendix.C}%
+\contentsline {section}{\numberline {C.1}Technology Stack Overview}{99}{section.C.1}%
+\contentsline {section}{\numberline {C.2}Backend Technologies}{99}{section.C.2}%
+\contentsline {subsection}{\numberline {C.2.1}Core Programming Language}{99}{subsection.C.2.1}%
+\contentsline {subsection}{\numberline {C.2.2}Web Automation Framework}{99}{subsection.C.2.2}%
+\contentsline {subsection}{\numberline {C.2.3}API Framework}{100}{subsection.C.2.3}%
+\contentsline {subsection}{\numberline {C.2.4}Data Processing Libraries}{101}{subsection.C.2.4}%
+\contentsline {subsection}{\numberline {C.2.5}Machine Learning Libraries}{101}{subsection.C.2.5}%
+\contentsline {subsection}{\numberline {C.2.6}Image and Visualization Libraries}{102}{subsection.C.2.6}%
+\contentsline {subsection}{\numberline {C.2.7}Color Processing}{102}{subsection.C.2.7}%
+\contentsline {section}{\numberline {C.3}Frontend Technologies}{103}{section.C.3}%
+\contentsline {subsection}{\numberline {C.3.1}Core Framework}{103}{subsection.C.3.1}%
+\contentsline {subsection}{\numberline {C.3.2}UI Component Library}{103}{subsection.C.3.2}%
+\contentsline {subsection}{\numberline {C.3.3}Data Visualization}{104}{subsection.C.3.3}%
+\contentsline {subsection}{\numberline {C.3.4}PDF Generation}{104}{subsection.C.3.4}%
+\contentsline {section}{\numberline {C.4}Development and Deployment}{104}{section.C.4}%
+\contentsline {subsection}{\numberline {C.4.1}Package Management}{104}{subsection.C.4.1}%
+\contentsline {subsection}{\numberline {C.4.2}Development Tools}{104}{subsection.C.4.2}%
+\contentsline {section}{\numberline {C.5}Data Management}{105}{section.C.5}%
+\contentsline {subsection}{\numberline {C.5.1}File System Storage}{105}{subsection.C.5.1}%
+\contentsline {subsection}{\numberline {C.5.2}Data Processing Optimization}{105}{subsection.C.5.2}%
+\contentsline {section}{\numberline {C.6}Performance Optimization Technologies}{106}{section.C.6}%
+\contentsline {subsection}{\numberline {C.6.1}Parallel Processing}{106}{subsection.C.6.1}%
+\contentsline {subsection}{\numberline {C.6.2}Algorithm Optimization}{106}{subsection.C.6.2}%
+\contentsline {section}{\numberline {C.7}Browser Compatibility}{106}{section.C.7}%
+\contentsline {subsection}{\numberline {C.7.1}Supported Browsers}{106}{subsection.C.7.1}%
+\contentsline {subsection}{\numberline {C.7.2}Progressive Enhancement}{107}{subsection.C.7.2}%
+\contentsline {section}{\numberline {C.8}Security Considerations}{107}{section.C.8}%
+\contentsline {subsection}{\numberline {C.8.1}Input Validation}{107}{subsection.C.8.1}%
+\contentsline {subsection}{\numberline {C.8.2}CORS Configuration}{107}{subsection.C.8.2}%
+\contentsline {section}{\numberline {C.9}System Requirements}{107}{section.C.9}%
+\contentsline {subsection}{\numberline {C.9.1}Minimum Requirements}{107}{subsection.C.9.1}%
+\contentsline {subsection}{\numberline {C.9.2}Recommended Configuration}{108}{subsection.C.9.2}%
+\contentsline {section}{\numberline {C.10}Version Management}{108}{section.C.10}%
+\contentsline {subsection}{\numberline {C.10.1}Dependency Versioning}{108}{subsection.C.10.1}%
+\contentsline {subsection}{\numberline {C.10.2}Technology Lifecycle}{108}{subsection.C.10.2}%
+\contentsline {chapter}{\numberline {D}Experimental Data}{109}{appendix.D}%
+\contentsline {section}{\numberline {D.1}Experimental Design Overview}{109}{section.D.1}%
+\contentsline {section}{\numberline {D.2}Dataset Characteristics}{109}{section.D.2}%
+\contentsline {subsection}{\numberline {D.2.1}Test Website Categories}{109}{subsection.D.2.1}%
+\contentsline {subsection}{\numberline {D.2.2}URL Distribution}{109}{subsection.D.2.2}%
+\contentsline {section}{\numberline {D.3}Performance Metrics}{111}{section.D.3}%
+\contentsline {subsection}{\numberline {D.3.1}Processing Time Analysis}{111}{subsection.D.3.1}%
+\contentsline {subsection}{\numberline {D.3.2}System Performance Metrics}{111}{subsection.D.3.2}%
+\contentsline {section}{\numberline {D.4}Clustering Quality Results}{111}{section.D.4}%
+\contentsline {subsection}{\numberline {D.4.1}DBCV Scores by Level}{111}{subsection.D.4.1}%
+\contentsline {subsection}{\numberline {D.4.2}Optimal Level Identification}{111}{subsection.D.4.2}%
+\contentsline {section}{\numberline {D.5}Similarity Analysis Results}{113}{section.D.5}%
+\contentsline {subsection}{\numberline {D.5.1}Cosine Similarity Distribution}{113}{subsection.D.5.1}%
+\contentsline {subsection}{\numberline {D.5.2}Multi-Metric Comparison}{113}{subsection.D.5.2}%
+\contentsline {section}{\numberline {D.6}Scalability Analysis}{113}{section.D.6}%
+\contentsline {subsection}{\numberline {D.6.1}URL Count vs Processing Time}{113}{subsection.D.6.1}%
+\contentsline {subsection}{\numberline {D.6.2}Memory Usage Patterns}{113}{subsection.D.6.2}%
+\contentsline {section}{\numberline {D.7}Experiment Validation Results}{115}{section.D.7}%
+\contentsline {subsection}{\numberline {D.7.1}Ground Truth Validation}{115}{subsection.D.7.1}%
+\contentsline {subsection}{\numberline {D.7.2}Cross-Validation Results}{115}{subsection.D.7.2}%
+\contentsline {section}{\numberline {D.8}Comparative Analysis}{115}{section.D.8}%
+\contentsline {subsection}{\numberline {D.8.1}Baseline Comparisons}{115}{subsection.D.8.1}%
+\contentsline {subsection}{\numberline {D.8.2}Feature Importance Analysis}{116}{subsection.D.8.2}%
+\contentsline {section}{\numberline {D.9}Error Analysis}{116}{section.D.9}%
+\contentsline {subsection}{\numberline {D.9.1}Failure Case Analysis}{116}{subsection.D.9.1}%
+\contentsline {subsection}{\numberline {D.9.2}Quality Degradation Factors}{116}{subsection.D.9.2}%
+\contentsline {section}{\numberline {D.10}Performance Optimization Results}{117}{section.D.10}%
+\contentsline {subsection}{\numberline {D.10.1}Optimization Techniques Impact}{117}{subsection.D.10.1}%
+\contentsline {section}{\numberline {D.11}Statistical Significance Tests}{117}{section.D.11}%
+\contentsline {subsection}{\numberline {D.11.1}Hypothesis Testing Results}{117}{subsection.D.11.1}%
+\contentsline {section}{\numberline {D.12}Reproducibility Information}{118}{section.D.12}%
+\contentsline {subsection}{\numberline {D.12.1}Experimental Configuration}{118}{subsection.D.12.1}%
+\contentsline {subsection}{\numberline {D.12.2}Data Availability}{118}{subsection.D.12.2}%
