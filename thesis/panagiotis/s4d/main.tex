@@ -9,6 +9,7 @@
 % === Core packages ===
 \usepackage{graphicx}
 \usepackage{amsmath, amssymb}
+\usepackage{algorithm2e}
 \usepackage{geometry}
 \usepackage{hyperref}
 \usepackage{fancyhdr}
@@ -17,6 +18,8 @@
 \usepackage{natbib}
 \usepackage[most]{tcolorbox}
 \usepackage{xcolor}
+\usepackage{listings}
+\usepackage{framed}
 
 % === Metadata ===
 \hypersetup{
@@ -34,6 +37,37 @@
 \fancyhf{}
 \fancyfoot[C]{\thepage}
 \fancyhead[R]{\leftmark}
+
+% === Code Styling ===
+\lstset{
+    backgroundcolor=\color{gray!5},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    commentstyle=\color{green!60!black},
+    deletekeywords={...},
+    escapeinside={\%*}{*)},
+    extendedchars=true,
+    frame=single,
+    framerule=0.4pt,
+    framesep=8pt,
+    keepspaces=true,
+    keywordstyle=\color{blue},
+    language=Python,
+    morekeywords={*,...},
+    numbers=left,
+    numbersep=12pt,
+    numberstyle=\tiny\color{gray!60},
+    rulecolor=\color{gray!40},
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    stepnumber=1,
+    stringstyle=\color{red},
+    tabsize=2,
+    title=\lstname
+}
 
 % === Title ===
 \title{S\textsuperscript{4}D: Style and Structure Similarity for Site Domains}

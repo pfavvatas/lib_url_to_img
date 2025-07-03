@@ -101,20 +101,20 @@
 \newlabel{sec:system-overview}{{3.1}{15}{System Overview}{section.3.1}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {3.1}{\ignorespaces S\textsuperscript  {4}D System Architecture Overview showing the seven main components and data flow from web page acquisition through similarity computation to final clustering results.}}{16}{figure.3.1}\protected@file@percent }
 \newlabel{fig:system_architecture}{{3.1}{16}{S\textsuperscript {4}D System Architecture Overview showing the seven main components and data flow from web page acquisition through similarity computation to final clustering results}{figure.3.1}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.2}Technology Stack and Tools}{16}{section.3.2}\protected@file@percent }
-\newlabel{sec:technology-stack}{{3.2}{16}{Technology Stack and Tools}{section.3.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.2}Technology Stack and Applied Tools}{16}{section.3.2}\protected@file@percent }
+\newlabel{sec:technology-stack}{{3.2}{16}{Technology Stack and Applied Tools}{section.3.2}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.2.1}Backend Technologies}{16}{subsection.3.2.1}\protected@file@percent }
 \newlabel{subsec:backend-technologies}{{3.2.1}{16}{Backend Technologies}{subsection.3.2.1}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.2.2}Frontend Technologies}{17}{subsection.3.2.2}\protected@file@percent }
 \newlabel{subsec:frontend-technologies}{{3.2.2}{17}{Frontend Technologies}{subsection.3.2.2}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.2.3}System Integration}{17}{subsection.3.2.3}\protected@file@percent }
 \newlabel{subsec:system-integration}{{3.2.3}{17}{System Integration}{subsection.3.2.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2.4}More: Extended Technology Stack Details}{17}{subsection.3.2.4}\protected@file@percent }
-\newlabel{subsec:more-technology-stack}{{3.2.4}{17}{More: Extended Technology Stack Details}{subsection.3.2.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2.4}Extended Technology Stack Details}{17}{subsection.3.2.4}\protected@file@percent }
+\newlabel{subsec:more-technology-stack}{{3.2.4}{17}{Extended Technology Stack Details}{subsection.3.2.4}{}}
 \@writefile{toc}{\contentsline {subsubsection}{Additional Development Dependencies}{17}{subsection.3.2.4}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{Data Storage and Management}{18}{subsection.3.2.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {3.3}Web Parsing with Multi-Level Analysis and Clustering Integration}{18}{section.3.3}\protected@file@percent }
-\newlabel{sec:web-parsing}{{3.3}{18}{Web Parsing with Multi-Level Analysis and Clustering Integration}{section.3.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.3}Web Parsing (Levels + Clustering)}{18}{section.3.3}\protected@file@percent }
+\newlabel{sec:web-parsing}{{3.3}{18}{Web Parsing (Levels + Clustering)}{section.3.3}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.3.1}Automated Web Rendering}{18}{subsection.3.3.1}\protected@file@percent }
 \newlabel{subsec:web-rendering}{{3.3.1}{18}{Automated Web Rendering}{subsection.3.3.1}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.3.2}Hierarchical DOM Tree Construction}{18}{subsection.3.3.2}\protected@file@percent }
@@ -127,131 +127,98 @@
 \newlabel{subsec:multi-level-analysis}{{3.3.3}{19}{Multi-Level DOM Analysis}{subsection.3.3.3}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {3.2}{\ignorespaces Bottom-up DOM Tree Traversal showing how levels 1-10 are constructed from leaf nodes upward, with Level 1 capturing the deepest elements and higher levels incorporating broader structural context.}}{20}{figure.3.2}\protected@file@percent }
 \newlabel{fig:dom_tree_traversal}{{3.2}{20}{Bottom-up DOM Tree Traversal showing how levels 1-10 are constructed from leaf nodes upward, with Level 1 capturing the deepest elements and higher levels incorporating broader structural context}{figure.3.2}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.3}{\ignorespaces Multi-Level Analysis Flow diagram illustrating how the system processes DOM elements at different hierarchical levels, from content-specific leaf elements to broader structural containers.}}{21}{figure.3.3}\protected@file@percent }
-\newlabel{fig:multi_level_analysis}{{3.3}{21}{Multi-Level Analysis Flow diagram illustrating how the system processes DOM elements at different hierarchical levels, from content-specific leaf elements to broader structural containers}{figure.3.3}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.4}CSS Property Analysis and Normalization}{22}{section.3.4}\protected@file@percent }
-\newlabel{sec:css-analysis}{{3.4}{22}{CSS Property Analysis and Normalization}{section.3.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.1}Attribute Filtering and Selection}{22}{subsection.3.4.1}\protected@file@percent }
-\newlabel{subsec:attribute-filtering}{{3.4.1}{22}{Attribute Filtering and Selection}{subsection.3.4.1}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Element Frequency Analysis}{22}{subsection.3.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Useful Attribute Identification}{22}{equation.3.4.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.2}CSS Value Normalization}{22}{subsection.3.4.2}\protected@file@percent }
-\newlabel{subsec:css-normalization}{{3.4.2}{22}{CSS Value Normalization}{subsection.3.4.2}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Pixel Value Normalization}{22}{subsection.3.4.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Color Space Processing}{23}{equation.3.4.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Dual-Coordinate Property Handling}{23}{equation.3.4.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {3.5}Feature Engineering and Vector Representation}{23}{section.3.5}\protected@file@percent }
-\newlabel{sec:feature-engineering}{{3.5}{23}{Feature Engineering and Vector Representation}{section.3.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.5.1}Page Vector Construction}{23}{subsection.3.5.1}\protected@file@percent }
-\newlabel{subsec:page-vectors}{{3.5.1}{23}{Page Vector Construction}{subsection.3.5.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.5.2}String Value Space Mapping}{23}{subsection.3.5.2}\protected@file@percent }
-\newlabel{subsec:string-mapping}{{3.5.2}{23}{String Value Space Mapping}{subsection.3.5.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.5.3}Data Standardization and Normalization}{24}{subsection.3.5.3}\protected@file@percent }
-\newlabel{subsec:data-standardization}{{3.5.3}{24}{Data Standardization and Normalization}{subsection.3.5.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.5.4}More: Extended Web Parsing Capabilities}{24}{subsection.3.5.4}\protected@file@percent }
-\newlabel{subsec:more-web-parsing}{{3.5.4}{24}{More: Extended Web Parsing Capabilities}{subsection.3.5.4}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Advanced Content Extraction}{24}{subsection.3.5.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Cross-Browser Compatibility}{24}{subsection.3.5.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {3.6}Data Modeling with Multi-Level Integration and Clustering Support}{24}{section.3.6}\protected@file@percent }
-\newlabel{sec:data-modeling}{{3.6}{24}{Data Modeling with Multi-Level Integration and Clustering Support}{section.3.6}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.6.1}Pre-Clustering Data Modeling}{25}{subsection.3.6.1}\protected@file@percent }
-\newlabel{subsec:pre-clustering-modeling}{{3.6.1}{25}{Pre-Clustering Data Modeling}{subsection.3.6.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.6.2}Vector Space Construction}{25}{subsection.3.6.2}\protected@file@percent }
-\newlabel{subsec:vector-space-construction}{{3.6.2}{25}{Vector Space Construction}{subsection.3.6.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.6.3}Vectorization and HDBSCAN Clustering Integration}{25}{subsection.3.6.3}\protected@file@percent }
-\newlabel{subsec:clustering-integration}{{3.6.3}{25}{Vectorization and HDBSCAN Clustering Integration}{subsection.3.6.3}{}}
-\@writefile{toc}{\contentsline {subsubsection}{HDBSCAN Parameter Optimization}{25}{subsection.3.6.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Intelligent Outlier Reassignment}{26}{subsection.3.6.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.6.4}Post-Clustering Data Modeling}{26}{subsection.3.6.4}\protected@file@percent }
-\newlabel{subsec:post-clustering-modeling}{{3.6.4}{26}{Post-Clustering Data Modeling}{subsection.3.6.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.6.5}More: Visualization of Clustered Elements}{26}{subsection.3.6.5}\protected@file@percent }
-\newlabel{subsec:more-visualization}{{3.6.5}{26}{More: Visualization of Clustered Elements}{subsection.3.6.5}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Interactive HTML Generation}{27}{subsection.3.6.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Step 4b: Data Modeling for Clustered Pages}{27}{subsection.3.6.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {3.7}Data Mining}{27}{section.3.7}\protected@file@percent }
-\newlabel{sec:data-mining}{{3.7}{27}{Data Mining}{section.3.7}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.7.1}Transition Matrix Construction}{27}{subsection.3.7.1}\protected@file@percent }
-\newlabel{subsec:transition-matrix}{{3.7.1}{27}{Transition Matrix Construction}{subsection.3.7.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.7.2}Cluster Positional Statistics}{28}{subsection.3.7.2}\protected@file@percent }
-\newlabel{subsec:positional-statistics}{{3.7.2}{28}{Cluster Positional Statistics}{subsection.3.7.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.7.3}Role Vector Construction}{28}{subsection.3.7.3}\protected@file@percent }
-\newlabel{subsec:role-vector-construction}{{3.7.3}{28}{Role Vector Construction}{subsection.3.7.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.7.4}More: Extended Data Mining Techniques}{29}{subsection.3.7.4}\protected@file@percent }
-\newlabel{subsec:more-data-mining}{{3.7.4}{29}{More: Extended Data Mining Techniques}{subsection.3.7.4}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Advanced Positional Analysis}{29}{subsection.3.7.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Enhanced Transition Modeling}{29}{subsection.3.7.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {3.8}Similarity Analysis}{29}{section.3.8}\protected@file@percent }
-\newlabel{sec:similarity-analysis}{{3.8}{29}{Similarity Analysis}{section.3.8}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.8.1}Multi-Dimensional Role Vector Construction}{29}{subsection.3.8.1}\protected@file@percent }
-\newlabel{subsec:role-vectors}{{3.8.1}{29}{Multi-Dimensional Role Vector Construction}{subsection.3.8.1}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Frequency Information}{30}{subsection.3.8.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Transition Matrices}{30}{equation.3.8.18}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Positional Statistics}{30}{equation.3.8.19}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.8.2}Complete Role Vector Specification}{30}{subsection.3.8.2}\protected@file@percent }
-\newlabel{subsec:complete-role-vector}{{3.8.2}{30}{Complete Role Vector Specification}{subsection.3.8.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.8.3}Best Setting Extraction}{30}{subsection.3.8.3}\protected@file@percent }
-\newlabel{subsec:best-setting-extraction}{{3.8.3}{30}{Best Setting Extraction}{subsection.3.8.3}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Median-Based Cluster Selection}{30}{subsection.3.8.3}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {3.4}{\ignorespaces Role Vector Construction Process illustrating how frequency information, transition matrices, and positional statistics are combined to create comprehensive cluster representations for similarity computation.}}{31}{figure.3.4}\protected@file@percent }
-\newlabel{fig:role_vector_construction}{{3.4}{31}{Role Vector Construction Process illustrating how frequency information, transition matrices, and positional statistics are combined to create comprehensive cluster representations for similarity computation}{figure.3.4}{}}
-\@writefile{toc}{\contentsline {subsubsection}{DBCV Score Optimization}{32}{Item.33}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {3.9}More: Extended Similarity Analysis Framework}{32}{section.3.9}\protected@file@percent }
-\newlabel{sec:more-similarity}{{3.9}{32}{More: Extended Similarity Analysis Framework}{section.3.9}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.9.1}Domain-Level Aggregation}{32}{subsection.3.9.1}\protected@file@percent }
-\newlabel{subsec:domain-aggregation}{{3.9.1}{32}{Domain-Level Aggregation}{subsection.3.9.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.9.2}Multi-Metric Distance Computation}{32}{subsection.3.9.2}\protected@file@percent }
-\newlabel{subsec:multi-metric-distance}{{3.9.2}{32}{Multi-Metric Distance Computation}{subsection.3.9.2}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Cosine Similarity}{32}{subsection.3.9.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Earth Mover's Distance (EMD) Approximation}{33}{equation.3.9.26}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Hausdorff Distance Approximation}{33}{equation.3.9.27}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.9.3}Combined Similarity Score}{33}{subsection.3.9.3}\protected@file@percent }
-\newlabel{subsec:combined-similarity}{{3.9.3}{33}{Combined Similarity Score}{subsection.3.9.3}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.10}Presentation of Analysis}{33}{section.3.10}\protected@file@percent }
-\newlabel{sec:presentation}{{3.10}{33}{Presentation of Analysis}{section.3.10}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.10.1}Similarity Matrix Construction}{33}{subsection.3.10.1}\protected@file@percent }
-\newlabel{subsec:similarity-matrix-construction}{{3.10.1}{33}{Similarity Matrix Construction}{subsection.3.10.1}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.5}{\ignorespaces Multi-Metric Similarity Framework showing how Cosine, EMD, and Hausdorff distance metrics are computed independently and then combined using geometric mean to produce the final similarity score.}}{34}{figure.3.5}\protected@file@percent }
-\newlabel{fig:multi_metric_similarity}{{3.5}{34}{Multi-Metric Similarity Framework showing how Cosine, EMD, and Hausdorff distance metrics are computed independently and then combined using geometric mean to produce the final similarity score}{figure.3.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.10.2}Interactive Visualization Framework}{35}{subsection.3.10.2}\protected@file@percent }
-\newlabel{subsec:interactive-visualization}{{3.10.2}{35}{Interactive Visualization Framework}{subsection.3.10.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.10.3}Result Interpretation Guidelines}{35}{subsection.3.10.3}\protected@file@percent }
-\newlabel{subsec:result-interpretation}{{3.10.3}{35}{Result Interpretation Guidelines}{subsection.3.10.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.10.4}More: Extended Presentation and Export Features}{36}{subsection.3.10.4}\protected@file@percent }
-\newlabel{subsec:more-presentation}{{3.10.4}{36}{More: Extended Presentation and Export Features}{subsection.3.10.4}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Advanced Export Options}{36}{subsection.3.10.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Statistical Reporting}{36}{subsection.3.10.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {3.11}Usage and Parameters}{36}{section.3.11}\protected@file@percent }
-\newlabel{sec:usage-parameters}{{3.11}{36}{Usage and Parameters}{section.3.11}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.11.1}System Configuration Parameters}{36}{subsection.3.11.1}\protected@file@percent }
-\newlabel{subsec:system-configuration}{{3.11.1}{36}{System Configuration Parameters}{subsection.3.11.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.11.2}Performance Tuning Guidelines}{37}{subsection.3.11.2}\protected@file@percent }
-\newlabel{subsec:performance-tuning}{{3.11.2}{37}{Performance Tuning Guidelines}{subsection.3.11.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.11.3}Usage Recommendations}{38}{subsection.3.11.3}\protected@file@percent }
-\newlabel{subsec:usage-recommendations}{{3.11.3}{38}{Usage Recommendations}{subsection.3.11.3}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.12}Best Level Selection Algorithm}{38}{section.3.12}\protected@file@percent }
-\newlabel{sec:best-level-selection}{{3.12}{38}{Best Level Selection Algorithm}{section.3.12}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.12.1}Median-Based Selection Strategy}{38}{subsection.3.12.1}\protected@file@percent }
-\newlabel{subsec:median-selection}{{3.12.1}{38}{Median-Based Selection Strategy}{subsection.3.12.1}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.13}Performance Optimization and Scalability}{38}{section.3.13}\protected@file@percent }
-\newlabel{sec:performance-optimization}{{3.13}{38}{Performance Optimization and Scalability}{section.3.13}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.13.1}System Optimization Strategies}{38}{subsection.3.13.1}\protected@file@percent }
-\newlabel{subsec:optimization-strategies}{{3.13.1}{38}{System Optimization Strategies}{subsection.3.13.1}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Efficient Data Processing}{39}{subsection.3.13.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Algorithm Optimization}{39}{subsection.3.13.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.13.2}Dual Processing Modes}{39}{subsection.3.13.2}\protected@file@percent }
-\newlabel{subsec:processing-modes}{{3.13.2}{39}{Dual Processing Modes}{subsection.3.13.2}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Mode 0: Unified Processing}{39}{subsection.3.13.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Mode 1: Domain-Based Processing}{39}{subsection.3.13.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.13.3}Performance Monitoring}{39}{subsection.3.13.3}\protected@file@percent }
-\newlabel{subsec:performance-monitoring}{{3.13.3}{39}{Performance Monitoring}{subsection.3.13.3}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.14}Methodology Validation and Quality Assurance}{39}{section.3.14}\protected@file@percent }
-\newlabel{sec:methodology-validation}{{3.14}{39}{Methodology Validation and Quality Assurance}{section.3.14}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.14.1}Algorithmic Robustness}{39}{subsection.3.14.1}\protected@file@percent }
-\newlabel{subsec:algorithmic-robustness}{{3.14.1}{39}{Algorithmic Robustness}{subsection.3.14.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.14.2}Scalability Considerations}{40}{subsection.3.14.2}\protected@file@percent }
-\newlabel{subsec:scalability}{{3.14.2}{40}{Scalability Considerations}{subsection.3.14.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.15}Methodology Summary}{40}{section.3.15}\protected@file@percent }
-\newlabel{sec:methodology-summary}{{3.15}{40}{Methodology Summary}{section.3.15}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.4}CSS Property Analysis and Normalization}{20}{subsection.3.3.4}\protected@file@percent }
+\newlabel{subsec:css-analysis}{{3.3.4}{20}{CSS Property Analysis and Normalization}{subsection.3.3.4}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Attribute Filtering and Selection}{20}{subsection.3.3.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{CSS Value Normalization}{21}{equation.3.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.5}Extended Web Parsing Capabilities}{23}{subsection.3.3.5}\protected@file@percent }
+\newlabel{subsec:more-web-parsing}{{3.3.5}{23}{Extended Web Parsing Capabilities}{subsection.3.3.5}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Advanced Content Extraction}{23}{subsection.3.3.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Cross-Browser Compatibility}{23}{subsection.3.3.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3.4}Data Modeling (Levels + Clustering)}{23}{section.3.4}\protected@file@percent }
+\newlabel{sec:data-modeling}{{3.4}{23}{Data Modeling (Levels + Clustering)}{section.3.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.1}Feature Engineering and Vector Representation}{23}{subsection.3.4.1}\protected@file@percent }
+\newlabel{subsec:feature-engineering}{{3.4.1}{23}{Feature Engineering and Vector Representation}{subsection.3.4.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Page Vector Construction}{23}{subsection.3.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{String Value Space Mapping}{24}{Item.19}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Data Standardization and Normalization}{24}{equation.3.4.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.2}Pre-Clustering Data Modeling}{24}{subsection.3.4.2}\protected@file@percent }
+\newlabel{subsec:pre-clustering-modeling}{{3.4.2}{24}{Pre-Clustering Data Modeling}{subsection.3.4.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.3}Vector Space Construction}{25}{subsection.3.4.3}\protected@file@percent }
+\newlabel{subsec:vector-space-construction}{{3.4.3}{25}{Vector Space Construction}{subsection.3.4.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.4}Vectorization and HDBSCAN Clustering Integration}{25}{subsection.3.4.4}\protected@file@percent }
+\newlabel{subsec:clustering-integration}{{3.4.4}{25}{Vectorization and HDBSCAN Clustering Integration}{subsection.3.4.4}{}}
+\@writefile{toc}{\contentsline {subsubsection}{HDBSCAN Parameter Optimization}{25}{subsection.3.4.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Intelligent Outlier Reassignment}{25}{subsection.3.4.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.5}Post-Clustering Data Modeling}{26}{subsection.3.4.5}\protected@file@percent }
+\newlabel{subsec:post-clustering-modeling}{{3.4.5}{26}{Post-Clustering Data Modeling}{subsection.3.4.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4.6}Visualization of Clustered Elements}{26}{subsection.3.4.6}\protected@file@percent }
+\newlabel{subsec:more-visualization}{{3.4.6}{26}{Visualization of Clustered Elements}{subsection.3.4.6}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Interactive HTML Generation}{26}{subsection.3.4.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Step 4b: Data Modeling for Clustered Pages}{26}{subsection.3.4.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3.5}Data Mining}{27}{section.3.5}\protected@file@percent }
+\newlabel{sec:data-mining}{{3.5}{27}{Data Mining}{section.3.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5.1}Transition Matrix Construction}{27}{subsection.3.5.1}\protected@file@percent }
+\newlabel{subsec:transition-matrix}{{3.5.1}{27}{Transition Matrix Construction}{subsection.3.5.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5.2}Cluster Positional Statistics}{27}{subsection.3.5.2}\protected@file@percent }
+\newlabel{subsec:positional-statistics}{{3.5.2}{27}{Cluster Positional Statistics}{subsection.3.5.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5.3}Role Vector Construction}{28}{subsection.3.5.3}\protected@file@percent }
+\newlabel{subsec:role-vector-construction}{{3.5.3}{28}{Role Vector Construction}{subsection.3.5.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5.4}Extended Data Mining Techniques}{28}{subsection.3.5.4}\protected@file@percent }
+\newlabel{subsec:more-data-mining}{{3.5.4}{28}{Extended Data Mining Techniques}{subsection.3.5.4}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Advanced Positional Analysis}{28}{subsection.3.5.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Enhanced Transition Modeling}{29}{subsection.3.5.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3.6}Similarity Analysis}{29}{section.3.6}\protected@file@percent }
+\newlabel{sec:similarity-analysis}{{3.6}{29}{Similarity Analysis}{section.3.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6.1}Multi-Dimensional Role Vector Construction}{29}{subsection.3.6.1}\protected@file@percent }
+\newlabel{subsec:role-vectors}{{3.6.1}{29}{Multi-Dimensional Role Vector Construction}{subsection.3.6.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Frequency Information}{29}{subsection.3.6.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Transition Matrices}{29}{equation.3.6.18}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Positional Statistics}{29}{equation.3.6.19}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6.2}Complete Role Vector Specification}{30}{subsection.3.6.2}\protected@file@percent }
+\newlabel{subsec:complete-role-vector}{{3.6.2}{30}{Complete Role Vector Specification}{subsection.3.6.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6.3}Best Setting Extraction}{30}{subsection.3.6.3}\protected@file@percent }
+\newlabel{subsec:best-setting-extraction}{{3.6.3}{30}{Best Setting Extraction}{subsection.3.6.3}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Median-Based Cluster Selection}{30}{subsection.3.6.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{DBCV Score Optimization}{30}{Item.33}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6.4}Extended Similarity Analysis Framework}{31}{subsection.3.6.4}\protected@file@percent }
+\newlabel{subsec:more-similarity}{{3.6.4}{31}{Extended Similarity Analysis Framework}{subsection.3.6.4}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Domain-Level Aggregation}{31}{subsection.3.6.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Multi-Metric Distance Computation}{31}{Item.36}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Combined Similarity Score}{32}{lstnumber.-5.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6.5}Best Level Selection Algorithm}{33}{subsection.3.6.5}\protected@file@percent }
+\newlabel{subsec:best-level-selection}{{3.6.5}{33}{Best Level Selection Algorithm}{subsection.3.6.5}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Median-Based Selection Strategy}{33}{subsection.3.6.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3.7}Presentation of Resulting Analysis}{34}{section.3.7}\protected@file@percent }
+\newlabel{sec:presentation}{{3.7}{34}{Presentation of Resulting Analysis}{section.3.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.7.1}Similarity Matrix Construction}{35}{subsection.3.7.1}\protected@file@percent }
+\newlabel{subsec:similarity-matrix-construction}{{3.7.1}{35}{Similarity Matrix Construction}{subsection.3.7.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.7.2}Interactive Visualization Framework}{35}{subsection.3.7.2}\protected@file@percent }
+\newlabel{subsec:interactive-visualization}{{3.7.2}{35}{Interactive Visualization Framework}{subsection.3.7.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.7.3}Result Interpretation Guidelines}{36}{subsection.3.7.3}\protected@file@percent }
+\newlabel{subsec:result-interpretation}{{3.7.3}{36}{Result Interpretation Guidelines}{subsection.3.7.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.7.4}Extended Presentation and Export Features}{36}{subsection.3.7.4}\protected@file@percent }
+\newlabel{subsec:more-presentation}{{3.7.4}{36}{Extended Presentation and Export Features}{subsection.3.7.4}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Advanced Export Options}{36}{subsection.3.7.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Statistical Reporting}{37}{subsection.3.7.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3.8}Usage and Parameters}{37}{section.3.8}\protected@file@percent }
+\newlabel{sec:usage-parameters}{{3.8}{37}{Usage and Parameters}{section.3.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.8.1}System Configuration Parameters}{37}{subsection.3.8.1}\protected@file@percent }
+\newlabel{subsec:system-configuration}{{3.8.1}{37}{System Configuration Parameters}{subsection.3.8.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.8.2}Performance Tuning Guidelines}{38}{subsection.3.8.2}\protected@file@percent }
+\newlabel{subsec:performance-tuning}{{3.8.2}{38}{Performance Tuning Guidelines}{subsection.3.8.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.8.3}Usage Recommendations}{38}{subsection.3.8.3}\protected@file@percent }
+\newlabel{subsec:usage-recommendations}{{3.8.3}{38}{Usage Recommendations}{subsection.3.8.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.9}Performance Optimization and Scalability}{39}{section.3.9}\protected@file@percent }
+\newlabel{sec:performance-optimization}{{3.9}{39}{Performance Optimization and Scalability}{section.3.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.9.1}Performance Monitoring}{39}{subsection.3.9.1}\protected@file@percent }
+\newlabel{subsec:performance-monitoring}{{3.9.1}{39}{Performance Monitoring}{subsection.3.9.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.10}Methodology Validation and Quality Assurance}{39}{section.3.10}\protected@file@percent }
+\newlabel{sec:methodology-validation}{{3.10}{39}{Methodology Validation and Quality Assurance}{section.3.10}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.10.1}Algorithmic Robustness}{39}{subsection.3.10.1}\protected@file@percent }
+\newlabel{subsec:algorithmic-robustness}{{3.10.1}{39}{Algorithmic Robustness}{subsection.3.10.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.11}Methodology Summary}{39}{section.3.11}\protected@file@percent }
+\newlabel{sec:methodology-summary}{{3.11}{39}{Methodology Summary}{section.3.11}{}}
 \@writefile{toc}{\contentsline {chapter}{\numberline {4}System Implementation}{41}{chapter.4}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}

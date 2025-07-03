@@ -26,7 +26,7 @@ The S\textsuperscript{4}D methodology employs a comprehensive multi-stage pipeli
     \label{fig:system_architecture}
 \end{figure}
 
-\section{Technology Stack and Tools}
+\section{Technology Stack and Applied Tools}
 \label{sec:technology-stack}
 
 The S\textsuperscript{4}D system is built using a comprehensive technology stack that ensures scalability, performance, and maintainability across all system components.
@@ -75,7 +75,7 @@ The S\textsuperscript{4}D system is built using a comprehensive technology stack
     \item \textbf{JSON}: Structured data storage and exchange format for all system components
 \end{itemize}
 
-\subsection{More: Extended Technology Stack Details}
+\subsection{Extended Technology Stack Details}
 \label{subsec:more-technology-stack}
 
 This subsection contains additional technology stack components and extended system architecture details that complement the core technology infrastructure.
@@ -94,11 +94,10 @@ Data persistence and storage solutions:
 \begin{itemize}
     \item \textbf{JSON File Storage}: Structured JSON storage with hierarchical organization for all data persistence
     \item \textbf{In-Memory Processing}: Efficient in-memory data structures for real-time analysis
-    \item \textbf{Basic Caching}: Simple file-based caching implementation with configurable TTL
     \item \textbf{Result Organization}: Systematic file organization for experiment results and analysis outputs
 \end{itemize}
 
-\section{Web Parsing with Multi-Level Analysis and Clustering Integration}
+\section{Web Parsing (Levels + Clustering)}
 \label{sec:web-parsing}
 
 This section details the comprehensive web parsing implementation that combines automated DOM extraction with multi-level structural analysis (levels 1-10) and integrated clustering preparation for the subsequent HDBSCAN analysis phase.
@@ -176,30 +175,20 @@ This bottom-up approach ensures that the most content-specific elements are capt
     \label{fig:dom_tree_traversal}
 \end{figure}
 
-% TODO: Add figure showing multi-level analysis flow
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.9\textwidth]{figures/methodology/multi_level_analysis_flow.png}
-    \caption{Multi-Level Analysis Flow diagram illustrating how the system processes DOM elements at different hierarchical levels, from content-specific leaf elements to broader structural containers.}
-    \label{fig:multi_level_analysis}
-\end{figure}
+\subsection{CSS Property Analysis and Normalization}
+\label{subsec:css-analysis}
 
-\section{CSS Property Analysis and Normalization}
-\label{sec:css-analysis}
-
-\subsection{Attribute Filtering and Selection}
-\label{subsec:attribute-filtering}
-
+\subsubsection{Attribute Filtering and Selection}
 The system implements a sophisticated attribute filtering algorithm that identifies structurally significant CSS properties. The filtering process involves:
 
-\subsubsection{Element Frequency Analysis}
+\textbf{Element Frequency Analysis}
 For each CSS attribute, the system computes the distribution of elements across all analyzed websites:
 
 \begin{equation}
 \text{frequency}_{attr} = \frac{\text{elements\_with\_attr}}{\text{total\_elements}}
 \end{equation}
 
-\subsubsection{Useful Attribute Identification}
+\textbf{Useful Attribute Identification}
 Attributes are classified as "useful" based on their discriminative power. The algorithm specifically focuses on:
 
 \begin{itemize}
@@ -209,12 +198,10 @@ Attributes are classified as "useful" based on their discriminative power. The a
     \item \textbf{Decoration Properties}: \texttt{text-decoration-line}, \texttt{text-decoration-style}
 \end{itemize}
 
-\subsection{CSS Value Normalization}
-\label{subsec:css-normalization}
-
+\subsubsection{CSS Value Normalization}
 The system implements comprehensive CSS value normalization to handle diverse value formats:
 
-\subsubsection{Pixel Value Normalization}
+\textbf{Pixel Value Normalization}
 Pixel values undergo standardized processing:
 
 \begin{equation}
@@ -225,7 +212,7 @@ Pixel values undergo standardized processing:
 \end{cases}
 \end{equation}
 
-\subsubsection{Color Space Processing}
+\textbf{Color Space Processing}
 RGB/RGBA color values are converted to HSV color space for perceptual similarity analysis:
 
 \begin{align}
@@ -234,7 +221,30 @@ S &= 1 - \frac{3\min(R,G,B)}{R+G+B} \\
 V &= \frac{R+G+B}{3}
 \end{align}
 
-\subsubsection{Dual-Coordinate Property Handling}
+\textbf{Implementation}: The system uses Python's \texttt{colorsys.rgb\_to\_hsv()} function for color space conversion:
+
+\begin{tcolorbox}[
+    colback=gray!5!white,
+    colframe=gray!60!black,
+    title=\textbf{HSV Color Space Conversion},
+    fonttitle=\bfseries,
+    enhanced,
+    arc=2mm,
+    boxrule=0.5pt
+]
+\begin{lstlisting}[language=Python]
+def extract_hsv_values(color_str):
+    rgb_values = tuple(map(int, re.findall(r'\d+', color_str)))
+    h, s, v = colorsys.rgb_to_hsv(rgb_values[0] / 255.0, 
+                                 rgb_values[1] / 255.0, 
+                                 rgb_values[2] / 255.0)
+    return h, s, v
+\end{lstlisting}
+\end{tcolorbox}
+
+This function is called in the CSS property processing pipeline for color normalization during feature vector construction.
+
+\textbf{Dual-Coordinate Property Handling}
 Properties with multiple coordinate values (e.g., margins, padding) undergo specialized processing:
 
 \begin{equation}
@@ -244,44 +254,36 @@ Properties with multiple coordinate values (e.g., margins, padding) undergo spec
 \end{cases}
 \end{equation}
 
-\section{Feature Engineering and Vector Representation}
-\label{sec:feature-engineering}
+\textbf{Implementation}: The dual-coordinate ordering logic is implemented as follows:
 
-\subsection{Page Vector Construction}
-\label{subsec:page-vectors}
+\begin{tcolorbox}[
+    colback=gray!5!white,
+    colframe=gray!60!black,
+    title=\textbf{Dual-Coordinate CSS Property Processing},
+    fonttitle=\bfseries,
+    enhanced,
+    arc=2mm,
+    boxrule=0.5pt
+]
+\begin{lstlisting}[language=Python]
+# Process dual-coordinate properties (e.g., margins, padding)
+if ' ' in pixel_k_value and 'px' in pixel_k_value:
+    parts = pixel_k_value.split()
+    if len(parts) == 2 and all('px' in part for part in parts):
+        x_val = float(parts[0].replace('px', ''))
+        y_val = float(parts[1].replace('px', ''))
+        
+        # Apply ordering transformation
+        if x_val >= y_val:
+            ordered_value = f"{x_val}px {y_val}px"
+        else:
+            ordered_value = f"{-x_val}px {-y_val}px"
+\end{lstlisting}
+\end{tcolorbox}
 
-The system constructs multi-dimensional feature vectors for each DOM element by processing useful CSS attributes. The vector construction algorithm:
+This algorithm processes pixel values with format "Xpx Ypx" and applies the ordering transformation to ensure consistent vector representation for properties like margins and padding.
 
-\begin{enumerate}
-    \item \textbf{Initializes} empty vectors for each unique element ID
-    \item \textbf{Processes} each useful attribute sequentially
-    \item \textbf{Appends} normalized attribute values to element vectors
-    \item \textbf{Maintains} consistent vector dimensionality across all elements
-\end{enumerate}
-
-\subsection{String Value Space Mapping}
-\label{subsec:string-mapping}
-
-Non-numeric CSS values are mapped to numerical representations through a global string value space (\texttt{str\_VSM}):
-
-\begin{equation}
-\text{numerical\_value} = \text{index\_of\_string\_in\_VSM}
-\end{equation}
-
-Special handling is provided for framework-specific values (e.g., Bootstrap's "start" → "left", "end" → "right").
-
-\subsection{Data Standardization and Normalization}
-\label{subsec:data-standardization}
-
-Feature vectors undergo standardization using scikit-learn's \texttt{StandardScaler}:
-
-\begin{equation}
-X_{\text{scaled}} = \frac{X - \mu}{\sigma}
-\end{equation}
-
-where $\mu$ represents the feature mean and $\sigma$ represents the feature standard deviation.
-
-\subsection{More: Extended Web Parsing Capabilities}
+\subsection{Extended Web Parsing Capabilities}
 \label{subsec:more-web-parsing}
 
 This subsection contains additional web parsing features and extended analysis capabilities that complement the core DOM extraction and CSS processing.
@@ -304,10 +306,41 @@ Multi-browser analysis support:
     \item \textbf{Legacy Browser Analysis}: Historical browser compatibility assessment
 \end{itemize}
 
-\section{Data Modeling with Multi-Level Integration and Clustering Support}
+\section{Data Modeling (Levels + Clustering)}
 \label{sec:data-modeling}
 
 The S\textsuperscript{4}D system employs sophisticated data modeling techniques to transform raw web page data into structured representations suitable for multi-level analysis and HDBSCAN clustering. This includes both pre-clustering data preparation across DOM levels 1-10 and post-clustering data enrichment with cluster assignments and metadata.
+
+\subsection{Feature Engineering and Vector Representation}
+\label{subsec:feature-engineering}
+
+\subsubsection{Page Vector Construction}
+The system constructs multi-dimensional feature vectors for each DOM element by processing useful CSS attributes. The vector construction algorithm:
+
+\begin{enumerate}
+    \item \textbf{Initializes} empty vectors for each unique element ID
+    \item \textbf{Processes} each useful attribute sequentially
+    \item \textbf{Appends} normalized attribute values to element vectors
+    \item \textbf{Maintains} consistent vector dimensionality across all elements
+\end{enumerate}
+
+\subsubsection{String Value Space Mapping}
+Non-numeric CSS values are mapped to numerical representations through a global string value space (\texttt{str\_VSM}):
+
+\begin{equation}
+\text{numerical\_value} = \text{index\_of\_string\_in\_VSM}
+\end{equation}
+
+Special handling is provided for framework-specific values (e.g., Bootstrap's "start" → "left", "end" → "right").
+
+\subsubsection{Data Standardization and Normalization}
+Feature vectors undergo standardization using scikit-learn's \texttt{StandardScaler}:
+
+\begin{equation}
+X_{\text{scaled}} = \frac{X - \mu}{\sigma}
+\end{equation}
+
+where $\mu$ represents the feature mean and $\sigma$ represents the feature standard deviation.
 
 \subsection{Pre-Clustering Data Modeling}
 \label{subsec:pre-clustering-modeling}
@@ -382,7 +415,7 @@ After clustering analysis, the system creates enriched data models:
     \item \textbf{Serial Arrays by Cluster IDs}: Sequential arrangement of clustered elements according to cl_ids
 \end{itemize}
 
-\subsection{More: Visualization of Clustered Elements}
+\subsection{Visualization of Clustered Elements}
 \label{subsec:more-visualization}
 
 \textbf{Step 4a: Presentation of Colored Clustered Elements within Pages}
@@ -485,7 +518,7 @@ The cluster frequency represents relative occurrence across all elements:
 \text{frequency}_{cluster} = \frac{\text{occurrences}_{cluster}}{\text{total\_elements}}
 \end{equation}
 
-\subsection{More: Extended Data Mining Techniques}
+\subsection{Extended Data Mining Techniques}
 \label{subsec:more-data-mining}
 
 This subsection contains additional advanced data mining methodologies and extended analysis techniques that complement the core transition matrix and role vector extraction processes.
@@ -553,13 +586,7 @@ The complete role vector for each cluster includes:
 
 where $\mathbf{T}_{out}$ and $\mathbf{T}_{in}$ represent outgoing and incoming transition vectors.
 
-% TODO: Add figure showing role vector construction process
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.9\textwidth]{figures/methodology/role_vector_construction.png}
-    \caption{Role Vector Construction Process illustrating how frequency information, transition matrices, and positional statistics are combined to create comprehensive cluster representations for similarity computation.}
-    \label{fig:role_vector_construction}
-\end{figure}
+
 
 \subsection{Best Setting Extraction}
 \label{subsec:best-setting-extraction}
@@ -588,12 +615,10 @@ The best configuration combines stability (median clusters) with quality (DBCV s
 
 where $\tau$ is a tolerance parameter for cluster count deviation from median.
 
-\section{More: Extended Similarity Analysis Framework}
-\label{sec:more-similarity}
+\subsection{Extended Similarity Analysis Framework}
+\label{subsec:more-similarity}
 
-\subsection{Domain-Level Aggregation}
-\label{subsec:domain-aggregation}
-
+\subsubsection{Domain-Level Aggregation}
 The system performs domain-level analysis by:
 
 \begin{enumerate}
@@ -602,35 +627,96 @@ The system performs domain-level analysis by:
     \item \textbf{Computing} domain-representative vectors
 \end{enumerate}
 
-\subsection{Multi-Metric Distance Computation}
-\label{subsec:multi-metric-distance}
-
+\subsubsection{Multi-Metric Distance Computation}
 The system computes three complementary similarity metrics:
 
-\subsubsection{Cosine Similarity}
+\textbf{Cosine Similarity}
 Standard cosine similarity between domain average vectors:
 
 \begin{equation}
 \text{sim}_{cosine}(A,B) = \frac{\mathbf{A} \cdot \mathbf{B}}{|\mathbf{A}||\mathbf{B}|}
 \end{equation}
 
-\subsubsection{Earth Mover's Distance (EMD) Approximation}
+\textbf{Implementation}: Uses scikit-learn's \texttt{cosine\_similarity()} function:
+
+\begin{tcolorbox}[
+    colback=gray!5!white,
+    colframe=gray!60!black,
+    title=\textbf{Cosine Similarity Computation},
+    fonttitle=\bfseries,
+    enhanced,
+    arc=2mm,
+    boxrule=0.5pt
+]
+\begin{lstlisting}[language=Python]
+from sklearn.metrics.pairwise import cosine_similarity
+
+# Compute cosine similarity between domain vectors
+cosine_sim = cosine_similarity(domain_vectors)
+\end{lstlisting}
+\end{tcolorbox}
+
+\textbf{Earth Mover's Distance (EMD) Approximation}
 Bidirectional minimum distance computation:
 
 \begin{equation}
 \text{sim}_{EMD}(A,B) = \frac{1}{2}\left[(1 - \text{mean}(\min(\text{dist}(A,B)))) + (1 - \text{mean}(\min(\text{dist}(B,A))))\right]
 \end{equation}
 
-\subsubsection{Hausdorff Distance Approximation}
+\textbf{Implementation}: Computed using SciPy's \texttt{cdist()} function with cosine metric:
+
+\begin{tcolorbox}[
+    colback=gray!5!white,
+    colframe=gray!60!black,
+    title=\textbf{EMD Distance Computation},
+    fonttitle=\bfseries,
+    enhanced,
+    arc=2mm,
+    boxrule=0.5pt
+]
+\begin{lstlisting}[language=Python]
+from scipy.spatial.distance import cdist
+import numpy as np
+
+# Compute distance matrix using cosine metric
+distances = cdist(domain_A, domain_B, metric='cosine')
+
+# Calculate EMD approximation
+emd_sim = 1 - np.nanmean(np.min(distances, axis=1))
+\end{lstlisting}
+\end{tcolorbox}
+
+\textbf{Hausdorff Distance Approximation}
 Maximum minimum distance computation:
 
 \begin{equation}
 \text{sim}_{Hausdorff}(A,B) = \frac{1}{2}\left[(1 - \max(\min(\text{dist}(A,B)))) + (1 - \max(\min(\text{dist}(B,A))))\right]
 \end{equation}
 
-\subsection{Combined Similarity Score}
-\label{subsec:combined-similarity}
+\textbf{Implementation}: Computed using the same distance matrix as EMD but with \texttt{np.nanmax()}:
 
+\begin{tcolorbox}[
+    colback=gray!5!white,
+    colframe=gray!60!black,
+    title=\textbf{Hausdorff Distance Computation},
+    fonttitle=\bfseries,
+    enhanced,
+    arc=2mm,
+    boxrule=0.5pt
+]
+\begin{lstlisting}[language=Python]
+from scipy.spatial.distance import cdist
+import numpy as np
+
+# Compute distance matrix using cosine metric
+distances = cdist(domain_A, domain_B, metric='cosine')
+
+# Calculate Hausdorff distance approximation
+hausdorff_sim = 1 - np.nanmax(np.min(distances, axis=1))
+\end{lstlisting}
+\end{tcolorbox}
+
+\subsubsection{Combined Similarity Score}
 The final similarity score employs geometric mean combination:
 
 \begin{equation}
@@ -639,15 +725,97 @@ The final similarity score employs geometric mean combination:
 
 The geometric mean provides balanced weighting while the percentage conversion ensures interpretable similarity scores.
 
-% TODO: Add figure showing multi-metric similarity computation framework
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.9\textwidth]{figures/methodology/multi_metric_similarity_framework.png}
-    \caption{Multi-Metric Similarity Framework showing how Cosine, EMD, and Hausdorff distance metrics are computed independently and then combined using geometric mean to produce the final similarity score.}
-    \label{fig:multi_metric_similarity}
-\end{figure}
+\textbf{Implementation}: The geometric mean is computed using NumPy's \texttt{np.power()} function:
 
-\section{Presentation of Analysis}
+\begin{tcolorbox}[
+    colback=gray!5!white,
+    colframe=gray!60!black,
+    title=\textbf{Geometric Mean Similarity Combination},
+    fonttitle=\bfseries,
+    enhanced,
+    arc=2mm,
+    boxrule=0.5pt
+]
+\begin{lstlisting}[language=Python]
+import numpy as np
+
+# Combine three similarity metrics using geometric mean
+combined_sim = np.power(cosine_sim * emd_sim * hausdorff_sim, 1/3) * 100
+\end{lstlisting}
+\end{tcolorbox}
+
+
+
+\subsection{Best Level Selection Algorithm}
+\label{subsec:best-level-selection}
+
+\subsubsection{Median-Based Selection Strategy}
+The system implements a sophisticated algorithm to identify optimal clustering levels:
+
+\begin{algorithm}[H]
+\caption{Best Clustering Level Selection}
+\KwIn{clustering\_results: List of clustering result dictionaries}
+\KwOut{best\_result: Clustering result with optimal configuration}
+\Begin{
+    valid\_results $\leftarrow$ filter clustering results with clusters > 0 and DBCV > 0\;
+    \If{len(valid\_results) < 2}{
+        \Return None\;
+    }
+    cluster\_counts $\leftarrow$ extract cluster counts from valid results\;
+    median\_clusters $\leftarrow$ compute median of cluster counts\;
+    ordered\_results $\leftarrow$ sort results by cluster count (ascending)\;
+    Y $\leftarrow$ median position in ordered results\;
+    W $\leftarrow$ cluster count at position Y\;
+    filtered\_results $\leftarrow$ results with cluster count $\leq$ W\;
+    \Return result with highest DBCV score from filtered results\;
+}
+\end{algorithm}
+
+This approach balances clustering quality (DBCV score) with interpretability (fewer clusters), providing robust level selection across diverse website collections.
+
+\textbf{Implementation}: The median-based selection algorithm is implemented as follows:
+
+\begin{tcolorbox}[
+    colback=gray!5!white,
+    colframe=gray!60!black,
+    title=\textbf{Best Clustering Level Selection Algorithm},
+    fonttitle=\bfseries,
+    enhanced,
+    arc=2mm,
+    boxrule=0.5pt
+]
+\begin{lstlisting}[language=Python]
+def find_best_clustering_level(clustering_results):
+    # Filter valid results (clusters > 0 and DBCV > 0)
+    valid_results = [r for r in clustering_results 
+                    if r.get('cluster_info', {}).get('num_clusters', 0) > 0 
+                    and r.get('cluster_info', {}).get('dbcv_score', 0) > 0]
+    
+    if len(valid_results) < 2:
+        return None
+    
+    # Extract cluster counts and find median
+    cluster_counts = [r['cluster_info']['num_clusters'] for r in valid_results]
+    median_clusters = np.median(cluster_counts)
+    
+    # Sort by cluster count and find median position
+    valid_results.sort(key=lambda x: x['cluster_info']['num_clusters'])
+    median_position = len(valid_results) // 2
+    w_cluster_count = valid_results[median_position]['cluster_info']['num_clusters']
+    
+    # Filter results with W clusters or fewer
+    filtered_results = [r for r in valid_results 
+                       if r['cluster_info']['num_clusters'] <= w_cluster_count]
+    
+    # Return result with highest DBCV score
+    if filtered_results:
+        return max(filtered_results, key=lambda x: x['cluster_info']['dbcv_score'])
+    
+    return None
+\end{lstlisting}
+\end{tcolorbox}
+
+\section{Presentation of Resulting Analysis}
 \label{sec:presentation}
 
 \textbf{Step 7: Similarity Matrix Visualization and Result Presentation}
@@ -715,7 +883,7 @@ The system provides comprehensive statistical summaries including:
     \item \textbf{Distribution Analysis}: Histogram and density plots of similarity scores
 \end{itemize}
 
-\subsection{More: Extended Presentation and Export Features}
+\subsection{Extended Presentation and Export Features}
 \label{subsec:more-presentation}
 
 This subsection contains additional presentation capabilities and export features that extend the core similarity matrix visualization.
@@ -761,10 +929,9 @@ This section provides comprehensive guidance for system usage and parameter conf
     \item \textbf{DBCV Threshold}: Quality threshold of 0.25 for acceptable clustering
 \end{itemize}
 
-\textbf{Processing Mode Configuration}
+\textbf{Processing Configuration}
 \begin{itemize}
-    \item \textbf{Mode 0}: Unified processing for comprehensive cross-domain analysis
-    \item \textbf{Mode 1}: Domain-separated processing for scalable large-scale analysis
+    \item \textbf{Unified Processing}: Comprehensive cross-domain analysis of all websites together
 \end{itemize}
 
 \subsection{Performance Tuning Guidelines}
@@ -789,9 +956,9 @@ This section provides comprehensive guidance for system usage and parameter conf
 
 \textbf{Optimal Analysis Scenarios}
 \begin{itemize}
-    \item \textbf{Template Detection}: Use Mode 0 with levels 3-7 for comprehensive template analysis
+    \item \textbf{Template Detection}: Use levels 3-7 for comprehensive template analysis
     \item \textbf{Design Pattern Analysis}: Use levels 1-5 with detailed CSS attribute filtering
-    \item \textbf{Large-Scale Surveys}: Use Mode 1 with optimized parameters for scalability
+    \item \textbf{Large-Scale Surveys}: Use optimized parameters for scalability
     \item \textbf{Domain Comparison}: Use median-based level selection for balanced analysis
 \end{itemize}
 
@@ -802,56 +969,8 @@ This section provides comprehensive guidance for system usage and parameter conf
     \item \textbf{Content Type}: HTML-based websites with CSS styling (JavaScript-rendered content supported)
 \end{itemize}
 
-\section{Best Level Selection Algorithm}
-\label{sec:best-level-selection}
-
-\subsection{Median-Based Selection Strategy}
-\label{subsec:median-selection}
-
-The system implements a sophisticated algorithm to identify optimal clustering levels:
-
-\begin{algorithm}[H]
-\caption{Best Clustering Level Selection}
-\begin{algorithmic}[1]
-\State $\text{valid\_results} \leftarrow$ filter clustering results with clusters > 0 and DBCV > 0
-\State $\text{cluster\_counts} \leftarrow$ extract cluster counts from valid results
-\State $\text{median\_clusters} \leftarrow$ compute median of cluster counts
-\State $\text{ordered\_results} \leftarrow$ sort results by cluster count (ascending)
-\State $Y \leftarrow$ median position in ordered results
-\State $W \leftarrow$ cluster count at position $Y$
-\State $\text{filtered\_results} \leftarrow$ results with cluster count $\leq W$
-\State \textbf{return} result with highest DBCV score from filtered results
-\end{algorithmic}
-\end{algorithm}
-
-This approach balances clustering quality (DBCV score) with interpretability (fewer clusters), providing robust level selection across diverse website collections.
-
 \section{Performance Optimization and Scalability}
 \label{sec:performance-optimization}
-
-\subsection{System Optimization Strategies}
-\label{subsec:optimization-strategies}
-
-The S\textsuperscript{4}D system implements several performance optimization approaches:
-
-\subsubsection{Efficient Data Processing}
-\begin{itemize}
-    \item \textbf{Optimized Data Structures}: Memory-efficient representations for large-scale analysis
-    \item \textbf{Batch Processing}: Grouped operations to reduce computational overhead
-    \item \textbf{Resource Management}: Careful allocation and deallocation of system resources
-\end{itemize}
-
-\subsubsection{Algorithm Optimization}
-The system employs optimized algorithms and data processing techniques to ensure scalable performance across varying workload sizes.
-
-\subsection{Dual Processing Modes}
-\label{subsec:processing-modes}
-
-\subsubsection{Mode 0: Unified Processing}
-All URLs processed together for comprehensive cross-domain analysis.
-
-\subsubsection{Mode 1: Domain-Based Processing}
-URLs grouped by domain and processed separately for scalable domain-specific analysis.
 
 \subsection{Performance Monitoring}
 \label{subsec:performance-monitoring}
@@ -879,17 +998,6 @@ The S\textsuperscript{4}D methodology ensures robustness through:
     \item \textbf{Output Verification}: Result consistency checking and quality metrics
 \end{itemize}
 
-\subsection{Scalability Considerations}
-\label{subsec:scalability}
-
-The methodology addresses scalability through:
-
-\begin{itemize}
-    \item \textbf{Memory Management}: Efficient data structures and garbage collection
-    \item \textbf{Sequential Processing}: Systematic URL processing with efficient resource utilization
-    \item \textbf{Storage Optimization}: Compressed data formats and intelligent file management
-\end{itemize}
-
 \section{Methodology Summary}
 \label{sec:methodology-summary}
 
@@ -902,7 +1010,7 @@ The methodology's novel contributions include:
     \item \textbf{Advanced Clustering Optimization}: Grid search parameter optimization with DBCV-based quality selection
     \item \textbf{Role Vector Innovation}: Comprehensive cluster representation incorporating frequency, transitions, and positional information
     \item \textbf{Multi-Metric Similarity}: Geometric mean combination of complementary distance metrics
-    \item \textbf{Scalable Performance Architecture}: Dual processing modes and efficient resource management
+    \item \textbf{Scalable Performance Architecture}: Unified processing approach and efficient resource management
 \end{enumerate}
 
 This methodology establishes a new paradigm for automated website analysis that balances analytical depth with computational efficiency, providing a foundation for future research in web structure and design pattern analysis. The system's implementation using mprocs for process management ensures reliable execution and monitoring across all components. 

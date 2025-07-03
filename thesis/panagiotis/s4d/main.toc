@@ -52,93 +52,78 @@
 \contentsline {section}{\numberline {2.10}Transition to System Design}{13}{section.2.10}%
 \contentsline {chapter}{\numberline {3}The S\textsuperscript {4}D System}{15}{chapter.3}%
 \contentsline {section}{\numberline {3.1}System Overview}{15}{section.3.1}%
-\contentsline {section}{\numberline {3.2}Technology Stack and Tools}{16}{section.3.2}%
+\contentsline {section}{\numberline {3.2}Technology Stack and Applied Tools}{16}{section.3.2}%
 \contentsline {subsection}{\numberline {3.2.1}Backend Technologies}{16}{subsection.3.2.1}%
 \contentsline {subsection}{\numberline {3.2.2}Frontend Technologies}{17}{subsection.3.2.2}%
 \contentsline {subsection}{\numberline {3.2.3}System Integration}{17}{subsection.3.2.3}%
-\contentsline {subsection}{\numberline {3.2.4}More: Extended Technology Stack Details}{17}{subsection.3.2.4}%
+\contentsline {subsection}{\numberline {3.2.4}Extended Technology Stack Details}{17}{subsection.3.2.4}%
 \contentsline {subsubsection}{Additional Development Dependencies}{17}{subsection.3.2.4}%
 \contentsline {subsubsection}{Data Storage and Management}{18}{subsection.3.2.4}%
-\contentsline {section}{\numberline {3.3}Web Parsing with Multi-Level Analysis and Clustering Integration}{18}{section.3.3}%
+\contentsline {section}{\numberline {3.3}Web Parsing (Levels + Clustering)}{18}{section.3.3}%
 \contentsline {subsection}{\numberline {3.3.1}Automated Web Rendering}{18}{subsection.3.3.1}%
 \contentsline {subsection}{\numberline {3.3.2}Hierarchical DOM Tree Construction}{18}{subsection.3.3.2}%
 \contentsline {subsubsection}{Unique Element Identification}{19}{subsection.3.3.2}%
 \contentsline {subsubsection}{Comprehensive Attribute Extraction}{19}{equation.3.3.1}%
 \contentsline {subsubsection}{Text Content Processing}{19}{Item.15}%
 \contentsline {subsection}{\numberline {3.3.3}Multi-Level DOM Analysis}{19}{subsection.3.3.3}%
-\contentsline {section}{\numberline {3.4}CSS Property Analysis and Normalization}{22}{section.3.4}%
-\contentsline {subsection}{\numberline {3.4.1}Attribute Filtering and Selection}{22}{subsection.3.4.1}%
-\contentsline {subsubsection}{Element Frequency Analysis}{22}{subsection.3.4.1}%
-\contentsline {subsubsection}{Useful Attribute Identification}{22}{equation.3.4.2}%
-\contentsline {subsection}{\numberline {3.4.2}CSS Value Normalization}{22}{subsection.3.4.2}%
-\contentsline {subsubsection}{Pixel Value Normalization}{22}{subsection.3.4.2}%
-\contentsline {subsubsection}{Color Space Processing}{23}{equation.3.4.3}%
-\contentsline {subsubsection}{Dual-Coordinate Property Handling}{23}{equation.3.4.6}%
-\contentsline {section}{\numberline {3.5}Feature Engineering and Vector Representation}{23}{section.3.5}%
-\contentsline {subsection}{\numberline {3.5.1}Page Vector Construction}{23}{subsection.3.5.1}%
-\contentsline {subsection}{\numberline {3.5.2}String Value Space Mapping}{23}{subsection.3.5.2}%
-\contentsline {subsection}{\numberline {3.5.3}Data Standardization and Normalization}{24}{subsection.3.5.3}%
-\contentsline {subsection}{\numberline {3.5.4}More: Extended Web Parsing Capabilities}{24}{subsection.3.5.4}%
-\contentsline {subsubsection}{Advanced Content Extraction}{24}{subsection.3.5.4}%
-\contentsline {subsubsection}{Cross-Browser Compatibility}{24}{subsection.3.5.4}%
-\contentsline {section}{\numberline {3.6}Data Modeling with Multi-Level Integration and Clustering Support}{24}{section.3.6}%
-\contentsline {subsection}{\numberline {3.6.1}Pre-Clustering Data Modeling}{25}{subsection.3.6.1}%
-\contentsline {subsection}{\numberline {3.6.2}Vector Space Construction}{25}{subsection.3.6.2}%
-\contentsline {subsection}{\numberline {3.6.3}Vectorization and HDBSCAN Clustering Integration}{25}{subsection.3.6.3}%
-\contentsline {subsubsection}{HDBSCAN Parameter Optimization}{25}{subsection.3.6.3}%
-\contentsline {subsubsection}{Intelligent Outlier Reassignment}{26}{subsection.3.6.3}%
-\contentsline {subsection}{\numberline {3.6.4}Post-Clustering Data Modeling}{26}{subsection.3.6.4}%
-\contentsline {subsection}{\numberline {3.6.5}More: Visualization of Clustered Elements}{26}{subsection.3.6.5}%
-\contentsline {subsubsection}{Interactive HTML Generation}{27}{subsection.3.6.5}%
-\contentsline {subsubsection}{Step 4b: Data Modeling for Clustered Pages}{27}{subsection.3.6.5}%
-\contentsline {section}{\numberline {3.7}Data Mining}{27}{section.3.7}%
-\contentsline {subsection}{\numberline {3.7.1}Transition Matrix Construction}{27}{subsection.3.7.1}%
-\contentsline {subsection}{\numberline {3.7.2}Cluster Positional Statistics}{28}{subsection.3.7.2}%
-\contentsline {subsection}{\numberline {3.7.3}Role Vector Construction}{28}{subsection.3.7.3}%
-\contentsline {subsection}{\numberline {3.7.4}More: Extended Data Mining Techniques}{29}{subsection.3.7.4}%
-\contentsline {subsubsection}{Advanced Positional Analysis}{29}{subsection.3.7.4}%
-\contentsline {subsubsection}{Enhanced Transition Modeling}{29}{subsection.3.7.4}%
-\contentsline {section}{\numberline {3.8}Similarity Analysis}{29}{section.3.8}%
-\contentsline {subsection}{\numberline {3.8.1}Multi-Dimensional Role Vector Construction}{29}{subsection.3.8.1}%
-\contentsline {subsubsection}{Frequency Information}{30}{subsection.3.8.1}%
-\contentsline {subsubsection}{Transition Matrices}{30}{equation.3.8.18}%
-\contentsline {subsubsection}{Positional Statistics}{30}{equation.3.8.19}%
-\contentsline {subsection}{\numberline {3.8.2}Complete Role Vector Specification}{30}{subsection.3.8.2}%
-\contentsline {subsection}{\numberline {3.8.3}Best Setting Extraction}{30}{subsection.3.8.3}%
-\contentsline {subsubsection}{Median-Based Cluster Selection}{30}{subsection.3.8.3}%
-\contentsline {subsubsection}{DBCV Score Optimization}{32}{Item.33}%
-\contentsline {section}{\numberline {3.9}More: Extended Similarity Analysis Framework}{32}{section.3.9}%
-\contentsline {subsection}{\numberline {3.9.1}Domain-Level Aggregation}{32}{subsection.3.9.1}%
-\contentsline {subsection}{\numberline {3.9.2}Multi-Metric Distance Computation}{32}{subsection.3.9.2}%
-\contentsline {subsubsection}{Cosine Similarity}{32}{subsection.3.9.2}%
-\contentsline {subsubsection}{Earth Mover's Distance (EMD) Approximation}{33}{equation.3.9.26}%
-\contentsline {subsubsection}{Hausdorff Distance Approximation}{33}{equation.3.9.27}%
-\contentsline {subsection}{\numberline {3.9.3}Combined Similarity Score}{33}{subsection.3.9.3}%
-\contentsline {section}{\numberline {3.10}Presentation of Analysis}{33}{section.3.10}%
-\contentsline {subsection}{\numberline {3.10.1}Similarity Matrix Construction}{33}{subsection.3.10.1}%
-\contentsline {subsection}{\numberline {3.10.2}Interactive Visualization Framework}{35}{subsection.3.10.2}%
-\contentsline {subsection}{\numberline {3.10.3}Result Interpretation Guidelines}{35}{subsection.3.10.3}%
-\contentsline {subsection}{\numberline {3.10.4}More: Extended Presentation and Export Features}{36}{subsection.3.10.4}%
-\contentsline {subsubsection}{Advanced Export Options}{36}{subsection.3.10.4}%
-\contentsline {subsubsection}{Statistical Reporting}{36}{subsection.3.10.4}%
-\contentsline {section}{\numberline {3.11}Usage and Parameters}{36}{section.3.11}%
-\contentsline {subsection}{\numberline {3.11.1}System Configuration Parameters}{36}{subsection.3.11.1}%
-\contentsline {subsection}{\numberline {3.11.2}Performance Tuning Guidelines}{37}{subsection.3.11.2}%
-\contentsline {subsection}{\numberline {3.11.3}Usage Recommendations}{38}{subsection.3.11.3}%
-\contentsline {section}{\numberline {3.12}Best Level Selection Algorithm}{38}{section.3.12}%
-\contentsline {subsection}{\numberline {3.12.1}Median-Based Selection Strategy}{38}{subsection.3.12.1}%
-\contentsline {section}{\numberline {3.13}Performance Optimization and Scalability}{38}{section.3.13}%
-\contentsline {subsection}{\numberline {3.13.1}System Optimization Strategies}{38}{subsection.3.13.1}%
-\contentsline {subsubsection}{Efficient Data Processing}{39}{subsection.3.13.1}%
-\contentsline {subsubsection}{Algorithm Optimization}{39}{subsection.3.13.1}%
-\contentsline {subsection}{\numberline {3.13.2}Dual Processing Modes}{39}{subsection.3.13.2}%
-\contentsline {subsubsection}{Mode 0: Unified Processing}{39}{subsection.3.13.2}%
-\contentsline {subsubsection}{Mode 1: Domain-Based Processing}{39}{subsection.3.13.2}%
-\contentsline {subsection}{\numberline {3.13.3}Performance Monitoring}{39}{subsection.3.13.3}%
-\contentsline {section}{\numberline {3.14}Methodology Validation and Quality Assurance}{39}{section.3.14}%
-\contentsline {subsection}{\numberline {3.14.1}Algorithmic Robustness}{39}{subsection.3.14.1}%
-\contentsline {subsection}{\numberline {3.14.2}Scalability Considerations}{40}{subsection.3.14.2}%
-\contentsline {section}{\numberline {3.15}Methodology Summary}{40}{section.3.15}%
+\contentsline {subsection}{\numberline {3.3.4}CSS Property Analysis and Normalization}{20}{subsection.3.3.4}%
+\contentsline {subsubsection}{Attribute Filtering and Selection}{20}{subsection.3.3.4}%
+\contentsline {subsubsection}{CSS Value Normalization}{21}{equation.3.3.2}%
+\contentsline {subsection}{\numberline {3.3.5}Extended Web Parsing Capabilities}{23}{subsection.3.3.5}%
+\contentsline {subsubsection}{Advanced Content Extraction}{23}{subsection.3.3.5}%
+\contentsline {subsubsection}{Cross-Browser Compatibility}{23}{subsection.3.3.5}%
+\contentsline {section}{\numberline {3.4}Data Modeling (Levels + Clustering)}{23}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}Feature Engineering and Vector Representation}{23}{subsection.3.4.1}%
+\contentsline {subsubsection}{Page Vector Construction}{23}{subsection.3.4.1}%
+\contentsline {subsubsection}{String Value Space Mapping}{24}{Item.19}%
+\contentsline {subsubsection}{Data Standardization and Normalization}{24}{equation.3.4.8}%
+\contentsline {subsection}{\numberline {3.4.2}Pre-Clustering Data Modeling}{24}{subsection.3.4.2}%
+\contentsline {subsection}{\numberline {3.4.3}Vector Space Construction}{25}{subsection.3.4.3}%
+\contentsline {subsection}{\numberline {3.4.4}Vectorization and HDBSCAN Clustering Integration}{25}{subsection.3.4.4}%
+\contentsline {subsubsection}{HDBSCAN Parameter Optimization}{25}{subsection.3.4.4}%
+\contentsline {subsubsection}{Intelligent Outlier Reassignment}{25}{subsection.3.4.4}%
+\contentsline {subsection}{\numberline {3.4.5}Post-Clustering Data Modeling}{26}{subsection.3.4.5}%
+\contentsline {subsection}{\numberline {3.4.6}Visualization of Clustered Elements}{26}{subsection.3.4.6}%
+\contentsline {subsubsection}{Interactive HTML Generation}{26}{subsection.3.4.6}%
+\contentsline {subsubsection}{Step 4b: Data Modeling for Clustered Pages}{26}{subsection.3.4.6}%
+\contentsline {section}{\numberline {3.5}Data Mining}{27}{section.3.5}%
+\contentsline {subsection}{\numberline {3.5.1}Transition Matrix Construction}{27}{subsection.3.5.1}%
+\contentsline {subsection}{\numberline {3.5.2}Cluster Positional Statistics}{27}{subsection.3.5.2}%
+\contentsline {subsection}{\numberline {3.5.3}Role Vector Construction}{28}{subsection.3.5.3}%
+\contentsline {subsection}{\numberline {3.5.4}Extended Data Mining Techniques}{28}{subsection.3.5.4}%
+\contentsline {subsubsection}{Advanced Positional Analysis}{28}{subsection.3.5.4}%
+\contentsline {subsubsection}{Enhanced Transition Modeling}{29}{subsection.3.5.4}%
+\contentsline {section}{\numberline {3.6}Similarity Analysis}{29}{section.3.6}%
+\contentsline {subsection}{\numberline {3.6.1}Multi-Dimensional Role Vector Construction}{29}{subsection.3.6.1}%
+\contentsline {subsubsection}{Frequency Information}{29}{subsection.3.6.1}%
+\contentsline {subsubsection}{Transition Matrices}{29}{equation.3.6.18}%
+\contentsline {subsubsection}{Positional Statistics}{29}{equation.3.6.19}%
+\contentsline {subsection}{\numberline {3.6.2}Complete Role Vector Specification}{30}{subsection.3.6.2}%
+\contentsline {subsection}{\numberline {3.6.3}Best Setting Extraction}{30}{subsection.3.6.3}%
+\contentsline {subsubsection}{Median-Based Cluster Selection}{30}{subsection.3.6.3}%
+\contentsline {subsubsection}{DBCV Score Optimization}{30}{Item.33}%
+\contentsline {subsection}{\numberline {3.6.4}Extended Similarity Analysis Framework}{31}{subsection.3.6.4}%
+\contentsline {subsubsection}{Domain-Level Aggregation}{31}{subsection.3.6.4}%
+\contentsline {subsubsection}{Multi-Metric Distance Computation}{31}{Item.36}%
+\contentsline {subsubsection}{Combined Similarity Score}{32}{lstnumber.-5.8}%
+\contentsline {subsection}{\numberline {3.6.5}Best Level Selection Algorithm}{33}{subsection.3.6.5}%
+\contentsline {subsubsection}{Median-Based Selection Strategy}{33}{subsection.3.6.5}%
+\contentsline {section}{\numberline {3.7}Presentation of Resulting Analysis}{34}{section.3.7}%
+\contentsline {subsection}{\numberline {3.7.1}Similarity Matrix Construction}{35}{subsection.3.7.1}%
+\contentsline {subsection}{\numberline {3.7.2}Interactive Visualization Framework}{35}{subsection.3.7.2}%
+\contentsline {subsection}{\numberline {3.7.3}Result Interpretation Guidelines}{36}{subsection.3.7.3}%
+\contentsline {subsection}{\numberline {3.7.4}Extended Presentation and Export Features}{36}{subsection.3.7.4}%
+\contentsline {subsubsection}{Advanced Export Options}{36}{subsection.3.7.4}%
+\contentsline {subsubsection}{Statistical Reporting}{37}{subsection.3.7.4}%
+\contentsline {section}{\numberline {3.8}Usage and Parameters}{37}{section.3.8}%
+\contentsline {subsection}{\numberline {3.8.1}System Configuration Parameters}{37}{subsection.3.8.1}%
+\contentsline {subsection}{\numberline {3.8.2}Performance Tuning Guidelines}{38}{subsection.3.8.2}%
+\contentsline {subsection}{\numberline {3.8.3}Usage Recommendations}{38}{subsection.3.8.3}%
+\contentsline {section}{\numberline {3.9}Performance Optimization and Scalability}{39}{section.3.9}%
+\contentsline {subsection}{\numberline {3.9.1}Performance Monitoring}{39}{subsection.3.9.1}%
+\contentsline {section}{\numberline {3.10}Methodology Validation and Quality Assurance}{39}{section.3.10}%
+\contentsline {subsection}{\numberline {3.10.1}Algorithmic Robustness}{39}{subsection.3.10.1}%
+\contentsline {section}{\numberline {3.11}Methodology Summary}{39}{section.3.11}%
 \contentsline {chapter}{\numberline {4}System Implementation}{41}{chapter.4}%
 \contentsline {section}{\numberline {4.1}System Architecture Overview}{41}{section.4.1}%
 \contentsline {section}{\numberline {4.2}Backend Implementation}{41}{section.4.2}%
