@@ -1,0 +1,257 @@
+\section{Getting Started}
+\label{sec:getting-started}
+
+The S\textsuperscript{4}D web interface provides an intuitive platform for analyzing website similarity and structure. This guide walks through all major features and functionality.
+
+\subsection{System Requirements}
+\label{subsec:system-requirements}
+
+\begin{itemize}
+    \item Modern web browser (Chrome, Firefox, Safari, Edge)
+    \item JavaScript enabled
+    \item Internet connection for URL processing
+    \item Minimum screen resolution: 1024x768
+\end{itemize}
+
+\section{Interface Overview}
+\label{sec:interface-overview}
+
+The S\textsuperscript{4}D interface consists of four main sections:
+
+\begin{enumerate}
+    \item \textbf{Home}: Main URL processing and analysis
+    \item \textbf{Experiments}: Batch experiment configuration and execution
+    \item \textbf{Results Archive}: Access to previous experiment results
+    \item \textbf{Settings}: Theme and configuration options
+\end{enumerate}
+
+% TODO: Add screenshot of main interface
+% \begin{figure}[htbp]
+%     \centering
+%     \includegraphics[width=0.9\textwidth]{figures/main_interface.png}
+%     \caption{S4D Main Interface Overview}
+%     \label{fig:main-interface}
+% \end{figure}
+
+\section{Basic URL Analysis}
+\label{sec:basic-url-analysis}
+
+\subsection{Adding URLs}
+\label{subsec:adding-urls}
+
+\begin{enumerate}
+    \item Navigate to the \textbf{Home} section
+    \item In the URL input field, enter or paste URLs
+    \item \textbf{Multiple URL support}:
+        \begin{itemize}
+            \item Paste multiple URLs separated by newlines
+            \item Paste space-separated URLs
+            \item Paste quoted URLs from spreadsheets
+        \end{itemize}
+    \item Press \textbf{Enter} or click \textbf{Add} to process URLs
+    \item Invalid URLs are automatically filtered and reported
+\end{enumerate}
+
+\subsection{Selecting Analysis Levels}
+\label{subsec:selecting-levels}
+
+DOM analysis supports levels 1-10, representing different depths of structural analysis:
+
+\begin{itemize}
+    \item \textbf{Level 1}: Surface-level structural elements
+    \item \textbf{Level 5}: Moderate depth analysis (recommended for most cases)
+    \item \textbf{Level 10}: Deep structural analysis (resource-intensive)
+\end{itemize}
+
+\textbf{Selection Process}:
+\begin{enumerate}
+    \item Click desired level chips in the Levels section
+    \item Selected levels appear highlighted in blue
+    \item Multiple levels can be selected for comparative analysis
+    \item At least one level must be selected before running analysis
+\end{enumerate}
+
+\subsection{Running Analysis}
+\label{subsec:running-analysis}
+
+\begin{enumerate}
+    \item Ensure URLs are added and levels are selected
+    \item Click the \textbf{Run} button
+    \item Monitor progress indicator
+    \item Use \textbf{Cancel} to abort if needed
+    \item Processing time varies based on:
+        \begin{itemize}
+            \item Number of URLs
+            \item Selected levels
+            \item Website complexity
+            \item Network speed
+        \end{itemize}
+\end{enumerate}
+
+\section{Understanding Results}
+\label{sec:understanding-results}
+
+\subsection{Site Similarity Analysis}
+\label{subsec:similarity-analysis}
+
+Results display similarity matrices showing relationships between analyzed websites:
+
+\begin{itemize}
+    \item \textbf{Color coding}: Viridis colormap from purple (low similarity) to yellow (high similarity)
+    \item \textbf{Percentage values}: Cosine similarity scores (0-100\%)
+    \item \textbf{Diagonal elements}: Self-similarity (always 100\%)
+    \item \textbf{Interactive features}:
+        \begin{itemize}
+            \item Hover for detailed tooltips
+            \item Click to copy matrix data
+            \item PDF export functionality
+        \end{itemize}
+\end{itemize}
+
+\subsection{Clustering Results}
+\label{subsec:clustering-results}
+
+Clustering analysis groups similar website elements:
+
+\begin{itemize}
+    \item \textbf{Cluster count}: Number of identified groups
+    \item \textbf{DBCV Score}: Quality metric (higher is better)
+    \item \textbf{Best level indicator}: Automatically identified optimal analysis level
+    \item \textbf{Cluster visualization}: Color-coded HTML outputs
+\end{itemize}
+
+\subsection{Generated HTML Files}
+\label{subsec:generated-html}
+
+The system generates color-coded HTML visualizations:
+
+\begin{itemize}
+    \item \textbf{Organization}: Files grouped by analysis level
+    \item \textbf{Naming convention}: level\_domain\_identifier\_guid.html
+    \item \textbf{Color coding}: Elements colored by cluster membership
+    \item \textbf{Metadata}: URL, GUID, and timestamp information included
+\end{itemize}
+
+\section{Advanced Features}
+\label{sec:advanced-features}
+
+\subsection{Experiment Configuration}
+\label{subsec:experiment-configuration}
+
+For batch processing and research workflows:
+
+\begin{enumerate}
+    \item Switch to \textbf{Experiments} tab
+    \item Configure experiment parameters:
+        \begin{itemize}
+            \item Experiment name
+            \item URL sets
+            \item Level combinations
+            \item URLs per domain settings
+        \end{itemize}
+    \item Launch batch experiments
+    \item Monitor progress and results
+\end{enumerate}
+
+\subsection{Results Archive}
+\label{subsec:results-archive}
+
+Access and analyze previous experiments:
+
+\begin{itemize}
+    \item \textbf{Experiment browser}: List of completed analyses
+    \item \textbf{Filtering}: Sort by date, success rate, duration
+    \item \textbf{Detailed views}: Expand for comprehensive results
+    \item \textbf{Data export}: Copy results in multiple formats
+    \item \textbf{Generated charts}: View performance visualizations
+\end{itemize}
+
+\section{Performance and Optimization}
+\label{sec:performance-optimization}
+
+\subsection{System Efficiency}
+\label{subsec:system-efficiency}
+
+The system implements various optimizations for improved performance:
+
+\begin{itemize}
+    \item \textbf{Browser reuse}: Maintains browser instances across requests
+    \item \textbf{Memory optimization}: Efficient data structure management
+    \item \textbf{Processing indicators}: Real-time status updates
+    \item \textbf{Resource monitoring}: Track system resource utilization
+\end{itemize}
+
+\subsection{Performance Monitoring}
+\label{subsec:performance-monitoring}
+
+Real-time performance metrics:
+
+\begin{itemize}
+    \item \textbf{Processing time}: Per URL and per level timing
+    \item \textbf{Memory usage}: System resource utilization
+    \item \textbf{Success rates}: Processing reliability metrics
+    \item \textbf{Bottleneck identification}: Slowest processing steps
+\end{itemize}
+
+\section{Troubleshooting}
+\label{sec:troubleshooting}
+
+\subsection{Common Issues}
+\label{subsec:common-issues}
+
+\textbf{URLs not processing}:
+\begin{itemize}
+    \item Verify URL format (must include http:// or https://)
+    \item Check website accessibility
+    \item Ensure stable internet connection
+    \item Try reducing number of simultaneous URLs
+\end{itemize}
+
+\textbf{Slow processing}:
+\begin{itemize}
+    \item Reduce analysis levels
+    \item Process fewer URLs simultaneously
+    \item Check system resources
+    \item Monitor system resource usage during processing
+\end{itemize}
+
+\textbf{Missing results}:
+\begin{itemize}
+    \item Verify successful processing completion
+    \item Check browser console for errors
+    \item Refresh page and retry
+    \item Contact system administrator if persistent
+\end{itemize}
+
+\subsection{Error Messages}
+\label{subsec:error-messages}
+
+\begin{itemize}
+    \item \textbf{"Invalid URLs skipped"}: Some URLs malformed - check format
+    \item \textbf{"No valid URLs found"}: All provided URLs invalid
+    \item \textbf{"Processing failed"}: Server error - retry or contact support
+    \item \textbf{"Timeout error"}: Request took too long - reduce scope
+\end{itemize}
+
+\section{Best Practices}
+\label{sec:best-practices}
+
+\subsection{Optimal Usage Patterns}
+\label{subsec:optimal-usage}
+
+\begin{itemize}
+    \item \textbf{Start small}: Begin with 3-5 URLs to understand results
+    \item \textbf{Level selection}: Use levels 1-3 for initial exploration
+    \item \textbf{Domain grouping}: Analyze similar domains together
+    \item \textbf{Progressive analysis}: Start broad, then focus on interesting clusters
+\end{itemize}
+
+\subsection{Result Interpretation}
+\label{subsec:result-interpretation}
+
+\begin{itemize}
+    \item \textbf{Similarity thresholds}: >80\% indicates high similarity
+    \item \textbf{Clustering quality}: DBCV >0.5 indicates good clustering
+    \item \textbf{Best level selection}: Use automatically identified optimal levels
+    \item \textbf{Visual inspection}: Always review generated HTML files
+\end{itemize} 

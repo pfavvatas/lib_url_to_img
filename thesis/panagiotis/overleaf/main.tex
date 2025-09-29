@@ -1,0 +1,206 @@
+\documentclass[12pt,a4paper,oneside]{book}
+
+% Package imports optimized for Overleaf (English only)
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{lmodern}
+\usepackage{amsmath,amsfonts,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage{setspace}
+\usepackage{url}
+\usepackage{hyperref}
+% Algorithm packages commented out due to missing dependencies
+% \usepackage{algorithm}
+% \usepackage{algorithmic}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{subcaption}
+\usepackage[numbers,sort&compress]{natbib}
+
+% TikZ libraries
+\usetikzlibrary{shapes,arrows,positioning}
+\pgfplotsset{compat=1.18}
+
+% Hyperref setup
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    citecolor=blue,
+    pdftitle={WebSRC: A Dataset for Web-Based Structural Reading Comprehension},
+    pdfauthor={Panagiotis Favvatas},
+}
+
+% Custom commands for the thesis
+\newcommand{\name}{\textsc{WebSRC}}
+
+% Custom commands for technical terms
+\newcommand{\websrc}{\textsc{WebSRC}}
+\newcommand{\hdbscan}{\textsc{HDBSCAN}}
+\newcommand{\dbcv}{\textsc{DBCV}}
+\newcommand{\react}{\textsc{React}}
+\newcommand{\flask}{\textsc{Flask}}
+\newcommand{\python}{\textsc{Python}}
+\newcommand{\dom}{\textsc{DOM}}
+\newcommand{\css}{\textsc{CSS}}
+\newcommand{\html}{\textsc{HTML}}
+\newcommand{\api}{\textsc{API}}
+\newcommand{\rest}{\textsc{REST}}
+\newcommand{\json}{\textsc{JSON}}
+\newcommand{\urlcmd}{\textsc{URL}}
+
+% Listings configuration
+\lstset{
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    stringstyle=\color{red},
+    commentstyle=\color{gray},
+    showstringspaces=false,
+    breaklines=true,
+    frame=single,
+    numbers=left,
+    numberstyle=\tiny\color{gray}
+}
+
+% Page style setup
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[R]{\leftmark}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Chapter title formatting
+\titleformat{\chapter}[display]
+{\normalfont\huge\bfseries}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
+
+% Spacing
+\onehalfspacing
+
+% Theorem environments
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}{Lemma}[chapter]
+\newtheorem{proposition}{Proposition}[chapter]
+\newtheorem{corollary}{Corollary}[chapter]
+
+\begin{document}
+
+% Title page
+\begin{titlepage}
+\centering
+
+% University Logo
+\vspace*{1cm}
+\includegraphics[width=3cm]{university_logo.png}
+\vspace{1cm}
+
+{\huge\bfseries WebSRC: A Dataset for Web-Based Structural Reading Comprehension\par}
+\vspace{2cm}
+
+{\Large Panagiotis Favvatas\par}
+\vspace{1.5cm}
+
+{\large A thesis submitted in partial fulfillment\\
+of the requirements for the degree of\\
+BSc of Science in Computer Science\par}
+\vspace{2cm}
+
+{\large University of Peloponnese\\
+Department of Informatics And Telecommunications\par}
+\vspace{1cm}
+
+{\large June 2025\par}
+
+\vspace{1.5cm}
+
+% Committee
+{\large \textbf{Committee}\par}
+\vspace{0.5cm}
+{\normalsize Professor Spyros Skiadopoulos, Supervisor\par}
+\vspace{0.3cm}
+{\normalsize PhD Candidate Thanasis Chantzios, Co-supervisor\par}
+
+\end{titlepage}
+
+% Abstract pages
+\frontmatter
+\pagestyle{plain}
+
+% English Abstract
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+This thesis presents {\name}, a research platform for analyzing structural similarities between websites. The system processes web pages by examining their DOM structure and CSS styling, then uses machine learning to group similar elements together.
+
+The core problem tackled here is building a system that can automatically analyze web pages at different DOM depths, ranging from level 1 to level 10. Users can choose between two approaches: analyzing all URLs together as one dataset, or processing them separately by domain for comparison. The system extracts both structural information from the DOM tree and visual styling from CSS properties, combining these into a single representation for analysis.
+
+The clustering approach uses HDBSCAN (Hierarchical Density-Based Spatial Clustering of Applications with Noise) along with DBCV (Density-Based Cluster Validation) to group similar webpage elements. The system also handles outliers by reassigning them to appropriate clusters when possible.
+
+For research purposes, the platform includes an experiment management component that allows users to run multiple test scenarios with different URL combinations, DOM levels, and processing modes. A caching system stores processed results from individual URLs, which speeds up repeated analyses. The cache includes TTL settings and tracks efficiency metrics to show how much processing time is saved.
+
+The technical implementation uses React for the user interface, Flask for the API layer, and Python for the core processing logic. The system produces visualizations through Gnuplot integration, generating charts and data files suitable for academic work. Users can access a results archive to compare different experiments and track performance over time.
+
+The system outputs color-coded HTML files that show structural similarities between websites. It also generates similarity matrices using cosine similarity calculations and provides detailed timing information about processing performance and cache usage.
+
+Testing shows that the system effectively groups web content based on structural characteristics. It can handle multiple websites simultaneously and produces meaningful clusters based on DOM hierarchy and CSS styling patterns. The performance data helps researchers optimize their analysis workflows.
+
+\textit{The complete system implementation is available at: \url{https://github.com/pfavvatas/lib_url_to_img}}
+
+% Acknowledgments
+\chapter*{Acknowledgments}
+\addcontentsline{toc}{chapter}{Acknowledgments}
+
+I would like to express my sincere gratitude to all those who supported me throughout the completion of this thesis and my academic journey.
+
+First and foremost, I want to thank my thesis supervisor for their invaluable guidance, patience, and expertise throughout this research. Their insights and constructive feedback were instrumental in shaping this work and ensuring its quality.
+
+I would like to acknowledge the members of my thesis committee for their valuable time, thoughtful questions, and constructive suggestions that helped improve this work significantly.
+
+Special thanks go to my fellow students and colleagues who provided valuable feedback on the {\name} system.
+
+I am grateful to the open-source community and the developers of the various tools and libraries that made this research possible, including the creators of HDBSCAN, React, Flask, Selenium, and numerous other technologies that formed the foundation of the {\name} system.
+
+I would like to thank my family for their unwavering support and encouragement throughout my academic journey.
+
+This work stands as a testament to the collective effort and support of many individuals, and I am deeply grateful to each and every one of them.
+
+\newpage
+% Table of contents
+\tableofcontents
+\listoffigures
+\listoftables
+
+% Main content
+\mainmatter
+\pagestyle{fancy}
+
+% Chapters
+\input{chapter1-introduction}
+\input{chapter2-related}
+\input{chapter3-architecture}
+\input{chapter4-implementation}
+\input{chapter5-evaluation}
+\input{chapter6-conclusion}
+
+% Appendices
+\appendix
+\input{appendix-technical}
+\input{appendix-api}
+
+% Bibliography
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document} 

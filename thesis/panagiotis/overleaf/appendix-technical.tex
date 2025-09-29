@@ -1,0 +1,280 @@
+\chapter{User Guide}
+\label{appendix:user-guide}
+
+This appendix provides a step-by-step guide for using the {\name} system through its web interface.
+
+\section{Getting Started}
+\label{app:getting_started}
+
+\subsection{Accessing the System}
+
+After installation and startup (see Appendix~\ref{appendix:tech-specs}), access the {\name} system by navigating to \texttt{http://localhost:3000} in your web browser.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{ui_startup_screen.png}
+\caption{Initial System Startup Screen}
+\label{fig:ui_startup_screen}
+\end{figure}
+
+\section{Basic Workflow}
+\label{app:basic_workflow}
+
+\subsection{Step 1: Enter URLs}
+
+\begin{enumerate}
+\item Navigate to the Home tab (🏠 Home)
+\item Enter URLs in the text area, one per line or paste multiple URLs
+\item URLs will automatically be grouped by domain if Mode 1 is selected
+\end{enumerate}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{ui_workflow_step1.png}
+\caption{Step 1: URL Entry and Domain Grouping}
+\label{fig:ui_workflow_step1}
+\end{figure}
+
+\subsection{Step 2: Configure Analysis}
+
+\begin{enumerate}
+\item Select DOM analysis levels using the numbered chips (1-10)
+\item Choose processing mode:
+\begin{itemize}
+\item Mode 0: All Together - processes all URLs as a single batch
+\item Mode 1: Domain-based - groups URLs by domain for analysis
+\end{itemize}
+\end{enumerate}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{ui_workflow_step2.png}
+\caption{Step 2: Level Selection and Mode Configuration}
+\label{fig:ui_workflow_step2}
+\end{figure}
+
+\subsection{Step 3: Execute Analysis}
+
+\begin{enumerate}
+\item Click the "Run" button to start processing
+\item Monitor progress through the loading indicators
+\item Processing time varies based on number of URLs and selected levels
+\end{enumerate}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{ui_workflow_step3.png}
+\caption{Step 3: Analysis Execution with Progress Indicators}
+\label{fig:ui_workflow_step3}
+\end{figure}
+
+\subsection{Step 4: View Results}
+
+\begin{enumerate}
+\item Navigate to the Clusters tab (🎯 Clusters) to view results
+\item Results are organized by DOM level
+\item Each cluster is color-coded for easy identification
+\item Click on sections to expand detailed views
+\end{enumerate}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{ui_workflow_step4.png}
+\caption{Step 4: Viewing Color-coded Clustering Results}
+\label{fig:ui_workflow_step4}
+\end{figure}
+
+\section{Advanced Features}
+\label{app:advanced_features}
+
+\subsection{Batch Experiments}
+
+For research purposes, use the Experiments tab (🧪 Experiments):
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{ui_advanced_experiments.png}
+\caption{Advanced Experiments Interface for Batch Processing}
+\label{fig:ui_advanced_experiments}
+\end{figure}
+
+\subsection{Historical Results}
+
+Access previous analyses through the Results tab (📊 Results):
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{ui_advanced_results.png}
+\caption{Historical Results Archive with Performance Metrics}
+\label{fig:ui_advanced_results}
+\end{figure}
+
+\subsection{Custom Configuration}
+
+Fine-tune analysis parameters in the Config tab (⚙️ Config):
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{ui_advanced_config.png}
+\caption{Custom Configuration for Advanced Users}
+\label{fig:ui_advanced_config}
+\end{figure}
+
+\chapter{Technical Specifications}
+\label{appendix:tech-specs}
+
+\section{System Requirements}
+\label{app:system_requirements}
+
+\subsection{Hardware Requirements}
+
+\begin{itemize}
+\item \textbf{CPU:} Intel i5-6500 or AMD Ryzen 5 2600 (minimum), Intel i7-8565U or higher (recommended)
+\item \textbf{RAM:} 8GB minimum, 16GB recommended for processing large datasets
+\item \textbf{Storage:} 2GB available disk space, SSD recommended for optimal performance
+\item \textbf{Network:} Stable internet connection for web scraping operations
+\end{itemize}
+
+\subsection{Software Requirements}
+
+\begin{itemize}
+\item \textbf{Operating System:} Windows 10+, macOS 10.14+, or Linux (Ubuntu 18.04+ recommended)
+\item \textbf{Python:} Version 3.8 or higher
+\item \textbf{Node.js:} Version 14.0 or higher
+\item \textbf{Chrome Browser:} Version 90+ (for ChromeDriver compatibility)
+\item \textbf{Git:} For version control and project cloning
+\end{itemize}
+
+\section{Installation Guide}
+\label{app:installation_guide}
+
+\subsection{Quick Start Installation}
+
+\begin{enumerate}
+\item Clone the repository:
+\begin{lstlisting}[language=bash]
+git clone https://github.com/user/websrc-project.git
+cd websrc-project
+\end{lstlisting}
+
+\item Install Python dependencies:
+\begin{lstlisting}[language=bash]
+pip install -r requirements.txt
+\end{lstlisting}
+
+\item Install Node.js dependencies:
+\begin{lstlisting}[language=bash]
+cd frontend
+npm install
+cd ..
+\end{lstlisting}
+
+\item Start the application:
+\begin{lstlisting}[language=bash]
+python run_project.py
+\end{lstlisting}
+\end{enumerate}
+
+\section{Configuration Options}
+\label{app:configuration}
+
+\subsection{Cache Configuration}
+
+The cache system can be configured through \texttt{backend/lib/config.json}:
+
+\begin{lstlisting}[language=json]
+{
+  "cache": {
+    "enabled": true,
+    "default_ttl_hours": 24,
+    "max_cache_size_mb": 1024,
+    "cleanup_interval_hours": 6
+  },
+  "clustering": {
+    "min_cluster_size_range": [2, 10],
+    "cluster_selection_epsilon_range": [0.0, 0.5],
+    "outlier_reassignment": true
+  }
+}
+\end{lstlisting}
+
+\subsection{Processing Parameters}
+
+Key processing parameters that can be adjusted:
+
+\begin{table}[h]
+\centering
+\caption{Processing Configuration Parameters}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Parameter} & \textbf{Default} & \textbf{Description} \\
+\hline
+\texttt{analysis\_levels} & [1, 2, 3] & DOM depth levels to analyze \\
+\texttt{timeout\_seconds} & 30 & Web scraping timeout \\
+\texttt{max\_urls\_per\_batch} & 50 & Maximum URLs per processing batch \\
+\texttt{enable\_css\_analysis} & true & Include computed CSS styles \\
+\texttt{dbcv\_optimization} & true & Enable DBCV-based parameter optimization \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Performance Tuning Guide}
+\label{app:performance_tuning}
+
+\subsection{Memory Optimization}
+
+\begin{itemize}
+\item Adjust \texttt{max\_urls\_per\_batch} based on available RAM
+\item Enable automatic garbage collection for large datasets
+\item Use streaming processing for very large URL lists
+\item Monitor memory usage during processing
+\end{itemize}
+
+\subsection{CPU Optimization}
+
+\begin{itemize}
+\item Configure parallel processing based on CPU cores
+\item Optimize clustering parameter ranges for faster convergence
+\item Use browser pooling for multiple concurrent scraping operations
+\item Enable CPU profiling for performance bottleneck identification
+\end{itemize}
+
+\section{Troubleshooting Guide}
+\label{app:troubleshooting}
+
+\subsection{Common Issues}
+
+\subsubsection{ChromeDriver Compatibility}
+
+\textbf{Issue:} ChromeDriver version mismatch with installed Chrome browser.
+
+\textbf{Solution:}
+\begin{lstlisting}[language=bash]
+# Update Chrome browser to latest version
+# Install compatible ChromeDriver
+pip install --upgrade selenium webdriver-manager
+\end{lstlisting}
+
+\subsubsection{Memory Errors}
+
+\textbf{Issue:} Out of memory errors during large dataset processing.
+
+\textbf{Solution:}
+\begin{itemize}
+\item Reduce \texttt{max\_urls\_per\_batch} parameter
+\item Increase system virtual memory
+\item Process datasets in smaller chunks
+\item Enable streaming processing mode
+\end{itemize}
+
+\subsubsection{Cache Corruption}
+
+\textbf{Issue:} Corrupted cache files causing processing errors.
+
+\textbf{Solution:}
+\begin{lstlisting}[language=bash]
+# Clear cache directory
+rm -rf backend/api/cache/*
+# Restart application
+python run_project.py
+\end{lstlisting} 

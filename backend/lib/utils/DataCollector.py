@@ -9,8 +9,6 @@ from utils.image import create_image_by_level
 from utils.process import process_url
 import time
 import random
-# Generate a timestamp for the file name
-timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 
 # Set to store used IDs
 used_ids = set()
@@ -33,22 +31,128 @@ def generate_unique_id():
 class DataCollector:
     def __init__(self):
         self.url_data = {}
+        # Generate a unique timestamp for this instance
+        self.timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S") + str(random.randint(1000, 9999))
+        self.timing_logs = {
+            "start_time": time.time(),
+            "url_processing": {},
+            "total_urls": 0
+        }
 
     def collect_data(self, urls, levels, driver, config):
-        for url in urls:
+        self.timing_logs["total_urls"] = len(urls)
+        self.timing_logs["levels"] = levels
+        self.url_timing_logs = {}  # Store detailed timing for each URL
+        successful_urls = 0
+        failed_urls = 0
+        
+        for i, url in enumerate(urls):
+            url_start_time = time.time()
             unique_id = generate_unique_id()  # Generate a unique identifier            
             self.url_data[unique_id] = {'url': url, 'html_data': {}, 'combinations_by_level': {}}
-            process_url(url, levels, driver, config, unique_id, self)
-            # create_image_by_level(self, timestamp)
-
+            
+            try:
+                print(f"🌐 Processing URL {i+1}/{len(urls)}: {url}")
+                
+                # Process the URL with error handling
+                url_timing_result = process_url(url, levels, driver, config, unique_id, self)
+                
+                # Check if processing was successful
+                if url_timing_result is not None and not url_timing_result.get('error'):
+                    successful_urls += 1
+                    print(f"✅ Successfully processed URL {i+1}/{len(urls)}: {url}")
+                else:
+                    failed_urls += 1
+                    print(f"⚠️  Failed to process URL {i+1}/{len(urls)}: {url} - {url_timing_result.get('error', 'Unknown error')}")
+                    # Remove failed URL data to avoid inconsistencies
+                    if not self.url_data[unique_id]['html_data']:
+                        del self.url_data[unique_id]
+                        
+            except Exception as e:
+                failed_urls += 1
+                error_msg = f"Exception during URL processing: {str(e)}"
+                print(f"❌ Error processing URL {i+1}/{len(urls)}: {url} - {error_msg}")
+                
+                # Log the error
+                with open('url_processing_errors.log', 'a') as f:
+                    f.write(f"{time.strftime('%Y-%m-%d %H:%M:%S')} - URL: {url} - Error: {error_msg}\n")
+                    f.write(f"Traceback: {traceback.format_exc()}\n\n")
+                
+                # Create error timing result
+                url_timing_result = {
+                    "url": url,
+                    "unique_id": unique_id,
+                    "error": error_msg,
+                    "exception": str(e),
+                    "traceback": traceback.format_exc()
+                }
+                
+                # Remove failed URL data to avoid inconsistencies
+                if unique_id in self.url_data and not self.url_data[unique_id]['html_data']:
+                    del self.url_data[unique_id]
+            
+            # Record timing for this URL (whether successful or failed)
+            url_duration = time.time() - url_start_time
+            self.timing_logs["url_processing"][f"url_{i+1}"] = {
+                "url": url,
+                "unique_id": unique_id,
+                "start_time": url_start_time,
+                "end_time": time.time(),
+                "duration": url_duration,
+                "description": f"Processing URL {i+1} of {len(urls)}",
+                "detailed_timing": url_timing_result,  # Include the detailed timing from process_url
+                "success": url_timing_result is not None and not (url_timing_result.get('error') if isinstance(url_timing_result, dict) else False)
+            }
+            
+            print(f"⏱️  URL {i+1}/{len(urls)} completed in {url_duration:.2f}s")
+            
+        # Log final summary
+        print(f"\n📊 Processing Summary:")
+        print(f"✅ Successful URLs: {successful_urls}/{len(urls)}")
+        print(f"❌ Failed URLs: {failed_urls}/{len(urls)}")
+        print(f"📁 Total data records: {len(self.url_data)}")
+        
+        # Store summary in timing logs
+        self.timing_logs["processing_summary"] = {
+            "total_urls": len(urls),
+            "successful_urls": successful_urls,
+            "failed_urls": failed_urls,
+            "success_rate": (successful_urls / len(urls)) * 100 if urls else 0,
+            "final_data_records": len(self.url_data)
+        }
+            
+        # create_image_by_level(self, self.timestamp)
 
     def save_data(self):
+        save_start_time = time.time()
         
-
         # Save the collected data to a file with the timestamp
-        file_name = f"results/data_{timestamp}.json"
+        file_name = f"results/data_{self.timestamp}.json"
+        
+        # Calculate file size before writing
+        file_size_before = 0
+        if os.path.exists(file_name):
+            file_size_before = os.path.getsize(file_name)
+        
         with open(file_name, 'w') as f:
             json.dump(self.url_data, f, indent=4)
+        
+        # Calculate file size after writing
+        file_size_after = os.path.getsize(file_name) if os.path.exists(file_name) else 0
+        
+        save_duration = time.time() - save_start_time
+        self.timing_logs["data_saving"] = {
+            "start_time": save_start_time,
+            "end_time": time.time(),
+            "duration": save_duration,
+            "file_name": file_name,
+            "file_size_bytes": file_size_after,
+            "file_size_mb": file_size_after / (1024 * 1024),
+            "file_size_change": file_size_after - file_size_before,
+            "description": "Saving collected data to JSON file",
+            "urls_saved": len(self.url_data),
+            "total_unique_ids": len(self.url_data)
+        }
 
     def find_attributes(self, data):
         # Initialize an empty list to store all attributes
@@ -90,6 +194,8 @@ class DataCollector:
         return combinations
 
     def computed_styles(self, level=1):
+        level_start_time = time.time()
+        
         # Get the combinations for the given level
         combinations = self.get_combinations_by_level(level)
 
@@ -157,13 +263,26 @@ class DataCollector:
             # If it doesn't exist, create it
             os.makedirs(dir_path)        
         # Save the output to a file
-        computed_styles_file = f"{dir_path}/computed_styles_{timestamp}.json"
+        computed_styles_file = f"{dir_path}/computed_styles_{self.timestamp}.json"
         with open(computed_styles_file, 'w') as f:
             json.dump({
                 'total_unique_attributes': total_unique_attributes,
                 'attribute_values': attribute_values
             }, f, indent=4)
 
+        # Record timing for this level
+        level_duration = time.time() - level_start_time
+        self.timing_logs[f"computed_styles_level_{level}"] = {
+            "start_time": level_start_time,
+            "end_time": time.time(),
+            "duration": level_duration,
+            "level": level,
+            "total_unique_attributes": total_unique_attributes,
+            "distinct_attributes": len(distinct_values),
+            "computed_styles_file": computed_styles_file,
+            "file_size_bytes": os.path.getsize(computed_styles_file) if os.path.exists(computed_styles_file) else 0,
+            "description": f"Generating computed styles for level {level}"
+        }
 
         # Iterate over each attribute
         for attribute_data in attribute_values:
@@ -188,7 +307,7 @@ class DataCollector:
                 except Exception as e:
                     # Write the error, attribute, value, and ids to the error file
                     # Open the error file
-                    with open(f"results/computed_styles_images/error_log_{timestamp}.txt", 'w') as error_file:
+                    with open(f"results/computed_styles_images/error_log_{self.timestamp}.txt", 'w') as error_file:
                         error_file.write(f"Error: {str(e)}\n")
                         error_file.write(f"Attribute: {attribute}\n")
                         error_file.write(f"Value: {value}\n")
@@ -196,30 +315,6 @@ class DataCollector:
                         error_file.write("Traceback:\n")
                         error_file.write(traceback.format_exc())
                         error_file.write("\n\n")
-
-            # Set the title of the plot to the attribute
-            # plt.title(attribute)
-
-            # Set the x and y labels
-            # plt.xlabel('Value')
-            # plt.ylabel('Number of IDs')
-
-            # Show the plot
-            # plt.show()
-
-            # Define the directory path
-            # dir_path = f"results/computed_styles_images/level_{level}"
-
-            # Check if the directory exists
-            # if not os.path.exists(dir_path):
-            #     # If it doesn't exist, create it
-            #     os.makedirs(dir_path)
-
-            # Now you can safely save the plot to the directory
-            # plt.savefig(f'{dir_path}/{attribute}_{timestamp}.png')
-
-            # Close the plot
-            # plt.close()
 
         return total_unique_attributes, attribute_values, computed_styles_file
 

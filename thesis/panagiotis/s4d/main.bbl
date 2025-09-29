@@ -1,0 +1,50 @@
+\begin{thebibliography}{1}
+
+\bibitem{chen2021websrc}
+Xingyu Chen, Zihan Zhao, Lu~Chen, JiaBao Ji, Danyang Zhang, Ao~Luo, Yuxuan
+  Xiong, and Kai Yu.
+\newblock Websrc: A dataset for web-based structural reading comprehension.
+\newblock In {\em Proceedings of the 2021 Conference on Empirical Methods in
+  Natural Language Processing}, pages 4173--4185, Online and Punta Cana,
+  Dominican Republic, 2021. Association for Computational Linguistics.
+
+\bibitem{deng2022domlm}
+Xiang Deng, Prashant Shiralkar, Colin Lockard, Binxuan Huang, and Huan Sun.
+\newblock Dom-lm: Learning generalizable representations for html documents.
+\newblock {\em arXiv preprint arXiv:2201.10608}, 2022.
+\newblock cs.CL.
+
+\bibitem{gulhane2011vertex}
+Pankaj Gulhane, Amit Madaan, Rupesh Mehta, Jeyashankher Ramamirtham, Rajeev
+  Rastogi, Sandeep Satpal, Srinivasan~H Sengamedu, Ashwin Tengli, and Charu
+  Tiwari.
+\newblock Web-scale information extraction with vertex.
+\newblock In {\em 2011 IEEE 27th International Conference on Data Engineering},
+  pages 1209--1220. IEEE, 2011.
+
+\bibitem{lockard2020zeroshotceres}
+Colin Lockard, Prashant Shiralkar, Xin~Luna Dong, and Hannaneh Hajishirzi.
+\newblock Zeroshotceres: Zero-shot relation extraction from semi-structured
+  webpages.
+\newblock In {\em Proceedings of the 58th Annual Meeting of the Association for
+  Computational Linguistics}, pages 8105--8117, Online, 2020. Association for
+  Computational Linguistics.
+
+\bibitem{mcinnes2017hdbscan}
+Leland McInnes, John Healy, and Steve Astels.
+\newblock hdbscan: Hierarchical density based clustering.
+\newblock {\em Journal of Open Source Software}, 2(11):205, 2017.
+\newblock Software Repository:
+  \url{https://github.com/scikit-learn-contrib/hdbscan}, Software Archive:
+  \url{http://dx.doi.org/10.5281/zenodo.401403}.
+
+\bibitem{moulavi2014dbcv}
+Davoud Moulavi, Pablo~Andretta Jaskowiak, Ricardo J. G.~B. Campello, Arthur
+  Zimek, and J{\"o}rg Sander.
+\newblock Density-based clustering validation.
+\newblock In {\em Proceedings of the 2014 SIAM International Conference on Data
+  Mining}, pages 839--847. SIAM, 2014.
+\newblock Introduces DBCV (Density-Based Cluster Validation) index for
+  evaluating density-based clustering results.
+
+\end{thebibliography}

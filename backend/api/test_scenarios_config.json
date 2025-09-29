@@ -1,0 +1,141 @@
+{
+  "test_configuration": {
+    "description": "Configuration for automated test scenarios combining different modes, levels, and URL sets",
+    "version": "1.0",
+    "created": "2024-01-01",
+    "max_urls_per_test": 10,
+    "available_urls": [
+      "https://nvd.nist.gov/vuln/detail/CVE-2020-14624",
+      "https://nvd.nist.gov/vuln/detail/CVE-2018-5032",
+      "http://jvn.jp/en/jp/JVN41119755/index.html",
+      "http://jvn.jp/en/jp/JVN33214411/index.html",
+      "https://www.kb.cert.org/vuls/id/366027",
+      "https://www.kb.cert.org/vuls/id/229438",
+      "https://www.dia-trofis.gr/lifestyle/vassilopita-i-tixeri-apo-ton-ilia-mamalaki/",
+      "https://www.dia-trofis.gr/lifestyle/pos-den-tha-ksefigete-tis-imeres-tou-pasxa/",
+      "https://www.gastronomos.gr/syntagh/spitika-kraker-me-paprika/313344/",
+      "https://www.gastronomos.gr/syntagh/koyloyrakia-kakaoy-nistisima-choris-anamoni/313773/"
+    ],
+    "url_combinations": {
+      "small_sets": [2, 3, 4],
+      "medium_sets": [5, 6, 7],
+      "large_sets": [8, 9, 10]
+    },
+    "test_parameters": {
+      "modes": [0, 1],
+      "available_levels": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      "level_combinations": {
+        "single_levels": [1, 2, 3, 4, 5],
+        "dual_levels": [[1, 2], [2, 3], [3, 4], [4, 5], [1, 3], [2, 4], [1, 5]],
+        "triple_levels": [[1, 2, 3], [2, 3, 4], [3, 4, 5], [1, 3, 5], [2, 4, 6]],
+        "multi_levels": [[1, 2, 3, 4], [2, 3, 4, 5], [1, 3, 5, 7]]
+      }
+    }
+  },
+  "test_generation_rules": {
+    "description": "Rules for generating all possible test combinations",
+    "combination_strategy": "all_combinations",
+    "filters": {
+      "max_combinations_per_run": 200,
+      "skip_identical_url_sets": true,
+      "prioritize_diverse_domains": true
+    },
+    "test_case_template": {
+      "id": "test_{index}_{mode}_L{levels}_U{url_count}",
+      "name": "Mode {mode} - Levels {levels} - {url_count} URLs",
+      "description": "Testing Mode {mode} with levels {levels} using {url_count} randomly selected URLs"
+    }
+  },
+  "output_configuration": {
+    "base_directory": "experiment_results",
+    "timestamp_format": "YYYY-MM-DD_HH-mm-ss",
+    "result_structure": {
+      "experiment_folder": "{timestamp}_{experiment_name}",
+      "test_case_folder": "test_{test_id}_{mode}_L{levels}",
+      "files": {
+        "config": "test_config.json",
+        "results": "results.json",
+        "timing": "timing_logs.json",
+        "html_files": "html_outputs/",
+        "similarity_data": "similarity_analysis.json",
+        "summary": "test_summary.json"
+      }
+    }
+  },
+  "gnuplot_data_export": {
+    "charts": [
+      {
+        "type": "processing_time_by_level",
+        "title": "Web Scraping Processing Time Analysis Across DOM Levels",
+        "subtitle": "Data: Total processing time (seconds) for URL clustering analysis by DOM tree depth",
+        "x_axis": "DOM_levels",
+        "y_axis": "processing_time_seconds",
+        "series": ["mode_0_all_together", "mode_1_domain_based"],
+        "description": "Compares computational performance between unified processing (Mode 0) vs domain-separated processing (Mode 1) across different DOM tree depth levels"
+      },
+      {
+        "type": "clusters_by_level",
+        "title": "HDBSCAN Clustering Results by DOM Tree Depth",
+        "subtitle": "Data: Number of clusters generated using HDBSCAN algorithm at each DOM level",
+        "x_axis": "DOM_levels",
+        "y_axis": "cluster_count",
+        "series": ["mode_0_unified", "mode_1_domain_split"],
+        "description": "Shows how DOM tree depth affects clustering behavior comparing unified vs domain-separated processing approaches"
+      },
+      {
+        "type": "similarity_scores_by_urls",
+        "title": "Cosine Similarity Scores Across Different URL Combinations",
+        "subtitle": "Data: Average cosine similarity percentages between websites based on CSS styling patterns",
+        "x_axis": "url_combination_size",
+        "y_axis": "average_similarity_percentage",
+        "series": ["mode_0_global", "mode_1_domain_grouped"],
+        "description": "Measures how similar websites are based on CSS styling when processed together vs grouped by domain"
+      },
+      {
+        "type": "html_files_generated_by_test",
+        "title": "HTML Visualization Files Generated Per Test Configuration",
+        "subtitle": "Data: Count of HTML output files created for visual inspection of clustering results",
+        "x_axis": "test_scenario_id",
+        "y_axis": "html_file_count",
+        "series": ["mode_0_output", "mode_1_output"],
+        "description": "Tracks the number of HTML visualization files generated for each test scenario"
+      },
+      {
+        "type": "dbcv_scores_comparison",
+        "title": "DBCV Clustering Quality Assessment Across Test Scenarios",
+        "subtitle": "Data: Density-Based Clustering Validation scores measuring clustering quality (-1 to 1 scale)",
+        "x_axis": "DOM_levels",
+        "y_axis": "dbcv_score",
+        "series": ["small_url_sets", "medium_url_sets", "large_url_sets"],
+        "description": "Evaluates clustering quality using DBCV metric across different URL set sizes and DOM levels"
+      },
+      {
+        "type": "cache_efficiency_analysis",
+        "title": "Caching System Performance During Experimental Runs",
+        "subtitle": "Data: Cache hit rate percentages showing data reuse efficiency during test execution",
+        "x_axis": "test_execution_order",
+        "y_axis": "cache_hit_percentage",
+        "series": ["overall_cache_performance"],
+        "description": "Monitors how effectively the caching system reduces redundant processing during experimental runs"
+      },
+      {
+        "type": "domain_distribution_analysis",
+        "title": "Website Domain Distribution Impact on Clustering",
+        "subtitle": "Data: Number of unique domains per test and their effect on cluster formation",
+        "x_axis": "unique_domains_count",
+        "y_axis": "clusters_formed",
+        "series": ["mode_0_cross_domain", "mode_1_within_domain"],
+        "description": "Analyzes how domain diversity affects clustering patterns in both processing modes"
+      },
+      {
+        "type": "computational_complexity",
+        "title": "Computational Complexity Analysis: Processing Time vs Input Size",
+        "subtitle": "Data: Processing time scaling with number of URLs and DOM levels processed",
+        "x_axis": "total_elements_processed",
+        "y_axis": "processing_time_seconds",
+        "series": ["mode_0_complexity", "mode_1_complexity"],
+        "description": "Studies computational complexity and scalability of both processing approaches"
+      }
+    ]
+  }
+} 

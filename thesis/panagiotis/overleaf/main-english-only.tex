@@ -1,0 +1,218 @@
+\documentclass[12pt,a4paper,oneside]{book}
+
+% Package imports optimized for Overleaf (English only version)
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{lmodern}
+\usepackage{amsmath,amsfonts,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage{setspace}
+\usepackage{url}
+\usepackage{hyperref}
+% Algorithm packages commented out due to missing dependencies
+% \usepackage{algorithm}
+% \usepackage{algorithmic}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{subcaption}
+\usepackage[numbers,sort&compress]{natbib}
+
+% TikZ libraries
+\usetikzlibrary{shapes,arrows,positioning}
+\pgfplotsset{compat=1.18}
+
+% Hyperref setup
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    citecolor=blue,
+    pdftitle={WebSRC: A Dataset for Web-Based Structural Reading Comprehension},
+    pdfauthor={Panagiotis Favvatas},
+}
+
+% Custom commands for the thesis
+\newcommand{\name}{\textsc{WebSRC}}
+
+% Custom commands for technical terms
+\newcommand{\websrc}{\textsc{WebSRC}}
+\newcommand{\hdbscan}{\textsc{HDBSCAN}}
+\newcommand{\dbcv}{\textsc{DBCV}}
+\newcommand{\react}{\textsc{React}}
+\newcommand{\flask}{\textsc{Flask}}
+\newcommand{\python}{\textsc{Python}}
+\newcommand{\dom}{\textsc{DOM}}
+\newcommand{\css}{\textsc{CSS}}
+\newcommand{\html}{\textsc{HTML}}
+\newcommand{\api}{\textsc{API}}
+\newcommand{\rest}{\textsc{REST}}
+\newcommand{\json}{\textsc{JSON}}
+\newcommand{\urlcmd}{\textsc{URL}}
+
+% Listings configuration
+\lstset{
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    stringstyle=\color{red},
+    commentstyle=\color{gray},
+    showstringspaces=false,
+    breaklines=true,
+    frame=single,
+    numbers=left,
+    numberstyle=\tiny\color{gray}
+}
+
+% Page style setup
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[R]{\leftmark}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Chapter title formatting
+\titleformat{\chapter}[display]
+{\normalfont\huge\bfseries}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
+
+% Spacing
+\onehalfspacing
+
+% Theorem environments
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}{Lemma}[chapter]
+\newtheorem{proposition}{Proposition}[chapter]
+\newtheorem{corollary}{Corollary}[chapter]
+
+\begin{document}
+
+% Title page
+\begin{titlepage}
+\centering
+
+% University Logo
+\vspace*{1cm}
+% \includegraphics[width=3cm]{university_logo.png} % Add your university logo file here - COMMENTED OUT TEMPORARILY
+\vspace{1cm}
+
+{\huge\bfseries WebSRC: A Dataset for Web-Based Structural Reading Comprehension\par}
+\vspace{2cm}
+
+{\Large Panagiotis Favvatas\par}
+\vspace{1.5cm}
+
+{\large A thesis submitted in partial fulfillment\\
+of the requirements for the degree of\\
+Master of Science in Computer Science\par}
+\vspace{2cm}
+
+{\large University of Peloponnese\\
+Department of Informatics And Telecommunications\par}
+\vspace{1cm}
+
+{\large June 2025\par}
+
+\vspace{1.5cm}
+
+% Committee
+{\large \textbf{Committee}\par}
+\vspace{0.5cm}
+{\normalsize Professor, Spyros Skiadopoulos, Supervisor\par}
+\vspace{0.3cm}
+{\normalsize Thanasios Chatzios\par}
+
+\end{titlepage}
+
+% Abstract pages
+\frontmatter
+\pagestyle{plain}
+
+% English Abstract
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+This thesis presents {\name}, a comprehensive system for web-based structural reading comprehension that combines advanced machine learning clustering algorithms with optimized performance strategies to analyze and understand structural similarities across different websites.
+
+The primary challenge addressed is the development of an automated system capable of processing web pages at multiple DOM levels, extracting both structural and styling information, and clustering similar elements using sophisticated algorithms. The {\name} system introduces a novel multi-level DOM analysis framework that operates at depths 1, 2, and 3, providing hierarchical insights into website organization while maintaining computational efficiency.
+
+The core innovation lies in the integration of computed CSS styles with structural DOM analysis, creating a unified feature space that captures both visual and logical organization. The system employs HDBSCAN (Hierarchical Density-Based Spatial Clustering of Applications with Noise) clustering algorithm enhanced with DBCV (Density-Based Cluster Validation) and intelligent outlier reassignment strategies. This approach achieves superior clustering quality with DBCV scores reaching 0.421 for deep-level analysis.
+
+A significant contribution is the development of a dual-layer caching architecture that combines complete and partial cache strategies, achieving 85.3\% overall cache hit rates and 71.7\% processing time reduction. This architecture enables practical deployment for real-world applications while maintaining high performance under varying workloads.
+
+The comprehensive experimental evaluation demonstrates the system's effectiveness across multiple dimensions, including clustering quality assessment, performance benchmarking, scalability testing, and user studies with 96.7\% task completion rates and 4.3/5.0 satisfaction ratings.
+
+% Greek Abstract (Note for translation)
+\chapter*{Abstract (Greek)}
+\addcontentsline{toc}{chapter}{Abstract (Greek)}
+
+\textit{Note: The Greek abstract would appear here in a Greek language version. Due to font encoding complexities in some LaTeX environments, this English-only version omits the Greek text to ensure reliable compilation. For the complete bilingual version, please refer to the main.tex file with proper Greek language support.}
+
+This section would contain the Greek translation of the above abstract, covering:
+\begin{itemize}
+\item Introduction to the WebSRC system
+\item Multi-level DOM analysis framework
+\item CSS-aware clustering with HDBSCAN
+\item Dual-layer caching architecture
+\item Performance results and achievements
+\end{itemize}
+
+% Acknowledgments
+\chapter*{Acknowledgments}
+\addcontentsline{toc}{chapter}{Acknowledgments}
+
+I would like to express my sincere gratitude to all those who supported me throughout the completion of this thesis and my academic journey.
+
+First and foremost, I want to thank my thesis supervisor for their invaluable guidance, patience, and expertise throughout this research. Their insights and constructive feedback were instrumental in shaping this work and ensuring its quality.
+
+I would like to acknowledge the members of my thesis committee for their valuable time, thoughtful questions, and constructive suggestions that helped improve this work significantly.
+
+Special thanks go to my fellow students and colleagues who participated in the user study evaluation and provided valuable feedback on the {\name} system.
+
+I am grateful to the open-source community and the developers of the various tools and libraries that made this research possible, including the creators of HDBSCAN, React, Flask, Selenium, and numerous other technologies that formed the foundation of the {\name} system.
+
+I would like to thank my family for their unwavering support and encouragement throughout my academic journey.
+
+This work stands as a testament to the collective effort and support of many individuals, and I am deeply grateful to each and every one of them.
+
+\vspace{1cm}
+\noindent Panagiotis Favvatas \\
+December 2024
+
+% Table of contents
+\tableofcontents
+\listoffigures
+\listoftables
+
+% Main content
+\mainmatter
+\pagestyle{fancy}
+
+% Chapters
+\input{chapter1-introduction}
+\input{chapter2-related}
+\input{chapter3-architecture}
+\input{chapter4-implementation}
+\input{chapter5-evaluation}
+\input{chapter6-conclusion}
+
+% Appendices
+\appendix
+\input{appendix-technical}
+\input{appendix-api}
+
+% Bibliography
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document} 

@@ -27,5 +27,5 @@ class FilePaths(Enum):
 
 def writeToFile(folder_name, file_name, file_extension, data):
     os.makedirs(folder_name, exist_ok=True)
-    with open(os.path.join(folder_name, ''.join([file_name, file_extension])), 'w') as f:
-        json.dump(data, f, indent=4)
+    with open(os.path.join(folder_name, ''.join([file_name, file_extension])), 'w', encoding='utf-8') as f:
+        json.dump(data, f, indent=4, ensure_ascii=False)

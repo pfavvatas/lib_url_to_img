@@ -1,0 +1,65 @@
+\chapter{Introduction}
+\label{chap:introduction}
+
+This thesis presents {\name}, a comprehensive system for web-based structural reading comprehension. {\name} is designed to analyze and understand the structural similarity of different websites through automated DOM analysis, CSS style extraction, and machine learning clustering. The system facilitates the mapping of each page's structure, starting from its basic layout, and organizes relevant information in a simple and structured manner. Through the use of advanced clustering algorithms, structural elements are expressed as vectors and grouped based on their feature similarities, providing color-coded visualizations for better understanding of website structural patterns.
+
+\section{Problem Statement}
+\label{sec:problem_statement}
+
+In the era of rapidly expanding web content, understanding the structural similarity between websites has become increasingly important for various applications including web mining, content analysis, and automated web processing. The challenge lies in developing systems that can effectively analyze, compare, and visualize the structural patterns across different websites in a scalable and efficient manner.
+
+\subsection{Web Structure Analysis Challenges}
+
+Web structure analysis presents several unique challenges:
+
+\begin{itemize}
+\item \textbf{DOM Complexity.} Modern websites contain deeply nested DOM structures with thousands of elements, making manual analysis impractical.
+\item \textbf{CSS Style Diversity.} The variety of CSS styling approaches across different websites creates inconsistency in structural representation.
+\item \textbf{Scalability Issues.} Processing large numbers of websites requires efficient algorithms and caching strategies.
+\item \textbf{Similarity Metrics.} Defining meaningful similarity measures for web structures remains a challenging research problem.
+\end{itemize}
+
+\subsection{Research Motivation}
+
+The need for automated web-based structural reading comprehension stems from several factors:
+
+\begin{itemize}
+\item \textbf{Content Management.} Organizations need tools to understand and manage large collections of web content.
+\item \textbf{Design Pattern Analysis.} Web developers benefit from understanding common structural patterns across websites.
+\item \textbf{Accessibility Evaluation.} Automated analysis can help identify accessibility issues across multiple web properties.
+\item \textbf{Machine Learning Applications.} Structured web data is essential for training models for web-based tasks.
+\end{itemize}
+
+\section{Our Contribution}
+\label{sec:contribution}
+
+This thesis presents several significant contributions to the field of web-based structural analysis:
+
+\subsection{Novel Clustering Methodology}
+
+\begin{itemize}
+\item \textbf{Multi-level DOM Analysis.} Introduction of hierarchical structural analysis at different DOM depths (levels 1, 2, 3).
+\item \textbf{CSS-aware Clustering.} Integration of computed CSS styles in similarity computations using HDBSCAN algorithm.
+\item \textbf{Robust Outlier Handling.} Intelligent reassignment strategy for noise reduction and improved cluster quality.
+\end{itemize}
+
+\subsection{Performance Optimization Innovations}
+
+\begin{itemize}
+\item \textbf{Dual-layer Caching.} Novel caching architecture combining complete and partial cache strategies, achieving 85.3\% cache hit rates.
+\item \textbf{Cache Efficiency Metrics.} Quantitative framework for measuring caching performance with 71.7\% processing time reduction.
+\item \textbf{Adaptive TTL Management.} Context-aware cache expiration policies optimized for different usage scenarios.
+\end{itemize}
+
+\subsection{Comprehensive Evaluation Framework}
+
+\begin{itemize}
+\item \textbf{Automated Test Generation.} Systematic approach to experimental design with reproducible test cases.
+\item \textbf{Multi-metric Assessment.} Integration of clustering quality (DBCV, silhouette) and system performance metrics.
+\item \textbf{Production-Ready Implementation.} Full-stack system with React frontend, Flask API, and Python processing core.
+\end{itemize}
+
+\section{Thesis Organization}
+\label{sec:organization}
+
+The rest of this thesis is organized as follows. In Chapter~\ref{chap:related} we present the related work of web structure analysis, clustering algorithms, and performance optimization techniques. In Chapter~\ref{chap:architecture} we present in detail the {\name} system architecture, describe its functionality, and present the technologies and principles upon which the system was designed. In Chapter~\ref{chap:implementation} we describe the implementation details of core algorithms including HDBSCAN clustering and the dual-layer caching system. In Chapter~\ref{chap:evaluation} we present comprehensive experimental evaluation including performance benchmarking and clustering quality assessment. Finally, in Chapter~\ref{chap:conclusion} we conclude this work and propose possible extensions and future research directions. 

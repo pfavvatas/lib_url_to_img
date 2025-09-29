@@ -22,3 +22,25 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+__pycache__
+*.log
+venv/*
+/venv
+venv/bin/activate
+thesis/thanasis/*
+results/*
+backend/api/error.log
+backend/api/error.log
+backend/api/cache/*
+output_html_files/*
+notes.txt
+backend/api/experiment_results/*
+websrc-thesis.tex
+websrc_thesis.tex
+WebSRC_Summary_for_Thesis.md
+WebSRC_Project_Analysis.md
+WebSRC_Project_Analysis_for_Thesis.md
+WebSRC_LaTeX_Content.tex
+thesis.tex
+
+backend/results/*
