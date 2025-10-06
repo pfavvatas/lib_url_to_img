@@ -176,6 +176,7 @@ class DataCollector:
     import json
 
     def get_combinations_by_level(self, level):
+        show_logs = False
         # Initialize an empty list to store the combinations
         combinations = []
 
@@ -183,41 +184,71 @@ class DataCollector:
         for guid in self.url_data:
             # Iterate over the combinations_by_level list
             for combination in self.url_data[guid]['combinations_by_level']:
-                print("combination['level']: ", combination['level'])
+                combo_start_time = time.time()
+                # print("combination['level']: ", combination['level'])
                 # Check if the level of the current combination matches the given level
                 if combination['level'] == str(level):
                     # If it does, flatten the combinations and extend the combinations list with them
                     flattened_combinations = [item for sublist in combination['combinations'] for item in sublist]
                     combinations.extend(flattened_combinations)
+                # Print duration for this combination processing
+                show_logs and print(f"⏱ finished [ {guid} ] level {combination.get('level')} in {time.time() - combo_start_time:.4f}s")
 
         # Return the combinations
         return combinations
 
     def computed_styles(self, level=1):
+        print(f"\033[94m=== Starting computed styles generation for level {level} in [computed_styles function] ===\033[0m")
+        show_logs = False
         level_start_time = time.time()
         
         # Get the combinations for the given level
+        show_logs and print(f"======================== Starting level {level} =========================")
+        show_logs and print(f"⏱ starting level {level} in {time.time() - level_start_time:.4f}s")
         combinations = self.get_combinations_by_level(level)
+        show_logs and print(f"⏱ finished level {level} in {time.time() - level_start_time:.4f}s")
+        show_logs and print(f"======================== Finished level {level} =========================")
+        
 
         # Initialize an empty list to store all attributes
         all_attributes = []
 
         # Iterate over the outer dictionary
+        show_logs and print(f"======================== Starting find_attributes =========================")
+        find_attributes_start_time = time.time()
         for guid in self.url_data:
             # Find all attributes in the data
             all_attributes.extend(self.find_attributes(self.url_data[guid]['html_data']))
+            show_logs and print(f"⏱ finished [ {guid} ] find_attributes in {time.time() - find_attributes_start_time:.4f}s")
+        show_logs and print(f"======================== Finished find_attributes =========================")
 
         # Convert the list to a pandas DataFrame to use nunique() and unique()
+        show_logs and print(f"======================== Starting attributes_df =========================")
+        attributes_df_start_time = time.time()
         attributes_df = pd.DataFrame(all_attributes, columns=['attribute', 'unique_id', 'value', 'text_size'])
+        show_logs and print(f"⏱ finished attributes_df in {time.time() - attributes_df_start_time:.4f}s")
+        show_logs and print(f"======================== Finished attributes_df =========================")
 
         # Convert dictionaries in 'value' column to strings
+        show_logs and print(f"======================== Starting attributes_df_value =========================")
+        attributes_df_value_start_time = time.time()
         attributes_df['value'] = attributes_df['value'].apply(json.dumps)
+        show_logs and print(f"⏱ finished attributes_df_value in {time.time() - attributes_df_value_start_time:.4f}s")
+        show_logs and print(f"======================== Finished attributes_df_value =========================")
 
         # Get total unique attributes
+        show_logs and print(f"======================== Starting total_unique_attributes =========================")
+        total_unique_attributes_start_time = time.time()
         total_unique_attributes = attributes_df['attribute'].nunique()
+        show_logs and print(f"⏱ finished total_unique_attributes in {time.time() - total_unique_attributes_start_time:.4f}s")
+        show_logs and print(f"======================== Finished total_unique_attributes =========================")
 
         # Get distinct values for each attribute
+        show_logs and print(f"======================== Starting distinct_values =========================")
+        distinct_values_start_time = time.time()
         distinct_values = attributes_df['attribute'].unique().tolist()
+        show_logs and print(f"⏱ finished distinct_values in {time.time() - distinct_values_start_time:.4f}s")
+        show_logs and print(f"======================== Finished distinct_values =========================")
 
         # # Create a nested dictionary structure for each unique attribute and its values
         # attribute_values = {}
@@ -235,27 +266,86 @@ class DataCollector:
         #         attribute_values[attribute][value_dict] = attribute_df[attribute_df['value'] == value]['unique_id'].tolist()
 
         # Create a nested list structure for each unique attribute and its values
+        show_logs and print(f"======================== Starting attribute_values =========================")
+        attribute_values_start_time = time.time()
         attribute_values = []
+
+        # Vectorized precomputation and filtering by combinations
+        vector_start_time = time.time()
+        comb_set = set(combinations)
+        # Precompute per-attribute unique lists (full, before filtering) for parity with previous behavior
+        unique_values_by_attr = attributes_df.groupby('attribute')['value'].unique()
+        unique_text_sizes_by_attr = attributes_df.groupby('attribute')['text_size'].unique()
+        # Prepare filtered dataframe (only rows whose unique_id is in combinations)
+        uid_str_start = time.time()
+        attributes_df = attributes_df.copy()
+        attributes_df['unique_id_str'] = attributes_df['unique_id'].astype(str)
+        uid_str_duration = time.time() - uid_str_start
+        filter_df_start = time.time()
+        filtered_df = attributes_df[attributes_df['unique_id_str'].isin(comb_set)]
+        filter_df_duration = time.time() - filter_df_start
+        # Group once for values and text_size on the filtered set
+        group_values_start = time.time()
+        grouped_values = (
+            filtered_df.groupby(['attribute', 'value'])['unique_id']
+            .apply(list)
+            .reset_index()
+        )
+        group_values_duration = time.time() - group_values_start
+        group_text_start = time.time()
+        grouped_text = (
+            filtered_df.groupby(['attribute', 'text_size'])['unique_id']
+            .apply(list)
+            .reset_index()
+        )
+        group_text_duration = time.time() - group_text_start
+        # Build fast lookup dictionaries
+        build_dicts_start = time.time()
+        values_lookup = {(row['attribute'], row['value']): row['unique_id'] for _, row in grouped_values.iterrows()}
+        text_lookup = {(row['attribute'], row['text_size']): row['unique_id'] for _, row in grouped_text.iterrows()}
+        build_dicts_duration = time.time() - build_dicts_start
+        show_logs and print(
+            f"⏱ vector prep: uid_str={uid_str_duration:.4f}s, filter={filter_df_duration:.4f}s, "
+            f"group_values={group_values_duration:.4f}s, group_text={group_text_duration:.4f}s, build_dicts={build_dicts_duration:.4f}s"
+        )
+
+        show_logs and print(f"🔎 attribute_values: {len(distinct_values)} attributes to process (vectorized)")
         for attribute in distinct_values:
-            attribute_df = attributes_df[attributes_df['attribute'] == attribute]
+            per_attribute_start_time = time.time()
             value_list = []
             text_size_value_list = []
-            for value in attribute_df['value'].unique():
-                value_str = value
-                unique_ids = attribute_df[attribute_df['value'] == value]['unique_id'].tolist()
-                # Filter the unique_ids by the combinations
-                filtered_ids = [id for id in unique_ids if str(id) in combinations]
+
+            # For 'value': include all unique values even if filtered ids are empty (parity with previous logic)
+            values_unique = unique_values_by_attr.get(attribute, [])
+            for value in values_unique:
+                filtered_ids = values_lookup.get((attribute, value), [])
                 value_list.append([value, filtered_ids])
-                # value_list.append([value, unique_ids])
-            for value in attribute_df['text_size'].unique():
-                    value_str = str(value)  # Convert value to string
-                    unique_ids = attribute_df[attribute_df['text_size'] == value]['unique_id'].tolist()
-                    # Filter the unique_ids by the combinations
-                    filtered_ids = [id for id in unique_ids if str(id) in combinations]
-                    if filtered_ids:  # Append only if filtered_ids is not empty
-                        text_size_value_list.append([value_str, filtered_ids])
+
+            # For 'text_size': include only if filtered ids is not empty (parity with previous logic)
+            # We can iterate directly over the filtered groups for this attribute
+            # to avoid scanning all unique text sizes
+            # Collect entries specific to this attribute
+            # If needed, fall back to scanning unique list
+            # Primary path: iterate filtered dict keys
+            # Build from grouped_text rows for this attribute
+            # Faster than per-value filtering
+            # Note: values in text_lookup keys are raw (not str); convert to str when storing
+            for (attr_key, text_size_key), ids in list(text_lookup.items()):
+                if attr_key != attribute:
+                    continue
+                if ids:
+                    text_size_value_list.append([str(text_size_key), ids])
+
             attribute_values.append([attribute, value_list, "text-size", text_size_value_list])
-                
+            show_logs and print(
+                f"✅ attribute '{attribute}' built in {time.time() - per_attribute_start_time:.4f}s; values={len(value_list)}, text_sizes={len(text_size_value_list)}"
+            )
+
+        show_logs and print(f"⏱ finished attribute_values in {time.time() - attribute_values_start_time:.4f}s")
+        show_logs and print(f"======================== Finished attribute_values =========================")
+
+        show_logs and print(f"======================== Starting computed_styles_file =========================")
+        computed_styles_file_start_time = time.time()
         # Define the directory path
         dir_path = f"results/computed_styles_level_{level}"
         # Check if the directory exists
@@ -269,8 +359,12 @@ class DataCollector:
                 'total_unique_attributes': total_unique_attributes,
                 'attribute_values': attribute_values
             }, f, indent=4)
+        show_logs and print(f"⏱ finished computed_styles_file in {time.time() - computed_styles_file_start_time:.4f}s")
+        show_logs and print(f"======================== Finished computed_styles_file =========================")
 
         # Record timing for this level
+        show_logs and print(f"======================== Starting computed_styles_level_{level} =========================")
+        computed_styles_level_start_time = time.time()
         level_duration = time.time() - level_start_time
         self.timing_logs[f"computed_styles_level_{level}"] = {
             "start_time": level_start_time,
@@ -283,8 +377,12 @@ class DataCollector:
             "file_size_bytes": os.path.getsize(computed_styles_file) if os.path.exists(computed_styles_file) else 0,
             "description": f"Generating computed styles for level {level}"
         }
+        show_logs and print(f"⏱ finished computed_styles_level_{level} in {time.time() - computed_styles_level_start_time:.4f}s")
+        show_logs and print(f"======================== Finished computed_styles_level_{level} =========================")
 
         # Iterate over each attribute
+        show_logs and print(f"======================== Starting computed_styles_images =========================")
+        computed_styles_images_start_time = time.time()
         for attribute_data in attribute_values:
             attribute = attribute_data[0]
             values = attribute_data[1]
@@ -315,6 +413,8 @@ class DataCollector:
                         error_file.write("Traceback:\n")
                         error_file.write(traceback.format_exc())
                         error_file.write("\n\n")
+        show_logs and print(f"⏱ finished computed_styles_images in {time.time() - computed_styles_images_start_time:.4f}s")
+        show_logs and print(f"======================== Finished computed_styles_images =========================")
 
         return total_unique_attributes, attribute_values, computed_styles_file
 
