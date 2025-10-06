@@ -312,12 +312,14 @@ def process_urls_from_cli(urls, levels, from_api=False):
     # Step 4: Computed styles generation timing
     step_start = time.time()
     print(f"\033[94m=== Starting computed styles generation for all levels ===\033[0m")
-    print(f"\033[94m=== Starting computed styles generation for level 1 ===\033[0m")
-    total_unique_attributes, attribute_values, computed_styles_file = dataCollector.computed_styles(level=1)
-    print(f"\033[94m=== Finished computed styles generation for level 1 in {time.time() - step_start:.4f}s ===\033[0m")
+    computed_styles_paths = {}
+    total_unique_attributes = None
     for level in levels:
         print(f"\033[94m=== Starting computed styles generation for level {level} ===\033[0m")
-        dataCollector.computed_styles(level=level)
+        tua, attribute_values, cs_file = dataCollector.computed_styles(level=level)
+        if total_unique_attributes is None:
+            total_unique_attributes = tua
+        computed_styles_paths[level] = cs_file
         print(f"\033[94m=== Finished computed styles generation for level {level} in {time.time() - step_start:.4f}s ===\033[0m")
     print(f"\033[94m=== Finished computed styles generation for all levels in {time.time() - step_start:.4f}s ===\033[0m")
     timing_logs["steps"]["computed_styles_generation"] = {
@@ -352,8 +354,8 @@ def process_urls_from_cli(urls, levels, from_api=False):
     for level in levels:
         level_start_time = time.time()
         
-        # Get the computed styles file path for this level
-        computed_styles_file = dataCollector.computed_styles(level=level)[2]
+        # Get the computed styles file path for this level (re-use from earlier generation)
+        computed_styles_file = computed_styles_paths.get(level)
         # print(f"\033[92m computed_styles_file: {computed_styles_file}\033[0m")
 
         # Process the computed styles file and call clustering function directly
