@@ -704,13 +704,9 @@ def process_clusters_from_cli(clusters_data, from_api=False, level_info=None):
                                 if not clean_domain:
                                     clean_domain = 'unknown'
                                 
-                                # Remove common domain suffixes for cleaner names
-                                if '.' in clean_domain:
-                                    domain_parts = clean_domain.split('.')
-                                    # Take the main domain part (before first dot)
-                                    main_domain = domain_parts[0]
-                                else:
-                                    main_domain = clean_domain
+                                # Use the full domain name to properly distinguish different domains
+                                # (e.g., docs.python.org vs docs.oracle.com)
+                                main_domain = clean_domain
                                 
                                 # Initialize counter for this domain if not seen before
                                 if main_domain not in domain_counters:
