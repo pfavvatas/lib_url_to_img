@@ -106,12 +106,17 @@ def extract_hsv_values(color_str):
     h, s, v = colorsys.rgb_to_hsv(rgb_values[0] / 255.0, rgb_values[1] / 255.0, rgb_values[2] / 255.0)
     return h, s, v
 
-def perform_clustering_analysis(data):
+def perform_clustering_analysis(data, enable_early_stop=False, early_stop_threshold=0.25, 
+                                 enable_final_threshold=False, final_threshold=0.5):
     """
     Perform clustering analysis on the provided data.
     
     Args:
         data: Dictionary containing the JSON data with 'attribute_values' key
+        enable_early_stop: Boolean to enable early stopping when DBCV score is below threshold (default: False)
+        early_stop_threshold: DBCV score threshold for early stopping (default: 0.25)
+        enable_final_threshold: Boolean to enable final threshold filtering (default: False)
+        final_threshold: DBCV score threshold for final cluster selection (default: 0.5)
         
     Returns:
         Dictionary containing:
@@ -470,7 +475,8 @@ def perform_clustering_analysis(data):
                 if len(set(labels)) > 1:  # Ensure there are at least two clusters (valid clusters)
                     dbcv_score = dbcv.dbcv(X_normalized, labels, check_duplicates=False)
                     
-                    if dbcv_score < 0.25:
+                    # Early stop check (only if enabled)
+                    if enable_early_stop and dbcv_score < early_stop_threshold:
                         early_stop = True
                         break
                     
@@ -524,8 +530,11 @@ def perform_clustering_analysis(data):
 
         best_by_fewest_clusters = None
 
+        # Determine the threshold to use for final selection
+        final_threshold_value = final_threshold if enable_final_threshold else 0
+
         for dbcv_score, min_cluster_size, cluster_selection_epsilon, labels in best_configs.values():
-            if dbcv_score > 0.5:
+            if dbcv_score > final_threshold_value:
                 num_clusters = len(set(labels)) - (1 if -1 in labels else 0)
                 if best_by_fewest_clusters is None or num_clusters < best_by_fewest_clusters[0]:
                     best_by_fewest_clusters = (
@@ -555,11 +564,12 @@ def perform_clustering_analysis(data):
                 'message': f"Clustering successful with {num_clusters} clusters and DBCV score: {dbcv_score:.3f}"
             }
         else:
+            threshold_msg = f"DBCV > {final_threshold_value}" if enable_final_threshold else "DBCV > 0"
             return {
                 'success': False,
                 'clusters': [],
                 'cluster_info': {},
-                'message': "No clustering configuration found with DBCV > 0.5."
+                'message': f"No clustering configuration found with {threshold_msg}."
             }
             
     except Exception as e:
@@ -582,7 +592,8 @@ def run_clustering_from_file(filename='computed_styles_20250602192507.json'):
         result = perform_clustering_analysis(data)
         
         if result['success']:
-            print(f"\nChosen clustering with fewest clusters (≥0.5 DBCV):")
+            threshold_msg = "≥0 DBCV"
+            print(f"\nChosen clustering with fewest clusters ({threshold_msg}):")
             print(f"min_cl_size: {result['cluster_info']['min_cluster_size']}, cl_sel_epsilon: {result['cluster_info']['cluster_selection_epsilon']}, dbcv_score: {result['cluster_info']['dbcv_score']:.3f}, num_clusters: {result['cluster_info']['num_clusters']}")
             print(str(result['clusters']).replace("'", '"'))
         else:
