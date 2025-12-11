@@ -26,8 +26,19 @@ def process_url(url, levels, driver, config, unique_id, dataCollector):
     step_start = time.time()
     try:
         driver.get(url)
-        # Wait for 10 seconds before proceeding with scraping
-        # time.sleep(10)
+        # Wait for page to stabilize, especially for dynamic pages like Bing
+        # Use WebDriverWait to ensure page is loaded
+        try:
+            WebDriverWait(driver, 10).until(
+                lambda d: d.execute_script("return document.readyState") == "complete"
+            )
+        except:
+            pass  # Continue even if timeout
+        
+        # Additional wait for dynamic content (especially for search engines)
+        if "bing.com" in url.lower() or "google.com" in url.lower():
+            time.sleep(2)  # Extra wait for search engine pages
+        
         url_timing["steps"]["browser_navigation"] = {
             "start_time": step_start,
             "end_time": time.time(),

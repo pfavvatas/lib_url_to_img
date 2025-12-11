@@ -28,6 +28,7 @@ from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 import math
 import sys
+import time
 import umap
 import statistics
 import warnings
@@ -126,6 +127,8 @@ def perform_clustering_analysis(data, enable_early_stop=False, early_stop_thresh
         - 'message': Status message
     """
     try:
+        print(f"  📊 Starting clustering analysis...")
+        analysis_start_time = time.time()
         useful_attributes = []
         useless_attributes = []
 
@@ -461,9 +464,17 @@ def perform_clustering_analysis(data, enable_early_stop=False, early_stop_thresh
         early_stop = False
 
         # Grid search over min_cluster_size and cluster_selection_epsilon
+        total_iterations = len(min_cluster_size_range) * 4  # Approximately 4 epsilon values per min_cluster_size
+        current_iteration = 0
+        
         for min_cluster_size in min_cluster_size_range:
             cluster_selection_epsilon = 0.0
             while cluster_selection_epsilon <= 1:
+                current_iteration += 1
+                # Progress logging every 10 iterations or at start
+                if current_iteration % 10 == 1 or current_iteration == 1:
+                    print(f"  🔄 Clustering progress: {current_iteration}/{total_iterations} iterations (min_cluster_size={min_cluster_size}, epsilon={cluster_selection_epsilon:.3f})")
+                
                 # Apply HDBSCAN clustering
                 clusterer = hdbscan.HDBSCAN(
                     min_cluster_size=min_cluster_size,
@@ -542,6 +553,9 @@ def perform_clustering_analysis(data, enable_early_stop=False, early_stop_thresh
                     )
 
         # Output the best setting with fewest clusters
+        analysis_duration = time.time() - analysis_start_time
+        print(f"  ✅ Clustering analysis completed in {analysis_duration:.2f}s")
+        
         if best_by_fewest_clusters:
             num_clusters, dbcv_score, min_cluster_size, cluster_selection_epsilon, labels = best_by_fewest_clusters
             cluster_dict = {}
@@ -550,6 +564,8 @@ def perform_clustering_analysis(data, enable_early_stop=False, early_stop_thresh
                     cluster_dict.setdefault(cluster_id, []).append(str(pageVectorsIDs[idx]))
 
             final_clusters = [members for members in cluster_dict.values()]
+            
+            print(f"  📈 Best configuration: {num_clusters} clusters, DBCV={dbcv_score:.3f}, min_cluster_size={min_cluster_size}, epsilon={cluster_selection_epsilon:.3f}")
             
             return {
                 'success': True,
@@ -565,6 +581,7 @@ def perform_clustering_analysis(data, enable_early_stop=False, early_stop_thresh
             }
         else:
             threshold_msg = f"DBCV > {final_threshold_value}" if enable_final_threshold else "DBCV > 0"
+            print(f"  ⚠️  No valid clustering configuration found with {threshold_msg}")
             return {
                 'success': False,
                 'clusters': [],

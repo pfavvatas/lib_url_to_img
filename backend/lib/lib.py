@@ -117,23 +117,63 @@ def process_urls_from_cli(urls, levels, from_api=False):
         if has_complete_cache:
             complete_cached_data = cache_manager.get_cached_data(cache_key)
             if complete_cached_data:
-                will_skip_data_collection = True
-                cache_stats = cache_manager.get_cache_stats()
-                print(f"\033[92m✅ Found COMPLETE cached data (key: {cache_key[:8]}...)\033[0m")
-                print(f"\033[94m📊 Cache stats: {cache_stats['total_entries']} entries, {cache_stats['total_size_mb']:.1f} MB total\033[0m")
+                # Verify that cached data contains entries for all requested URLs
+                cached_urls_in_data = set()
+                for guid, guid_data in complete_cached_data.items():
+                    url = guid_data.get('url')
+                    if url:
+                        cached_urls_in_data.add(url)
+                
+                requested_urls_set = set(urls)
+                missing_urls = requested_urls_set - cached_urls_in_data
+                
+                if missing_urls:
+                    # Cache is incomplete - treat as partial cache
+                    print(f"\033[93m⚠️  Complete cache found but missing data for {len(missing_urls)} URLs - treating as PARTIAL cache\033[0m")
+                    print(f"\033[93m   Missing URLs: {list(missing_urls)}\033[0m")
+                    # Replace urls_to_process with missing URLs (these are the ones that need fetching)
+                    urls_to_process = list(missing_urls)
+                    # Use partial cache instead - extract data for URLs that are present
+                    has_complete_cache = False
+                    cached_url_data = {guid: data for guid, data in complete_cached_data.items() 
+                                     if data.get('url') in cached_urls_in_data}
+                    will_skip_data_collection = False
+                    print(f"\033[96m🔍 Using PARTIAL cached data for {len(cached_urls_in_data)}/{len(urls)} URLs\033[0m")
+                    print(f"\033[96m🔄 Will process {len(urls_to_process)} missing URLs: {urls_to_process}\033[0m")
+                else:
+                    # All URLs present - valid complete cache
+                    will_skip_data_collection = True
+                    cache_stats = cache_manager.get_cache_stats()
+                    print(f"\033[92m✅ Found COMPLETE cached data (key: {cache_key[:8]}...)\033[0m")
+                    print(f"\033[94m📊 Cache stats: {cache_stats['total_entries']} entries, {cache_stats['total_size_mb']:.1f} MB total\033[0m")
+                    print(f"\033[94m📋 Cached URLs: {len(cached_urls_in_data)}/{len(urls)} URLs\033[0m")
             else:
                 print(f"\033[93m⚠️  Complete cache key found but data corrupted, checking partial cache\033[0m")
+                has_complete_cache = False
         
         # Check partial cache if no complete cache
         if not will_skip_data_collection and cached_url_data:
-            print(f"\033[96m🔍 Found PARTIAL cached data for {len(urls) - len(urls_to_process)}/{len(urls)} URLs\033[0m")
-            print(f"\033[96m📋 URLs from cache: {[url for url in urls if url not in urls_to_process]}\033[0m")
-            print(f"\033[96m🔄 URLs to process: {urls_to_process}\033[0m")
+            cached_urls_list = [url for url in urls if url not in urls_to_process]
+            print(f"\033[96m🔍 Found PARTIAL cached data for {len(cached_urls_list)}/{len(urls)} URLs\033[0m")
+            print(f"\033[96m📋 URLs from cache ({len(cached_urls_list)}): {cached_urls_list}\033[0m")
+            print(f"\033[96m🔄 URLs to process ({len(urls_to_process)}): {urls_to_process}\033[0m")
+            
+            # Verify that all URLs are accounted for
+            if len(cached_urls_list) + len(urls_to_process) != len(urls):
+                missing_urls = [url for url in urls if url not in cached_urls_list and url not in urls_to_process]
+                print(f"\033[91m⚠️  WARNING: {len(missing_urls)} URLs are neither cached nor in processing list: {missing_urls}\033[0m")
+                # Add missing URLs to processing list
+                urls_to_process.extend(missing_urls)
+                print(f"\033[93m🔧 Added missing URLs to processing list. Now processing {len(urls_to_process)} URLs\033[0m")
             
             cache_stats = cache_manager.get_cache_stats()
             print(f"\033[94m📊 Cache stats: {cache_stats['complete_cache_entries']} complete + {cache_stats['individual_url_entries']} individual entries\033[0m")
         elif not will_skip_data_collection and not cached_url_data:
             print(f"\033[93m❌ No cached data found - will process all {len(urls)} URLs\033[0m")
+            # Ensure all URLs are in processing list
+            if len(urls_to_process) != len(urls):
+                print(f"\033[93m⚠️  WARNING: Processing list has {len(urls_to_process)} URLs but expected {len(urls)}. Adding missing URLs.\033[0m")
+                urls_to_process = urls.copy()
         
         if not from_api and (has_complete_cache or cached_url_data):
             # For CLI usage, still prompt user about cached data
@@ -254,9 +294,28 @@ def process_urls_from_cli(urls, levels, from_api=False):
         # Cache saving logic - conditional on ENABLE_CACHING
         data_collection_time = time.time() - data_collection_start
         if ENABLE_CACHING:
-            # Save ALL data to cache (complete set)
-            cache_key = cache_manager.save_to_cache(urls, levels, dataCollector.url_data, data_collection_time)
-            print(f"\033[92m💾 Data saved to cache (key: {cache_key[:8]}..., processing time: {data_collection_time:.2f}s)\033[0m")
+            # Extract successfully processed URLs from dataCollector.url_data
+            successfully_processed_urls = set()
+            for guid, guid_data in dataCollector.url_data.items():
+                url = guid_data.get('url')
+                if url:
+                    successfully_processed_urls.add(url)
+            
+            # Identify failed URLs (URLs that were attempted but don't have data)
+            failed_urls = [url for url in urls_to_process if url not in successfully_processed_urls]
+            
+            # Only save cache for successfully processed URLs (not failed ones)
+            if successfully_processed_urls:
+                # Convert set to list for cache saving
+                successfully_processed_urls_list = list(successfully_processed_urls)
+                cache_key = cache_manager.save_to_cache(successfully_processed_urls_list, levels, dataCollector.url_data, data_collection_time)
+                print(f"\033[92m💾 Data saved to cache for {len(successfully_processed_urls_list)} successful URLs (key: {cache_key[:8]}..., processing time: {data_collection_time:.2f}s)\033[0m")
+            
+            # Report failed URLs that will be retried on next run
+            if failed_urls:
+                print(f"\033[93m⚠️  {len(failed_urls)} URLs failed and were NOT cached - they will be retried on next run:\033[0m")
+                for failed_url in failed_urls:
+                    print(f"\033[93m   - {failed_url}\033[0m")
         else:
             cache_key = None
             print(f"\033[93m🚫 Cache saving DISABLED - data not saved to cache (processing time: {data_collection_time:.2f}s)\033[0m")

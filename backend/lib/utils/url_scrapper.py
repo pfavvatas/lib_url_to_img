@@ -1,6 +1,7 @@
 import re
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import StaleElementReferenceException
 import json
 import random
 import time
@@ -26,21 +27,94 @@ def generate_unique_id():
             print(f"\033[93mDuplicate ID found: {unique_id}, generating a new one.\033[0m")
             
 class HTMLTag:
-    def __init__(self, webelement, driver, depth=0, parent_id=None):
+    def __init__(self, webelement, driver, depth=0, parent_id=None, max_retries=2):
         self.unique_id = generate_unique_id()#id(self)
         self.parent_id = parent_id  # Save the parent's unique_id
-        self.tag_name = webelement.tag_name
-        self.attributes = self.get_all_attributes(webelement, driver)  
         self.depth = depth
-        self.actual_text = self.get_text_excluding_children(webelement, driver)
-        self.text = self.clean_text(webelement.text.strip()) if webelement.text else ""
-        self.text_size = self.count_text()
+        
+        # Retry logic for stale element references
+        retry_count = 0
+        success = False
+        
+        while retry_count < max_retries and not success:
+            try:
+                # Get element properties with retry
+                self.tag_name = webelement.tag_name
+                self.attributes = self.get_all_attributes(webelement, driver)  
+                self.actual_text = self.get_text_excluding_children(webelement, driver)
+                try:
+                    text_content = webelement.text.strip() if webelement.text else ""
+                except StaleElementReferenceException:
+                    text_content = ""
+                self.text = self.clean_text(text_content)
+                self.text_size = self.count_text()
 
-        # We only create children list and recursively populate it if the current webelement has child elements.
-        if webelement.find_elements(By.XPATH, ".//*"):
-            self.children = [HTMLTag(child, driver, depth=depth+1, parent_id=self.unique_id) for child in webelement.find_elements(By.XPATH, "./*")]
-        else:
-            self.children = []
+                # Process children with stale element handling
+                self.children = []
+                try:
+                    # Get children using find_elements, but process immediately to avoid stale references
+                    child_elements = webelement.find_elements(By.XPATH, "./*")
+                    if child_elements:
+                        # Process each child immediately while the reference is still valid
+                        for child in child_elements:
+                            try:
+                                # Verify element is still attached before processing
+                                _ = child.tag_name
+                                # Process immediately to avoid stale reference
+                                self.children.append(HTMLTag(child, driver, depth=depth+1, parent_id=self.unique_id, max_retries=max_retries))
+                            except StaleElementReferenceException:
+                                # If child becomes stale during processing, skip it
+                                continue
+                            except Exception:
+                                # Skip this child on any other error
+                                continue
+                except StaleElementReferenceException:
+                    # If parent element becomes stale while getting children, leave children list empty
+                    self.children = []
+                except Exception:
+                    # If any other error occurs, leave children list empty
+                    self.children = []
+                
+                success = True
+                
+            except StaleElementReferenceException:
+                retry_count += 1
+                if retry_count < max_retries:
+                    # Wait briefly before retrying
+                    time.sleep(0.2)
+                    # Try to re-find the element
+                    try:
+                        # Use JavaScript to get a fresh reference
+                        element_id = driver.execute_script("return arguments[0].id", webelement)
+                        if element_id:
+                            webelement = driver.find_element(By.ID, element_id)
+                        else:
+                            # Fallback: try to get by tag name from body
+                            tag_name = driver.execute_script("return arguments[0].tagName", webelement)
+                            if tag_name.lower() == 'body':
+                                webelement = driver.find_element(By.TAG_NAME, tag_name)
+                            else:
+                                # Can't recover, set defaults
+                                break
+                    except Exception:
+                        # Can't recover, set defaults
+                        break
+                else:
+                    # Max retries reached, set defaults
+                    break
+            except Exception as e:
+                # For any other exception, set defaults and break
+                break
+        
+        # Set defaults if initialization failed
+        if not success:
+            self.tag_name = "unknown"
+            self.attributes = {}
+            self.actual_text = ""
+            self.text = ""
+            self.text_size = 0
+            if not hasattr(self, 'children'):
+                self.children = []
 
     def get_text_excluding_children(self, webelement, driver):
         # script = "return arguments[0].firstChild ? arguments[0].firstChild.textContent : '';"
@@ -54,31 +128,37 @@ class HTMLTag:
     }
     return textContent.trim();
 """
-        return driver.execute_script(script, webelement).strip()
+        try:
+            return driver.execute_script(script, webelement).strip()
+        except StaleElementReferenceException:
+            return ""
     
     def get_all_attributes(self, webelement, driver):
-        attrs = driver.execute_script("""
-        let elem = arguments[0], 
-            attrs = {};
-        for(let i = 0; i < elem.attributes.length; i++) {
-            attrs[elem.attributes[i].name] = elem.attributes[i].value;
-        }
-        return attrs;
-        """, webelement)
-        css_props = driver.execute_script("""
-        let elem = arguments[0], 
-            computedStyle = window.getComputedStyle(elem),
-            cssProps = {};
-        for(let i = 0; i < computedStyle.length; i++) {
-            let prop = computedStyle[i];
-            cssProps[prop] = computedStyle.getPropertyValue(prop);
-        }
-        return cssProps;
-        """, webelement)
-        rect = driver.execute_script('return arguments[0].getBoundingClientRect()', webelement)
-        css_props.update(rect)
-        attrs = {**attrs, **css_props}
-        return attrs
+        try:
+            attrs = driver.execute_script("""
+            let elem = arguments[0], 
+                attrs = {};
+            for(let i = 0; i < elem.attributes.length; i++) {
+                attrs[elem.attributes[i].name] = elem.attributes[i].value;
+            }
+            return attrs;
+            """, webelement)
+            css_props = driver.execute_script("""
+            let elem = arguments[0], 
+                computedStyle = window.getComputedStyle(elem),
+                cssProps = {};
+            for(let i = 0; i < computedStyle.length; i++) {
+                let prop = computedStyle[i];
+                cssProps[prop] = computedStyle.getPropertyValue(prop);
+            }
+            return cssProps;
+            """, webelement)
+            rect = driver.execute_script('return arguments[0].getBoundingClientRect()', webelement)
+            css_props.update(rect)
+            attrs = {**attrs, **css_props}
+            return attrs
+        except StaleElementReferenceException:
+            return {}
     
     def to_dict(self):
         return {

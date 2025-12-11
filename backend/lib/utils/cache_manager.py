@@ -145,16 +145,32 @@ class CacheManager:
                             with open(cache_file, 'r') as f:
                                 url_data = json.load(f)
                             
-                            # Merge cached data for this URL
-                            cached_url_data.update(url_data)
-                            self.logger.info(f"✅ Cache hit for URL: {url} (key: {url_cache_key[:8]}...)")
+                            # Validate that cached data actually contains data for this URL
+                            # Check if any entry in url_data has the matching URL
+                            has_valid_data = False
+                            for guid, guid_data in url_data.items():
+                                if guid_data.get('url') == url and guid_data.get('html_data'):
+                                    has_valid_data = True
+                                    break
                             
-                            # Update access time
-                            entry["last_accessed"] = datetime.now().isoformat()
-                            continue
+                            if has_valid_data:
+                                # Merge cached data for this URL
+                                cached_url_data.update(url_data)
+                                self.logger.info(f"✅ Cache hit for URL: {url} (key: {url_cache_key[:8]}...)")
+                                
+                                # Update access time
+                                entry["last_accessed"] = datetime.now().isoformat()
+                                continue
+                            else:
+                                # Cache file exists but doesn't contain valid data for this URL
+                                self.logger.warning(f"⚠️  Cache file exists for URL: {url} but contains no valid data - will reprocess")
+                                # Remove invalid cache entry
+                                self._remove_url_cache_entry(url_cache_key)
                             
                         except (json.JSONDecodeError, IOError) as e:
                             self.logger.error(f"Failed to load cached URL data: {e}")
+                            # Remove corrupted cache entry
+                            self._remove_url_cache_entry(url_cache_key)
                     else:
                         self.logger.info(f"⏰ Cache expired for URL: {url}")
                 else:
@@ -200,13 +216,40 @@ class CacheManager:
                         with open(metadata_file, 'r') as f:
                             metadata = json.load(f)
                         
-                        # Verify URLs and levels match
+                        # Verify URLs and levels match in metadata
                         if (set(metadata["urls"]) == set(urls) and 
                             set(metadata["levels"]) == set(levels)):
-                            return True, cache_key
+                            # CRITICAL: Also verify that cached data actually contains entries for all URLs
+                            try:
+                                with open(cache_file, 'r') as f:
+                                    cached_data = json.load(f)
+                                
+                                # Extract URLs from cached data
+                                cached_urls_in_data = set()
+                                for guid, guid_data in cached_data.items():
+                                    url = guid_data.get('url')
+                                    if url:
+                                        cached_urls_in_data.add(url)
+                                
+                                # Check if all requested URLs are present in cached data
+                                requested_urls_set = set(urls)
+                                missing_urls = requested_urls_set - cached_urls_in_data
+                                
+                                if missing_urls:
+                                    self.logger.warning(f"⚠️  Complete cache found but missing data for {len(missing_urls)} URLs: {missing_urls}")
+                                    # Don't treat as complete cache if data is incomplete
+                                    return False, cache_key
+                                
+                                # All URLs present - valid complete cache
+                                return True, cache_key
+                                
+                            except (json.JSONDecodeError, IOError) as e:
+                                self.logger.error(f"Failed to validate cached data: {e}")
+                                return False, cache_key
                             
                     except (json.JSONDecodeError, IOError, KeyError) as e:
                         self.logger.error(f"Failed to validate cache metadata: {e}")
+                        return False, cache_key
         
         # Check for partial cache hits
         cached_url_data, urls_to_process = self.check_individual_url_cache(urls, levels, custom_ttl_hours)
