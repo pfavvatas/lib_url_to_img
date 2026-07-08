@@ -1,0 +1,161 @@
+\chapter{System Implementation}
+\label{ch:implementation}
+
+This chapter details the technical implementation of the S\textsuperscript{4}D system, covering the backend processing engine, the Flask REST API, the Node.js static file server, and the React frontend, together with the process orchestration that ties them together.
+
+\section{System Architecture Overview}
+\label{sec:architecture-overview}
+
+The S\textsuperscript{4}D system is structured as three independent services that communicate over HTTP:
+
+\begin{enumerate}
+    \item \textbf{Flask REST API} (port 5000) --- the primary backend service that accepts analysis requests, drives the processing pipeline, and returns JSON results.
+    \item \textbf{Node.js static file server} (port 5005) --- serves the colour-coded HTML output files generated during analysis so that the React frontend can display them in iframes.
+    \item \textbf{React frontend} (port 3000) --- a single-page application through which users submit URLs, monitor progress, and explore results.
+\end{enumerate}
+
+All three services are launched concurrently from the project root with a single \texttt{mprocs} command, which reads the process definitions from \texttt{mprocs.yaml} and multiplexes their log streams in a single terminal window.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/implementation/system_architecture_overview.png}
+    \caption{S\textsuperscript{4}D system architecture: three independent services (Flask API, Node.js file server, React SPA) started together via mprocs and communicating over localhost HTTP.}
+    \label{fig:system_architecture}
+\end{figure}
+
+\section{Backend Implementation}
+\label{sec:backend-implementation}
+
+\subsection{Source Layout}
+
+The backend source tree is rooted at \texttt{backend/} and is divided into two sub-directories:
+
+\begin{itemize}
+    \item \textbf{\texttt{backend/api/}} --- contains \texttt{main.py} (the Flask application entry point) and \texttt{experiment\_manager.py} (batch experiment orchestration).
+    \item \textbf{\texttt{backend/lib/}} --- contains the core processing library (\texttt{lib.py}) and the \texttt{utils/} package with the following modules:
+    \begin{itemize}
+        \item \textbf{\texttt{url\_scrapper.py}}: Selenium WebDriver automation --- DOM traversal, CSS extraction, and HTML output generation.
+        \item \textbf{\texttt{clustering.py}}: HDBSCAN wrapper with grid-search parameter optimisation and DBCV validation.
+        \item \textbf{\texttt{site\_similarity.py}}: multi-metric similarity computation (cosine, EMD approximation, Hausdorff approximation).
+        \item \textbf{\texttt{DataCollector.py}}: structured storage and retrieval of per-page JSON data.
+        \item \textbf{\texttt{process.py}}: pipeline orchestration coordinating the above modules.
+        \item \textbf{\texttt{cache\_manager.py}}: TTL-based cache that avoids re-scraping URLs seen in recent runs.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Core Processing Functions}
+
+Three functions in \texttt{lib.py} form the public interface consumed by the API layer:
+
+\begin{itemize}
+    \item \textbf{\texttt{process\_urls\_from\_api(urls, levels, mode)}}: accepts a list of URLs, the requested DOM depth levels, and the processing mode (0 = unified, 1 = per-domain), runs the full pipeline, and returns a JSON-serialisable result dictionary containing clustering metadata, similarity matrices, and paths to the generated HTML files.
+    \item \textbf{\texttt{process\_clusters\_from\_api(clusters\_data)}}: accepts pre-computed cluster data and recomputes the similarity matrix, useful for re-running the analysis step without repeating DOM extraction.
+    \item \textbf{\texttt{find\_best\_clustering\_level(clustering\_results)}}: the median-based level selection algorithm described in Section~\ref{sec:similarity-analysis}.
+\end{itemize}
+
+\section{Flask REST API}
+\label{sec:api-implementation}
+
+\subsection{Server Configuration}
+
+The Flask application (\texttt{backend/api/main.py}) is initialised with \texttt{flask-cors} to allow requests from the React frontend on port 3000. An optional Swagger UI (\texttt{flasgger}) is enabled by the environment variable \texttt{ENABLE\_SWAGGER=true}, providing interactive API documentation at \texttt{/apidocs}.
+
+\begin{lstlisting}[language=Python, caption=Flask application initialisation]
+app = Flask(__name__)
+CORS(app, resources={r"/*": {
+    "origins": ["http://localhost:3000"],
+    "methods": ["GET", "POST", "OPTIONS"]
+}})
+swagger = Swagger(app) if enable_swagger else None
+\end{lstlisting}
+
+\subsection{API Endpoints}
+
+\subsubsection{URL Processing}
+\textbf{POST /process-urls} is the primary analysis endpoint. It accepts a JSON body with three fields:
+
+\begin{itemize}
+    \item \texttt{urls} --- list of URLs to analyse.
+    \item \texttt{levels} --- list of DOM depth levels to compute (e.g., \texttt{[3, 5, 7]}).
+    \item \texttt{mode} --- processing mode: \texttt{0} for unified (all URLs in one pass) or \texttt{1} for per-domain grouping.
+\end{itemize}
+
+The handler calls \texttt{process\_urls\_from\_api()} and returns the result as JSON, including the similarity matrix, per-level clustering summaries, and file paths for the generated HTML visualisations.
+
+\subsubsection{Cluster Reprocessing}
+\textbf{POST /process-clusters} accepts pre-existing cluster assignments and recomputes the role vectors and similarity metrics without re-running the expensive DOM extraction step.
+
+\subsubsection{Batch Experiments}
+\textbf{POST /experiments/run-batch} accepts an experiment configuration object containing one or more named test cases, each specifying its own URL list, levels, and mode. The \texttt{ExperimentManager} runs all test cases sequentially, persists results to dated sub-directories, and returns a unique experiment identifier.
+
+\subsubsection{Result Retrieval}
+\begin{itemize}
+    \item \textbf{GET /experiments/results/list} --- returns metadata for all stored experiment runs (name, timestamp, test-case count).
+    \item \textbf{GET /experiments/results/\{experiment\_id\}} --- returns the full result object for a specific run, including per-test similarity matrices and clustering summaries.
+\end{itemize}
+
+\subsection{HTML File Proxy}
+\textbf{GET /output\_html\_files/\{filename\}} serves colour-coded HTML files generated during analysis. The Flask handler resolves the path relative to the project root, verifies the file exists, and streams it to the caller. This route mirrors the Node.js static server (Section~\ref{sec:nodejs-server}) and allows programmatic access to individual HTML snapshots via the API base URL.
+
+\section{Node.js Static File Server}
+\label{sec:nodejs-server}
+
+A lightweight Node.js/Express server (\texttt{backend/server/server.js}) listens on port 5005 and mounts the \texttt{output\_html\_files/} directory as a static asset path:
+
+\begin{lstlisting}[language=Java, caption=Node.js static server]
+const express = require('express');
+const app = express();
+const outputDir = path.join(__dirname, '../api/output_html_files');
+app.use('/output_html_files', express.static(outputDir));
+app.listen(5005, () => console.log('Server is running on port 5005'));
+\end{lstlisting}
+
+The React frontend embeds the resulting URLs (e.g., \texttt{http://localhost:5005/output\_html\_files/level\_3/example.html}) in iframes to render the colour-coded page visualisations alongside the similarity matrix.
+
+\section{React Frontend}
+\label{sec:frontend-implementation}
+
+\subsection{Application Structure}
+
+The frontend is a Create-React-App single-page application. All user-facing logic is contained in a single component, \texttt{src/components/URLChipForm.js}, which manages:
+
+\begin{itemize}
+    \item \textbf{URL input}: a multi-value chip input that validates and lists the submitted URLs.
+    \item \textbf{Parameter selection}: checkboxes for DOM depth levels and a toggle for processing mode.
+    \item \textbf{Progress monitoring}: polling the Flask API during long-running analyses and displaying status messages.
+    \item \textbf{Result display}: rendering the similarity matrix as a colour-coded heatmap (Viridis colourmap) and embedding the HTML output files via the Node.js server URLs.
+\end{itemize}
+
+\subsection{Communication with Backend Services}
+
+All API calls use the browser's \texttt{fetch} API targeting the Flask server at \texttt{http://localhost:5000}. The Node.js server at \texttt{http://localhost:5005} is used exclusively for \texttt{<iframe>} sources that load the generated HTML output files.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/interface/react_interface_overview.png}
+    \caption{React interface: URL chip input form, level/mode selectors, progress feedback, and the resulting similarity heatmap with linked HTML visualisations.}
+    \label{fig:react_interface}
+\end{figure}
+
+\section{Process Orchestration}
+\label{sec:process-orchestration}
+
+The \texttt{mprocs.yaml} file at the project root defines three process entries:
+
+\begin{itemize}
+    \item \textbf{api}: \texttt{python backend/api/main.py} --- starts the Flask server on port 5000.
+    \item \textbf{server}: \texttt{node backend/server/server.js} --- starts the Node.js file server on port 5005.
+    \item \textbf{frontend}: \texttt{npm start} (in \texttt{frontend/}) --- starts the React development server on port 3000.
+\end{itemize}
+
+Running \texttt{mprocs} from the project root launches all three concurrently, with each service's output displayed in a separate pane. This eliminates the need for multiple terminal sessions during development and testing.
+
+\section{Caching}
+\label{sec:caching}
+
+The \texttt{CacheManager} class (\texttt{backend/lib/utils/cache\_manager.py}) implements a file-based TTL cache. When a URL is submitted for processing, the system checks whether a recent (non-expired) result already exists in the cache directory. If found, the cached JSON data is loaded directly, skipping DOM extraction and clustering. This significantly reduces processing time when running repeated experiments on the same URL sets. Cache expiry and storage paths are configurable via \texttt{backend/lib/config.json}.
+
+\section{Implementation Summary}
+\label{sec:implementation-summary}
+
+The S\textsuperscript{4}D implementation is organised as three cooperating services: a Flask REST API that drives the analysis pipeline, a Node.js static server that delivers HTML visualisations, and a React SPA that provides the user interface. The \texttt{mprocs} tool starts all three with a single command. The backend processing library exposes three well-defined entry points consumed by the API layer, and the TTL cache reduces redundant computation across repeated runs. This modular separation ensures that each component can be tested and maintained independently while composing into a coherent end-to-end system.

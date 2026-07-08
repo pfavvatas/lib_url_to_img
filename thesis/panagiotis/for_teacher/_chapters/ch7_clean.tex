@@ -1,0 +1,56 @@
+\chapter{Conclusion and Future Work}
+\label{ch:conclusion}
+
+\section{Summary of Contributions}
+\label{sec:contributions}
+
+This thesis presented S\textsuperscript{4}D, a system for automated cross-domain web similarity analysis based on DOM structure and CSS properties. The system makes five concrete technical contributions:
+
+\begin{enumerate}
+    \item \textbf{Bottom-up multi-level DOM analysis.} A recursive traversal algorithm that builds feature vectors at 10 configurable depth levels, from leaf nodes (level 1) upward toward the root (level 10). This enables the analysis to capture structural patterns at varying degrees of granularity without committing to a fixed depth.
+
+    \item \textbf{HDBSCAN clustering with automatic parameter optimisation.} A grid search over minimum cluster size and selection epsilon, guided by the DBCV score, that selects the best clustering configuration without manual tuning. An outlier reassignment step ensures every DOM element is assigned to a cluster, eliminating noise from downstream similarity computation.
+
+    \item \textbf{Role vector representation.} A compact vector per cluster encoding relative occurrence frequency, outgoing and incoming transition probabilities, and positional statistics (mean, standard deviation, min, max of normalised element positions). Role vectors capture the functional role of each cluster within the document sequence, not just its internal CSS properties.
+
+    \item \textbf{Multi-metric similarity framework.} A combined similarity score computed as the geometric mean of cosine similarity, an EMD approximation, and a Hausdorff approximation between the role vector sets of two domains. Each metric captures a different aspect of structural correspondence; the geometric mean rewards consistently high scores across all three.
+
+    \item \textbf{Median-based best-level selection.} An algorithm that, given clustering results across all requested levels, identifies the level that best balances cluster count (interpretability) and DBCV score (quality): it sorts valid results by cluster count, uses the cluster count at the median position as a ceiling, and among results below that ceiling selects the one with the highest DBCV score.
+\end{enumerate}
+
+Together these components form an end-to-end pipeline that takes a set of URLs as input and produces a pairwise similarity matrix and colour-coded HTML visualisations as output, with no manual parameter tuning required.
+
+\section{Experimental Evaluation}
+\label{sec:eval-summary}
+
+The system was evaluated on 20 URLs drawn from 6 domains in 3 thematic categories: security vulnerability databases (nvd.nist.gov, jvn.jp, kb.cert.org), political news (pirateparty.gr), and food/recipe sites (dia-trofis.gr, gastronomos.gr). The evaluation assessed whether the similarity matrix correctly reflects thematic groupings, which DOM depth level achieves the best clustering quality, and how processing time scales with the dataset.
+
+The results of this evaluation are reported in Chapters~\ref{ch:experiments} and~\ref{ch:results} and are to be interpreted in light of the research questions defined in Section~\ref{sec:research-questions}.
+
+\section{Limitations}
+\label{sec:limitations}
+
+The system has three notable limitations:
+
+\begin{itemize}
+    \item \textbf{Static snapshot analysis.} DOM extraction captures the page state at load time. Heavily JavaScript-driven pages or pages that require user interaction to reveal content may produce incomplete feature vectors.
+
+    \item \textbf{Single-browser dependency.} Computed styles are obtained from Chrome. Browser-specific CSS behaviour may cause feature vectors for the same page to differ across browsers.
+
+    \item \textbf{Processing time.} DOM extraction with headless Chrome is the bottleneck. Processing time scales approximately linearly with the number of URLs, which limits the practical scale of a single run without caching.
+\end{itemize}
+
+\section{Future Work}
+\label{sec:future-work}
+
+Several directions could extend the system:
+
+\begin{itemize}
+    \item \textbf{Richer interaction simulation.} Using browser automation to simulate scrolling, lazy loading, and basic user interactions before DOM extraction would improve coverage for dynamic pages.
+
+    \item \textbf{Semantic feature integration.} Incorporating text embeddings from DOM text nodes alongside CSS features could improve the distinction between structurally similar but semantically different pages.
+
+    \item \textbf{Larger-scale evaluation.} Evaluating the similarity metric on a larger and more diverse dataset, with ground-truth category labels, would allow a more rigorous quantitative assessment of clustering accuracy.
+
+    \item \textbf{Incremental processing.} Extending the cache layer to support incremental updates --- re-scraping only URLs that have changed since the last run --- would make repeated analysis at scale more practical.
+\end{itemize}

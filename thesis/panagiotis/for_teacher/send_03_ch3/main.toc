@@ -1,0 +1,63 @@
+\babel@toc {greek}{}\relax 
+\babel@toc {greek}{}\relax 
+\contentsline {chapter}{Περίληψη}{\EnsureStandardFontEncoding {i}}{chapter*.1}%
+\babel@toc {english}{}\relax 
+\contentsline {chapter}{Abstract}{\EnsureStandardFontEncoding {iii}}{chapter*.2}%
+\contentsline {chapter}{Acknowledgements}{\EnsureStandardFontEncoding {v}}{chapter*.3}%
+\babel@toc {english}{}\relax 
+\babel@toc {english}{}\relax 
+\contentsline {chapter}{\numberline {1}Introduction}{1}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Problem Statement}{1}{section.1.1}%
+\contentsline {subsection}{\numberline {1.1.1}Web Structure Analysis Challenges}{1}{subsection.1.1.1}%
+\contentsline {subsubsection}{\numberline {1.1.1.1}DOM Complexity and Recursive Processing}{1}{subsubsection.1.1.1.1}%
+\contentsline {subsubsection}{\numberline {1.1.1.2}CSS Style Diversity and Standardization}{1}{subsubsection.1.1.1.2}%
+\contentsline {subsubsection}{\numberline {1.1.1.3}Attribute Extraction and Feature Engineering}{2}{subsubsection.1.1.1.3}%
+\contentsline {subsubsection}{\numberline {1.1.1.4}Scalability and Performance Optimization}{2}{subsubsection.1.1.1.4}%
+\contentsline {subsubsection}{\numberline {1.1.1.5}Multi-dimensional Similarity Computation}{2}{subsubsection.1.1.1.5}%
+\contentsline {subsubsection}{\numberline {1.1.1.6}Clustering Parameter Optimization}{2}{subsubsection.1.1.1.6}%
+\contentsline {subsubsection}{\numberline {1.1.1.7}Cross-Domain Pattern Recognition}{2}{subsubsection.1.1.1.7}%
+\contentsline {subsection}{\numberline {1.1.2}Research Motivation}{2}{subsection.1.1.2}%
+\contentsline {section}{\numberline {1.2}Research Objectives}{3}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Contributions}{3}{section.1.3}%
+\contentsline {section}{\numberline {1.4}Thesis Structure}{3}{section.1.4}%
+\contentsline {chapter}{\numberline {2}Related Work}{5}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Structural Understanding of Web Documents}{5}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Information Extraction and Representation}{5}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Similarity and Clustering in Web Analysis}{6}{section.2.3}%
+\contentsline {section}{\numberline {2.4}Comparison with Prior Work}{6}{section.2.4}%
+\contentsline {section}{\numberline {2.5}Research Gaps and Opportunities}{6}{section.2.5}%
+\contentsline {section}{\numberline {2.6}Summary}{7}{section.2.6}%
+\contentsline {chapter}{\numberline {3}The S\textsuperscript {4}D System}{9}{chapter.3}%
+\contentsline {section}{\numberline {3.1}System Overview}{9}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Technology Stack}{9}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Backend Technologies}{10}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}Frontend and Infrastructure}{10}{subsection.3.2.2}%
+\contentsline {section}{\numberline {3.3}Web Parsing}{11}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Automated Web Rendering}{11}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}Hierarchical DOM Tree Construction}{11}{subsection.3.3.2}%
+\contentsline {subsubsection}{\numberline {3.3.2.1}Unique Element Identification}{11}{subsubsection.3.3.2.1}%
+\contentsline {subsubsection}{\numberline {3.3.2.2}Comprehensive Attribute Extraction}{11}{subsubsection.3.3.2.2}%
+\contentsline {subsubsection}{\numberline {3.3.2.3}Text Content Processing}{11}{subsubsection.3.3.2.3}%
+\contentsline {subsection}{\numberline {3.3.3}Multi-Level DOM Analysis}{12}{subsection.3.3.3}%
+\contentsline {subsection}{\numberline {3.3.4}CSS Property Analysis and Normalisation}{12}{subsection.3.3.4}%
+\contentsline {subsubsection}{\numberline {3.3.4.1}Attribute Selection}{12}{subsubsection.3.3.4.1}%
+\contentsline {subsubsection}{\numberline {3.3.4.2}CSS Value Normalisation}{13}{subsubsection.3.3.4.2}%
+\contentsline {section}{\numberline {3.4}Data Modelling}{13}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}Feature Vector Construction}{13}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.4.2}HDBSCAN Clustering Integration}{13}{subsection.3.4.2}%
+\contentsline {subsubsection}{\numberline {3.4.2.1}Parameter Optimisation}{13}{subsubsection.3.4.2.1}%
+\contentsline {subsubsection}{\numberline {3.4.2.2}Outlier Reassignment}{14}{subsubsection.3.4.2.2}%
+\contentsline {subsection}{\numberline {3.4.3}Post-Clustering Data Enrichment}{14}{subsection.3.4.3}%
+\contentsline {section}{\numberline {3.5}Data Mining: Transition Matrices and Role Vectors}{14}{section.3.5}%
+\contentsline {subsection}{\numberline {3.5.1}Transition Matrix Construction}{14}{subsection.3.5.1}%
+\contentsline {subsection}{\numberline {3.5.2}Positional Statistics}{14}{subsection.3.5.2}%
+\contentsline {subsection}{\numberline {3.5.3}Role Vector Specification}{14}{subsection.3.5.3}%
+\contentsline {section}{\numberline {3.6}Similarity Analysis}{15}{section.3.6}%
+\contentsline {subsection}{\numberline {3.6.1}Domain-Level Aggregation}{15}{subsection.3.6.1}%
+\contentsline {subsection}{\numberline {3.6.2}Multi-Metric Similarity}{15}{subsection.3.6.2}%
+\contentsline {subsection}{\numberline {3.6.3}Best Level Selection Algorithm}{15}{subsection.3.6.3}%
+\contentsline {section}{\numberline {3.7}Result Presentation}{16}{section.3.7}%
+\contentsline {subsection}{\numberline {3.7.1}Colour-Coded HTML Generation}{16}{subsection.3.7.1}%
+\contentsline {subsection}{\numberline {3.7.2}Similarity Matrix}{16}{subsection.3.7.2}%
+\contentsline {section}{\numberline {3.8}System Parameters and Usage}{16}{section.3.8}%
+\contentsline {section}{\numberline {3.9}Methodology Summary}{16}{section.3.9}%

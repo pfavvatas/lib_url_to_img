@@ -106,6 +106,17 @@ def extract_hsv_values(color_str):
     rgb_values = tuple(map(int, re.findall(r'\d+', color_str)))
     h, s, v = colorsys.rgb_to_hsv(rgb_values[0] / 255.0, rgb_values[1] / 255.0, rgb_values[2] / 255.0)
     return h, s, v
+    
+def safe_float(val, default=-1.0):
+    s = str(val).strip('"').strip("'").strip().lower()
+    if s in ("infinite", "+infinite", "infinity", "+infinity", "inf", "+inf"):
+        return float(default)
+    if s in ("-infinite", "-infinity", "-inf"):
+        return float(default)  # or keep negative if you prefer
+    if s in ("auto", "none", "", "nan"):
+        return float(default)
+    return float(s)
+
 
 def perform_clustering_analysis(data, enable_early_stop=False, early_stop_threshold=0.25, 
                                  enable_final_threshold=False, final_threshold=0.5):
@@ -188,13 +199,13 @@ def perform_clustering_analysis(data, enable_early_stop=False, early_stop_thresh
                                             nkey = '-1px'
                                         if '%' in nkey:
                                             nperc = nkey.split('%')[0]
-                                            nnum = (-1)*float(nperc)/100.0
+                                            nnum = (-1) * safe_float(nperc, default=-1.0) / 100.0
                                             ntot = nnum 
                                             nkey = str(ntot) + 'px'
-                                        px_value = float(nkey.split('px')[0])
+                                        px_value = safe_float(nkey.split('px')[0], default=-1.0)
                                     except:
                                         nkey = '-1px'
-                                        px_value = float(nkey.split('px')[0])
+                                        px_value = safe_float(nkey.split('px')[0], default=-1.0)
                                     att_histograms_values[key] = {'value': att_histograms_values[key], 'px': px_value}
                                 sorted_att_histograms_values = dict(sorted(att_histograms_values.items(), key=lambda x: x[1]['px']))
                                 sorted_att_histograms_values_strings = {key: value['value'] for key, value in sorted_att_histograms_values.items()}
@@ -205,7 +216,7 @@ def perform_clustering_analysis(data, enable_early_stop=False, early_stop_thresh
                                     nkey = key.strip('"')
                                     if nkey == 'auto':
                                         nkey = '-1'
-                                    num_value = float(nkey)
+                                    num_value = safe_float(nkey, default=-1.0)
                                     att_histograms_values[key] = {'value': att_histograms_values[key], 'num': num_value}
                                 sorted_att_histograms_values = dict(sorted(att_histograms_values.items(), key=lambda x: x[1]['num']))
                                 sorted_att_histograms_values_strings = {key: value['value'] for key, value in sorted_att_histograms_values.items()}
@@ -283,13 +294,13 @@ def perform_clustering_analysis(data, enable_early_stop=False, early_stop_thresh
                                             nkey = '-1px'
                                         if '%' in nkey:
                                             nperc = nkey.split('%')[0]
-                                            nnum = (-1)*float(nperc)/100.0 
+                                            nnum = (-1) * safe_float(nperc, default=-1.0) / 100.0
                                             ntot = nnum
                                             nkey = str(ntot) + 'px'
-                                        px_value = float(nkey.split('px')[0])
+                                        px_value = safe_float(nkey.split('px')[0], default=-1.0)
                                     except:
                                         nkey = '-1px'
-                                        px_value = float(nkey.split('px')[0])
+                                        px_value = safe_float(nkey.split('px')[0], default=-1.0)
                                     att_histograms_values[key] = {'value': att_histograms_values[key], 'px': px_value}
                                 sorted_att_histograms_values = dict(sorted(att_histograms_values.items(), key=lambda x: x[1]['px']))
                                 sorted_att_histograms_values_strings = {key: value['value'] for key, value in sorted_att_histograms_values.items()}
@@ -300,7 +311,7 @@ def perform_clustering_analysis(data, enable_early_stop=False, early_stop_thresh
                                     nkey = key.strip('"')
                                     if nkey == 'auto':
                                         nkey = '-1'
-                                    num_value = float(nkey)
+                                    num_value = safe_float(nkey, default=-1.0)
                                     att_histograms_values[key] = {'value': att_histograms_values[key], 'num': num_value}
                                 sorted_att_histograms_values = dict(sorted(att_histograms_values.items(), key=lambda x: x[1]['num']))
                                 sorted_att_histograms_values_strings = {key: value['value'] for key, value in sorted_att_histograms_values.items()}
@@ -363,16 +374,14 @@ def perform_clustering_analysis(data, enable_early_stop=False, early_stop_thresh
                                         pixel_k_value = '-1'
                                     if '%' in pixel_k_value:
                                         nperc = pixel_k_value.split('%')[0]
-                                        nnum = (-1)*float(nperc)/100.0
-                                        ntot = nnum
-                                        pixel_k_value = str(ntot)
-                                    pixel_k_value = float(pixel_k_value.split('px')[0])
+                                        pixel_k_value = str((-1) * safe_float(nperc, default=-1.0) / 100.0)
+                                    pixel_k_value = safe_float(pixel_k_value.split('px')[0], default=-1.0)
                                 except:
-                                    pixel_k_value = '-1'
+                                    pixel_k_value = '-1.0'
                                 if el_id not in pageVectors:
                                     pageVectors[el_id] = []
                                 if pageElementsVisited[el_id] == 0:
-                                    pageVectors[el_id].append(float(pixel_k_value))
+                                    pageVectors[el_id].append(safe_float(pixel_k_value, default=-1.0))
                                 pageElementsVisited[el_id] = len(pageVectors[el_id])
                         elif re.match(r'\d+(\.\d+)?px \d+(\.\d+)?px$', frstKey):
                             for el_id in k[1]:
@@ -385,15 +394,16 @@ def perform_clustering_analysis(data, enable_early_stop=False, early_stop_thresh
                                         pixel_k_value_Y = '-1'
                                     if '%' in k[0]:
                                         npercX = pixel_k_values[0].split('%')[0]
-                                        nnumX = (-1)*float(npercX)/100.0
+                                        nnumX = (-1) * safe_float(npercX, default=-1.0) / 100.0
                                         ntotX = nnumX
                                         pixel_k_value_X = str(ntotX)
                                         npercY = pixel_k_values[1].split('%')[0]
-                                        nnumY = (-1)*float(npercY)/100.0
+                                        nnumY = (-1) * safe_float(npercY, default=-1.0) / 100.0
                                         ntotY = nnumY
                                         pixel_k_value_Y = str(ntotY)
-                                    pixel_k_value_X = float(pixel_k_value_X.split('px')[0])
-                                    pixel_k_value_Y = float(pixel_k_value_Y.split('px')[0])
+                                    pixel_k_value_X = safe_float(pixel_k_value_X.split('px')[0], default=-1.0)
+                                    pixel_k_value_Y = safe_float(pixel_k_value_Y.split('px')[0], default=-1.0)
+
                                 except:
                                     pixel_k_value_X = -1
                                     pixel_k_value_Y = -1
@@ -403,8 +413,9 @@ def perform_clustering_analysis(data, enable_early_stop=False, early_stop_thresh
                                 if el_id not in pageVectors:
                                     pageVectors[el_id] = []
                                 if pageElementsVisited[el_id] == 0:
-                                    pageVectors[el_id].append(float(pixel_k_value_X))
-                                    pageVectors[el_id].append(float(pixel_k_value_Y))
+                                    pageVectors[el_id].append(safe_float(pixel_k_value_X, default=-1.0))
+                                    pageVectors[el_id].append(safe_float(pixel_k_value_Y, default=-1.0))
+
                                 pageElementsVisited[el_id] = len(pageVectors[el_id])
                             elTypeFlag = 1
                         elif re.match(r'\d+(\.\d+)?$', frstKey):
@@ -412,7 +423,13 @@ def perform_clustering_analysis(data, enable_early_stop=False, early_stop_thresh
                                 if el_id not in pageVectors:
                                     pageVectors[el_id] = []
                                 if pageElementsVisited[el_id] == 0:
-                                    pageVectors[el_id].append(float(str(k[0]).strip('"')))
+                                    val = str(k[0]).strip('"').strip("'").lower()
+                                    if val in ("infinite","auto","none",""):
+                                        val = "-1"
+                                    try:
+                                        pageVectors[el_id].append(float(val))
+                                    except ValueError:
+                                        pageVectors[el_id].append(-1.0)
                                 pageElementsVisited[el_id] = len(pageVectors[el_id])
                         elif re.match(r'.*rgb\(\d+, \d+, \d+\)', frstKey):
                             elTypeFlag = 1
@@ -449,10 +466,13 @@ def perform_clustering_analysis(data, enable_early_stop=False, early_stop_thresh
         scaler = StandardScaler()
         X_scaled = scaler.fit_transform(arr_2B_red)
         X_normalized = X_scaled
+        X_feat = X_scaled  # (this is what you previously called X_normalized)
 
-        max_range_cl_size = int(len(pageVectorsIDs)*10/100)+1
+        max_range_cl_size = 60#int(len(pageVectorsIDs)*1/100)+1 #10% --> 1% --> 60
         if max_range_cl_size <= 5:
             max_range_cl_size = 10
+            
+        ##max_range_cl_size = 10 #added to avoid over-analyzing
 
         # Define ranges for parameter search
         min_cluster_size_range = range(5, max_range_cl_size, 1)
@@ -472,8 +492,8 @@ def perform_clustering_analysis(data, enable_early_stop=False, early_stop_thresh
             while cluster_selection_epsilon <= 1:
                 current_iteration += 1
                 # Progress logging every 10 iterations or at start
-                if current_iteration % 10 == 1 or current_iteration == 1:
-                    print(f"  🔄 Clustering progress: {current_iteration}/{total_iterations} iterations (min_cluster_size={min_cluster_size}, epsilon={cluster_selection_epsilon:.3f})")
+                ##if current_iteration % 10 == 1 or current_iteration == 1:
+                print(f"  🔄 Clustering progress: {min_cluster_size}/{max_range_cl_size} step (min_cluster_size={min_cluster_size}, epsilon={cluster_selection_epsilon:.3f})")
                 
                 # Apply HDBSCAN clustering
                 clusterer = hdbscan.HDBSCAN(
@@ -485,6 +505,8 @@ def perform_clustering_analysis(data, enable_early_stop=False, early_stop_thresh
                 # Step 1: Ensure at least one valid cluster (not just outliers)
                 if len(set(labels)) > 1:  # Ensure there are at least two clusters (valid clusters)
                     dbcv_score = dbcv.dbcv(X_normalized, labels, check_duplicates=False)
+                    
+                    print(f"  📊 DBCV Score: {dbcv_score}, # Clusters: {len(set(labels))}")
                     
                     # Early stop check (only if enabled)
                     if enable_early_stop and dbcv_score < early_stop_threshold:
@@ -532,7 +554,9 @@ def perform_clustering_analysis(data, enable_early_stop=False, early_stop_thresh
                         nearest_cluster = min(distances, key=distances.get)
                         labels[outlier] = nearest_cluster  # Reassign the outlier to the nearest cluster
                         
-                cluster_selection_epsilon += 0.333 #0.1
+                cluster_selection_epsilon += 0.1 #0.1 / 0.333
+                if dbcv_score >= 0.5:
+                    break
             if early_stop == True:
                 break
                 
@@ -590,6 +614,7 @@ def perform_clustering_analysis(data, enable_early_stop=False, early_stop_thresh
             }
             
     except Exception as e:
+        print(e)
         return {
             'success': False,
             'clusters': [],

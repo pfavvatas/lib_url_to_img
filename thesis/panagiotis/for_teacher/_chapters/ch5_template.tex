@@ -1,0 +1,231 @@
+\chapter{Experiments and Evaluation}
+\label{ch:experiments}
+
+This chapter presents the experimental evaluation of the S\textsuperscript{4}D system. The goal is to assess whether the system's multi-level DOM clustering and role-vector similarity pipeline can correctly identify structural and stylistic commonalities among pages from the same thematic domain and distinguish them from pages belonging to unrelated domains.
+
+\section{Research Questions}
+\label{sec:research-questions}
+
+The evaluation is organised around three research questions:
+
+\begin{enumerate}
+    \item \textbf{RQ1}: Does the similarity matrix produced by S\textsuperscript{4}D reflect the expected thematic groupings of the input URLs (i.e., are within-category similarity scores higher than cross-category scores)?
+    \item \textbf{RQ2}: Which DOM depth level (1--10) produces the best-quality clustering, as measured by the DBCV score?
+    \item \textbf{RQ3}: How does processing time scale with the number of URLs and the number of requested levels?
+\end{enumerate}
+
+\section{Dataset}
+\label{sec:dataset}
+
+The experimental dataset consists of 20 URLs drawn from 6 domains, organised into three thematic categories. The categories were chosen to represent clearly distinct web design patterns: security vulnerability databases, political news sites, and food/recipe sites. Within each category, multiple pages from the same domain as well as from structurally similar competing domains are included, so that the similarity metric can be evaluated both within and across domains.
+
+\subsection{Category 1: Security Vulnerability Databases}
+\label{subsec:cat-security}
+
+This category contains 12 URLs from three well-known public vulnerability registries. All three sites present individual CVE/vulnerability entries in a structured, data-dense format with consistent typography and tabular layout, making them a natural test for cross-domain structural similarity.
+
+\begin{itemize}
+    \item \textbf{nvd.nist.gov} (4 URLs): NIST National Vulnerability Database individual CVE detail pages.
+    \item \textbf{jvn.jp} (4 URLs): Japan Vulnerability Notes individual advisory pages.
+    \item \textbf{kb.cert.org} (4 URLs): CERT/CC Vulnerability Notes Database individual notes.
+\end{itemize}
+
+The exact URLs used are listed in Table~\ref{tab:urls-security}.
+
+\begin{table}[htbp]
+\centering
+\caption{Security vulnerability database URLs}
+\label{tab:urls-security}
+\begin{tabular}{ll}
+\toprule
+\textbf{Domain} & \textbf{URL} \\
+\midrule
+nvd.nist.gov & \texttt{/vuln/detail/CVE-2020-14624} \\
+nvd.nist.gov & \texttt{/vuln/detail/CVE-2018-5032} \\
+nvd.nist.gov & \texttt{/vuln/detail/CVE-2025-6765} \\
+nvd.nist.gov & \texttt{/vuln/detail/CVE-2025-6763} \\
+jvn.jp & \texttt{/en/jp/JVN41119755/index.html} \\
+jvn.jp & \texttt{/en/jp/JVN33214411/index.html} \\
+jvn.jp & \texttt{/en/jp/JVN17860456/index.html} \\
+jvn.jp & \texttt{/en/jp/JVN05562338/index.html} \\
+kb.cert.org & \texttt{/vuls/id/366027} \\
+kb.cert.org & \texttt{/vuls/id/229438} \\
+kb.cert.org & \texttt{/vuls/id/806555} \\
+kb.cert.org & \texttt{/vuls/id/282450} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Category 2: Political News}
+\label{subsec:cat-news}
+
+This category contains 4 URLs from a single Greek political party news site (Pirate Party Greece). All pages are article pages sharing the same WordPress-based template, providing a controlled within-domain baseline.
+
+\begin{itemize}
+    \item \textbf{pirateparty.gr} (4 URLs): individual article pages from the Pirate Party Greece blog.
+\end{itemize}
+
+\subsection{Category 3: Food and Lifestyle}
+\label{subsec:cat-food}
+
+This category contains 4 URLs from two Greek food and recipe sites. Both sites present recipe content in a similar layout (featured image, ingredient list, instructions), testing cross-domain similarity within the same content niche.
+
+\begin{itemize}
+    \item \textbf{dia-trofis.gr} (2 URLs): lifestyle and recipe article pages.
+    \item \textbf{gastronomos.gr} (2 URLs): recipe detail pages.
+\end{itemize}
+
+\subsection{Dataset Summary}
+\label{subsec:dataset-summary}
+
+\begin{table}[htbp]
+\centering
+\caption{Dataset summary}
+\label{tab:dataset-summary}
+\begin{tabular}{llcc}
+\toprule
+\textbf{Category} & \textbf{Domain(s)} & \textbf{URLs} & \textbf{Expected cluster behaviour} \\
+\midrule
+Security CVE & nvd.nist.gov, jvn.jp, kb.cert.org & 12 & high cross-domain similarity \\
+Political news & pirateparty.gr & 4 & tight within-domain cluster \\
+Food / recipes & dia-trofis.gr, gastronomos.gr & 4 & high cross-domain similarity \\
+\midrule
+\textbf{Total} & 6 domains & \textbf{20} & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Experimental Setup}
+\label{sec:experimental-setup}
+
+\subsection{System Configuration}
+
+All experiments were run using the following fixed configuration:
+
+\begin{itemize}
+    \item \textbf{Browser}: Chrome headless, viewport 1920$\times$1080.
+    \item \textbf{Analysis levels}: levels 1--10 (all levels processed in a single run).
+    \item \textbf{Processing mode}: Mode~0 (unified --- all URLs processed together in a single pass).
+    \item \textbf{Minimum cluster size}: 5--10\% of total element count (grid-searched automatically).
+    \item \textbf{Selection epsilon}: 0.0, 0.333, 0.667, 1.0 (grid-searched automatically).
+    \item \textbf{Best level selection}: median-based algorithm (Section~\ref{sec:similarity-analysis}).
+\end{itemize}
+
+\subsection{Evaluation Metrics}
+
+\begin{itemize}
+    \item \textbf{DBCV score}: primary measure of intra-cluster density vs.\ inter-cluster separation (higher is better; scores above 0.5 are considered good).
+    \item \textbf{Number of clusters}: a secondary quality indicator; fewer clusters are preferred for interpretability, subject to DBCV threshold.
+    \item \textbf{Combined similarity score}: geometric mean of cosine, EMD, and Hausdorff similarity (expressed as a percentage, Section~\ref{sec:similarity-analysis}).
+    \item \textbf{Processing time}: total wall-clock time from URL submission to similarity matrix completion, measured per run.
+\end{itemize}
+
+\section{Results}
+\label{sec:results}
+
+\textit{Note: the results below are placeholders. Run the system on the dataset described in Section~\ref{sec:dataset} and fill in the actual values.}
+
+\subsection{DBCV Scores by Level}
+\label{subsec:dbcv-results}
+
+Table~\ref{tab:dbcv-by-level} reports the DBCV score and number of clusters produced at each level for the 20-URL dataset.
+
+\begin{table}[htbp]
+\centering
+\caption{DBCV score and cluster count per analysis level}
+\label{tab:dbcv-by-level}
+\begin{tabular}{ccc}
+\toprule
+\textbf{Level} & \textbf{DBCV score} & \textbf{Number of clusters} \\
+\midrule
+1  & [TODO] & [TODO] \\
+2  & [TODO] & [TODO] \\
+3  & [TODO] & [TODO] \\
+4  & [TODO] & [TODO] \\
+5  & [TODO] & [TODO] \\
+6  & [TODO] & [TODO] \\
+7  & [TODO] & [TODO] \\
+8  & [TODO] & [TODO] \\
+9  & [TODO] & [TODO] \\
+10 & [TODO] & [TODO] \\
+\midrule
+\textbf{Best (auto-selected)} & \textbf{[TODO]} & \textbf{[TODO]} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[htbp]
+    \centering
+    \fbox{\parbox{0.85\textwidth}{\centering\vspace{2cm}[TODO: bar chart of DBCV score per level]\vspace{2cm}}}
+    \caption{DBCV score by analysis level. The dashed line at 0.5 marks the quality threshold above which clustering results are considered acceptable.}
+    \label{fig:dbcv-by-level}
+\end{figure}
+
+\subsection{Similarity Matrix}
+\label{subsec:similarity-matrix}
+
+Table~\ref{tab:similarity-matrix} shows the combined similarity scores (as percentages) between all six domains at the auto-selected best level. The expected pattern is that within-category pairs (security--security, food--food) exhibit higher scores than cross-category pairs.
+
+\begin{table}[htbp]
+\centering
+\caption{Inter-domain similarity matrix at best level (\%), combined geometric-mean score}
+\label{tab:similarity-matrix}
+\begin{tabular}{lcccccc}
+\toprule
+ & \textbf{nvd} & \textbf{jvn} & \textbf{kb.cert} & \textbf{pirate} & \textbf{dia-trofis} & \textbf{gastro} \\
+\midrule
+\textbf{nvd.nist.gov}    & 100 & [TODO] & [TODO] & [TODO] & [TODO] & [TODO] \\
+\textbf{jvn.jp}          &     & 100    & [TODO] & [TODO] & [TODO] & [TODO] \\
+\textbf{kb.cert.org}     &     &        & 100    & [TODO] & [TODO] & [TODO] \\
+\textbf{pirateparty.gr}  &     &        &        & 100    & [TODO] & [TODO] \\
+\textbf{dia-trofis.gr}   &     &        &        &        & 100    & [TODO] \\
+\textbf{gastronomos.gr}  &     &        &        &        &        & 100    \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[htbp]
+    \centering
+    \fbox{\parbox{0.85\textwidth}{\centering\vspace{3cm}[TODO: heatmap of similarity matrix (Viridis colourmap)]\vspace{3cm}}}
+    \caption{Similarity matrix heatmap. Brighter cells indicate higher combined similarity. Within-category blocks (security diagonal, food diagonal) are expected to be the brightest.}
+    \label{fig:similarity-heatmap}
+\end{figure}
+
+\subsection{Processing Time}
+\label{subsec:processing-time}
+
+\begin{table}[htbp]
+\centering
+\caption{Processing time for the 20-URL dataset}
+\label{tab:processing-time}
+\begin{tabular}{lc}
+\toprule
+\textbf{Phase} & \textbf{Time (s)} \\
+\midrule
+DOM extraction and CSS analysis (20 URLs) & [TODO] \\
+Clustering (all 10 levels)                & [TODO] \\
+Role vector computation                   & [TODO] \\
+Similarity matrix computation             & [TODO] \\
+\midrule
+\textbf{Total}                            & \textbf{[TODO]} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Discussion}
+\label{sec:discussion}
+
+\textit{Fill in after obtaining actual results. The following questions should be addressed:}
+
+\begin{itemize}
+    \item Which level was selected as best, and does the selection align with visual inspection of the colour-coded HTML outputs?
+    \item Do the security domains (nvd.nist.gov, jvn.jp, kb.cert.org) exhibit high mutual similarity, as expected given their common structured-data presentation style?
+    \item Do the food domains (dia-trofis.gr, gastronomos.gr) show higher mutual similarity than each does with the news or security categories?
+    \item Where does pirateparty.gr sit relative to the other categories, and is it distinguishable by the similarity metric?
+    \item Are there unexpected high or low similarities, and can they be explained by examining the colour-coded HTML visualisations?
+\end{itemize}
+
+\section{Summary}
+\label{sec:ch5-summary}
+
+This chapter described the experimental setup and dataset (20 URLs, 6 domains, 3 thematic categories) used to evaluate S\textsuperscript{4}D, and presented the evaluation metrics and placeholder result tables to be filled in after running the system. The expected outcome is that the similarity matrix will reflect the thematic groupings of the input URLs, with within-category scores substantially higher than cross-category scores.

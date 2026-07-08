@@ -197,6 +197,7 @@ def compute_site_cosine_similarity(sites):
         columns=domain_names
     ).round(3)
 
+    '''
     sim_emd = pd.DataFrame(index=domain_names, columns=domain_names, dtype=float)
     sim_haus = pd.DataFrame(index=domain_names, columns=domain_names, dtype=float)
 
@@ -227,11 +228,11 @@ def compute_site_cosine_similarity(sites):
 
     sim_emd = sim_emd.round(3)
     sim_haus = sim_haus.round(3)
-    
+    '''
     # Combined similarity using geometric mean
-    sim_combined = (sim_cosine * sim_emd * sim_haus)**(1/3)
+    ####sim_combined = (sim_cosine * sim_emd * sim_haus)**(1/3)
     
     # Convert to percentage (0-100) and clip to valid range
-    sim_combined = np.clip(sim_combined, 0, 1) * 100
+    ####sim_combined = np.clip(sim_combined, 0, 1) * 100
     
-    return sim_combined.round(2) 
+    return sim_cosine.round(2)#sim_combined.round(2) 

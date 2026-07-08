@@ -1,0 +1,12 @@
+\begin{thebibliography}{1}
+
+\bibitem{moulavi2014dbcv}
+Davoud Moulavi, Pablo~Andretta Jaskowiak, Ricardo J. G.~B. Campello, Arthur
+  Zimek, and J{\"o}rg Sander.
+\newblock Density-based clustering validation.
+\newblock In {\em Proceedings of the 2014 SIAM International Conference on Data
+  Mining}, pages 839--847. SIAM, 2014.
+\newblock Introduces DBCV (Density-Based Cluster Validation) index for
+  evaluating density-based clustering results.
+
+\end{thebibliography}

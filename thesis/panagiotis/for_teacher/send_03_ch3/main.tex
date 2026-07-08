@@ -1,0 +1,172 @@
+\documentclass[15pt,a4paper]{book}
+
+% === Language & Encoding ===
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english,greek]{babel}
+\usepackage{lmodern}
+
+% === Core packages ===
+\usepackage{graphicx}
+\usepackage{amsmath, amssymb}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage{natbib}
+\usepackage[most]{tcolorbox}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{framed}
+\usepackage{booktabs}
+
+% === Graphics path: reuse figures from original thesis ===
+\graphicspath{{../../S_D_Thesis_25042026/}}
+
+% === Metadata ===
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=cyan,
+    pdftitle={S4D: Style and Structure Similarity for Site Domains},
+    pdfauthor={Panagiotis Favvatas},
+}
+
+% === Styling ===
+\geometry{margin=2.5cm}
+\onehalfspacing
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[C]{\thepage}
+\fancyhead[R]{\leftmark}
+
+% === Code Styling ===
+\lstset{
+    backgroundcolor=\color{gray!5},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    commentstyle=\color{green!60!black},
+    deletekeywords={...},
+    escapeinside={\%*}{*)},
+    extendedchars=true,
+    frame=single,
+    framerule=0.4pt,
+    framesep=8pt,
+    keepspaces=true,
+    keywordstyle=\color{blue},
+    language=Python,
+    morekeywords={*,...},
+    numbers=left,
+    numbersep=12pt,
+    numberstyle=\tiny\color{gray!60},
+    rulecolor=\color{gray!40},
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    stepnumber=1,
+    stringstyle=\color{red},
+    tabsize=2,
+    title=\lstname
+}
+
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{4}
+
+\titleformat{\paragraph}
+  {\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\renewcommand\theparagraph{\thesubsubsection.\arabic{paragraph}}
+
+\title{S\textsuperscript{4}D: Style and Structure Similarity for Site Domains}
+\author{Panagiotis Favvatas}
+\date{June 2025}
+
+\begin{document}
+
+% === Title Page ===
+\begin{titlepage}
+\thispagestyle{empty}
+\centering
+\vspace*{3cm}
+\includegraphics[width=4cm]{university_logo.png}\par\vspace{2cm}
+{\Huge\bfseries \textlatin{S\textsuperscript{4}D}: \textlatin{Style and Structure Similarity for Site Domains}\par}
+\vfill
+\end{titlepage}
+
+% === Copyright Page ===
+\newpage
+\thispagestyle{empty}
+\vspace*{\fill}
+\begin{center}
+{\large
+\textlatin{S\textsuperscript{4}D: Style and Structure Similarity for Site Domains}\\
+\vspace{0.5cm}
+\textlatin{Panagiotis Favvatas}\\
+\vspace{0.5cm}
+\textlatin{Bachelor Thesis, Department of Informatics And Telecommunications}\\
+\textlatin{University of the Peloponnese, July 2025}\\
+\vspace{0.5cm}
+\textlatin{Copyright \copyright{} 2025 University of Peloponnese. All Rights Reserved}
+}
+\end{center}
+
+% === Detailed Thesis Page ===
+\newpage
+\thispagestyle{empty}
+\begin{center}
+\vspace*{2cm}
+{\Large\bfseries
+\textlatin{S\textsuperscript{4}D: Style and Structure Similarity for Site Domains\\}
+}
+\vspace{1.5cm}
+{\large \textlatin{Panagiotis Favvatas}}\\
+\vspace{2cm}
+{\large
+\textlatin{A thesis submitted in partial fulfillment}\\
+\textlatin{of the requirements for the degree of}\\
+\textlatin{Informatics and Telecommunications}\\
+}
+\vspace{2cm}
+{\large\bfseries \textlatin{Committee}}\\
+\vspace{0.5cm}
+{\large
+\textlatin{Professor, Spiros Skiadopoulos, Supervisor}\\
+\textlatin{Professor, [Committee Member 1]}\\
+\textlatin{Associate Professor, [Committee Member 2]}\\
+}
+\vspace{2cm}
+{\large
+\textlatin{University of the Peloponnese}\\
+\textlatin{2025}\\
+}
+\end{center}
+
+% === Front Matter ===
+\frontmatter
+\pagenumbering{roman}
+
+\input{../_base/front_matter/greek-abstract.tex}
+\input{../_base/front_matter/english-abstract.tex}
+
+\chapter*{Acknowledgements}
+\addcontentsline{toc}{chapter}{Acknowledgements}
+\input{../_base/front_matter/acknowledgements.tex}
+
+\tableofcontents
+
+% === Main Matter ===
+\mainmatter
+\pagenumbering{arabic}
+\selectlanguage{english}
+
+\input{../_chapters/ch1.tex}
+\input{../_chapters/ch2_clean.tex}
+\input{../_chapters/ch3_fixed.tex}
+
+% === Bibliography ===
+\bibliographystyle{plain}
+\bibliography{../_base/bibliography/references}
+
+\end{document}

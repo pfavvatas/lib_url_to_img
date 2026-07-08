@@ -1,0 +1,465 @@
+\section{API Overview}
+\label{sec:api-overview}
+
+The S\textsuperscript{4}D system provides a RESTful API built with FastAPI, offering programmatic access to all core functionality. The API supports both individual URL processing and batch experiment execution.
+
+\subsection{Base Configuration}
+\label{subsec:base-configuration}
+
+\begin{itemize}
+    \item \textbf{Base URL}: \texttt{http://localhost:5000}
+    \item \textbf{Content-Type}: \texttt{application/json}
+    \item \textbf{Response Format}: JSON
+    \item \textbf{CORS}: Enabled for web client integration
+    \item \textbf{Documentation}: Available at \texttt{/apidocs} (Swagger UI)
+\end{itemize}
+
+\section{Core Processing Endpoints}
+\label{sec:core-endpoints}
+
+\subsection{Process URLs}
+\label{subsec:process-urls}
+
+\textbf{Endpoint}: \texttt{POST /process-urls}
+
+Processes a list of URLs with specified analysis levels and processing modes.
+
+\subsubsection{Request Format}
+\label{subsubsec:request-format}
+
+\begin{verbatim}
+{
+    "urls": [
+        "https://example.com",
+        "https://test.com"
+    ],
+    "levels": [1, 2, 3],
+    "mode": 0
+}
+\end{verbatim}
+
+\textbf{Parameters}:
+\begin{itemize}
+    \item \texttt{urls} (array): List of URLs to analyze
+    \item \texttt{levels} (array): DOM analysis levels (1-10)
+    \item \texttt{mode} (integer): Processing mode
+        \begin{itemize}
+            \item \texttt{0}: Process all URLs together
+            \item \texttt{1}: Domain-based processing
+        \end{itemize}
+\end{itemize}
+
+\subsubsection{Response Format}
+\label{subsubsec:response-format}
+
+\begin{verbatim}
+{
+    "status": "success",
+    "message": "URLs processed successfully",
+    "clustering_results": [...],
+    "processed_clusters": [...],
+    "html_files": [...],
+    "timing_logs": {...},
+    "best_level_info": {...}
+}
+\end{verbatim}
+
+\textbf{Response Fields}:
+\begin{itemize}
+    \item \texttt{status}: Success/error indicator
+    \item \texttt{message}: Human-readable status message
+    \item \texttt{clustering\_results}: HDBSCAN clustering analysis
+    \item \texttt{processed\_clusters}: Post-processed cluster data
+    \item \texttt{html\_files}: Generated visualization files
+    \item \texttt{timing\_logs}: Performance metrics
+    \item \texttt{best\_level\_info}: Optimal level identification
+\end{itemize}
+
+\subsection{Process Clusters}
+\label{subsec:process-clusters}
+
+\textbf{Endpoint}: \texttt{POST /process-clusters}
+
+Processes raw cluster data for visualization and analysis.
+
+\subsubsection{Request Format}
+\label{subsubsec:cluster-request}
+
+\begin{verbatim}
+{
+    "clusters": "[[\"guid1\", \"guid2\"], [\"guid3\", \"guid4\"]]"
+}
+\end{verbatim}
+
+\textbf{Parameters}:
+\begin{itemize}
+    \item \texttt{clusters} (string): JSON-encoded cluster arrays
+\end{itemize}
+
+\subsubsection{Response Format}
+\label{subsubsec:cluster-response}
+
+\begin{verbatim}
+{
+    "status": "success",
+    "message": "Clustering completed successfully",
+    "data": "...",
+    "sites": {...},
+    "html_files": [...],
+    "timing_logs": {...},
+    "site_similarity": {...}
+}
+\end{verbatim}
+
+\section{Experiment Management Endpoints}
+\label{sec:experiment-endpoints}
+
+\subsection{Run Experiment Batch}
+\label{subsec:experiment-batch}
+
+\textbf{Endpoint}: \texttt{POST /experiments/run-batch}
+
+Executes batch experiments with multiple test configurations.
+
+\subsubsection{Request Format}
+\label{subsubsec:experiment-request}
+
+\begin{verbatim}
+{
+    "experiment_name": "Thesis Experiment 1",
+    "selected_test_cases": [
+        {
+            "id": "test_001_0_L1_U3",
+            "name": "Test Case 1",
+            "mode": 0,
+            "levels": [1, 2],
+            "urls": ["https://example.com", "https://test.com"],
+            "url_count": 2
+        }
+    ]
+}
+\end{verbatim}
+
+\subsubsection{Response Format}
+\label{subsubsec:experiment-response}
+
+\begin{verbatim}
+{
+    "status": "success",
+    "experiment_summary": {
+        "experiment_info": {
+            "name": "Thesis Experiment 1",
+            "total_tests": 1,
+            "successful_tests": 1,
+            "failed_tests": 0,
+            "success_rate": 100.0,
+            "duration": 45.2
+        },
+        "results": [...],
+        "gnuplot_files": [...],
+        "generated_images": [...]
+    }
+}
+\end{verbatim}
+
+\subsection{List Experiment Results}
+\label{subsec:list-experiments}
+
+\textbf{Endpoint}: \texttt{GET /experiments/results/list}
+
+Retrieves list of completed experiments.
+
+\subsubsection{Response Format}
+\label{subsubsec:experiments-list}
+
+\begin{verbatim}
+{
+    "status": "success",
+    "experiments": [
+        {
+            "id": "20241201_143022_thesis_experiment_1",
+            "name": "Thesis Experiment 1",
+            "timestamp": "20241201_143022",
+            "total_tests": 5,
+            "successful_tests": 5,
+            "success_rate": 100.0,
+            "duration": 120.5
+        }
+    ],
+    "total_count": 1
+}
+\end{verbatim}
+
+\subsection{Get Experiment Details}
+\label{subsec:experiment-details}
+
+\textbf{Endpoint}: \texttt{GET /experiments/results/\{experiment\_id\}}
+
+Retrieves detailed results for a specific experiment.
+
+\subsubsection{Response Format}
+\label{subsubsec:experiment-detail}
+
+\begin{verbatim}
+{
+    "status": "success",
+    "experiment_data": {
+        "id": "20241201_143022_thesis_experiment_1",
+        "experiment_info": {...},
+        "results": [...],
+        "gnuplot_files": [...],
+        "generated_images": [...]
+    }
+}
+\end{verbatim}
+
+\section{File Access Endpoints}
+\label{sec:file-endpoints}
+
+\subsection{HTML File Serving}
+\label{subsec:html-serving}
+
+\textbf{Endpoint}: \texttt{GET /output\_html\_files/\{filename\}}
+
+Serves generated HTML visualization files.
+
+\textbf{File Structure}:
+\begin{itemize}
+    \item \texttt{level\_\{level\}/}: Analysis level directories
+    \item \texttt{level\_\{level\}\_\{domain\}\_\{identifier\}\_\{guid\}.html}: File naming convention
+\end{itemize}
+
+\subsection{Experiment File Downloads}
+\label{subsec:experiment-files}
+
+\textbf{Endpoint}: \texttt{GET /experiments/results/\{experiment\_id\}/files/\{filename\}}
+
+Downloads experiment-generated files (GNUplot data, scripts, etc.).
+
+\subsection{Generated Images}
+\label{subsec:generated-images}
+
+\textbf{Endpoint}: \texttt{GET /experiments/results/\{experiment\_id\}/images/\{filename\}}
+
+Serves generated chart images (PNG, SVG, etc.).
+
+\section{Error Handling}
+\label{sec:error-handling}
+
+\subsection{Standard Error Response}
+\label{subsec:error-response}
+
+\begin{verbatim}
+{
+    "status": "error",
+    "message": "Error description",
+    "stack_trace": "Detailed error information"
+}
+\end{verbatim}
+
+\subsection{HTTP Status Codes}
+\label{subsec:status-codes}
+
+\begin{itemize}
+    \item \texttt{200 OK}: Successful operation
+    \item \texttt{400 Bad Request}: Invalid request parameters
+    \item \texttt{404 Not Found}: Resource not found
+    \item \texttt{500 Internal Server Error}: Server processing error
+\end{itemize}
+
+\subsection{Common Error Messages}
+\label{subsec:error-messages}
+
+\begin{itemize}
+    \item \texttt{"No valid URLs found"}: All provided URLs invalid
+    \item \texttt{"ChromeDriver setup failed"}: Browser automation error
+    \item \texttt{"Processing timeout"}: Operation exceeded time limit
+    \item \texttt{"Resource allocation error"}: System resource limitation
+\end{itemize}
+
+\section{Rate Limiting and Performance}
+\label{sec:rate-limiting}
+
+\subsection{Request Limits}
+\label{subsec:request-limits}
+
+\begin{itemize}
+    \item \textbf{URLs per request}: Maximum 50 URLs
+    \item \textbf{Levels per request}: Maximum 10 levels
+    \item \textbf{Concurrent requests}: 5 simultaneous requests
+    \item \textbf{Timeout}: 30 minutes per request
+\end{itemize}
+
+\subsection{Performance Considerations}
+\label{subsec:performance-considerations}
+
+\begin{itemize}
+    \item \textbf{Processing time}: Scales with URL count × level count
+    \item \textbf{Memory usage}: Increases with DOM complexity
+    \item \textbf{Optimization benefits}: Efficient processing for repeated operations
+    \item \textbf{Optimal batch size}: 5-10 URLs per request
+\end{itemize}
+
+\section{Authentication and Security}
+\label{sec:authentication}
+
+\subsection{Current Implementation}
+\label{subsec:current-auth}
+
+\begin{itemize}
+    \item \textbf{Authentication}: None (development/research environment)
+    \item \textbf{CORS}: Configured for specific origins
+    \item \textbf{Rate limiting}: Built-in request queuing
+    \item \textbf{Input validation}: URL format verification
+\end{itemize}
+
+\subsection{Production Considerations}
+\label{subsec:production-security}
+
+For production deployment, consider implementing:
+
+\begin{itemize}
+    \item API key authentication
+    \item Request rate limiting per client
+    \item Input sanitization and validation
+    \item HTTPS encryption
+    \item Access logging and monitoring
+\end{itemize}
+
+\section{Main API Endpoints}
+\label{sec:main-api-endpoints}
+
+This section provides simple usage examples for the four core API endpoints in the S\textsuperscript{4}D system.
+
+\subsection{URL Processing}
+\label{subsec:url-processing-api}
+
+\textbf{Endpoint}: \texttt{POST /process-urls}
+
+Processes multiple URLs for similarity analysis and clustering.
+
+\begin{tcolorbox}[
+    colback=gray!5!white,
+    colframe=gray!60!black,
+    title=\textbf{cURL Example},
+    enhanced
+]
+\begin{verbatim}
+curl -X POST "http://localhost:5000/process-urls" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "urls": [
+      "https://example.com", 
+      "https://test.com"
+    ],
+    "levels": [1, 2, 3],
+    "mode": 0
+  }'
+\end{verbatim}
+\end{tcolorbox}
+
+\textbf{Response}: Returns clustering results, HTML files, and similarity matrices.
+
+\subsection{Experiment Batch Processing}
+\label{subsec:experiment-batch}
+
+\textbf{Endpoint}: \texttt{POST /experiments/run-batch}
+
+Executes batch experiments with multiple test configurations.
+
+\begin{tcolorbox}[
+    colback=gray!5!white,
+    colframe=gray!60!black,
+    title=\textbf{cURL Example},
+    enhanced
+]
+\begin{verbatim}
+curl -X POST "http://localhost:5000/experiments/run-batch" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "experiment_name": "Thesis Experiment",
+    "selected_test_cases": [
+      {
+        "id": "test_001",
+        "name": "Test Case 1",
+        "mode": 0,
+        "levels": [1, 2],
+        "urls": ["https://example.com", "https://test.com"]
+      }
+    ]
+  }'
+\end{verbatim}
+\end{tcolorbox}
+
+\textbf{Response}: Returns experiment summary with results and generated images.
+
+\subsection{Experiment Results Listing}
+\label{subsec:experiments-list}
+
+\textbf{Endpoint}: \texttt{GET /experiments/results/list}
+
+Retrieves list of completed experiments.
+
+\begin{tcolorbox}[
+    colback=gray!5!white,
+    colframe=gray!60!black,
+    title=\textbf{cURL Example},
+    enhanced
+]
+\begin{verbatim}
+curl -X GET "http://localhost:5000/experiments/results/list"
+\end{verbatim}
+\end{tcolorbox}
+
+\textbf{Response}: Returns array of experiment summaries with metadata.
+
+\subsection{Experiment Details}
+\label{subsec:experiment-details}
+
+\textbf{Endpoint}: \texttt{GET /experiments/results/\{experiment\_id\}}
+
+Retrieves detailed results for a specific experiment.
+
+\begin{tcolorbox}[
+    colback=gray!5!white,
+    colframe=gray!60!black,
+    title=\textbf{cURL Example},
+    enhanced
+]
+\begin{verbatim}
+curl -X GET "http://localhost:5000/experiments/results/exp_123"
+\end{verbatim}
+\end{tcolorbox}
+
+\textbf{Response}: Returns complete experiment data including generated images and analysis results.
+
+\section{File Access}
+\label{sec:file-access}
+
+The S\textsuperscript{4}D system provides multiple file access endpoints:
+
+\begin{itemize}
+    \item \textbf{HTML Files}: \texttt{GET /output\_html\_files/\{filename\}}
+    \item \textbf{Experiment Files}: \texttt{GET /experiments/results/\{id\}/files/\{filename\}}
+    \item \textbf{Generated Images}: \texttt{GET /experiments/results/\{id\}/images/\{filename\}}
+\end{itemize}
+
+\section{Error Handling}
+\label{sec:error-handling}
+
+All endpoints return standardized error responses:
+
+\begin{verbatim}
+{
+    "status": "error",
+    "message": "Error description"
+}
+\end{verbatim}
+
+\textbf{Common HTTP Status Codes}:
+\begin{itemize}
+    \item \texttt{200 OK}: Successful operation
+    \item \texttt{400 Bad Request}: Invalid parameters
+    \item \texttt{404 Not Found}: Resource not found
+    \item \texttt{500 Internal Server Error}: Processing error
+\end{itemize} 

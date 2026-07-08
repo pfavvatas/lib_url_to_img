@@ -1,0 +1,54 @@
+\chapter{Related Work}
+\label{ch:related-work}
+
+This chapter reviews research related to the structural and visual analysis of web pages, highlighting prior work in web parsing, information extraction, and representation learning. The discussion emphasizes how these approaches inform, contrast with, and complement the S\textsuperscript{4}D system. The review is structured into three major areas: (1) structural understanding of web documents, (2) information extraction and representation approaches, and (3) similarity and clustering methods for web analysis. Finally, we compare S\textsuperscript{4}D with prior systems to highlight its unique contributions.
+
+\section{Structural Understanding of Web Documents}
+\label{sec:structural-understanding}
+
+One of the earliest challenges in web analysis has been the ability to combine textual semantics with structural information. Chen et al.~\cite{chen2021websrc} introduced \textbf{WebSRC}, a large-scale dataset for structural reading comprehension. Their work demonstrates that effective web understanding requires not only semantic interpretation but also the hierarchical organization of HTML elements. WebSRC provides 400K question--answer pairs across 6.4K web pages, combining HTML source code, screenshots, and metadata. While WebSRC focuses on question answering, its emphasis on DOM-aware structural comprehension is relevant to S\textsuperscript{4}D's structural modeling. Unlike WebSRC, however, S\textsuperscript{4}D does not address query answering but instead targets structural and stylistic similarity across domains.
+
+Building on this idea of structural representation, Deng et al.~\cite{deng2022domlm} proposed \textbf{DOM-LM}, a transformer-based model that encodes both textual content and DOM structure to learn generalizable representations of web pages. Their approach addresses the shortcomings of methods that rely solely on visual rendering or plain-text representations. DOM-LM achieves strong generalization in few-shot and zero-shot tasks such as attribute extraction and information retrieval. In contrast, S\textsuperscript{4}D applies structural encoding not for semantic extraction but to identify recurring patterns of element arrangement across domains, enabling inter-domain similarity assessment.
+
+\section{Information Extraction and Representation}
+\label{sec:information-extraction}
+
+The extraction of structured information from web pages has been another central research theme. Gulhane et al.~\cite{gulhane2011vertex} developed \textbf{Vertex}, a wrapper induction system deployed at Yahoo! for large-scale record extraction. Vertex introduced algorithms for grouping similar pages, generating XPath-based extraction rules, and adapting to structural changes. It achieved web-scale deployment, extracting over 250 million records from more than 200 websites. Vertex demonstrates the scalability of web information extraction but is tailored to structured record retrieval. By contrast, S\textsuperscript{4}D does not generate wrappers or extract database-like content; it focuses instead on comparing visual and structural layouts across entire domains.
+
+More recently, Lockard et al.~\cite{lockard2020zeroshotceres} proposed \textbf{ZeroShotCeres}, which tackles the challenge of zero-shot relation extraction from semi-structured web pages. Their model employs graph neural networks to capture both textual semantics and visual cues such as layout, font size, and color. This enables generalization to previously unseen templates without the need for template-specific training data. ZeroShotCeres highlights the importance of structural and visual cues for generalizable web analysis. While their focus is relation extraction, S\textsuperscript{4}D instead leverages structural and positional properties to compute domain-level similarity, not entity-level relations.
+
+\section{Similarity and Clustering in Web Analysis}
+\label{sec:similarity-clustering}
+
+Similarity measurement and clustering techniques have been applied in web analysis to group documents, identify templates, and extract structure. Traditional approaches often prioritize textual similarity, but recent advances emphasize structural and visual dimensions. For example, graph-based models such as ZeroShotCeres~\cite{lockard2020zeroshotceres} highlight the utility of representing web pages as graphs where nodes correspond to DOM elements and edges represent structural or semantic relationships.
+
+The S\textsuperscript{4}D system extends these ideas by combining multiple similarity dimensions---structural and positional---and introducing role vector similarity to capture the functional roles of elements across domains. For clustering, S\textsuperscript{4}D adopts HDBSCAN~\cite{mcinnes2017hdbscan}, which automatically determines the number of clusters, handles noise, and reveals hierarchical patterns. This makes it particularly suited to web data, which is both high-dimensional and heterogeneous. Unlike prior work, S\textsuperscript{4}D applies clustering at the element level within pages and then aggregates results at the domain level, enabling the analysis of cross-domain stylistic and structural similarity.
+
+\section{Comparison with Prior Work}
+\label{sec:comparison}
+
+The reviewed works demonstrate significant progress in web analysis, yet they address different objectives from S\textsuperscript{4}D:
+
+\begin{itemize}
+    \item \textbf{WebSRC}~\cite{chen2021websrc}: Focuses on question answering over structured web data, highlighting the need for structural comprehension. S\textsuperscript{4}D instead uses structure for cross-domain similarity analysis.
+    \item \textbf{DOM-LM}~\cite{deng2022domlm}: Learns generalizable document embeddings from DOM+text representations. S\textsuperscript{4}D leverages DOM+CSS for unsupervised clustering rather than representation learning.
+    \item \textbf{Vertex}~\cite{gulhane2011vertex}: Extracts structured records at web scale via wrapper induction. S\textsuperscript{4}D does not extract records but compares layout and style across domains.
+    \item \textbf{ZeroShotCeres}~\cite{lockard2020zeroshotceres}: Performs zero-shot relation extraction using structural and visual features. S\textsuperscript{4}D uses similar structural and positional cues but for similarity computation and domain-level clustering.
+\end{itemize}
+
+\section{Research Gaps and Opportunities}
+\label{sec:research-gaps}
+
+The literature reveals several research gaps that S\textsuperscript{4}D addresses:
+
+\begin{itemize}
+    \item \textbf{Cross-domain similarity}: None of the reviewed systems compute similarity matrices across domains, which is central to S\textsuperscript{4}D.
+    \item \textbf{Multi-dimensional analysis}: Existing work typically emphasizes content or relations; S\textsuperscript{4}D integrates structural and positional dimensions.
+    \item \textbf{Clustering across stylistic patterns}: Prior systems rarely apply clustering to identify design-level commonalities across domains. S\textsuperscript{4}D introduces a multi-level clustering approach for this purpose.
+    \item \textbf{Scalability to modern web design}: Systems like Vertex demonstrate scale for extraction tasks, but scalable cross-domain similarity analysis remains underexplored.
+\end{itemize}
+
+\section{Summary}
+\label{sec:related-summary}
+
+This chapter has reviewed four representative systems---WebSRC, DOM-LM, Vertex, and ZeroShotCeres---that address different aspects of structural web understanding, information extraction, and similarity-based analysis. Each system contributes important ideas relevant to S\textsuperscript{4}D, yet none directly targets cross-domain visual and structural similarity measurement via unsupervised clustering. The gaps identified above motivate the design choices presented in the following chapter.

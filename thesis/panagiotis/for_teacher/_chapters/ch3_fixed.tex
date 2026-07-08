@@ -1,0 +1,317 @@
+\chapter{The S\textsuperscript{4}D System}
+\label{ch:s4d-system}
+
+This chapter presents the complete S\textsuperscript{4}D (Style and Structure Similarity for Site Domains) system, detailing the 7-step workflow from web page acquisition through similarity analysis to final result presentation. The system combines advanced web parsing, clustering algorithms, and multi-dimensional similarity computation to provide robust website comparison and categorisation capabilities.
+
+\section{System Overview}
+\label{sec:system-overview}
+
+The S\textsuperscript{4}D methodology employs a comprehensive multi-stage pipeline that transforms raw web pages into structured similarity matrices and clustering results. The system architecture consists of seven main processing components:
+
+\begin{enumerate}
+    \item \textbf{Web Page Acquisition and DOM Extraction} --- Automated web page rendering and hierarchical DOM tree construction
+    \item \textbf{Multi-Level CSS Property Analysis} --- Comprehensive CSS attribute extraction and normalisation across multiple DOM depth levels
+    \item \textbf{Feature Engineering and Vector Representation} --- Transformation of CSS properties into numerical vectors suitable for machine learning algorithms
+    \item \textbf{Advanced Clustering Analysis} --- HDBSCAN-based clustering with automatic parameter optimisation and quality validation
+    \item \textbf{Role Vector-based Similarity Computation} --- Multi-dimensional similarity assessment using frequency, transition, and positional information
+    \item \textbf{Multi-Metric Similarity Framework} --- Combined similarity scoring using geometric mean of multiple distance metrics
+    \item \textbf{Result Presentation} --- Interactive HTML generation and similarity matrix display
+\end{enumerate}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/methodology/system_architecture_overview.png}
+    \caption{S\textsuperscript{4}D System Architecture Overview showing the seven main components and data flow from web page acquisition through similarity computation to final clustering results.}
+    \label{fig:system_architecture}
+\end{figure}
+
+\section{Technology Stack}
+\label{sec:technology-stack}
+
+The S\textsuperscript{4}D system is built using a technology stack that ensures scalability, performance, and maintainability across all system components.
+
+\subsection{Backend Technologies}
+
+\textbf{Core Programming Language}
+\begin{itemize}
+    \item \textbf{Python 3.8+}: Primary backend development language with a rich ecosystem for data science and web development.
+    \item \textbf{Flask}: Lightweight REST API framework for Python web services, providing HTTP endpoints for URL processing and result retrieval.
+    \item \textbf{Selenium WebDriver 4.x}: Web automation framework for DOM extraction and CSS analysis using a headless Chrome browser.
+\end{itemize}
+
+\textbf{Data Processing Libraries}
+\begin{itemize}
+    \item \textbf{NumPy}: Numerical computing and array operations for vector calculations.
+    \item \textbf{Pandas}: Data manipulation and analysis for role vector computation.
+    \item \textbf{Scikit-learn}: Machine learning algorithms and preprocessing, including \texttt{StandardScaler} and \texttt{cosine\_similarity}.
+\end{itemize}
+
+\textbf{Clustering and Similarity Analysis}
+\begin{itemize}
+    \item \textbf{HDBSCAN}: Hierarchical density-based clustering with automatic cluster detection \cite{mcinnes2017hdbscan}.
+    \item \textbf{DBCV}: Density-Based Cluster Validation for clustering quality assessment \cite{moulavi2014dbcv}.
+    \item \textbf{SciPy}: Scientific computing for distance calculations (\texttt{cdist}) and statistical functions.
+\end{itemize}
+
+\subsection{Frontend and Infrastructure}
+
+\begin{itemize}
+    \item \textbf{React 18.x}: Component-based frontend framework providing the interactive user interface (port 3000).
+    \item \textbf{Node.js static server}: A lightweight Node.js HTTP server that serves the generated HTML result files (port 5005).
+    \item \textbf{mprocs}: Multi-process orchestration tool that starts all three services (Flask API, React frontend, Node.js file server) with a single command.
+    \item \textbf{JSON}: Structured data storage and exchange format used throughout the system.
+\end{itemize}
+
+\section{Web Parsing}
+\label{sec:web-parsing}
+
+This section details the web parsing implementation that combines automated DOM extraction with multi-level structural analysis.
+
+\subsection{Automated Web Rendering}
+
+The S\textsuperscript{4}D system employs Selenium WebDriver with Chrome browser in headless mode to ensure consistent web page rendering. The browser is configured with:
+
+\begin{itemize}
+    \item \textbf{Headless mode} (\texttt{--headless}): eliminates GUI overhead and ensures reproducible rendering.
+    \item \textbf{Fixed viewport}: 1920$\times$1080 pixels, ensuring consistent element positioning across pages.
+    \item \textbf{Sandbox flags} (\texttt{--no-sandbox}, \texttt{--disable-dev-shm-usage}): enable execution in server environments.
+\end{itemize}
+
+\subsection{Hierarchical DOM Tree Construction}
+
+The DOM extraction algorithm employs recursive traversal through the \texttt{HTMLTag} class. Each web element is processed as follows.
+
+\subsubsection{Unique Element Identification}
+A unique ID is generated for each element by combining a millisecond timestamp with a random integer:
+
+\begin{equation}
+\text{unique\_id} = \text{timestamp}_{ms} \times 10^{10} + \text{random}_{[10^9, 10^{10})}
+\end{equation}
+
+\subsubsection{Comprehensive Attribute Extraction}
+Three categories of information are extracted per element:
+\begin{enumerate}
+    \item \textbf{HTML attributes}: obtained via JavaScript execution in the browser context.
+    \item \textbf{Computed CSS properties}: all computed style properties accessed through \texttt{window.getComputedStyle()}.
+    \item \textbf{Geometric properties}: element bounding rectangle coordinates via \texttt{getBoundingClientRect()}.
+\end{enumerate}
+
+\subsubsection{Text Content Processing}
+Text content is extracted via direct DOM node traversal in JavaScript, isolating only text nodes that are direct children of the element:
+
+\begin{lstlisting}[caption=Text Content Extraction]
+let textContent = '';
+for (let node of element.childNodes) {
+    if (node.nodeType === Node.TEXT_NODE) {
+        textContent += node.textContent;
+    }
+}
+return textContent.trim();
+\end{lstlisting}
+
+The extracted text is then normalised by removing non-printable ASCII characters while preserving Unicode.
+
+\subsection{Multi-Level DOM Analysis}
+\label{subsec:multi-level-analysis}
+
+The system implements a bottom-up hierarchical analysis across 10 configurable levels (levels 1--10). The level represents the path length from a leaf node upward through the DOM tree:
+
+\begin{itemize}
+    \item \textbf{Level 1}: Leaf elements (bottom-most nodes with no children).
+    \item \textbf{Level 2}: Leaf elements plus their immediate parent.
+    \item \textbf{Level 3}: Leaf elements plus parent and grandparent.
+    \item \textbf{Levels 4--10}: Extended upward paths capturing broader structural context.
+\end{itemize}
+
+This bottom-up approach ensures the most content-specific elements are captured first, with increasing levels incorporating wider structural context.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/methodology/dom_tree_traversal.png}
+    \caption{Bottom-up DOM Tree Traversal: Level 1 captures leaf nodes; higher levels extend the path toward the root.}
+    \label{fig:dom_tree_traversal}
+\end{figure}
+
+\subsection{CSS Property Analysis and Normalisation}
+
+\subsubsection{Attribute Selection}
+The system focuses on a curated set of CSS properties with discriminative power for structural and visual similarity. These include typography properties (\texttt{font-size}, \texttt{font-weight}, \texttt{font-style}, \texttt{color}), layout properties (\texttt{text-align}, \texttt{line-height}, \texttt{margin}, \texttt{padding}, border properties), and decoration properties (\texttt{text-decoration-style}, \texttt{text-decoration-color}). Properties such as positioning (\texttt{display}, \texttt{position}) and animations are intentionally excluded as they introduce noise for cross-domain structural comparison.
+
+\subsubsection{CSS Value Normalisation}
+The system applies consistent normalisation rules:
+
+\textbf{Pixel values}:
+\begin{equation}
+\text{normalised} = \begin{cases}
+-1 & \text{if value} = \text{``auto''} \\
+-\frac{\text{percentage}}{100} & \text{if value contains ``\%''} \\
+\text{float(value.replace(``px'', ``''))} & \text{otherwise}
+\end{cases}
+\end{equation}
+
+\textbf{Colour space conversion}: RGB/RGBA values are converted to HSV for perceptual uniformity using Python's \texttt{colorsys.rgb\_to\_hsv()}.
+
+\begin{tcolorbox}[colback=gray!5!white, colframe=gray!60!black,
+    title=\textbf{HSV Colour Space Conversion}, fonttitle=\bfseries,
+    enhanced, arc=2mm, boxrule=0.5pt]
+\begin{lstlisting}[language=Python]
+def extract_hsv_values(color_str):
+    rgb = tuple(map(int, re.findall(r'\d+', color_str)))
+    h, s, v = colorsys.rgb_to_hsv(
+        rgb[0]/255.0, rgb[1]/255.0, rgb[2]/255.0)
+    return h, s, v
+\end{lstlisting}
+\end{tcolorbox}
+
+\textbf{Dual-coordinate properties} (margins, padding with two values ``Xpx Ypx'') are ordered so that $X \geq Y$ always holds; if not, both values are negated. This ensures a canonical representation for symmetric and asymmetric spacing.
+
+\section{Data Modelling}
+\label{sec:data-modeling}
+
+\subsection{Feature Vector Construction}
+
+For each DOM element at a given level, the system constructs a feature vector by concatenating the normalised values of all selected CSS attributes. Non-numeric CSS values (e.g., \texttt{left}, \texttt{bold}) are mapped to integers via a global string-to-integer vocabulary (\texttt{str\_VSM}), with special handling for framework aliases (e.g., Bootstrap's \texttt{start} → \texttt{left}).
+
+All feature vectors are standardised using \texttt{StandardScaler}:
+\begin{equation}
+X_{\text{scaled}} = \frac{X - \mu}{\sigma}
+\end{equation}
+
+\subsection{HDBSCAN Clustering Integration}
+\label{subsec:clustering-integration}
+
+\subsubsection{Parameter Optimisation}
+The system implements a grid search over HDBSCAN parameters:
+\begin{itemize}
+    \item \textbf{Minimum cluster size}: ranges from 5\% to 10\% of the total number of elements.
+    \item \textbf{Selection epsilon}: ranges from 0.0 to 1.0 in steps of 0.333.
+    \item \textbf{Early stopping}: configurations with DBCV score below 0.25 are skipped.
+    \item \textbf{Best selection}: among valid configurations (DBCV $> 0.5$), the one producing the fewest clusters is chosen to favour interpretability.
+\end{itemize}
+
+\subsubsection{Outlier Reassignment}
+Elements labelled as noise (cluster label $= -1$) by HDBSCAN are reassigned to the nearest cluster centroid using Euclidean distance:
+\begin{enumerate}
+    \item Compute centroids for all valid clusters.
+    \item For each outlier, find the centroid with minimum Euclidean distance.
+    \item Assign the outlier to that cluster.
+    \item Recompute centroids and repeat until convergence.
+\end{enumerate}
+
+\subsection{Post-Clustering Data Enrichment}
+
+After clustering, each DOM element in the stored JSON data is annotated with its cluster assignment and the cluster colour used for visualisation. This creates the enriched data structure used by subsequent pipeline stages for similarity computation and HTML output generation.
+
+\section{Data Mining: Transition Matrices and Role Vectors}
+\label{sec:data-mining}
+
+\subsection{Transition Matrix Construction}
+
+For each processed page, the system extracts the sequence of cluster IDs assigned to DOM elements in traversal order. A transition matrix $T$ is then built, where:
+\begin{equation}
+T_{i \rightarrow j} = \frac{\text{count}(i \rightarrow j)}{\sum_{k} \text{count}(i \rightarrow k)}
+\end{equation}
+counts transitions between adjacent cluster IDs in the sequence.
+
+\subsection{Positional Statistics}
+
+For each cluster, the system computes statistics of normalised element positions within the DOM sequence:
+\begin{align}
+\text{pos}_{norm} &= \frac{\text{position}}{\max(\text{sequence\_length} - 1, 1)} \\
+\mu_{pos} &= \frac{1}{n}\sum_{i=1}^{n}\text{pos}_{norm,i} \qquad
+\sigma_{pos} = \sqrt{\frac{1}{n}\sum_{i=1}^{n}(\text{pos}_{norm,i} - \mu_{pos})^2}
+\end{align}
+
+\subsection{Role Vector Specification}
+
+The complete role vector for each cluster combines all the above information:
+\begin{equation}
+\mathbf{R}_{cluster} = [\,\text{freq},\; \mathbf{T}_{out},\; \mathbf{T}_{in},\; \mu_{pos},\; \sigma_{pos},\; \min_{pos},\; \max_{pos}\,]
+\end{equation}
+where $\text{freq}$ is the relative occurrence frequency of that cluster across all elements, and $\mathbf{T}_{out}$, $\mathbf{T}_{in}$ are the outgoing and incoming transition probability vectors respectively.
+
+\section{Similarity Analysis}
+\label{sec:similarity-analysis}
+
+\subsection{Domain-Level Aggregation}
+
+Websites are grouped by domain (via URL parsing). Role vectors within each domain are averaged to produce a domain-representative vector. Inter-domain similarity is then computed between these aggregated vectors.
+
+\subsection{Multi-Metric Similarity}
+
+Three complementary metrics are computed for each domain pair $(A, B)$:
+
+\textbf{Cosine Similarity}:
+\begin{equation}
+\text{sim}_{cos}(A,B) = \frac{\mathbf{A} \cdot \mathbf{B}}{|\mathbf{A}||\mathbf{B}|}
+\end{equation}
+
+\textbf{EMD Approximation} (bidirectional mean minimum distance):
+\begin{equation}
+\text{sim}_{EMD}(A,B) = \tfrac{1}{2}\bigl[(1 - \overline{\min\,\text{dist}(A \to B)}) + (1 - \overline{\min\,\text{dist}(B \to A)})\bigr]
+\end{equation}
+
+\textbf{Hausdorff Approximation} (bidirectional max minimum distance):
+\begin{equation}
+\text{sim}_{H}(A,B) = \tfrac{1}{2}\bigl[(1 - \max\min\,\text{dist}(A \to B)) + (1 - \max\min\,\text{dist}(B \to A))\bigr]
+\end{equation}
+
+The final combined similarity uses geometric mean:
+\begin{equation}
+\text{sim}_{combined}(A,B) = \bigl(\text{sim}_{cos} \times \text{sim}_{EMD} \times \text{sim}_{H}\bigr)^{1/3} \times 100\%
+\end{equation}
+
+\subsection{Best Level Selection Algorithm}
+
+After computing clustering results for all requested levels, the system selects the best level using a median-based algorithm:
+
+\begin{tcolorbox}[colback=gray!5!white, colframe=gray!60!black,
+    title=\textbf{Algorithm: Best Clustering Level Selection}, fonttitle=\bfseries,
+    enhanced, arc=2mm, boxrule=0.5pt]
+\textbf{Input:} clustering\_results: list of \{level, num\_clusters, dbcv\_score\}\\
+\textbf{Output:} best result
+\begin{enumerate}
+    \item valid $\leftarrow$ results with num\_clusters $> 0$ and dbcv\_score $> 0$
+    \item \textbf{if} $|\text{valid}| < 2$: \textbf{return} None
+    \item Sort valid by num\_clusters (ascending)
+    \item $W \leftarrow$ num\_clusters at median position of sorted list
+    \item filtered $\leftarrow$ results with num\_clusters $\leq W$
+    \item \textbf{return} result with highest dbcv\_score from filtered
+\end{enumerate}
+\end{tcolorbox}
+
+This balances clustering quality (DBCV score) with interpretability (fewer clusters preferred).
+
+\section{Result Presentation}
+\label{sec:presentation}
+
+\subsection{Colour-Coded HTML Generation}
+
+For each processed page, the system generates an HTML file in which every clustered DOM element is rendered with its cluster colour as a \texttt{background-color} CSS property. Files are organised in \texttt{output\_html\_files/level\_N/} directories and served by the Node.js static file server on port 5005.
+
+\subsection{Similarity Matrix}
+
+The final output is a symmetric matrix $S$ where $S_{ij} = S_{ji}$ gives the combined similarity score (as a percentage) between domains $i$ and $j$, with $S_{ii} = 100\%$. The React frontend renders this matrix as a colour-coded heatmap using the Viridis colourmap for perceptual uniformity and accessibility.
+
+\section{System Parameters and Usage}
+\label{sec:usage-parameters}
+
+\textbf{Key configurable parameters:}
+\begin{itemize}
+    \item \textbf{Analysis levels}: any subset of 1--10; more levels increase coverage but also computation time.
+    \item \textbf{Minimum cluster size}: set dynamically as 5--10\% of total elements.
+    \item \textbf{Processing mode}: Mode~0 processes all URLs together in a single pass; Mode~1 groups URLs by domain and processes each group separately.
+    \item \textbf{Caching}: a TTL-based cache (\texttt{CacheManager}) stores processed URL data, allowing repeated runs to skip re-scraping already-seen URLs.
+\end{itemize}
+
+\textbf{Recommended usage:}
+\begin{itemize}
+    \item Use levels 3--7 for general-purpose domain comparison.
+    \item Use Mode~0 (unified processing) when all input URLs should be clustered together for a single similarity matrix.
+    \item Monitor DBCV scores to confirm clustering quality; scores above 0.5 indicate well-separated clusters.
+\end{itemize}
+
+\section{Methodology Summary}
+\label{sec:methodology-summary}
+
+The S\textsuperscript{4}D methodology provides a complete pipeline for automated web similarity analysis. Its key technical contributions are: (1) a bottom-up multi-level DOM analysis framework, (2) HDBSCAN clustering with grid-search parameter optimisation and outlier reassignment, (3) role vectors encoding frequency, transition, and positional information, (4) a geometric-mean multi-metric similarity framework, and (5) a median-based best-level selection algorithm. Together these components form an end-to-end system capable of producing interpretable cross-domain similarity results without manual parameter tuning.

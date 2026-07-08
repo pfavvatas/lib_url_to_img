@@ -1,0 +1,98 @@
+\chapter{Introduction}
+\label{ch:introduction}
+
+This thesis presents \textlatin{\textbf{S\textsuperscript{4}D}}, a system for analyzing and detecting similarities between websites. \textlatin{\textbf{S\textsuperscript{4}D}} is a multi-layered system that aims to facilitate the modeling and analysis of websites' visual and structural similarity. Through a variety of functionalities and a Graphical User Interface (GUI), it is able to yield meaningful insight into the websites' visual and structural similarity analysis process, ultimately generating a similarity matrix for all input webpages.
+
+\section{Problem Statement}
+\label{sec:problem-statement}
+
+The current landscape of web analysis tools focuses primarily on content-based analysis, often overlooking the significance of visual design patterns and structural similarities between websites. In the era of rapidly expanding web content, understanding the structural similarity between websites has become increasingly important for various applications including web mining, content analysis, and automated web processing. However, traditional approaches face several critical challenges.
+
+\subsection{Web Structure Analysis Challenges}
+\label{subsec:web-challenges}
+
+Modern web structure analysis presents several unique technical challenges that our \textlatin{S\textsuperscript{4}D} system specifically addresses:
+
+\begin{itemize}
+    \item \textbf{DOM Complexity and Recursive Processing.} Modern websites contain deeply nested DOM structures with thousands of elements, requiring recursive traversal algorithms to accurately capture hierarchical relationships. The sheer depth and breadth of contemporary HTML trees make consistent and scalable structural analysis a non-trivial engineering challenge.
+
+    \item \textbf{CSS Style Diversity and Standardization.} The variety of CSS styling approaches across websites creates inconsistency in structural representation, making cross-site comparisons particularly challenging. Different sites express the same visual properties through differing units, formats, and conventions, requiring unified normalization before any meaningful comparison can take place.
+
+    \item \textbf{Attribute Extraction and Feature Engineering.} Extracting meaningful features from HTML elements involves processing hundreds of CSS properties per element. Identifying which properties carry structural significance — and how to normalize them for comparison — is central to building a reliable similarity model.
+
+    \item \textbf{Scalability and Performance Optimization.} Processing large numbers of websites demands efficient algorithms and robust memory management. As the number of analyzed domains grows, the computational overhead of feature extraction and comparison increases substantially, requiring careful architectural choices to ensure reliable performance at scale.
+
+    \item \textbf{Multi-dimensional Similarity Computation.} Defining meaningful similarity measures for web structures involves multiple algorithmic challenges, since web pages differ across visual, structural, and positional dimensions simultaneously. No single metric fully captures the richness of inter-site similarity, making combined approaches necessary.
+
+    \item \textbf{Clustering Parameter Optimization.} Achieving optimal clustering results requires careful parameter tuning, as different web datasets exhibit varying densities and structural patterns. Selecting appropriate parameters without overfitting to a specific domain is a non-trivial problem that demands principled search strategies.
+
+    \item \textbf{Cross-Domain Pattern Recognition.} Identifying design trends across different domains requires sophisticated comparison frameworks capable of abstracting away domain-specific content while preserving structural and stylistic signals. This becomes especially challenging when the overall design language varies significantly between domains.
+\end{itemize}
+
+\subsection{Research Motivation}
+\label{subsec:research-motivation}
+
+The need for automated web structural analysis stems from several key factors:
+
+\begin{itemize}
+    \item \textbf{Content Management}: Organizations need tools to understand and manage large collections of web content based on structural and visual characteristics.
+
+    \item \textbf{Design Pattern Analysis}: Web developers and designers benefit from understanding common structural patterns and visual trends across websites in their domain.
+
+    \item \textbf{Accessibility Evaluation}: Automated structural analysis can help identify accessibility issues and design inconsistencies across multiple web properties.
+
+    \item \textbf{Web Analytics Enhancement}: Structural similarity analysis provides deeper insights into website categorization and user experience patterns beyond traditional content-based metrics.
+\end{itemize}
+
+\section{Our Methodology and Contributions}
+\label{sec:methodology-overview}
+
+\textlatin{\textbf{S\textsuperscript{4}D}} addresses the challenges outlined above through a cohesive set of methods and components. To handle DOM complexity, the system uses unique ID generation and hierarchical tree processing to manage parent-child relationships across depth levels 1–10 while maintaining structural integrity throughout analysis. For CSS diversity, sophisticated parsing and normalization pipelines process pixel values (\texttt{px}), percentages (\texttt{\%}), and relative units in a unified manner, enabling consistent cross-site comparisons.
+
+Attribute extraction is guided by selective filtering focused on structurally significant properties such as \texttt{font-size}, \texttt{text-align}, \texttt{line-height}, and \texttt{cursor}, with dedicated handling for color space conversions and unit standardization. Scalability is achieved through domain-based processing modes, ChromeDriver optimization, and parallel data processing, enabling reliable batch analysis across large website collections.
+
+For similarity computation, the system combines HDBSCAN clustering with DBCV (Density-Based Cluster Validation) scoring \cite{moulavi2014dbcv}, cosine similarity matrices, and role vector analysis to jointly capture structural, visual, and positional relationships between elements. Clustering parameters are tuned via grid search over cluster size ranges and selection epsilon values, with automatic outlier reassignment to the nearest cluster centroid using Euclidean distance. Cross-domain analysis is enabled through domain-level aggregation, transition matrices between design elements, and the use of the cosine similarity metric.
+
+This thesis makes the following key contributions:
+
+\begin{itemize}
+    \item \textbf{Novel feature extraction methodology}: Development of comprehensive techniques for extracting both structural and visual features from websites
+    \item \textbf{Advanced similarity metrics}: Introduction of new metrics specifically designed for website comparison
+    \item \textbf{Integrated clustering approach}: Implementation of clustering algorithms optimized for website analysis
+    \item \textbf{Comprehensive evaluation framework}: Establishment of evaluation metrics and datasets for assessing website similarity systems
+    \item \textbf{Practical applications}: Demonstration of real-world applications in web design analysis and automated categorization
+\end{itemize}
+
+\section{Research Objectives}
+\label{sec:objectives}
+
+To tackle the challenges raised above, the primary objectives of this research are:
+
+\begin{enumerate}
+    \item To develop a robust system for extracting and analyzing structural and visual features from websites
+    \item To create effective similarity metrics that can accurately measure relationships between different websites
+    \item To implement clustering algorithms that can group websites based on their design and structural characteristics
+    \item To provide a comprehensive comparison framework for website analysis across different domains
+    \item To validate the effectiveness of the proposed system through extensive testing and evaluation
+\end{enumerate}
+
+\section{Thesis Structure}
+\label{sec:thesis-structure}
+
+The remainder of this thesis is organized as follows:
+
+\begin{itemize}
+    \item \textbf{Chapter 2: Literature Review} presents a comprehensive review of existing approaches to website analysis, similarity measurement, and clustering techniques relevant to web data.
+
+    \item \textbf{Chapter 3: Methodology} describes the proposed \textlatin{S\textsuperscript{4}D} system architecture, including feature extraction methods, similarity metrics, and clustering algorithms.
+
+    \item \textbf{Chapter 4: Implementation} details the technical implementation of the system, including data structures, algorithms, and software architecture decisions.
+
+    \item \textbf{Chapter 5: Experimental Design} outlines the experimental methodology, datasets used, and evaluation metrics employed to assess the system's performance.
+
+    \item \textbf{Chapter 6: Results and Analysis} presents the experimental results, performance analysis, and comparison with existing approaches.
+
+    \item \textbf{Chapter 7: Discussion} provides an in-depth discussion of the findings, limitations, and implications of the research.
+
+    \item \textbf{Chapter 8: Conclusion and Future Work} summarizes the key findings, contributions, and suggests directions for future research.
+\end{itemize}

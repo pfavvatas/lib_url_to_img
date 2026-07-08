@@ -1,0 +1,36 @@
+# LaTeX compilation artifacts
+*.aux
+*.log
+*.bbl
+*.blg
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.synctex(busy)
+*.pdfsync
+*.nav
+*.snm
+*.vrb
+*.idx
+*.ind
+*.ilg
+*.glo
+*.gls
+*.acn
+*.acr
+*.alg
+*.glg
+
+# Zip archives
+*.zip
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Overleaf sync
+overleaf/
